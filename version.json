@@ -1,6 +1,13 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "updated": "2026-09-25",
-  "scope": "chrome-dev-channel",
-  "notes": "Initial live patch channel"
+  "scope": "chrome-portrait-inspector",
+  "notes": [
+    "Left system rail intentionally unchanged",
+    "Moved technical HUD behind portrait and removed intrusive biometric/grid overlays",
+    "Reframed portrait telemetry around canvas perimeter",
+    "Rebuilt right inspector around a single alignment datum",
+    "Full-width subsystem visualization with composed copy/metrics block",
+    "Normalized port, hardware, and action spacing"
+  ]
 }
