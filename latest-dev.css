@@ -1,0 +1,5 @@
+/* FEHA live development patch channel.
+   Keep production overrides temporary and scoped here. */
+:root {
+  --feha-dev-build: "0.1.0";
+}
