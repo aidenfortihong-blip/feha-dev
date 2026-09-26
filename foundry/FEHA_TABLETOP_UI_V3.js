@@ -668,7 +668,15 @@
   function renderJack(actorId) {
     const root = document.getElementById(JACK_ID);
     const actor = actorById(actorId);
-    if (!root || !actor) return;
+
+    if (!root) return;
+
+    if (!actor) {
+      root.remove();
+      ui?.notifications?.warn?.("Cyberdeck operator is no longer available.");
+      open();
+      return;
+    }
     root.dataset.phase = "live";
     root.dataset.actorId = actor.id;
     root.innerHTML = jackMarkup(actor);
@@ -676,6 +684,14 @@
   }
 
   function openJack(actor) {
+    if (!lifecycleActive) return null;
+
+    const live = model(actor);
+    if (!live.deck) {
+      ui?.notifications?.warn?.("Install a Cyberdeck before JACK IN.");
+      return null;
+    }
+
     document.getElementById(JACK_ID)?.remove();
     const root = document.createElement("section");
     root.id = JACK_ID;
@@ -732,7 +748,7 @@
 
           if (changed) {
             globalThis.FEHA_SOUNDS?.play?.(value?"install":"remove",{cooldown:0});
-            render(actor.id);
+            if (root.isConnected) render(actor.id);
           }
         } catch (err) {
           console.error("FEHA V3 software slot update failed",err);
@@ -775,7 +791,7 @@
               live.maxRam+"</strong>.</p>"
           });
 
-          render(actor.id);
+          if (root.isConnected) render(actor.id);
         } catch (err) {
           console.error("FEHA V3 Short Rest failed",err);
           ui?.notifications?.error?.("Cyberdeck Short Rest failed.");
@@ -820,6 +836,9 @@
           setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),90);
         } catch (err) {
           console.warn("FEHA V3 target selection failed",err);
+          globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
+          ui?.notifications?.warn?.("Could not acquire that scene target.");
+          return;
         }
         renderJack(actor.id);
         return;
@@ -943,6 +962,28 @@
             !actorActionBusy(item.parent.id)
           ) {
             queueV3Refresh("auto");
+          }
+        })
+      ]);
+    }
+
+    for (const event of ["createActor","deleteActor"]) {
+      v3Hooks.push([
+        event,
+        Hooks.on(event, actor => {
+          const root = document.getElementById(ROOT_ID);
+          const jack = document.getElementById(JACK_ID);
+          const visible = jack?.dataset?.actorId ?? root?.dataset?.actorId ?? null;
+
+          if (event === "deleteActor" && actor?.id === visible) {
+            jack?.remove();
+            root?.remove();
+            open();
+            return;
+          }
+
+          if (root?.dataset?.fehaV3 === "1") {
+            render(root.dataset.actorId);
           }
         })
       ]);
