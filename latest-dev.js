@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.0";
+  const BUILD = "0.6.1";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.0 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.1 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.0 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.1 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.0 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.1 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.0 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.1 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.0 // sound source: ${source}`
+      `FEHA DEV 0.6.1 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.0 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.1 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1598,10 +1598,19 @@
   }
 
   function cyberActors() {
-    const all = [...(game?.actors ?? [])];
-    return all
-      .filter(actor => game.user?.isGM || actor.isOwner)
-      .sort((a,b) => String(a.name).localeCompare(String(b.name)));
+    const allowed = new Map([
+      ["ponyboy", 0],
+      ["derke", 1],
+      ["sasha", 2],
+      ["zach", 3]
+    ]);
+
+    return [...(game?.actors ?? [])]
+      .filter(actor => {
+        const key = norm(actor?.name);
+        return allowed.has(key) && (game.user?.isGM || actor.isOwner);
+      })
+      .sort((a,b) => (allowed.get(norm(a.name)) ?? 99) - (allowed.get(norm(b.name)) ?? 99));
   }
 
   function cyberActorById(id) {
@@ -1704,11 +1713,17 @@
   function renderCyberdeckV2(actorId = null, tab = "quickhacks") {
     const actors = cyberActors();
     const saved = localStorage.getItem("fehaCyberdeckActorV2");
+    const requested = cyberActorById(actorId);
+    const savedActor = cyberActorById(saved);
+    const chromeActor = globalThis.ADKChromeBackend?.getActor?.();
+    const userActor = game.user?.character;
+    const rosterIds = new Set(actors.map(a => a.id));
+
     const fallback =
-      cyberActorById(actorId) ??
-      cyberActorById(saved) ??
-      globalThis.ADKChromeBackend?.getActor?.() ??
-      game.user?.character ??
+      (requested && rosterIds.has(requested.id) ? requested : null) ??
+      (savedActor && rosterIds.has(savedActor.id) ? savedActor : null) ??
+      (chromeActor && rosterIds.has(chromeActor.id) ? chromeActor : null) ??
+      (userActor && rosterIds.has(userActor.id) ? userActor : null) ??
       actors[0] ??
       null;
 
