@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.8";
+  const BUILD = "0.6.9";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.8 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.9 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.8 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.9 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.8 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.9 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.8 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.9 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.8 // sound source: ${source}`
+      `FEHA DEV 0.6.9 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.8 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.9 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1759,7 +1759,8 @@
         cards.push(quickhackCard(item, true));
       } else {
         cards.push(`
-          <button type="button" class="cd2-empty-slot" data-cd-action="tab" data-tab="memory">
+          <button type="button" class="cd2-empty-slot" data-cd-action="tab" data-tab="memory" data-slot="${i + 1}">
+            <em>SLOT ${String(i + 1).padStart(2, "0")}</em>
             <span>+</span>
             <b>EMPTY SLOT</b>
             <small>LOAD SOFTWARE</small>
@@ -1822,6 +1823,9 @@
     const ramText = model.deck ? `${model.currentRam} / ${ramMax}` : "OFFLINE";
 
     root.dataset.actorId = fallback.id;
+    root.dataset.actor = norm(
+      fallback?.flags?.fleshEnshrouded?.adkCharacter ?? fallback.name
+    );
     root.dataset.tab = tab;
     applyCyberdeckPrivateAssets(root);
 
