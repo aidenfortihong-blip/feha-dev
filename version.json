@@ -1,11 +1,11 @@
 {
-  "version": "0.4.19",
+  "version": "0.4.20",
   "updated": "2026-09-26",
-  "scope": "legacy-wallet-launcher-removal",
+  "scope": "portrait-hud-line-cleanup",
   "notes": [
-    "Removed the surviving top-bar €$ launcher from Chrome Manager",
-    "Added a capture guard so legacy wallet clicks cannot open the broken editor",
-    "Automatically removes the large legacy wallet textarea if an old instance is already present",
-    "ADKWallet/backend balance data remains untouched and available for the future standalone wallet UI"
+    "Removed floating portrait telemetry bars and decorative line clutter",
+    "Hidden portrait topology, coordinate, side-tick, and mini technical-line overlays",
+    "Kept portrait art, identity block, active-system dock, and core Chrome Manager behavior intact",
+    "Legacy wallet launcher suppression from 0.4.19 remains active"
   ]
 }
