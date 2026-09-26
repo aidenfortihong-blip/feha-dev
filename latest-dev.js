@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.6";
+  const BUILD = "0.6.7";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.6 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.7 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.6 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.7 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.6 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.7 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.6 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.7 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.6 // sound source: ${source}`
+      `FEHA DEV 0.6.7 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.6 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.7 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1742,9 +1742,11 @@
     if (!model.deck) {
       return `
         <div class="cd2-no-deck">
-          <div class="cd2-no-deck-glyph">×</div>
+          <div class="cd2-no-deck-reticle"><i></i><i></i><span>×</span></div>
+          <small>HARDWARE LINK // UNRESOLVED</small>
           <b>NO CYBERDECK INSTALLED</b>
           <span>Install an Operating System / Cyberdeck through Chrome Manager.</span>
+          <em>RAM OFFLINE // SOFTWARE BUS LOCKED</em>
         </div>
       `;
     }
@@ -2007,7 +2009,7 @@
           <div class="cd2-right-stat"><span>LOADED</span><b>${model.loaded.length}</b></div>
           <div class="cd2-right-stat"><span>LIBRARY</span><b>${model.library.length}</b></div>
           <div class="cd2-right-stat"><span>CAPACITY</span><b>${model.softwareSlots || "—"}</b></div>
-          <div class="cd2-right-stat"><span>QH DC</span><b>${model.quickhackDc ?? "—"}</b></div>
+          <div class="cd2-right-stat"><span>QH DC</span><b>${model.deck ? (model.quickhackDc ?? "—") : "—"}</b></div>
         </section>
 
         <section>
@@ -2015,14 +2017,6 @@
           <div class="cd2-mini-support">${supportCards(model)}</div>
         </section>
 
-        ${game.user?.isGM ? `
-        <section class="cd2-gm-exports">
-          <div class="cd2-subhead">GM EXPORTS</div>
-          <p>Download the live-world handoff package and the installed ADK/FEHA module source.</p>
-          <button type="button" data-cd-action="export-handoff"><span>LIVE WORLD</span><b>EXPORT DATA</b></button>
-          <button type="button" data-cd-action="export-source"><span>INSTALLED MODULE</span><b>EXPORT SOURCE</b></button>
-        </section>
-        ` : ""}
 
         <section class="cd2-session">
           <div class="cd2-subhead">SESSION</div>
