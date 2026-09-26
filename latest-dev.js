@@ -1,7 +1,8 @@
 (() => {
-  const BUILD = "0.6.9";
+  const BUILD = "0.7.0";
   let observer = null;
   let walletGuard = null;
+  let cyberdeckCombatHooks = [];
 
   const norm = value => String(value ?? "").trim().toLowerCase();
 
@@ -496,7 +497,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.9 // preload failed", event, err);
+          console.warn("FEHA DEV 0.7.0 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +555,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.9 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.7.0 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.9 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.7.0 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +582,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.9 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.7.0 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +706,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.9 // sound source: ${source}`
+      `FEHA DEV 0.7.0 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.9 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.7.0 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1787,6 +1788,132 @@
     `).join("");
   }
 
+  function combatNetworkModel(actor) {
+    const combat = game?.combat ?? null;
+    if (!combat) return {combat:null, active:false, nodes:[], targetName:null, round:null, turn:null};
+
+    const targetedIds = new Set(
+      [...(game.user?.targets ?? [])].map(t => t?.id ?? t?.document?.id).filter(Boolean)
+    );
+    const combatants = [...(combat.combatants ?? [])].filter(c => c && (c.tokenId || c.token?.id));
+    const count = combatants.length;
+
+    const nodes = combatants.map((combatant,index) => {
+      const tokenId = combatant.tokenId ?? combatant.token?.id ?? "";
+      const tokenDoc = combatant.token ?? null;
+      const tokenObj = globalThis.canvas?.tokens?.get?.(tokenId) ?? null;
+      const actorDoc = combatant.actor ?? tokenObj?.actor ?? null;
+      const disposition = Number(tokenDoc?.disposition ?? tokenObj?.document?.disposition ?? 0);
+      const outer = index >= 8;
+      const ringIndex = outer ? index - 8 : index;
+      const ringCount = outer ? Math.max(1,count - 8) : Math.min(count,8);
+      const angle = (-Math.PI/2) + ((Math.PI*2*ringIndex)/Math.max(1,ringCount)) + (outer ? Math.PI/Math.max(4,ringCount) : 0);
+      const radiusX = outer ? 43 : 34;
+      const radiusY = outer ? 39 : 31;
+      const x = 50 + Math.cos(angle) * radiusX;
+      const y = 50 + Math.sin(angle) * radiusY;
+      const relation = disposition < 0 ? "hostile" : disposition > 0 ? "friendly" : "neutral";
+      return {
+        id: combatant.id,
+        tokenId,
+        sceneId: tokenDoc?.parent?.id ?? combat.scene?.id ?? combat.sceneId ?? "",
+        actorId: actorDoc?.id ?? "",
+        name: combatant.name ?? actorDoc?.name ?? tokenDoc?.name ?? "UNKNOWN",
+        img: tokenDoc?.texture?.src ?? tokenObj?.document?.texture?.src ?? actorDoc?.img ?? "icons/svg/mystery-man.svg",
+        initiative: Number.isFinite(Number(combatant.initiative)) ? Number(combatant.initiative) : null,
+        defeated: combatant.defeated === true,
+        relation,
+        self: actorDoc?.id === actor?.id,
+        targeted: targetedIds.has(tokenId),
+        x, y
+      };
+    });
+
+    const targeted = nodes.find(n => n.targeted) ?? null;
+    return {
+      combat, active:true, nodes,
+      targetName: targeted?.name ?? null,
+      targetId: targeted?.tokenId ?? null,
+      round: combat.round ?? null,
+      turn: combat.turn ?? null
+    };
+  }
+
+  function combatNetworkMarkup(actor) {
+    const network = combatNetworkModel(actor);
+    if (!network.active || !network.nodes.length) {
+      return [
+        '<div class="cd2-network-grid is-idle">',
+        '<div class="cd2-network-idle-core">',
+        '<div class="cd2-network-idle-reticle"><span>×</span></div>',
+        '<small>ENCOUNTER BUS // IDLE</small>',
+        '<b>NO ACTIVE COMBAT NODES</b>',
+        '<span>Start a Foundry combat encounter to populate the neural topology.</span>',
+        '</div></div>'
+      ].join("");
+    }
+
+    const lines = network.nodes.map(node => {
+      const x2 = (node.x * 10).toFixed(2);
+      const y2 = (node.y * 6).toFixed(2);
+      const cls = ["cd2-net-line","is-"+node.relation,node.targeted?"is-targeted":"",node.defeated?"is-defeated":""].filter(Boolean).join(" ");
+      return '<line class="'+cls+'" x1="500" y1="300" x2="'+x2+'" y2="'+y2+'" />';
+    }).join("");
+
+    const nodes = network.nodes.map((node,index) => {
+      const cls = ["cd2-combat-node","is-"+node.relation,node.targeted?"is-targeted":"",node.self?"is-self":"",node.defeated?"is-defeated":""].filter(Boolean).join(" ");
+      const init = node.initiative == null ? "" : " // INIT " + esc(node.initiative);
+      return [
+        '<button type="button" class="'+cls+'" style="--node-x:'+node.x.toFixed(2)+'%;--node-y:'+node.y.toFixed(2)+'%" data-cd-action="target-combatant" data-combatant-id="'+esc(node.id)+'" data-token-id="'+esc(node.tokenId)+'" data-scene-id="'+esc(node.sceneId)+'" title="Target '+esc(node.name)+'">',
+        '<span class="cd2-node-index">'+String(index+1).padStart(2,"0")+'</span>',
+        '<img src="'+esc(node.img)+'" alt="">',
+        '<span class="cd2-node-copy"><b>'+esc(node.name)+'</b><small>'+(node.self?"SELF":node.relation.toUpperCase())+init+'</small></span>',
+        '<i>'+(node.targeted?"LOCKED":"TARGET")+'</i>',
+        '</button>'
+      ].join("");
+    }).join("");
+
+    const status = network.targetName ? "TARGET LOCK // " + esc(network.targetName.toUpperCase()) : "SELECT ANY COMBAT NODE";
+    const operatorImg = cyberPortrait(actor);
+    return [
+      '<div class="cd2-network-grid is-live">',
+      '<svg class="cd2-net-links" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">',
+      '<defs><filter id="cd2-net-glow"><feGaussianBlur stdDeviation="2.2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>',
+      lines,
+      '</svg>',
+      '<div class="cd2-net-operator"><div class="cd2-net-operator-ring"></div><img src="'+esc(operatorImg)+'" alt=""><div><small>OPERATOR</small><b>'+esc(actor.name)+'</b></div></div>',
+      nodes,
+      '<div class="cd2-network-hud">',
+      '<div><span>ENCOUNTER</span><b>'+network.nodes.length+' NODES</b></div>',
+      '<div><span>ROUND</span><b>'+(network.round ?? "—")+'</b></div>',
+      '<div><span>TURN</span><b>'+(network.turn == null ? "—" : Number(network.turn)+1)+'</b></div>',
+      '<div class="cd2-network-lock '+(network.targetName?"has-lock":"")+'"><span>LOCK</span><b>'+status+'</b></div>',
+      '</div></div>'
+    ].join("");
+  }
+
+  function installCyberdeckCombatHooks() {
+    if (cyberdeckCombatHooks.length || !globalThis.Hooks?.on) return;
+    const refresh = () => {
+      const root = document.getElementById(CYBERDECK_V2_ID);
+      if (!root || root.dataset.tab !== "network") return;
+      const actorId = root.dataset.actorId;
+      setTimeout(() => {
+        const live = document.getElementById(CYBERDECK_V2_ID);
+        if (live?.dataset.tab === "network") renderCyberdeckV2(actorId,"network");
+      },40);
+    };
+    for (const event of ["updateCombat","createCombat","deleteCombat","createCombatant","updateCombatant","deleteCombatant","targetToken"]) {
+      cyberdeckCombatHooks.push([event,Hooks.on(event,refresh)]);
+    }
+  }
+
+  function removeCyberdeckCombatHooks() {
+    if (!globalThis.Hooks?.off) { cyberdeckCombatHooks = []; return; }
+    for (const [event,id] of cyberdeckCombatHooks) { try { Hooks.off(event,id); } catch {} }
+    cyberdeckCombatHooks = [];
+  }
+
   function renderCyberdeckV2(actorId = null, tab = "quickhacks") {
     const actors = cyberActors();
     const saved = localStorage.getItem("fehaCyberdeckActorV2");
@@ -1942,21 +2069,11 @@
           </div>
 
           <div class="cd2-view ${tab === "network" ? "is-active" : ""}" data-view="network">
-            <div class="cd2-section-head">
-              <div><small>NETWORK TOPOLOGY</small><h3>TARGET ACQUISITION</h3></div>
-              <span>PASSIVE SCAN</span>
+            <div class="cd2-section-head cd2-network-head">
+              <div><small>LIVE ENCOUNTER BUS</small><h3>TARGET ACQUISITION</h3></div>
+              <span>${game.combat ? `${[...(game.combat.combatants ?? [])].length} COMBAT NODES` : "NO ACTIVE COMBAT"}</span>
             </div>
-            <div class="cd2-network-grid">
-              <div class="cd2-crosshair"><i></i><i></i><i></i><i></i></div>
-              <div class="cd2-node n1">01</div>
-              <div class="cd2-node n2">02</div>
-              <div class="cd2-node n3">03</div>
-              <div class="cd2-node n4">04</div>
-              <div class="cd2-network-copy">
-                <b>NO TARGET LOCK</b>
-                <span>Awaiting network target / token integration.</span>
-              </div>
-            </div>
+            ${combatNetworkMarkup(fallback)}
           </div>
 
           <div class="cd2-view ${tab === "memory" ? "is-active" : ""}" data-view="memory">
@@ -2631,6 +2748,39 @@ if (!game.user?.isGM) {
         return;
       }
 
+      if (action === "target-combatant") {
+        const combatantId = button.dataset.combatantId;
+        const tokenId = button.dataset.tokenId;
+        const sceneId = button.dataset.sceneId;
+        const combatant = game.combat?.combatants?.get?.(combatantId);
+        if (!combatant || !tokenId) {
+          globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
+          ui?.notifications?.warn?.("Combat target is no longer available.");
+          renderCyberdeckV2(actor.id,"network");
+          return;
+        }
+        let targeted = false;
+        const tokenObj = (globalThis.canvas?.scene?.id === sceneId || !sceneId) ? globalThis.canvas?.tokens?.get?.(tokenId) : null;
+        try {
+          if (tokenObj?.setTarget) {
+            await tokenObj.setTarget(true,{user:game.user,releaseOthers:true,groupSelection:true});
+            targeted = true;
+          } else if (game.user?.updateTokenTargets) {
+            await game.user.updateTokenTargets([tokenId]);
+            targeted = true;
+          }
+        } catch (err) { console.warn("FEHA Cyberdeck target lock failed",err); }
+        if (targeted) {
+          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+          setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),90);
+        } else {
+          globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
+          ui?.notifications?.warn?.(sceneId && globalThis.canvas?.scene?.id !== sceneId ? "That combatant is on a different scene." : "Could not acquire that combat token.");
+        }
+        renderCyberdeckV2(actor.id,"network");
+        return;
+      }
+
       if (action === "rest") {
         globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0});
         if (typeof actor?.shortRest === "function") {
@@ -2681,6 +2831,7 @@ if (!game.user?.isGM) {
     }
 
     adk.openCyberdeck = openCyberdeckV2;
+    installCyberdeckCombatHooks();
     adk.exportHandoff = exportFehaHandoff;
     adk.exportModuleSource = exportFehaModuleSource;
     globalThis.FEHA_CYBERDECK_V2 = {
@@ -2708,6 +2859,7 @@ if (!game.user?.isGM) {
       delete adk.exportHandoff;
       delete adk.exportModuleSource;
     }
+    removeCyberdeckCombatHooks();
     delete globalThis.FEHA_CYBERDECK_V2;
     cyberdeckOriginalOpen = null;
   }
