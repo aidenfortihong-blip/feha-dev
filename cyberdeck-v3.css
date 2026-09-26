@@ -2629,3 +2629,451 @@
     width:82px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.7 NETWORK TOPOLOGY
+   JACK IN reads as a live mesh: relays, branches, packets, routes, hub.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-space {
+  background:
+    radial-gradient(circle at 50% 50%,rgba(var(--jack-cyan),.055),transparent 14%),
+    radial-gradient(circle at 50% 50%,transparent 0 24%,rgba(var(--jack-cyan),.020) 24.3%,transparent 24.8%),
+    radial-gradient(circle at 50% 50%,transparent 0 39%,rgba(var(--jack-cyan),.014) 39.3%,transparent 39.8%),
+    radial-gradient(circle at 50% 50%,rgba(var(--jack-cyan),.018) 1px,transparent 1.6px),
+    linear-gradient(rgba(var(--jack-cyan),.020) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--jack-cyan),.016) 1px,transparent 1px),
+    linear-gradient(180deg,#02080a,#010507) !important;
+  background-size:
+    auto,
+    auto,
+    auto,
+    24px 24px,
+    48px 48px,
+    48px 48px,
+    auto !important;
+}
+
+/* Give the graph some depth without reintroducing noisy texture masks. */
+#feha-jackin-overlay .jack-space::before {
+  opacity:.46 !important;
+  background:
+    linear-gradient(90deg,transparent 49.94%,rgba(var(--jack-cyan),.065) 50%,transparent 50.06%),
+    linear-gradient(0deg,transparent 49.94%,rgba(var(--jack-cyan),.052) 50%,transparent 50.06%),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 72px,
+      rgba(var(--jack-cyan),.012) 72px 73px,
+      transparent 73px 144px
+    ) !important;
+}
+
+#feha-jackin-overlay .jack-space::after {
+  width:min(54vw,760px) !important;
+  border-color:rgba(var(--jack-cyan),.07) !important;
+  box-shadow:
+    0 0 0 48px rgba(var(--jack-cyan),.010),
+    0 0 0 96px rgba(var(--jack-cyan),.008),
+    0 0 0 144px rgba(var(--jack-cyan),.006) !important;
+}
+
+/* Topology caption */
+#feha-jackin-overlay .jack-net-caption {
+  position:absolute;
+  right:16px;
+  top:14px;
+  z-index:7;
+  min-width:190px;
+  padding:9px 11px;
+  text-align:right;
+  background:rgba(2,8,10,.72);
+  border-right:2px solid rgba(var(--jack-cyan),.34);
+}
+
+#feha-jackin-overlay .jack-net-caption small,
+#feha-jackin-overlay .jack-net-caption b {
+  display:block;
+}
+
+#feha-jackin-overlay .jack-net-caption small {
+  color:#5f777d;
+  font-size:7px;
+  letter-spacing:1.3px;
+}
+
+#feha-jackin-overlay .jack-net-caption b {
+  margin-top:4px;
+  color:#cfeff4;
+  font-size:8px;
+  letter-spacing:.8px;
+}
+
+/* SVG mesh */
+#feha-jackin-overlay .jack-links {
+  z-index:2 !important;
+  overflow:visible;
+}
+
+#feha-jackin-overlay .jack-net-line {
+  fill:none;
+  vector-effect:non-scaling-stroke;
+  stroke-linecap:round;
+  animation:jack-topology-flow 7s linear infinite;
+}
+
+#feha-jackin-overlay .jack-net-line.is-backbone {
+  stroke:rgba(var(--jack-cyan),.46) !important;
+  stroke-width:2.15 !important;
+  stroke-dasharray:10 8 !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-branch {
+  stroke:rgba(var(--jack-cyan),.28) !important;
+  stroke-width:1.55 !important;
+  stroke-dasharray:7 10 !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-mesh {
+  stroke:rgba(var(--jack-cyan),.15) !important;
+  stroke-width:1.0 !important;
+  stroke-dasharray:3 12 !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-shadow {
+  stroke:rgba(var(--jack-cyan),.12) !important;
+  stroke-width:.9 !important;
+  stroke-dasharray:2 11 !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-endpoint {
+  stroke:rgba(var(--jack-cyan),.34) !important;
+  stroke-width:1.8 !important;
+  stroke-dasharray:8 8 !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-endpoint.is-hostile {
+  stroke:rgba(var(--jack-mag),.42) !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-endpoint.is-friendly {
+  stroke:rgba(var(--jack-cyan),.42) !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-endpoint.is-neutral {
+  stroke:rgba(var(--jack-yellow),.34) !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-selected-route {
+  stroke:rgb(var(--jack-yellow)) !important;
+  stroke-width:3.2 !important;
+  stroke-dasharray:13 5 !important;
+  opacity:1 !important;
+  filter:drop-shadow(0 0 7px rgba(var(--jack-yellow),.52)) !important;
+  animation:jack-selected-route 1.6s linear infinite;
+}
+
+/* Moving packets */
+#feha-jackin-overlay .jack-packet {
+  fill:rgba(var(--jack-cyan),.72);
+  filter:drop-shadow(0 0 4px rgba(var(--jack-cyan),.45));
+  pointer-events:none;
+}
+
+#feha-jackin-overlay .jack-packet.is-backbone {
+  fill:#c9fbff;
+}
+
+#feha-jackin-overlay .jack-packet.is-selected-route {
+  fill:rgb(var(--jack-yellow));
+  filter:drop-shadow(0 0 7px rgba(var(--jack-yellow),.70));
+}
+
+/* Synthetic relay / subnet nodes */
+#feha-jackin-overlay .jack-relay {
+  position:absolute;
+  left:var(--jack-x);
+  top:var(--jack-y);
+  z-index:4;
+  width:86px;
+  min-height:52px;
+  transform:translate(-50%,-50%);
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  column-gap:8px;
+  align-items:center;
+  padding:7px 8px;
+  pointer-events:none;
+  background:rgba(2,8,10,.73);
+  border:1px solid rgba(var(--jack-cyan),.10);
+  border-left:2px solid rgba(var(--jack-cyan),.30);
+  box-shadow:0 6px 20px rgba(0,0,0,.18);
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%);
+  animation:jack-relay-idle 3.6s ease-in-out infinite;
+  animation-delay:var(--relay-delay);
+}
+
+#feha-jackin-overlay .jack-relay.is-gateway {
+  width:104px;
+  border-left-color:rgba(var(--jack-yellow),.64);
+  background:rgba(8,10,7,.78);
+}
+
+#feha-jackin-overlay .jack-relay.is-subnet {
+  opacity:.84;
+}
+
+#feha-jackin-overlay .jack-relay.is-edge {
+  opacity:.58;
+}
+
+#feha-jackin-overlay .jack-relay-core {
+  grid-row:1 / span 2;
+  position:relative;
+  width:22px;
+  height:22px;
+  display:block;
+  border:1px solid rgba(var(--jack-cyan),.40);
+  transform:rotate(45deg);
+  box-shadow:
+    0 0 0 4px rgba(var(--jack-cyan),.018),
+    0 0 14px rgba(var(--jack-cyan),.07);
+}
+
+#feha-jackin-overlay .jack-relay-core::before,
+#feha-jackin-overlay .jack-relay-core::after {
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:5px;
+  height:5px;
+  transform:translate(-50%,-50%);
+  background:rgba(var(--jack-cyan),.82);
+  box-shadow:0 0 8px rgba(var(--jack-cyan),.38);
+}
+
+#feha-jackin-overlay .jack-relay-core::after {
+  width:1px;
+  height:30px;
+  opacity:.22;
+}
+
+#feha-jackin-overlay .jack-relay.is-gateway .jack-relay-core {
+  border-color:rgba(var(--jack-yellow),.58);
+}
+
+#feha-jackin-overlay .jack-relay.is-gateway .jack-relay-core::before {
+  background:rgb(var(--jack-yellow));
+  box-shadow:0 0 9px rgba(var(--jack-yellow),.48);
+}
+
+#feha-jackin-overlay .jack-relay small {
+  align-self:end;
+  color:#bad9de;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.8px;
+  line-height:1;
+}
+
+#feha-jackin-overlay .jack-relay em {
+  align-self:start;
+  margin-top:3px;
+  color:#4f7077;
+  font-size:6px;
+  font-style:normal;
+  letter-spacing:.9px;
+}
+
+/* Operator becomes the hub of the mesh. */
+#feha-jackin-overlay .jack-operator {
+  z-index:6 !important;
+}
+
+#feha-jackin-overlay .jack-operator::before,
+#feha-jackin-overlay .jack-operator::after {
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  pointer-events:none;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+}
+
+#feha-jackin-overlay .jack-operator::before {
+  width:126%;
+  height:126%;
+  border:1px dashed rgba(var(--jack-cyan),.15);
+  animation:jack-hub-ring 14s linear infinite;
+}
+
+#feha-jackin-overlay .jack-operator::after {
+  width:154%;
+  height:154%;
+  border:1px solid rgba(var(--jack-cyan),.055);
+  box-shadow:
+    0 0 0 18px rgba(var(--jack-cyan),.006),
+    0 0 0 38px rgba(var(--jack-cyan),.004);
+}
+
+#feha-jackin-overlay .jack-operator-hub {
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+#feha-jackin-overlay .jack-operator-hub i {
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:112px;
+  height:1px;
+  transform-origin:0 50%;
+  transform:rotate(calc(var(--port) * 45deg));
+  background:linear-gradient(
+    90deg,
+    rgba(var(--jack-cyan),.48),
+    rgba(var(--jack-cyan),.08) 62%,
+    transparent
+  );
+  opacity:.44;
+}
+
+#feha-jackin-overlay .jack-operator-hub i::after {
+  content:"";
+  position:absolute;
+  right:6px;
+  top:50%;
+  width:4px;
+  height:4px;
+  transform:translateY(-50%) rotate(45deg);
+  background:rgba(var(--jack-cyan),.70);
+  box-shadow:0 0 6px rgba(var(--jack-cyan),.32);
+  animation:jack-port-pulse 2.8s ease-in-out infinite;
+  animation-delay:calc(var(--port) * -.19s);
+}
+
+/* Target acquisition shell */
+#feha-jackin-overlay .jack-node.is-targeted::before {
+  content:"";
+  position:absolute;
+  inset:-8px;
+  pointer-events:none;
+  background:
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) left top/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) left top/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) right top/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) right top/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) left bottom/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) left bottom/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) right bottom/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-yellow)),rgb(var(--jack-yellow))) right bottom/2px 18px no-repeat;
+  opacity:.68;
+  animation:jack-reticle 1.8s ease-in-out infinite;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted::after {
+  content:"TRACE LOCK";
+  position:absolute;
+  right:9px;
+  bottom:-18px;
+  color:rgba(var(--jack-yellow),.72);
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:1.2px;
+}
+
+/* A selected route should visually outrank all ambient infrastructure. */
+#feha-jackin-overlay .jack-node.is-targeted {
+  z-index:8 !important;
+}
+
+/* Sparse scenes: now the extra relays provide the density, so avoid blowing
+   the real nodes up too much. */
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node {
+  width:232px !important;
+  min-height:100px !important;
+  top:18% !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node img {
+  width:66px !important;
+  height:66px !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="2"] .jack-node {
+  width:214px !important;
+  top:20% !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="2"] .jack-node:nth-of-type(1) {
+  left:30% !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="2"] .jack-node:nth-of-type(2) {
+  left:70% !important;
+}
+
+/* Lower dock stays clean; topology gets the complexity, controls do not. */
+#feha-jackin-overlay .jack-actions {
+  border-top-color:rgba(var(--jack-yellow),.30) !important;
+}
+
+@keyframes jack-topology-flow {
+  to { stroke-dashoffset:-36; }
+}
+
+@keyframes jack-selected-route {
+  to { stroke-dashoffset:-36; }
+}
+
+@keyframes jack-relay-idle {
+  0%,100% {
+    filter:brightness(.90);
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+  }
+  50% {
+    filter:brightness(1.08);
+    box-shadow:
+      0 6px 20px rgba(0,0,0,.18),
+      0 0 16px rgba(var(--jack-cyan),.035);
+  }
+}
+
+@keyframes jack-hub-ring {
+  to { transform:translate(-50%,-50%) rotate(360deg); }
+}
+
+@keyframes jack-port-pulse {
+  0%,100% { opacity:.24; transform:translateY(-50%) rotate(45deg) scale(.75); }
+  50% { opacity:1; transform:translateY(-50%) rotate(45deg) scale(1.18); }
+}
+
+@keyframes jack-reticle {
+  0%,100% { opacity:.48; filter:brightness(.9); }
+  50% { opacity:.92; filter:brightness(1.15); }
+}
+
+@media(max-width:1500px) {
+  #feha-jackin-overlay .jack-relay {
+    width:76px;
+    min-height:48px;
+  }
+
+  #feha-jackin-overlay .jack-relay.is-gateway {
+    width:92px;
+  }
+
+  #feha-jackin-overlay .jack-relay-core {
+    width:19px;
+    height:19px;
+  }
+
+  #feha-jackin-overlay .jack-operator-hub i {
+    width:96px;
+  }
+}
