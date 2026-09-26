@@ -5452,3 +5452,347 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.6.1
+   CYBERDECK V2 // READABILITY SCALE + FIXED ROSTER
+   ========================================================================== */
+
+/* Overall app scale: larger columns, larger type, less microscopic telemetry. */
+#feha-cyberdeck-v2 {
+  inset: 12px 14px 18px 14px !important;
+  grid-template-columns: 320px minmax(650px, 1fr) 340px !important;
+  grid-template-rows: 88px minmax(0,1fr) !important;
+  font-size: 1.12em !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header {
+  grid-template-columns: minmax(430px,1fr) auto auto !important;
+  gap: 26px !important;
+  padding: 15px 17px 14px 22px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-brand small {
+  font-size: 9px !important;
+  letter-spacing: 2.3px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-brand h1 {
+  font-size: 30px !important;
+  letter-spacing: 3px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-build {
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header-status {
+  grid-template-columns: repeat(3, minmax(86px,auto)) !important;
+  gap: 5px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header-status > div {
+  padding: 9px 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header-status span {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header-status b {
+  font-size: 9px !important;
+}
+
+#feha-cyberdeck-v2 #cd2-actor {
+  width: 220px !important;
+  height: 44px !important;
+  font-size: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-close {
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 22px !important;
+}
+
+/* Left rail */
+#feha-cyberdeck-v2 .cd2-operator {
+  padding: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-portrait {
+  height: 350px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-tag {
+  left: 12px !important;
+  bottom: 12px !important;
+  padding: 6px 8px !important;
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta {
+  margin-top: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta > div {
+  padding: 10px 11px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta span {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta b {
+  font-size: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-summary {
+  margin-top: 10px !important;
+  padding: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-summary > small {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head {
+  grid-template-columns: 50px minmax(0,1fr) !important;
+  gap: 11px !important;
+  margin-top: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head img {
+  width: 50px !important;
+  height: 50px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head h2 {
+  font-size: 15px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head span {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-specs > div {
+  padding: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-specs span {
+  font-size: 6px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-specs b {
+  font-size: 10px !important;
+}
+
+/* Main telemetry / tabs */
+#feha-cyberdeck-v2 .cd2-main {
+  grid-template-rows: auto 46px minmax(0,1fr) 88px !important;
+  padding: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-telemetry {
+  gap: 9px !important;
+  padding-bottom: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-meter {
+  padding: 10px 11px 11px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-meter-head {
+  margin-bottom: 9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-meter-head span {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-meter-head b {
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-segments i {
+  height: 9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-tabs button {
+  height: 45px !important;
+  font-size: 8px !important;
+  letter-spacing: 1.3px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-view {
+  padding-top: 15px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head {
+  padding: 0 3px 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head small {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head h3 {
+  font-size: 23px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head > span {
+  font-size: 8px !important;
+}
+
+/* Quickhack cards / slots */
+#feha-cyberdeck-v2 .cd2-loaded-grid {
+  grid-template-columns: repeat(auto-fill,minmax(220px,1fr)) !important;
+  gap: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot,
+#feha-cyberdeck-v2 .cd2-hack-card {
+  min-height: 145px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot span {
+  font-size: 28px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot b {
+  font-size: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot small {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card {
+  grid-template-columns: 56px minmax(0,1fr) auto !important;
+  gap: 8px 11px !important;
+  padding: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card > img {
+  width: 54px !important;
+  height: 54px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-copy b {
+  font-size: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-copy span {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-copy small {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card button {
+  min-width: 56px !important;
+  height: 30px !important;
+  font-size: 7px !important;
+}
+
+/* Footer */
+#feha-cyberdeck-v2 .cd2-footer {
+  grid-template-columns: minmax(0,1fr) auto 215px !important;
+  gap: 9px !important;
+  padding-top: 11px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log {
+  padding: 0 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log span {
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log b {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-rest {
+  min-width: 185px !important;
+  padding: 0 15px !important;
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack {
+  padding: 0 18px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack span {
+  font-size: 6px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack b {
+  font-size: 24px !important;
+}
+
+/* Right rail */
+#feha-cyberdeck-v2 .cd2-right {
+  padding: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right > section {
+  padding: 13px !important;
+  margin-bottom: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-subhead {
+  margin-bottom: 9px !important;
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right-stat {
+  padding: 9px 0 !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right-stat span {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right-stat b {
+  font-size: 9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card {
+  grid-template-columns: 46px minmax(0,1fr) !important;
+  gap: 10px !important;
+  padding: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card img {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card b {
+  font-size: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card span {
+  font-size: 6px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card small,
+#feha-cyberdeck-v2 .cd2-session p {
+  font-size: 7px !important;
+}
+
+/* Keep the UI usable on somewhat smaller desktop windows. */
+@media (max-width: 1450px) {
+  #feha-cyberdeck-v2 {
+    grid-template-columns: 280px minmax(560px,1fr) 300px !important;
+    font-size: 1.04em !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-portrait {
+    height: 310px !important;
+  }
+}
