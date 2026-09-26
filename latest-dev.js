@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.5.1";
+  const BUILD = "0.5.2";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.5.1 // preload failed", event, err);
+          console.warn("FEHA DEV 0.5.2 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.5.1 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.5.2 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.5.1 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.5.2 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.5.1 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.5.2 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.5.1 // sound source: ${source}`
+      `FEHA DEV 0.5.2 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.5.1 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.5.2 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1240,29 +1240,40 @@
     findLeafByText(root, /^Install one through the Chrome Manager\.?$/i)
       ?.classList.add("feha-cd-empty-copy");
 
-    // Loaded quickhack slots are the repeated large empty controls under the
-    // LOADED QUICKHACKS heading. Tag only compact button-like descendants in
-    // that section so we can tighten them without touching other controls.
-    const loadedSection = root.querySelector(".feha-cd-loaded-section");
-    if (loadedSection) {
-      loadedSection.querySelectorAll("button, [role='button']").forEach(el => {
-        const text = textNorm(el.innerText ?? el.textContent);
-        if (text === "+" || /QUICKHACK/i.test(text)) el.classList.add("feha-cd-quickhack-slot");
-      });
-    }
+    // Loaded quickhack slots are the repeated '+' controls. Tag them anywhere
+    // inside the Cyberdeck root because the stable template's DOM wrapper for
+    // the slot rack differs from the heading wrapper.
+    root.querySelectorAll("button, [role='button'], .clickable, [data-action]").forEach(el => {
+      const text = textNorm(el.innerText ?? el.textContent);
+      if (text === "+") el.classList.add("feha-cd-quickhack-slot");
+    });
 
-    // Tag the Cyberdeck's legacy balance control even when it is not semantic.
+    // Kill the legacy €$ launcher in Cyberdeck even when its visible text lives
+    // inside nested spans/icons. Walk outward to the first compact control shell.
     [...root.querySelectorAll("*")].forEach(el => {
-      if (el.children.length > 0) return;
-      const text = textNorm(el.textContent);
+      const text = textNorm(el.innerText ?? el.textContent);
       if (!/^€\$\s*[-+]?\d[\d,.]*$/i.test(text)) return;
+
       let shell = el;
-      for (let depth = 0, cur = el.parentElement; cur && cur !== root && depth < 3; depth++, cur = cur.parentElement) {
+      for (let depth = 0, cur = el.parentElement; cur && cur !== root && depth < 6; depth++, cur = cur.parentElement) {
+        const r = cur.getBoundingClientRect?.();
         const t = textNorm(cur.innerText ?? cur.textContent);
-        if (/^€\$\s*[-+]?\d[\d,.]*$/i.test(t)) shell = cur;
-        else break;
+        const compact = r && r.width <= 180 && r.height <= 90;
+        const controlish =
+          cur.matches?.("button, a, [role='button'], .clickable, [data-action]") ||
+          typeof cur.onclick === "function";
+
+        if (compact && (controlish || /^€\$\s*[-+]?\d[\d,.]*$/i.test(t))) {
+          shell = cur;
+        } else if (!/^€\$\s*[-+]?\d[\d,.]*$/i.test(t)) {
+          break;
+        }
       }
+
       shell.classList.add("feha-cd-wallet");
+      shell.dataset.fehaWalletLauncher = "legacy";
+      shell.setAttribute?.("aria-hidden","true");
+      shell.setAttribute?.("tabindex","-1");
     });
 
     root.querySelectorAll("select").forEach(el => el.classList.add("feha-cd-select"));
@@ -1271,6 +1282,25 @@
       if (/^CHECK$/i.test(text)) el.classList.add("feha-cd-check");
       if (/^[×✕✖x]$/i.test(text)) el.classList.add("feha-cd-close");
     });
+
+    // Geometry-based layout hooks: stable template classes are not available in
+    // the dev repo, so tag the major visible columns by screen position/size.
+    const rootRect = root.getBoundingClientRect?.();
+    if (rootRect) {
+      const largeChildren = [...root.querySelectorAll("div, section, main, aside")].filter(el => {
+        const r = el.getBoundingClientRect?.();
+        if (!r) return false;
+        return r.width > rootRect.width * .24 && r.height > rootRect.height * .45;
+      });
+
+      for (const el of largeChildren) {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const rel = (cx - rootRect.left) / rootRect.width;
+        if (rel < .62) el.classList.add("feha-cd-main-left");
+        else el.classList.add("feha-cd-main-right");
+      }
+    }
 
     tagCyberdeckPortrait(root);
 
@@ -1295,7 +1325,8 @@
       ".feha-cd-kicker,.feha-cd-title,.feha-cd-deck-panel,.feha-cd-library,.feha-cd-support," +
       ".feha-cd-section-title,.feha-cd-empty-copy,.feha-cd-empty-title,.feha-cd-select," +
       ".feha-cd-check,.feha-cd-close,.feha-cd-portrait-img,.feha-cd-portrait-card," +
-      ".feha-cd-loaded-title,.feha-cd-loaded-section,.feha-cd-quickhack-slot,.feha-cd-wallet"
+      ".feha-cd-loaded-title,.feha-cd-loaded-section,.feha-cd-quickhack-slot,.feha-cd-wallet," +
+      ".feha-cd-main-left,.feha-cd-main-right"
     ).forEach(el => {
       for (const cls of [...el.classList]) {
         if (cls.startsWith("feha-cd-")) el.classList.remove(cls);
