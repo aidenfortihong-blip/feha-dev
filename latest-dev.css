@@ -4349,3 +4349,29 @@
   background: #020609 !important;
   padding: 11px 12px 13px !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.5.3
+   CYBERDECK // STOP GUESSING AT GEOMETRY
+   ========================================================================== */
+
+/* 0.5.2 tagged large regions by screen geometry. That can hit different
+   wrappers depending on actor/deck state. Neutralize those speculative hooks. */
+[data-feha-cyberdeck="1"] .feha-cd-main-left,
+[data-feha-cyberdeck="1"] .feha-cd-main-right {
+  background: unset !important;
+  box-shadow: unset !important;
+}
+
+/* Keep only safe, text-anchored Cyberdeck styling until exact stable template
+   classes are captured from the live DOM. */
+[data-feha-cyberdeck="1"] .feha-cd-loaded-section :has(> .feha-cd-quickhack-slot) {
+  display: revert !important;
+  flex-wrap: revert !important;
+  align-items: revert !important;
+  justify-content: revert !important;
+  gap: revert !important;
+  height: revert !important;
+  min-height: revert !important;
+}
