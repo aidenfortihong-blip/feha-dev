@@ -5,7 +5,9 @@
 
 (() => {
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
-  const VERSION = "0.8.3";
+  globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
+  try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
+  const VERSION = "0.8.4";
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
   const FLAG = "fleshEnshrouded";
@@ -48,7 +50,26 @@
     const f = flags(item);
     const category = String(f.sourceCategory ?? "").toLowerCase();
     const looksCyberware = category === "cyberware" || Boolean(f.cyberwareSlot);
-    return looksCyberware && f.installed !== false;
+    if (!looksCyberware || f.installed === false || f.isInstalled === false) return false;
+
+    const containerId =
+      item?.system?.container?.id ??
+      item?.system?.container ??
+      null;
+
+    if (containerId) {
+      const parent = item.parent;
+      const container = parent?.items?.get?.(containerId) ?? null;
+      const cf = flags(container);
+      if (
+        cf.cyberStorage === true ||
+        norm(container?.name) === "cyberware cache"
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   function isDeck(item) {
@@ -86,6 +107,12 @@
     return match ? Number(match[1]) : 2;
   }
 
+  function hackEffect(item) {
+    const cost = hackCost(item);
+    const raw = String(flags(item).effectText ?? description(item) ?? "Quickhack software.");
+    return raw.replace(/\bRAM\s+\d+\b/i, "RAM " + cost);
+  }
+
   function hackDC(actor) {
     const intMod = Number(actor?.system?.abilities?.int?.mod ?? 0);
     const prof = Number(actor?.system?.attributes?.prof ?? actor?.system?.details?.prof ?? 2);
@@ -94,33 +121,59 @@
 
   function model(actor) {
     const items = [...(actor?.items ?? [])];
-    const deck = items.find(isDeck) ?? null;
+
+    const deckCandidates = items.filter(isDeck);
+    const deck =
+      deckCandidates.find(item =>
+        flags(item).installed === true ||
+        flags(item).isInstalled === true
+      ) ??
+      deckCandidates[0] ??
+      null;
+
     const quickhacks = items.filter(isQuickhack)
       .sort((a,b) => String(a.name).localeCompare(String(b.name)));
-    const loaded = quickhacks.filter(item => flags(item).loadedQuickhack === true);
-    const library = quickhacks.filter(item => flags(item).loadedQuickhack !== true);
-    const support = items.filter(isSupport);
 
     const df = flags(deck);
     const rating = Math.max(1,Math.min(5,Number(df.rating ?? df.tier ?? 2) || 2));
     const baseRam = deck
       ? (Number(df.ramMax) || (4 + 2 * rating))
       : 0;
+
+    const support = items.filter(isSupport);
     const supportRam = support.reduce((sum,item) => sum + supportRamBonus(item),0);
     const maxRam = deck ? baseRam + supportRam : 0;
+
     const stored = actor?.flags?.[FLAG]?.ramCurrent;
     const currentRam = !deck
       ? 0
       : stored == null
         ? maxRam
         : Math.max(0,Math.min(maxRam,Number(stored) || 0));
+
     const slots = deck
       ? (Number(df.quickhackSlots) || (2 + rating))
       : 0;
 
+    const loadedAll = quickhacks.filter(item => flags(item).loadedQuickhack === true);
+    const loaded = deck ? loadedAll.slice(0,slots) : [];
+    const overflow = deck ? loadedAll.slice(slots) : loadedAll;
+    const library = quickhacks.filter(item => flags(item).loadedQuickhack !== true);
+
     return {
-      actor,deck,quickhacks,loaded,library,support,
-      maxRam,currentRam,slots,
+      actor,
+      deck,
+      deckCandidates,
+      deckConflict:deckCandidates.length > 1,
+      quickhacks,
+      loadedAll,
+      loaded,
+      overflow,
+      library,
+      support,
+      maxRam,
+      currentRam,
+      slots,
       dc:hackDC(actor),
       manufacturer:String(df.manufacturer ?? df.company ?? "UNKNOWN"),
       mk:String(df.mk ?? df.rating ?? df.tier ?? ""),
@@ -149,9 +202,41 @@
     return fixed[k] || actor?.flags?.[FLAG]?.characterChooserPortrait || actor?.img || "icons/svg/mystery-man.svg";
   }
 
+  function readV3PrivateAssets() {
+    if (globalThis.FEHA_CP2077_ASSETS?.ui) {
+      return globalThis.FEHA_CP2077_ASSETS;
+    }
+
+    try {
+      const parsed = JSON.parse(
+        localStorage.getItem("fehaCP2077PrivateAssetsV1") || "null"
+      );
+      if (!parsed || typeof parsed !== "object") return null;
+
+      const ok = value =>
+        typeof value === "string" &&
+        value.startsWith("https://assets.forge-vtt.com/");
+
+      const ui = Object.fromEntries(
+        Object.entries(parsed.ui ?? {}).filter(([,value]) => ok(value))
+      );
+      const audio = Object.fromEntries(
+        Object.entries(parsed.audio ?? {}).filter(([,value]) => ok(value))
+      );
+
+      if (!Object.keys(ui).length && !Object.keys(audio).length) return null;
+
+      const assets = {ui,audio};
+      globalThis.FEHA_CP2077_ASSETS = assets;
+      return assets;
+    } catch {
+      return null;
+    }
+  }
+
   function applyV3Assets(root) {
     if (!root) return;
-    const ui = globalThis.FEHA_CP2077_ASSETS?.ui ?? {};
+    const ui = readV3PrivateAssets()?.ui ?? {};
     const map = {
       "--v3-frame":"ffe5273fdf_frame_bg",
       "--v3-hud":"6691702ad7_hud_patch_frame",
@@ -198,7 +283,7 @@
       '<div class="cd2-hack-copy">',
       '<b>'+esc(item.name)+'</b>',
       '<span>RAM '+cost+' // '+esc(flags(item).ratingLabel ?? ("MK."+String(flags(item).mk ?? flags(item).rating ?? "—")))+'</span>',
-      '<small>'+esc(flags(item).effectText ?? description(item) ?? "Quickhack software.")+'</small>',
+      '<small>'+esc(hackEffect(item))+'</small>',
       '</div>',
       '<button type="button" data-v3-action="'+(loaded?"unload":"load")+'" data-item-id="'+esc(item.id)+'">'+(loaded?"EJECT":"LOAD")+'</button>',
       '</article>'
@@ -286,9 +371,9 @@
           <div><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
           <div><span>QH DC</span><b>${m.deck?m.dc:"—"}</b></div>
         </div>
-        <div class="cd2-deck-summary ${m.deck?"":"is-offline"}">
+        <div class="cd2-deck-summary ${m.deck?"":"is-offline"} ${m.deckConflict?"has-conflict":""}">
           <small>INSTALLED CYBERDECK</small>
-          ${m.deck ? '<div class="cd2-deck-head"><img src="'+esc(m.deck.img || "icons/svg/cog.svg")+'" alt=""><div><h2>'+esc(m.deck.name)+'</h2><span>'+esc(m.manufacturer)+(m.mk?" // MK."+esc(m.mk):"")+'</span></div></div><div class="cd2-deck-specs"><div><span>RAM</span><b>'+m.maxRam+'</b></div><div><span>SLOTS</span><b>'+m.slots+'</b></div><div><span>QH DC</span><b>'+m.dc+'</b></div></div>' : '<div class="cd2-offline-copy">NO HARDWARE LINK</div>'}
+          ${m.deck ? '<div class="cd2-deck-head"><img src="'+esc(m.deck.img || "icons/svg/cog.svg")+'" alt=""><div><h2>'+esc(m.deck.name)+'</h2><span>'+esc(m.manufacturer)+(m.mk?" // MK."+esc(m.mk):"")+'</span></div></div><div class="cd2-deck-specs"><div><span>RAM</span><b>'+m.maxRam+'</b></div><div><span>SLOTS</span><b>'+m.slots+'</b></div><div><span>QH DC</span><b>'+m.dc+'</b></div></div>' + (m.deckConflict?'<div class="v3-deck-conflict">MULTIPLE INSTALLED CYBERDECKS DETECTED // USING '+esc(m.deck.name)+'</div>':'') : '<div class="cd2-offline-copy">NO HARDWARE LINK</div>'}
         </div>
       </aside>
 
@@ -316,8 +401,16 @@
               <div><small>OWNED SOFTWARE</small><h3>SOFTWARE LIBRARY</h3></div>
               <span>${m.library.length} AVAILABLE</span>
             </div>
+            ${m.overflow.length ? `
+              <div class="v3-overflow">
+                <div class="v3-overflow-head">OVER CAPACITY // ${m.overflow.length} SOFTWARE PACKAGE${m.overflow.length===1?"":"S"} MUST BE EJECTED</div>
+                <div class="cd2-library-list v3-overflow-list">
+                  ${m.overflow.map(item => hackCard(item,true)).join("")}
+                </div>
+              </div>
+            ` : ""}
             <div class="cd2-library-list">
-              ${m.library.length ? m.library.map(item => hackCard(item,false)).join("") : '<div class="cd2-empty-message">ALL OWNED QUICKHACKS ARE LOADED</div>'}
+              ${m.library.length ? m.library.map(item => hackCard(item,false)).join("") : (m.overflow.length ? "" : '<div class="cd2-empty-message">ALL OWNED QUICKHACKS ARE LOADED</div>')}
             </div>
           </section>
         </div>
@@ -512,33 +605,62 @@
       }
 
       if (action === "load" || action === "unload") {
+        if (button.dataset.busy === "1") return;
+        button.dataset.busy = "1";
+        button.disabled = true;
+
         const value = action === "load";
-        await setLoaded(actor,button.dataset.itemId,value);
-        globalThis.FEHA_SOUNDS?.play?.(value?"install":"remove",{cooldown:0});
-        render(actor.id);
+
+        try {
+          const changed = await setLoaded(actor,button.dataset.itemId,value);
+          if (changed === true) {
+            globalThis.FEHA_SOUNDS?.play?.(value?"install":"remove",{cooldown:0});
+            render(actor.id);
+          }
+        } catch (err) {
+          console.error("FEHA V3 software slot update failed",err);
+          ui?.notifications?.error?.("Cyberdeck software update failed.");
+          if (root.isConnected) {
+            button.disabled = false;
+            delete button.dataset.busy;
+          }
+        }
         return;
       }
 
       if (action === "rest") {
+        if (button.dataset.busy === "1") return;
         const live = model(actor);
         if (!live.deck) {
           return ui?.notifications?.warn?.("No Cyberdeck installed.");
         }
 
-        globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
-        await actor.update({
-          [`flags.${FLAG}.ramCurrent`]:live.maxRam
-        });
+        button.dataset.busy = "1";
+        button.disabled = true;
 
-        await ChatMessage.create({
-          speaker:ChatMessage.getSpeaker({actor}),
-          content:
-            "<p><strong>"+esc(actor.name)+
-            "</strong> completed a Short Rest. RAM restored to <strong>"+
-            live.maxRam+"</strong>.</p>"
-        });
+        try {
+          globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+          await actor.update({
+            [`flags.${FLAG}.ramCurrent`]:live.maxRam
+          });
 
-        render(actor.id);
+          await ChatMessage.create({
+            speaker:ChatMessage.getSpeaker({actor}),
+            content:
+              "<p><strong>"+esc(actor.name)+
+              "</strong> completed a Short Rest. RAM restored to <strong>"+
+              live.maxRam+"</strong>.</p>"
+          });
+
+          render(actor.id);
+        } catch (err) {
+          console.error("FEHA V3 Short Rest failed",err);
+          ui?.notifications?.error?.("Cyberdeck Short Rest failed.");
+          if (root.isConnected) {
+            button.disabled = false;
+            delete button.dataset.busy;
+          }
+        }
         return;
       }
 
@@ -561,7 +683,10 @@
       }
 
       if (action === "target") {
-        const token = canvas?.tokens?.get?.(button.dataset.tokenId);
+        const token =
+          canvas?.tokens?.get?.(button.dataset.tokenId) ??
+          canvas?.tokens?.placeables?.find?.(t => t.id === button.dataset.tokenId) ??
+          null;
         if (!token) return ui?.notifications?.warn?.("That scene token is no longer available.");
         try {
           await token.setTarget(true,{user:game.user,releaseOthers:true,groupSelection:true});
@@ -575,10 +700,20 @@
       }
 
       if (action === "run") {
+        if (root.dataset.executing === "1") return;
+
         const item = actor.items?.get?.(button.dataset.itemId);
         const target = [...(game.user?.targets ?? [])][0] ?? null;
-        if (!item || flags(item).loadedQuickhack !== true || !target) {
-          return ui?.notifications?.warn?.("Select a target and load that Quickhack first.");
+        const targetId = target?.id ?? target?.document?.id ?? null;
+        const liveNet = sceneModel(actor);
+
+        if (
+          !item ||
+          !model(actor).loaded.some(h => h.id === item.id) ||
+          !target ||
+          !liveNet.nodes.some(node => node.id === targetId)
+        ) {
+          return ui?.notifications?.warn?.("Select a live scene target and load that Quickhack first.");
         }
 
         const m = model(actor);
@@ -587,16 +722,28 @@
           return ui?.notifications?.warn?.("Not enough RAM. "+m.currentRam+"/"+cost+".");
         }
 
-        await actor.update({[`flags.${FLAG}.ramCurrent`]:m.currentRam-cost});
-        globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
-        setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),100);
+        root.dataset.executing = "1";
+        button.disabled = true;
 
-        await ChatMessage.create({
-          speaker:ChatMessage.getSpeaker({actor}),
-          content:'<div style="display:flex;gap:10px;align-items:center"><img src="'+esc(item.img)+'" style="width:54px;height:54px;object-fit:contain"><div><h3>'+esc(item.name)+'</h3><p><strong>RAM '+cost+'</strong> • DC '+m.dc+' • TARGET '+esc(target.name ?? target.document?.name ?? "UNKNOWN")+'</p><p>'+esc(flags(item).effectText ?? description(item))+'</p></div></div>'
-        });
+        try {
+          await actor.update({[`flags.${FLAG}.ramCurrent`]:m.currentRam-cost});
+          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+          setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),100);
 
-        renderJack(actor.id);
+          await ChatMessage.create({
+            speaker:ChatMessage.getSpeaker({actor}),
+            content:'<div style="display:flex;gap:10px;align-items:center"><img src="'+esc(item.img)+'" style="width:54px;height:54px;object-fit:contain"><div><h3>'+esc(item.name)+'</h3><p><strong>RAM '+cost+'</strong> • DC '+m.dc+' • TARGET '+esc(target.name ?? target.document?.name ?? "UNKNOWN")+'</p><p>'+esc(hackEffect(item))+'</p></div></div>'
+          });
+
+          renderJack(actor.id);
+        } catch (err) {
+          console.error("FEHA V3 Quickhack execution failed",err);
+          ui?.notifications?.error?.("Quickhack execution failed.");
+          if (root.isConnected) {
+            delete root.dataset.executing;
+            button.disabled = false;
+          }
+        }
       }
     };
   }
@@ -612,9 +759,10 @@
   const v3Hooks = [];
   let refreshQueued = false;
 
-  function queueV3Refresh() {
+  function queueV3Refresh(mode = "auto") {
     if (refreshQueued) return;
     refreshQueued = true;
+
     requestAnimationFrame(() => {
       refreshQueued = false;
 
@@ -624,6 +772,8 @@
         return;
       }
 
+      if (mode === "jack") return;
+
       const root = document.getElementById(ROOT_ID);
       if (root?.dataset?.fehaV3 === "1") {
         render(root.dataset.actorId);
@@ -631,19 +781,40 @@
     });
   }
 
+  function visibleActorId() {
+    return (
+      document.getElementById(JACK_ID)?.dataset?.actorId ??
+      document.getElementById(ROOT_ID)?.dataset?.actorId ??
+      null
+    );
+  }
+
   if (globalThis.Hooks?.on) {
-    for (const event of [
+    v3Hooks.push([
       "updateActor",
-      "createItem",
-      "updateItem",
-      "deleteItem",
-      "createToken",
-      "updateToken",
-      "deleteToken",
-      "targetToken",
-      "canvasReady"
-    ]) {
-      v3Hooks.push([event,Hooks.on(event,queueV3Refresh)]);
+      Hooks.on("updateActor", actor => {
+        if (actor?.id === visibleActorId()) queueV3Refresh("auto");
+      })
+    ]);
+
+    for (const event of ["createItem","updateItem","deleteItem"]) {
+      v3Hooks.push([
+        event,
+        Hooks.on(event, item => {
+          if (item?.parent?.id === visibleActorId()) queueV3Refresh("auto");
+        })
+      ]);
+    }
+
+    for (const event of ["createToken","updateToken","deleteToken","targetToken","canvasReady"]) {
+      v3Hooks.push([
+        event,
+        Hooks.on(event, () => {
+          if (document.getElementById(JACK_ID)?.dataset?.phase === "live") {
+            queueV3Refresh("jack");
+          }
+        })
+      ]);
     }
   }
 
@@ -653,24 +824,10 @@
     game.adk.openCyberdeck = open;
   }
 
-  let reclaimQueued = false;
   const reclaimV3 = () => {
-    if (reclaimQueued) return;
-    reclaimQueued = true;
-    requestAnimationFrame(() => {
-      reclaimQueued = false;
-
-      if (game.adk && game.adk.openCyberdeck !== open) {
-        game.adk.openCyberdeck = open;
-      }
-
-      const current = document.getElementById(ROOT_ID);
-      if (current && current.dataset.fehaV3 !== "1" && !document.getElementById(JACK_ID)) {
-        const actorId = current.dataset.actorId ?? localStorage.getItem("fehaCyberdeckActorV3");
-        current.remove();
-        render(actorId);
-      }
-    });
+    if (game.adk && game.adk.openCyberdeck !== open) {
+      game.adk.openCyberdeck = open;
+    }
   };
 
   const existing = document.getElementById(ROOT_ID);
@@ -678,8 +835,7 @@
   const wasOpen = Boolean(existing);
   existing?.remove();
 
-  const v3Observer = new MutationObserver(reclaimV3);
-  v3Observer.observe(document.body,{childList:true,subtree:true});
+  const v3Observer = null;
 
   globalThis.FEHA_TABLETOP_UI_V3 = {
     version:VERSION,
@@ -688,7 +844,7 @@
     openJack,
     model,
     destroy() {
-      v3Observer.disconnect();
+      v3Observer?.disconnect?.();
       for (const [event,id] of v3Hooks) {
         try { Hooks.off(event,id); } catch {}
       }
@@ -697,6 +853,7 @@
       if (game.adk?.__fehaV3PreviousOpenCyberdeck) {
         game.adk.openCyberdeck = game.adk.__fehaV3PreviousOpenCyberdeck;
       }
+      delete globalThis.FEHA_CYBERDECK_V3_ACTIVE;
     }
   };
 
