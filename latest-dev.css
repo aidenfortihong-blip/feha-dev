@@ -1598,3 +1598,750 @@
     animation: none !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.0
+   FULL CP2077 THEATRE RERUN
+   The private extraction becomes the visual grammar, not garnish.
+   ========================================================================== */
+
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-cp2077-assets="1"] {
+  --cp-red: 255, 92, 96;
+  --cp-cyan: 94, 247, 255;
+  --cp-yellow: 255, 205, 70;
+  --cp-quiet: 17, 39, 44;
+}
+
+/* ----- overall composition ------------------------------------------------ */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-app {
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .018), transparent 18%, transparent 82%, rgba(var(--cp-red), .018)),
+    #020609 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-main {
+  grid-template-columns: minmax(268px, .68fr) minmax(560px, 1.55fr) minmax(390px, 1.02fr) !important;
+}
+
+/* ----- command rail ------------------------------------------------------- */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-command {
+  min-height: 76px !important;
+  padding: 0 16px 0 20px !important;
+  gap: 18px !important;
+  background:
+    var(--feha-cp-highlight) 46% 100% / 44% 72% no-repeat,
+    linear-gradient(90deg, rgba(var(--cp-cyan), .085), transparent 28%),
+    linear-gradient(180deg, #071118, #03080c) !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .34) !important;
+  box-shadow: 0 7px 24px rgba(0,0,0,.42) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-command::after {
+  height: 2px !important;
+  background:
+    linear-gradient(90deg,
+      rgb(var(--cp-cyan)) 0 14%,
+      transparent 14% 72%,
+      rgba(var(--cp-red), .86) 72% 86%,
+      transparent 86%) !important;
+  opacity: .56 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand > i {
+  width: 9px !important;
+  height: 44px !important;
+  background:
+    linear-gradient(180deg,
+      rgb(var(--cp-cyan)) 0 16%, transparent 16% 23%,
+      rgb(var(--cp-cyan)) 23% 42%, transparent 42% 50%,
+      rgb(var(--cp-red)) 50% 69%, transparent 69% 77%,
+      rgb(var(--cp-cyan)) 77% 100%) !important;
+  box-shadow:
+    9px 0 rgba(var(--cp-cyan), .08),
+    18px 0 rgba(var(--cp-cyan), .025) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand small {
+  color: rgb(var(--cp-cyan)) !important;
+  letter-spacing: 2.35px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand b {
+  font-size: clamp(24px, 1.7vw, 31px) !important;
+  letter-spacing: 3.2px !important;
+  text-shadow: 2px 0 rgba(var(--cp-red), .10) !important;
+}
+
+/* Ripperdoc-derived capacity shell. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head {
+  position: relative !important;
+  min-height: 52px !important;
+  padding: 8px 13px 7px !important;
+  gap: 7px !important;
+  background:
+    var(--feha-cp-button-holder) center / 100% 100% no-repeat,
+    linear-gradient(90deg, rgba(2,7,10,.96), rgba(6,15,20,.82)) !important;
+  border-left: 1px solid rgba(var(--cp-cyan), .18) !important;
+  border-right: 1px solid rgba(var(--cp-cyan), .08) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head > div:first-child {
+  position: relative !important;
+  z-index: 4 !important;
+  gap: 12px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head span {
+  color: #b3c8ce !important;
+  font-size: 9px !important;
+  letter-spacing: 1.25px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head b {
+  color: rgb(var(--cp-red)) !important;
+  font-size: 14px !important;
+  text-shadow: 0 0 10px rgba(var(--cp-red), .34) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail {
+  position: relative !important;
+  z-index: 3 !important;
+  height: 14px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.018), transparent),
+    #010406 !important;
+  border: 1px solid rgba(var(--cp-cyan), .18) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.012),
+    0 0 15px rgba(var(--cp-cyan), .045) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 2px 3px !important;
+  z-index: 4 !important;
+  background: rgb(var(--cp-cyan)) !important;
+  -webkit-mask: var(--feha-cp-bar-long) center / 100% 100% no-repeat !important;
+  mask: var(--feha-cp-bar-long) center / 100% 100% no-repeat !important;
+  opacity: .52 !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 1px !important;
+  z-index: 5 !important;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0 calc(8.333% - 2px),
+      rgba(1,5,7,.82) calc(8.333% - 2px) 8.333%) !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail > i {
+  top: 3px !important;
+  bottom: 3px !important;
+  height: auto !important;
+  z-index: 2 !important;
+  background:
+    linear-gradient(90deg,
+      rgba(var(--cp-cyan), .88) 0%,
+      rgba(var(--cp-cyan), .72) 52%,
+      rgba(var(--cp-red), .92) 100%) !important;
+  box-shadow:
+    0 0 8px rgba(var(--cp-cyan), .40),
+    0 0 15px rgba(var(--cp-red), .20) !important;
+  clip-path: polygon(0 0, 98.5% 0, 100% 50%, 98.5% 100%, 0 100%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail > span {
+  opacity: 0 !important;
+}
+
+/* ----- left subsystem rail ------------------------------------------------ */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems {
+  background:
+    linear-gradient(180deg, rgba(var(--cp-cyan), .025), transparent 36%),
+    #03090d !important;
+  border-right: 1px solid rgba(var(--cp-cyan), .13) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems > header {
+  min-height: 38px !important;
+  padding: 0 13px !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .11) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini {
+  margin: 9px 10px 10px !important;
+  padding: 11px 13px 12px !important;
+  background:
+    var(--feha-cp-barcode4) calc(100% - 10px) 12px / 112px auto no-repeat,
+    linear-gradient(100deg, rgba(var(--cp-cyan), .075), transparent 64%),
+    #061017 !important;
+  border-left: 2px solid rgb(var(--cp-red)) !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .10) !important;
+  clip-path: polygon(0 0, 94% 0, 100% 16%, 100% 100%, 0 100%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system {
+  min-height: 58px !important;
+  grid-template-columns: 25px 38px minmax(0,1fr) 34px 4px !important;
+  gap: 7px !important;
+  margin: 0 4px 3px !important;
+  padding: 6px 9px 6px 8px !important;
+  color: #83999f !important;
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .025), transparent 73%),
+    #050c10 !important;
+  border-left: 1px solid rgba(var(--cp-cyan), .11) !important;
+  border-bottom: 1px solid rgba(255,255,255,.028) !important;
+  clip-path: polygon(0 0, 95% 0, 100% 16%, 100% 100%, 4% 100%, 0 84%) !important;
+  transition:
+    color .12s linear,
+    background .12s linear,
+    transform .12s linear,
+    border-color .12s linear !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: var(--feha-cp-highlight) center / 100% 100% no-repeat !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity .12s linear !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system:hover {
+  transform: translateX(2px) !important;
+  color: #e7f3f5 !important;
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .095), rgba(var(--cp-cyan), .018) 74%, transparent),
+    #071116 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system:hover::before {
+  opacity: .075 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active {
+  color: #fff !important;
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .17), rgba(var(--cp-cyan), .035) 66%, transparent),
+    #08131a !important;
+  border-left: 3px solid rgb(var(--cp-cyan)) !important;
+  box-shadow:
+    inset 22px 0 32px rgba(var(--cp-cyan), .045),
+    0 0 0 1px rgba(var(--cp-cyan), .05) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active::before {
+  opacity: .12 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active::after {
+  content: none !important;
+  display: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .system-glyph {
+  width: 34px !important;
+  height: 34px !important;
+  background:
+    radial-gradient(circle at center, rgba(var(--cp-cyan), .065), transparent 66%) !important;
+  border-color: rgba(var(--cp-cyan), .16) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-glyph,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-online .system-glyph {
+  color: rgb(var(--cp-cyan)) !important;
+  border-color: rgba(var(--cp-cyan), .48) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .system-count {
+  position: relative !important;
+  width: 30px !important;
+  height: 30px !important;
+  display: grid !important;
+  place-items: center !important;
+  color: #abc0c5 !important;
+  background: var(--feha-cp-counter-stroke) center / 28px 28px no-repeat !important;
+  font-size: 7px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger {
+  margin: 7px 9px 9px !important;
+  min-height: 48px !important;
+  background:
+    var(--feha-cp-button-holder-2) center / 100% 100% no-repeat,
+    #03090d !important;
+  border: 0 !important;
+  clip-path: none !important;
+}
+
+/* ----- portrait theatre --------------------------------------------------- */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-subject {
+  background:
+    radial-gradient(circle at 52% 30%, rgba(var(--cp-cyan), .055), transparent 30%),
+    linear-gradient(180deg, #071017 0%, #020609 100%) !important;
+  border-right: 1px solid rgba(var(--cp-cyan), .12) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-subject::before {
+  background:
+    var(--feha-cp-cw-mask) 9% 50% / 5% 84% no-repeat,
+    var(--feha-cp-armor-barbg) 92% 50% / 3.8% 82% no-repeat,
+    var(--feha-cp-highlight) center 68% / 94% 26% no-repeat,
+    linear-gradient(90deg, #020608 0%, transparent 7%, transparent 93%, #020608 100%),
+    linear-gradient(0deg, #020608 0%, transparent 18%, transparent 88%, rgba(2,6,8,.76) 100%) !important;
+  opacity: .37 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-background {
+  opacity: .11 !important;
+  filter: drop-shadow(0 0 18px rgba(var(--cp-cyan), .075)) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-corners {
+  opacity: .34 !important;
+  border-color: rgba(var(--cp-cyan), .23) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id {
+  background:
+    linear-gradient(90deg, rgba(1,6,9,.90), rgba(1,6,9,.30), transparent) !important;
+  border-left-color: rgba(var(--cp-cyan), .52) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-topology-mark {
+  background:
+    linear-gradient(270deg, rgba(1,6,9,.90), rgba(1,6,9,.28), transparent) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+  left: 24px !important;
+  right: 24px !important;
+  bottom: 21px !important;
+  padding: 12px 16px 12px !important;
+  background:
+    var(--feha-cp-highlight) left bottom / 100% 48% no-repeat,
+    linear-gradient(90deg, rgba(1,6,9,.90), rgba(1,6,9,.62) 62%, transparent) !important;
+  border-left: 2px solid rgb(var(--cp-red)) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title h1 {
+  letter-spacing: 1.9px !important;
+  text-shadow:
+    2px 0 rgba(var(--cp-red), .12),
+    0 0 18px rgba(0,0,0,.62) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status {
+  background:
+    linear-gradient(90deg, rgba(2,8,11,.82), rgba(4,12,16,.62), transparent) !important;
+  border-color: rgba(var(--cp-cyan), .13) !important;
+}
+
+/* ----- inspector / hardware ---------------------------------------------- */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-inspector {
+  padding: 13px 15px 20px !important;
+  background:
+    var(--feha-cp-lines) calc(100% - 14px) 22px / 46px 16px no-repeat,
+    linear-gradient(180deg, rgba(var(--cp-cyan), .022), transparent 30%),
+    #03080c !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header {
+  min-height: 42px !important;
+  padding: 0 0 10px !important;
+  border-bottom-color: rgba(var(--cp-cyan), .16) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header::after {
+  width: 122px !important;
+  height: 24px !important;
+  background: var(--feha-cp-barcode1) right center / contain no-repeat !important;
+  opacity: .36 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title {
+  position: relative !important;
+  min-height: 86px !important;
+  padding: 12px 0 13px !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 3px !important;
+  height: 48px !important;
+  background: var(--feha-cp-highlight) left bottom / 100% 100% no-repeat !important;
+  opacity: .13 !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title::after {
+  height: 2px !important;
+  background:
+    linear-gradient(90deg,
+      rgb(var(--cp-red)) 0 8%,
+      rgba(var(--cp-cyan), .22) 8% 58%,
+      transparent 86%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title h2 {
+  position: relative !important;
+  z-index: 2 !important;
+  font-size: clamp(27px, 1.9vw, 37px) !important;
+  letter-spacing: 1.6px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .port-heading {
+  position: relative !important;
+  height: 31px !important;
+  margin: 0 !important;
+  padding: 10px 3px 6px !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .08) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .port-heading::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  bottom: -1px !important;
+  width: 74px !important;
+  height: 2px !important;
+  background: var(--feha-cp-crossline) left center / 68px 2px no-repeat !important;
+  opacity: .58 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port-stack {
+  gap: 7px !important;
+  padding: 8px 0 11px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port {
+  position: relative !important;
+  min-height: 61px !important;
+  padding: 8px 9px !important;
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .045), transparent 58%),
+    #02080b !important;
+  border: 1px solid rgba(var(--cp-cyan), .13) !important;
+  clip-path: polygon(0 0, 93% 0, 100% 18%, 100% 100%, 0 100%) !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port::after {
+  content: "" !important;
+  position: absolute !important;
+  right: 5px !important;
+  top: 5px !important;
+  width: 25px !important;
+  height: 28px !important;
+  background: var(--feha-cp-hud-patch) center / contain no-repeat !important;
+  opacity: .24 !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port:hover {
+  border-color: rgba(var(--cp-cyan), .38) !important;
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .10), transparent 62%),
+    #041017 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-socket {
+  width: 30px !important;
+  height: 30px !important;
+  background: var(--feha-cp-buffer-empty) center / contain no-repeat !important;
+  opacity: .88 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-filled .port-socket {
+  background: var(--feha-cp-buffer-active) center / contain no-repeat !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-visual {
+  position: relative !important;
+  border: 1px solid rgba(var(--cp-cyan), .12) !important;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(var(--cp-cyan), .055), transparent 42%),
+    #010608 !important;
+  clip-path: polygon(0 0, 94% 0, 100% 10%, 100% 100%, 4% 100%, 0 92%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-visual::before {
+  inset: 4px !important;
+  border: 0 !important;
+  background: var(--feha-cp-reward-frame) center / 100% 100% no-repeat !important;
+  opacity: .16 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-visual::after {
+  width: 190px !important;
+  height: 190px !important;
+  background: var(--feha-cp-frame-glow) center / contain no-repeat !important;
+  opacity: .20 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-legend {
+  left: 34px !important;
+  right: 18px !important;
+  bottom: 10px !important;
+  padding-top: 6px !important;
+  border-top: 1px solid rgba(var(--cp-cyan), .11) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy {
+  background:
+    linear-gradient(135deg, rgba(var(--cp-red), .035), rgba(var(--cp-cyan), .018) 62%, transparent) !important;
+  border-left: 2px solid rgba(var(--cp-red), .66) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics > div {
+  position: relative !important;
+  background:
+    linear-gradient(180deg, rgba(var(--cp-cyan), .025), transparent),
+    #030a0e !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .08) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics > div::after {
+  content: "" !important;
+  position: absolute !important;
+  right: 6px !important;
+  top: 6px !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: var(--feha-cp-counter) center / contain no-repeat !important;
+  opacity: .20 !important;
+}
+
+/* ----- living telemetry --------------------------------------------------- */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout {
+  position: relative !important;
+  min-height: 94px !important;
+  background:
+    var(--feha-cp-code1) 98% 8px / min(48%, 255px) auto no-repeat,
+    linear-gradient(180deg, rgba(var(--cp-cyan), .022), transparent 72%),
+    #02080b !important;
+  border: 1px solid rgba(var(--cp-cyan), .15) !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -20% !important;
+  top: 0 !important;
+  width: 22% !important;
+  height: 100% !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(var(--cp-cyan), .10), transparent) !important;
+  transform: skewX(-16deg) !important;
+  animation: feha040SignalSweep 4.8s linear infinite !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-wave {
+  height: 42px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-wave polyline {
+  stroke: rgb(var(--cp-cyan)) !important;
+  stroke-width: 1.05 !important;
+  filter:
+    drop-shadow(0 0 3px rgba(var(--cp-cyan), .48))
+    drop-shadow(0 0 8px rgba(var(--cp-cyan), .10)) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-barcode {
+  align-items: center !important;
+  opacity: .82 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-barcode i {
+  transform-origin: center !important;
+  will-change: transform, opacity !important;
+  background: rgba(var(--cp-cyan), var(--o)) !important;
+}
+
+/* ----- action buttons ----------------------------------------------------- */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary {
+  min-height: 51px !important;
+  padding: 8px 18px !important;
+  color: #eef8fa !important;
+  background:
+    var(--feha-cp-button-holder-2) center / 100% 100% no-repeat,
+    linear-gradient(90deg, rgba(var(--cp-cyan), .05), rgba(var(--cp-cyan), .014)),
+    #02080b !important;
+  border: 0 !important;
+  border-left: 0 !important;
+  clip-path: none !important;
+  text-align: center !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: var(--feha-cp-highlight) center / 100% 100% no-repeat !important;
+  opacity: 0 !important;
+  transition: opacity .12s linear !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse:hover::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary:hover::before {
+  opacity: .11 !important;
+}
+
+/* ----- owned augment cache ------------------------------------------------ */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache {
+  background:
+    var(--feha-cp-lines) 98% 14px / 58px 20px no-repeat,
+    linear-gradient(180deg, rgba(var(--cp-cyan), .055), transparent 24%),
+    rgba(2,7,10,.992) !important;
+  border-top: 1px solid rgb(var(--cp-cyan)) !important;
+  box-shadow:
+    0 -34px 90px rgba(0,0,0,.88),
+    0 -1px 26px rgba(var(--cp-cyan), .10) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache > header {
+  min-height: 48px !important;
+  padding: 0 18px !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .14) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache > header::after {
+  right: 58px !important;
+  width: 150px !important;
+  background: var(--feha-cp-barcode3) right center / contain no-repeat !important;
+  opacity: .24 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] button.adk-v6-cache-card {
+  position: relative !important;
+  background:
+    linear-gradient(112deg, rgba(var(--cp-cyan), .075), transparent 34%),
+    #030b0f !important;
+  border: 1px solid rgba(var(--cp-cyan), .16) !important;
+  clip-path: polygon(0 0, 95% 0, 100% 11%, 100% 100%, 0 100%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] button.adk-v6-cache-card::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  height: 34px !important;
+  background: var(--feha-cp-button-holder) center top / 100% 34px no-repeat !important;
+  opacity: .28 !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] button.adk-v6-cache-card.is-selected::after,
+#adk-chrome-manager-34[data-feha-rerun="040"] button.adk-v6-cache-card:hover::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 20px !important;
+  top: 25px !important;
+  width: 122px !important;
+  height: 122px !important;
+  background: var(--feha-cp-frame-glow-small) center / contain no-repeat !important;
+  opacity: .15 !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty {
+  min-width: 420px !important;
+  padding: 22px 20px !important;
+  background:
+    var(--feha-cp-highlight) left center / 100% 100% no-repeat,
+    linear-gradient(90deg, rgba(var(--cp-cyan), .035), transparent 68%) !important;
+  border-left: 2px solid rgba(var(--cp-cyan), .50) !important;
+}
+
+/* ----- status rail -------------------------------------------------------- */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-statusbar {
+  min-height: 22px !important;
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .04), transparent 30%, transparent 70%, rgba(var(--cp-cyan), .025)),
+    #02070a !important;
+  border-top-color: rgba(var(--cp-cyan), .14) !important;
+}
+
+/* Source-derived entrance/selection timing. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-inspector {
+  animation: feha040RipperIntro .25s linear both !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system-dossier,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-hardware-dossier {
+  animation: feha040ChoiceIntro .25s linear both !important;
+}
+
+@keyframes feha040RipperIntro {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes feha040ChoiceIntro {
+  from { opacity: 0; transform: translateX(5px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes feha040SignalSweep {
+  0% { left: -24%; opacity: 0; }
+  9% { opacity: .9; }
+  38% { opacity: .24; }
+  55%,100% { left: 118%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-inspector,
+  #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system-dossier,
+  #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-hardware-dossier,
+  #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout::before {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 1450px) {
+  #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-main {
+    grid-template-columns: minmax(250px, .72fr) minmax(500px, 1.48fr) minmax(360px, 1fr) !important;
+  }
+
+  #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand b {
+    font-size: 23px !important;
+  }
+}
