@@ -1,11 +1,14 @@
 {
-  "version": "0.6.8",
+  "version": "0.6.9",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-quickhack-memory-rack",
+  "scope": "cyberdeck-readability-spunk",
   "notes": [
-    "Removed oversized raw CP2077 white-mask imagery from empty Quickhack slots",
-    "Rebuilt empty slots as clean Cyberdeck memory bays with subtle extracted asset overlays",
-    "All five software slots now stay in a single horizontal rack on normal desktop layouts",
-    "Reduced extracted HUD/button texture intensity on Quickhack cards and tabs while keeping the asset-heavy Cyberpunk identity"
+    "Major readability pass across Cyberdeck typography, telemetry, operator rail, quickhack rack, right diagnostic spine, and footer controls",
+    "Added character-tinted interface accents for Ponyboy, Derke, Sasha, and Zach",
+    "Added numbered software memory bays and significantly stronger empty-slot hierarchy",
+    "Made installed deck and support chrome art larger and easier to read",
+    "Upgraded JACK IN into the primary hero action with larger typography, stronger geometry, hover response, and slow idle pulse",
+    "Added slow ambient scan motion, portrait grid drift, RAM shimmer, and active-tab energy without returning to high-frequency HyperFX",
+    "Preserved the real FEHA Cyberdeck mechanics introduced in 0.6.6 and the clean slot treatment from 0.6.8"
   ]
 }
