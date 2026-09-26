@@ -1,12 +1,12 @@
 {
-  "version": "0.4.8",
+  "version": "0.4.9",
   "updated": "2026-09-25",
-  "scope": "empty-cache-cleanup",
+  "scope": "installed-port-layout-polish",
   "notes": [
-    "Removed the raw CP2077 highlight image that caused giant white horizontal bars across the NO COMPATIBLE HARDWARE state",
-    "Rebuilt the empty cache message as a clean FEHA panel with no atlas-text overlays",
-    "Constrained the empty panel width and aligned it cleanly within the cache rail",
-    "Reduced empty-drawer height so a no-results state does not consume the same space as a populated hardware rail",
-    "Preserved all cache functionality and the 0.4.7 installed-port layout"
+    "Installed chrome now gets a full-width hardware row instead of being cramped into one third of the port rail",
+    "Remaining vacant ports move into a clean two-column row underneath when a subsystem has installed hardware",
+    "Installed item names and metadata can render at readable size without ellipsis",
+    "EJECT remains aligned on the right without stealing most of the title width",
+    "All-vacant subsystems still use the existing three-across layout"
   ]
 }
