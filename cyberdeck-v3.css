@@ -3077,3 +3077,124 @@
     width:96px;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.8 VIEWPORT GUARD
+   Hard-pin JACK IN to the browser viewport and protect all edge content.
+   ========================================================================== */
+
+#feha-jackin-overlay {
+  position:fixed !important;
+  inset:0 !important;
+  left:0 !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:100vw !important;
+  height:100vh !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:none !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+  translate:none !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  contain:layout paint;
+}
+
+/* Foundry/theme globals must never inject margins/transforms into our
+   fullscreen application surface. */
+body > #feha-jackin-overlay {
+  margin:0 !important;
+  transform:none !important;
+}
+
+/* Protected inner gutter. Using explicit left/right instead of viewport-width
+   math prevents horizontal crop under browser zoom / transformed Foundry UI. */
+#feha-jackin-overlay .jack-header {
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  top:0 !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  transform:none !important;
+  padding-left:24px !important;
+  padding-right:24px !important;
+}
+
+#feha-jackin-overlay .jack-space {
+  left:24px !important;
+  right:24px !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  transform:none !important;
+}
+
+#feha-jackin-overlay .jack-actions {
+  left:24px !important;
+  right:24px !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  transform:none !important;
+}
+
+/* Keep edge-mounted readouts well inside the clipped network polygon. */
+#feha-jackin-overlay .jack-lock-readout {
+  left:20px !important;
+  max-width:calc(100% - 40px) !important;
+}
+
+#feha-jackin-overlay .jack-net-caption {
+  right:20px !important;
+  max-width:calc(100% - 40px) !important;
+}
+
+/* Never let the left action-title column collapse or escape its dock. */
+#feha-jackin-overlay .jack-actions-title {
+  min-width:0 !important;
+  overflow:hidden !important;
+}
+
+#feha-jackin-overlay .jack-actions-title small,
+#feha-jackin-overlay .jack-actions-title b,
+#feha-jackin-overlay .jack-actions-title span {
+  max-width:100% !important;
+  overflow-wrap:anywhere;
+}
+
+/* Horizontal overflow in software cards must remain inside the dock. */
+#feha-jackin-overlay .jack-hacks,
+#feha-jackin-overlay .jack-hack {
+  min-width:0 !important;
+}
+
+#feha-jackin-overlay .jack-hack > span {
+  min-width:0 !important;
+  overflow:hidden;
+}
+
+/* Defensive reset for Foundry/global button positioning. */
+#feha-jackin-overlay button {
+  margin:0;
+}
+
+@media(max-width:900px) {
+  #feha-jackin-overlay .jack-space,
+  #feha-jackin-overlay .jack-actions {
+    left:12px !important;
+    right:12px !important;
+  }
+
+  #feha-jackin-overlay .jack-header {
+    padding-left:14px !important;
+    padding-right:14px !important;
+  }
+}
