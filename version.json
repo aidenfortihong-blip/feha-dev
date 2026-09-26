@@ -1,13 +1,11 @@
 {
-  "version": "0.6.3",
+  "version": "0.6.4",
   "updated": "2026-09-26",
-  "scope": "integrated-gm-export-tools",
+  "scope": "module-source-export-fix",
   "notes": [
-    "Integrated the FEHA live-world handoff exporter directly into the ADK dev runtime",
-    "Integrated the installed ADK/FEHA module source exporter directly into the ADK dev runtime",
-    "Added a GM-only Cyberdeck panel with EXPORT DATA and EXPORT SOURCE buttons",
-    "No F12, Macro Directory creation, or manual script pasting is required",
-    "Exporter files remain in foundry/ as standalone backups",
-    "Cyberdeck 0.6.2 asset-heavy visuals, four-character roster, and sound behavior remain intact"
+    "Fixed module source export path duplication for Foundry runtime esmodule paths",
+    "Handles Foundry style/module descriptors that are objects instead of string paths",
+    "Parses module.json as the authoritative manifest and recursively queues its scripts, ES modules, styles, and language files",
+    "Live-world handoff export from 0.6.3 remains valid and does not need to be rerun"
   ]
 }
