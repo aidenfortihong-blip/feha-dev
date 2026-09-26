@@ -2008,3 +2008,53 @@
   pointer-events:none;
   opacity:.54;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.4 READABILITY FLOOR
+   Functional text must remain readable at normal desktop viewing distance.
+   ========================================================================== */
+
+#feha-cyberdeck-v2.feha-v3 .cd2-header-status span,
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy span,
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card::before,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot::before,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot em {
+  font-size:7.5px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot small,
+#feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy small,
+#feha-cyberdeck-v2.feha-v3 .cd2-empty-message,
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small,
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p,
+#feha-cyberdeck-v2.feha-v3 .v3-deck-conflict {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-head-stat span,
+#feha-jackin-overlay .jack-operator small,
+#feha-jackin-overlay .jack-node-copy small,
+#feha-jackin-overlay .jack-node > em,
+#feha-jackin-overlay .jack-lock-readout small,
+#feha-jackin-overlay .jack-lock-readout span,
+#feha-jackin-overlay .jack-hack small,
+#feha-jackin-overlay .jack-hack em {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-node-num {
+  font-size:7px !important;
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p,
+  #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
+    font-size:8px !important;
+  }
+}
