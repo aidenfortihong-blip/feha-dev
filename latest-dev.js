@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.4.21";
+  const BUILD = "0.5.0";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.21 // preload failed", event, err);
+          console.warn("FEHA DEV 0.5.0 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.21 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.5.0 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.21 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.5.0 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.21 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.5.0 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.21 // sound source: ${source}`
+      `FEHA DEV 0.5.0 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.21 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.5.0 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1106,6 +1106,167 @@
     });
   }
 
+  function textNorm(value) {
+    return String(value ?? "").replace(/\s+/g, " ").trim();
+  }
+
+  function findCyberdeckRoots(scope = document.body) {
+    if (!scope?.querySelectorAll) return [];
+
+    const candidates = [
+      ...scope.querySelectorAll(".application, .app, .window-app, [role='dialog']")
+    ].filter(el => {
+      const text = textNorm(el.innerText ?? el.textContent);
+      return (
+        /ADK\s*\/\/\s*CYBERDECK TERMINAL/i.test(text) &&
+        /SOFTWARE LIBRARY/i.test(text)
+      );
+    });
+
+    // Prefer the smallest matching application shell so parent wrappers do not
+    // receive the Cyberdeck skin as well.
+    return candidates.filter(el => !candidates.some(other => other !== el && el.contains(other)));
+  }
+
+  function findLeafByText(root, matcher) {
+    if (!root?.querySelectorAll) return null;
+    for (const el of root.querySelectorAll("*")) {
+      if (el.children.length > 0) continue;
+      const text = textNorm(el.textContent);
+      if (typeof matcher === "string" ? text === matcher : matcher.test(text)) return el;
+    }
+    return null;
+  }
+
+  function smallestTextShell(leaf, required, maxDepth = 7, maxLength = 1400) {
+    if (!leaf) return null;
+    let cursor = leaf.parentElement;
+    let best = leaf.parentElement;
+
+    for (let depth = 0; cursor && depth < maxDepth; depth++, cursor = cursor.parentElement) {
+      const text = textNorm(cursor.innerText ?? cursor.textContent);
+      const ok = required.every(rx => rx.test(text));
+      if (!ok) continue;
+      if (text.length <= maxLength) best = cursor;
+      else break;
+    }
+
+    return best;
+  }
+
+  function tagCyberdeckPortrait(root) {
+    const images = [...root.querySelectorAll("img")].filter(img => {
+      const r = img.getBoundingClientRect?.();
+      return r && r.width >= 110 && r.height >= 140;
+    });
+    if (!images.length) return;
+
+    const img = images.sort((a,b) => {
+      const ar = a.getBoundingClientRect();
+      const br = b.getBoundingClientRect();
+      return (br.width * br.height) - (ar.width * ar.height);
+    })[0];
+
+    img.classList.add("feha-cd-portrait-img");
+
+    let cursor = img.parentElement;
+    let chosen = cursor;
+    for (let depth = 0; cursor && cursor !== root && depth < 6; depth++, cursor = cursor.parentElement) {
+      const r = cursor.getBoundingClientRect?.();
+      if (!r) continue;
+      if (r.width >= 220 && r.width <= 520 && r.height >= 250 && r.height <= 620) {
+        chosen = cursor;
+      }
+    }
+    chosen?.classList?.add("feha-cd-portrait-card");
+  }
+
+  function markCyberdeck(root) {
+    if (!root) return false;
+
+    root.dataset.fehaCyberdeck = "1";
+    root.classList.add("feha-cyberdeck");
+
+    const kicker = findLeafByText(root, /NOCTURNE\s*\/\/\s*NETRUNNER SUITE/i);
+    kicker?.classList.add("feha-cd-kicker");
+
+    const title = findLeafByText(root, /ADK\s*\/\/\s*CYBERDECK TERMINAL/i);
+    title?.classList.add("feha-cd-title");
+
+    const deckEmpty = findLeafByText(root, /^NO CYBERDECK INSTALLED$/i);
+    const deckShell = smallestTextShell(
+      deckEmpty,
+      [/NO CYBERDECK INSTALLED/i, /Install one through the Chrome Manager/i],
+      7,
+      700
+    );
+    deckShell?.classList.add("feha-cd-deck-panel");
+
+    const softwareHead = findLeafByText(root, /^SOFTWARE LIBRARY$/i);
+    softwareHead?.classList.add("feha-cd-section-title");
+    const softwareShell = smallestTextShell(
+      softwareHead,
+      [/SOFTWARE LIBRARY/i, /Purchased Quickhacks stay here permanently/i],
+      7,
+      1200
+    );
+    softwareShell?.classList.add("feha-cd-library");
+
+    const supportHead = findLeafByText(root, /^NETRUNNER SUPPORT CHROME$/i);
+    supportHead?.classList.add("feha-cd-section-title");
+    const supportShell = smallestTextShell(
+      supportHead,
+      [/NETRUNNER SUPPORT CHROME/i, /installed netrunning support chrome/i],
+      7,
+      1000
+    );
+    supportShell?.classList.add("feha-cd-support");
+
+    findLeafByText(root, /^No software owned\.?$/i)
+      ?.classList.add("feha-cd-empty-copy");
+    findLeafByText(root, /^No installed netrunning support chrome\.?$/i)
+      ?.classList.add("feha-cd-empty-copy");
+    deckEmpty?.classList.add("feha-cd-empty-title");
+    findLeafByText(root, /^Install one through the Chrome Manager\.?$/i)
+      ?.classList.add("feha-cd-empty-copy");
+
+    root.querySelectorAll("select").forEach(el => el.classList.add("feha-cd-select"));
+    root.querySelectorAll("button, [role='button']").forEach(el => {
+      const text = textNorm(el.innerText ?? el.textContent);
+      if (/^CHECK$/i.test(text)) el.classList.add("feha-cd-check");
+      if (/^[×✕✖x]$/i.test(text)) el.classList.add("feha-cd-close");
+    });
+
+    tagCyberdeckPortrait(root);
+
+    // The old wallet launcher is not part of the Cyberdeck design.
+    suppressLegacyWalletChrome(root);
+
+    return true;
+  }
+
+  function markCyberdecks(scope = document.body) {
+    const roots = findCyberdeckRoots(scope);
+    roots.forEach(markCyberdeck);
+    return roots.length;
+  }
+
+  function clearCyberdeckMarks() {
+    document.querySelectorAll('[data-feha-cyberdeck="1"]').forEach(root => {
+      delete root.dataset.fehaCyberdeck;
+      root.classList.remove("feha-cyberdeck");
+    });
+    document.querySelectorAll(
+      ".feha-cd-kicker,.feha-cd-title,.feha-cd-deck-panel,.feha-cd-library,.feha-cd-support," +
+      ".feha-cd-section-title,.feha-cd-empty-copy,.feha-cd-empty-title,.feha-cd-select," +
+      ".feha-cd-check,.feha-cd-close,.feha-cd-portrait-img,.feha-cd-portrait-card"
+    ).forEach(el => {
+      for (const cls of [...el.classList]) {
+        if (cls.startsWith("feha-cd-")) el.classList.remove(cls);
+      }
+    });
+  }
+
   function startObserver() {
     observer?.disconnect?.();
     observer = new MutationObserver(() => {
@@ -1114,6 +1275,7 @@
       normalizeDossierSchematics();
       tagLegacyWallets();
       suppressLegacyWalletChrome();
+      markCyberdecks();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
@@ -1145,6 +1307,7 @@
       removeSoundEngine();
       removeWalletGuard();
       clearLegacyWalletTags();
+      clearCyberdeckMarks();
       document
         .getElementById("adk-chrome-manager-34")
         ?.classList.remove("feha-cache-selection-focus");
@@ -1183,6 +1346,7 @@
   markRoot();
   tagLegacyWallets();
   suppressLegacyWalletChrome();
+  markCyberdecks();
 
   console.log(
     "%cFEHA DEV PATCH %c" + BUILD,
@@ -1191,7 +1355,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // legacy wallet UI fully suppressed"
+    "FEHA DEV " + BUILD + " // Cyberdeck foundation active"
   );
 
   state.reopenChrome();
