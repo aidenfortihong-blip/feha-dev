@@ -8,6 +8,7 @@
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
   const VERSION = "0.8.4";
+  let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
   const FLAG = "fleshEnshrouded";
@@ -765,6 +766,7 @@
 
     requestAnimationFrame(() => {
       refreshQueued = false;
+      if (!lifecycleActive) return;
 
       const jack = document.getElementById(JACK_ID);
       if (jack?.dataset?.phase === "live") {
@@ -827,6 +829,7 @@
   }
 
   const reclaimV3 = () => {
+    if (!lifecycleActive) return;
     if (game.adk && game.adk.openCyberdeck !== open) {
       game.adk.openCyberdeck = open;
     }
@@ -846,6 +849,7 @@
     openJack,
     model,
     destroy() {
+      lifecycleActive = false;
       v3Observer?.disconnect?.();
       for (const [event,id] of v3Hooks) {
         try { Hooks.off(event,id); } catch {}
@@ -864,9 +868,13 @@
   };
 
   if (wasOpen) {
-    setTimeout(() => render(existingActorId),60);
+    setTimeout(() => {
+      if (lifecycleActive) render(existingActorId);
+    },60);
   }
 
-  setTimeout(reclaimV3,120);
+  setTimeout(() => {
+    if (lifecycleActive) reclaimV3();
+  },120);
   ui?.notifications?.info?.("FEHA Cyberdeck V3 "+VERSION+" ready.");
 })();
