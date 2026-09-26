@@ -1,12 +1,15 @@
 {
-  "version": "0.6.1",
+  "version": "0.6.2",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-readability-roster",
+  "scope": "cyberdeck-asset-heavy-beauty-sound",
   "notes": [
-    "Scaled Cyberdeck V2 up across typography, telemetry, actor portrait, quickhack cards, controls, footer, and right rail",
-    "Cyberdeck actor selector is now restricted to Ponyboy, Derke, Sasha, and Zach only",
-    "Roster order is fixed as Ponyboy, Derke, Sasha, Zach",
-    "Saved/fallback actor selection is constrained to the allowed Cyberdeck roster",
-    "Cyberdeck V2 mechanics and data model remain unchanged"
+    "Removed Heat and Humanity from Cyberdeck V2 entirely",
+    "Rebuilt top telemetry around RAM, installed deck hardware, and software load only",
+    "Mapped the existing private Cyberpunk UI asset pack into Cyberdeck V2 and used frame, HUD, highlight, line, barcode, buffer, button, glow, and reward assets throughout",
+    "Made installed cyberdeck, quickhack, and support-chrome item art substantially larger and more visually dominant",
+    "Upgraded the right rail into a hardware/software rack using actual item art and Cyberpunk UI assets",
+    "Added Cyberdeck open/close, hover, actor switch, tab, load, unload, run, short-rest, error, confirm, and JACK IN sound feedback through the existing Cyberpunk-first sound engine",
+    "Reworked Cyberdeck event binding to avoid duplicate listeners across rerenders",
+    "Roster remains locked to Ponyboy, Derke, Sasha, and Zach"
   ]
 }
