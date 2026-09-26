@@ -1,12 +1,11 @@
 {
-  "version": "0.4.17",
+  "version": "0.4.18",
   "updated": "2026-09-26",
-  "scope": "legacy-wallet-removal",
+  "scope": "subsystem-rail-no-lines",
   "notes": [
-    "Removed the old embedded ADK // WALLET blocks from character sheets without touching ADKWallet backend data",
-    "Runtime now tags legacy wallet shells and their balance nodes with dedicated FEHA hooks for the future standalone wallet redesign",
-    "Wallet suppression automatically reapplies after Foundry sheet rerenders",
-    "Updated Derke to the latest Forge portrait 74981913-bd87-4289-a524-7d987e699cfd.png",
-    "The existing signal-profile hotfix remains unrelated and does not need to own wallet logic"
+    "Removed all subsystem row borders, separators, outlines, and decorative pseudo-element lines",
+    "Active and hover states now communicate selection through fill/color only",
+    "Preserved subsystem spacing, counters, glyphs, and selector behavior",
+    "Legacy wallet suppression and ADKWallet backend behavior remain unchanged"
   ]
 }
