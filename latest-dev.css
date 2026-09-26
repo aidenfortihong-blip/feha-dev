@@ -1290,3 +1290,146 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.3.1
+   SCHEMATIC SCALE + PORT GRID + LEGEND CLIP FIX
+   ========================================================================== */
+
+/* The diagram viewBox is now cropped per-system in JS to the actual authored
+   artwork bounds. Fill the stage cleanly without the giant empty 1000x800
+   margin that made everything microscopic. */
+#adk-chrome-manager-34 .dossier-visual .adk-v6-system-viz {
+  position: absolute !important;
+  inset: 6px 8px 20px !important;
+  width: calc(100% - 16px) !important;
+  height: calc(100% - 26px) !important;
+  transform: none !important;
+  opacity: .80 !important;
+  overflow: visible !important;
+}
+
+/* The lower-left chamfer was physically clipping SYS.CRTX / SYS.OS / etc.
+   Pull the legend inward and upward out of the cut corner. */
+#adk-chrome-manager-34 .dossier-legend {
+  left: 34px !important;
+  right: 14px !important;
+  bottom: 11px !important;
+  z-index: 8 !important;
+  font-size: 8px !important;
+  line-height: 1.1 !important;
+  letter-spacing: .85px !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+}
+
+/* --------------------------------------------------------------------------
+   PORT LAYOUT
+   3 ports = one deliberate row, 2 ports = two equal columns, 1 = full width.
+   No orphan third port hanging underneath a two-column row.
+   -------------------------------------------------------------------------- */
+
+#adk-chrome-manager-34 .adk-v6-port-stack {
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port-stack:has(> .adk-v6-port:nth-child(2)):not(:has(> .adk-v6-port:nth-child(3))) {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port-stack:has(> .adk-v6-port:nth-child(3)) {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+/* Compact horizontal card so 3 ports still read cleanly in one row. */
+#adk-chrome-manager-34 .adk-v6-port {
+  position: relative !important;
+  min-height: 66px !important;
+  grid-template-columns: 30px minmax(0, 1fr) !important;
+  grid-template-rows: minmax(46px, auto) auto !important;
+  gap: 4px 8px !important;
+  align-items: center !important;
+  align-content: center !important;
+  padding: 8px 8px 7px 27px !important;
+  overflow: visible !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-id {
+  position: absolute !important;
+  left: 8px !important;
+  top: 8px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  grid-column: auto !important;
+  grid-row: auto !important;
+  font-size: 7px !important;
+  line-height: 1 !important;
+  letter-spacing: .25px !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-socket,
+#adk-chrome-manager-34 .adk-v6-port .port-thumb {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  justify-self: center !important;
+  align-self: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  margin: 0 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-copy {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  align-self: center !important;
+  overflow: visible !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-copy b {
+  display: block !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  font-size: 11px !important;
+  line-height: 1.02 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-copy small {
+  display: block !important;
+  margin-top: 3px !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  font-size: 7px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .45px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-actions {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  justify-content: flex-end !important;
+  margin: 1px 0 0 !important;
+}
+
+/* A filled port can need more room for USE/EJECT. */
+#adk-chrome-manager-34 .adk-v6-port.is-filled {
+  min-height: 88px !important;
+}
+
+/* If the inspector becomes genuinely narrow, readability wins over forcing 3
+   columns. This also prevents long item names from getting crushed. */
+@media (max-width: 1320px) {
+  #adk-chrome-manager-34 .adk-v6-port-stack:has(> .adk-v6-port:nth-child(3)) {
+    grid-template-columns: 1fr !important;
+  }
+
+  #adk-chrome-manager-34 .adk-v6-port-stack:has(> .adk-v6-port:nth-child(2)):not(:has(> .adk-v6-port:nth-child(3))) {
+    grid-template-columns: 1fr !important;
+  }
+}
