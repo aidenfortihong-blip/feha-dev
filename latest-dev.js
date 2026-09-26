@@ -484,7 +484,10 @@
     }
 
     const localPack = readLocalPack() ?? readPrivateAssets()?.audio ?? null;
-    const paths = localPack ?? FALLBACK_MAP;
+    const paths = {
+      ...FALLBACK_MAP,
+      ...(localPack ?? {})
+    };
     const forgeBacked = localPack && Object.values(localPack).some(path => String(path).startsWith("https://assets.forge-vtt.com/"));
     const source = localPack ? (forgeBacked ? "CYBERPUNK 2077 // FORGE PRIVATE" : "CYBERPUNK 2077 // LOCAL") : "KENNEY // FALLBACK";
 
