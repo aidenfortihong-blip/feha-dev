@@ -1050,3 +1050,70 @@
   ) !important;
   pointer-events: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.2.5
+   TRUE SYSTEM-GLYPH REGISTRATION + CACHE SELECTION UX
+   ========================================================================== */
+
+/*
+   Each system illustration has a different authored optical center inside the
+   shared 1000x800 SVG viewBox. The foreground blue glyph now registers to that
+   actual system center rather than blindly using the panel's 50% midpoint.
+*/
+#adk-chrome-manager-34 .dossier-core-glyph {
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+}
+
+#adk-chrome-manager-34 .dossier-visual:has(.mode-cortex) .dossier-core-glyph {
+  top: 35.75% !important;
+}
+
+#adk-chrome-manager-34 .dossier-visual:has(.mode-face) .dossier-core-glyph {
+  top: 45% !important;
+}
+
+#adk-chrome-manager-34 .dossier-visual:has(.mode-os) .dossier-core-glyph {
+  top: 42.75% !important;
+}
+
+#adk-chrome-manager-34 .dossier-visual:has(.mode-arms) .dossier-core-glyph {
+  top: 48.1% !important;
+}
+
+#adk-chrome-manager-34 .dossier-visual:has(.mode-hands) .dossier-core-glyph {
+  top: 46.75% !important;
+}
+
+#adk-chrome-manager-34 .dossier-visual:has(.mode-structure) .dossier-core-glyph,
+#adk-chrome-manager-34 .dossier-visual:has(.mode-neural) .dossier-core-glyph,
+#adk-chrome-manager-34 .dossier-visual:has(.mode-circulatory) .dossier-core-glyph,
+#adk-chrome-manager-34 .dossier-visual:has(.mode-dermal) .dossier-core-glyph {
+  top: 50% !important;
+}
+
+#adk-chrome-manager-34 .dossier-visual:has(.mode-legs) .dossier-core-glyph {
+  top: 53.6% !important;
+}
+
+/*
+   Clicking an owned augment should feel like opening that hardware dossier,
+   not like clicking a card underneath a giant drawer. The native cache state
+   remains intact, but the drawer visually retracts after a cache-card pick.
+*/
+#adk-chrome-manager-34.feha-cache-selection-focus .adk-v6-cache.is-open {
+  transform: translateY(calc(100% - 2px)) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition:
+    transform 180ms cubic-bezier(.2,.75,.2,1),
+    opacity 130ms ease !important;
+}
+
+#adk-chrome-manager-34.feha-cache-selection-focus .adk-v6-cache.is-open::before {
+  opacity: 0 !important;
+}
