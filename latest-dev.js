@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.4.10";
+  const BUILD = "0.4.11";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -236,6 +236,7 @@
     normalizeDossierSchematics();
     applyPrivateAssets(root);
     filterActorRoster(root);
+    applyDerkePortrait(root);
     return true;
   }
 
@@ -455,7 +456,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.10 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.11 // preload failed", event, err);
         }
       }
     }
@@ -513,11 +514,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.10 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.11 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.10 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.11 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -540,7 +541,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.10 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.11 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -664,12 +665,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.10 // sound source: ${source}`
+      `FEHA DEV 0.4.11 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.10 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.11 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -700,11 +701,68 @@
     delete globalThis.__FEHA_SOUND_ENGINE_028;
   }
 
+  const DERKE_PORTRAIT_B64_URL =
+    "https://raw.githubusercontent.com/aidenfortihong-blip/feha-dev/main/assets/portraits/derke.webp.b64";
+  let derkePortraitPromise = null;
+  let derkePortraitDataUrl = null;
+
+  function loadDerkePortrait() {
+    if (derkePortraitDataUrl) return Promise.resolve(derkePortraitDataUrl);
+    if (derkePortraitPromise) return derkePortraitPromise;
+
+    derkePortraitPromise = fetch(DERKE_PORTRAIT_B64_URL, { cache: "force-cache" })
+      .then(response => {
+        if (!response.ok) throw new Error("Derke portrait fetch failed: " + response.status);
+        return response.text();
+      })
+      .then(payload => {
+        derkePortraitDataUrl = "data:image/webp;base64," + payload.trim();
+        return derkePortraitDataUrl;
+      })
+      .catch(error => {
+        derkePortraitPromise = null;
+        console.error("FEHA DEV 0.4.11 // Derke portrait load failed", error);
+        throw error;
+      });
+
+    return derkePortraitPromise;
+  }
+
+  function applyDerkePortrait(root = document.getElementById("adk-chrome-manager-34")) {
+    const actor = globalThis.ADKChromeBackend?.getActor?.();
+    const actorName = norm(actor?.name);
+
+    if (actorName !== "derke") {
+      if (root?.dataset) delete root.dataset.fehaPortraitOverride;
+      return false;
+    }
+
+    const portrait = root?.querySelector?.(".subject-art img");
+    if (!portrait) return false;
+
+    root.dataset.fehaPortraitOverride = "derke";
+
+    void loadDerkePortrait().then(url => {
+      const liveRoot = document.getElementById("adk-chrome-manager-34");
+      const liveActor = globalThis.ADKChromeBackend?.getActor?.();
+      if (!liveRoot || norm(liveActor?.name) !== "derke") return;
+
+      const livePortrait = liveRoot.querySelector(".subject-art img");
+      if (!livePortrait) return;
+
+      if (livePortrait.src !== url) livePortrait.src = url;
+      livePortrait.alt = "Derke";
+      livePortrait.dataset.fehaPortrait = "derke";
+    });
+
+    return true;
+  }
+
   function filterActorRoster(root = document.getElementById("adk-chrome-manager-34")) {
     const select = root?.querySelector?.("#actor-select");
     if (!select) return false;
 
-    const blocked = new Set(["nina", "florence", "cael"]);
+    const blocked = new Set(["nina", "florence", "cael", "xiao"]);
 
     for (const option of [...select.options]) {
       const label = norm(option.textContent || option.label || "");
@@ -916,7 +974,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // actor roster cleanup loaded"
+    "FEHA DEV " + BUILD + " // Derke portrait + roster cleanup loaded"
   );
 
   state.reopenChrome();
