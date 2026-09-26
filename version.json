@@ -1,15 +1,15 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "updated": "2026-09-25",
-  "scope": "chrome-clean-schematics-and-port-readability",
+  "scope": "chrome-schematic-scale-port-grid-legend",
   "notes": [
-    "Removed the colored subsystem core glyph from every system dossier",
-    "Changed dossier SVGs from crop/slice mode to full-image meet mode",
-    "Shifted the full grey schematic slightly downward so the complete artwork is visible in the inspector window",
-    "Fixed P01/P02/P03 being overlapped by the diamond hardware socket",
-    "Separated port ID, socket and text into dedicated grid columns",
-    "Removed ellipsis clipping from VACANT PORT and OPEN HARDWARE CACHE text",
-    "Stacks ports vertically on narrower inspector widths to preserve readability",
-    "Preserved the 0.2.9 guttural digital sound engine"
+    "Cropped each subsystem SVG viewBox to its real authored artwork bounds so schematics are large without cutting off the system drawing",
+    "Kept preserveAspectRatio=meet so the full system artwork remains visible",
+    "Moved SYS.* / STANDBY legend inward and upward to escape the dossier panel's lower-left chamfer clipping",
+    "Three hardware ports now share one deliberate three-column row instead of leaving an orphan third card",
+    "Two ports use two equal columns and one port uses full width",
+    "Port IDs are positioned independently so P01/P02/P03 no longer steal width from the socket or text",
+    "Filled ports retain extra height for USE/EJECT actions",
+    "Preserved all previous sound, actor-switch, cache, typography and capacity fixes"
   ]
 }
