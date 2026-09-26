@@ -42,8 +42,16 @@
     if (list.length === 1) return list[0];
 
     const suggested =
-      list.find(m => /\b(adk|feha)\b/i.test(`${m.id} ${m.title}`)) ??
-      list.find(m => m.active) ??
+      list.find(m => m.id === "flesh-enshrouded-heart-ablaze") ??
+      list.find(m =>
+        /flesh.*enshrouded|heart.*ablaze/i.test(`${m.id} ${m.title}`) &&
+        !/gateway/i.test(`${m.id} ${m.title}`)
+      ) ??
+      list.find(m =>
+        /\b(adk|feha)\b/i.test(`${m.id} ${m.title}`) &&
+        !/gateway/i.test(`${m.id} ${m.title}`)
+      ) ??
+      list.find(m => m.active && !/gateway/i.test(`${m.id} ${m.title}`)) ??
       list[0];
 
     const menu = list
