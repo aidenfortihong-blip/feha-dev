@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.3.0";
+  const BUILD = "0.3.1";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -131,11 +131,35 @@
     const root = document.getElementById("adk-chrome-manager-34");
     if (!root) return;
 
-    root.querySelectorAll(".dossier-visual .adk-v6-system-viz").forEach(svg => {
-      // The production SVGs ship as xMidYMid slice, which deliberately crops
-      // their top/bottom edges. For the inspector we want the entire schematic.
-      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-    });
+    // These viewBoxes frame the actual authored system artwork, not the huge
+    // generic 1000x800 canvas. Each keeps the full system drawing visible while
+    // removing the dead margin that made the art look microscopic.
+    const frames = {
+      cortex:      "230 80 540 420",
+      face:        "255 95 490 530",
+      os:          "255 75 490 540",
+      arms:        "95 145 810 485",
+      hands:       "175 195 650 370",
+      structure:   "125 55 750 690",
+      neural:      "195 65 610 665",
+      circulatory: "175 145 650 510",
+      dermal:      "195 125 610 550",
+      legs:        "205 145 590 565"
+    };
+
+    root
+      .querySelectorAll(".dossier-visual .adk-v6-system-viz")
+      .forEach(svg => {
+        const modeClass = [...svg.classList].find(name => name.startsWith("mode-"));
+        const mode = modeClass?.slice(5) ?? "";
+        const frame = frames[mode];
+
+        if (frame) {
+          svg.setAttribute("viewBox", frame);
+        }
+
+        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      });
   }
 
   function markRoot() {
@@ -1043,7 +1067,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // clean schematics + port text fix loaded"
+    "FEHA DEV " + BUILD + " // schematic scale + port grid + legend fix loaded"
   );
 
   state.reopenChrome();
