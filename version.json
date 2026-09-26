@@ -1,15 +1,29 @@
 {
-  "version": "0.8.3",
+  "version": "0.8.4",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-v3-lock-quality",
+  "scope": "deep-audit-hardening",
   "notes": [
-    "Aligned Cyberdeck detection with the installed FEHA module: Cyberdeck, Paraline, Netdriver, Tetratronic, and Raven Micro names are recognized",
-    "Support Chrome now excludes all Cyberdecks and follows the canonical FEHA support-chrome text rules",
-    "Short Rest now directly restores ramCurrent to computed maximum RAM and posts the same style of rest chat message as the original Cyberdeck",
-    "V3 destroys its previous observer/hooks before reloading so repeated dev-loader runs no longer stack duplicate listeners",
-    "Base Cyberdeck and JACK IN now live-refresh when relevant Foundry actors, items, scene tokens, or user targeting changes",
-    "Replaced generic Session filler with the installed Cyberdeck's actual passive effect text",
-    "Added character-specific accent cohesion, quiet ambient scanning, restrained RAM animation, cleaner card hovers, passive-rail hierarchy, and final JACK IN polish",
-    "JavaScript syntax verification passed after the final patch"
+    "Eliminated the V2/V3 Cyberdeck launcher race and removed V3's compensating document-wide reclaim observer",
+    "Made foundry/ADK_DEV_LOADER.js the canonical V3 loader with base/V3 cleanup, immutable commit loading, and V2 fallback recovery",
+    "Added lifecycle guards so delayed callbacks from destroyed builds cannot resurrect old V2 or reclaim a newer V3 opener",
+    "Aligned Cyberdeck recognition with the installed FEHA module: Cyberdeck, Paraline, Netdriver, Tetratronic, and Raven Micro",
+    "Hardened Cyberware Cache typing and metadata repair so ordinary inventory cannot leak into Chrome Manager and stashed chrome is normalized uninstalled",
+    "Preserved FEHA export APIs while V3 owns the Cyberdeck launcher",
+    "Optimized the shared DOM observer to scan only newly-added subtrees instead of rescanning the entire document on every mutation",
+    "Hardened private asset/audio bootstrap and per-event sound fallbacks; active-volume changes now preserve event mix levels",
+    "Added overflow handling for loaded Quickhacks after deck capacity changes; overflow software is visible and cannot execute until ejected",
+    "Added runtime action locks across rerenders to prevent duplicate software changes, Short Rest messages, and RAM spending",
+    "Validated JACK IN targets against the active scene, added robust token lookup, and added collision avoidance for target nodes/operator space",
+    "Closing JACK IN now returns to the Cyberdeck loadout",
+    "Fixed failed LOAD controls remaining disabled and actor-switch races during async software/rest actions",
+    "Added actor roster lifecycle refreshes and live deck validation before JACK IN",
+    "Canonicalized displayed Quickhack RAM text to flags.ramCost without mutating world items",
+    "Aligned Derke V3 portrait to the approved Forge source and removed unusable F12 recovery instructions",
+    "Final static gate passed: all shipped JavaScript parses, both CSS files are structurally balanced, V3 contains no Heat/Humanity UI, and base/V3/loader all report 0.8.4"
+  ],
+  "knownManualRules": [
+    "Cyberdeck passive effects such as conditional RAM discounts are displayed but not automatically adjudicated because the installed FEHA module also treats them as descriptive/manual rules",
+    "Quickhack damage, saves, conditions, and chained effects are announced in chat but are not automatically applied; this matches the current installed FEHA Cyberdeck behavior",
+    "The exported world catalog contains legacy Quickhack description text whose written RAM values can disagree with flags.ramCost; V3 uses flags.ramCost as canonical and corrects its own display text without mutating source items"
   ]
 }
