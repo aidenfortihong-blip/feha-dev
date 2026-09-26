@@ -7365,3 +7365,460 @@
     padding: 13px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.7.0
+   CYBERDECK // LIVE COMBAT NETWORK + HERO FOOTER
+   ========================================================================== */
+
+/* Portrait: remove cinematic filtering and keep only light terminal framing. */
+#feha-cyberdeck-v2 .cd2-portrait img {
+  filter: none !important;
+}
+
+#feha-cyberdeck-v2 .cd2-portrait::after {
+  background:
+    linear-gradient(180deg, transparent 72%, rgba(0,0,0,.28)),
+    linear-gradient(90deg, rgba(var(--cd2-persona), .018), transparent 18%) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-portrait-grid {
+  opacity: .08 !important;
+}
+
+/* --------------------------------------------------------------------------
+   LIVE ENCOUNTER NETWORK
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-network-grid {
+  position: relative !important;
+  height: calc(100% - 62px) !important;
+  min-height: 500px !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--cd2-persona), .07), transparent 19%),
+    linear-gradient(rgba(var(--cd2-persona), .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--cd2-persona), .028) 1px, transparent 1px),
+    #020709 !important;
+  background-size: auto, 40px 40px, 40px 40px, auto !important;
+  border: 1px solid rgba(var(--cd2-persona), .18) !important;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+
+#feha-cyberdeck-v2 .cd2-network-grid.is-live::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 49.95%, rgba(var(--cd2-persona), .055) 50%, transparent 50.05%),
+    linear-gradient(0deg, transparent 49.95%, rgba(var(--cd2-persona), .045) 50%, transparent 50.05%);
+  opacity: .55;
+}
+
+#feha-cyberdeck-v2 .cd2-net-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#feha-cyberdeck-v2 .cd2-net-line {
+  stroke: rgba(var(--cd2-cyan), .20);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 8;
+  vector-effect: non-scaling-stroke;
+  animation: cd2-net-flow 6s linear infinite;
+}
+
+#feha-cyberdeck-v2 .cd2-net-line.is-friendly {
+  stroke: rgba(92,239,255,.28);
+}
+
+#feha-cyberdeck-v2 .cd2-net-line.is-hostile {
+  stroke: rgba(255,70,126,.34);
+}
+
+#feha-cyberdeck-v2 .cd2-net-line.is-neutral {
+  stroke: rgba(255,216,84,.26);
+}
+
+#feha-cyberdeck-v2 .cd2-net-line.is-targeted {
+  stroke: rgb(var(--cd2-yellow));
+  stroke-width: 2.5;
+  stroke-dasharray: 8 4;
+  filter: url(#cd2-net-glow);
+  animation-duration: 1.2s;
+}
+
+#feha-cyberdeck-v2 .cd2-net-line.is-defeated {
+  opacity: .20;
+}
+
+/* Operator hub */
+#feha-cyberdeck-v2 .cd2-net-operator {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  width: 154px;
+  height: 154px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%,-50%);
+  text-align: center;
+}
+
+#feha-cyberdeck-v2 .cd2-net-operator-ring {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(var(--cd2-persona), .48);
+  transform: rotate(45deg);
+  box-shadow:
+    0 0 26px rgba(var(--cd2-persona), .08),
+    inset 0 0 24px rgba(var(--cd2-persona), .035);
+  animation: cd2-net-ring 9s linear infinite;
+}
+
+#feha-cyberdeck-v2 .cd2-net-operator img {
+  width: 86px;
+  height: 86px;
+  object-fit: cover;
+  object-position: center 24%;
+  z-index: 1;
+  border: 1px solid rgba(var(--cd2-persona), .42);
+  background: #010405;
+  clip-path: polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+
+#feha-cyberdeck-v2 .cd2-net-operator > div:last-child {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 52px);
+  z-index: 2;
+  min-width: 134px;
+  padding: 7px 9px;
+  transform: translateX(-50%);
+  background: rgba(1,5,7,.90);
+  border-left: 2px solid rgb(var(--cd2-persona));
+}
+
+#feha-cyberdeck-v2 .cd2-net-operator small,
+#feha-cyberdeck-v2 .cd2-net-operator b {
+  display: block;
+}
+
+#feha-cyberdeck-v2 .cd2-net-operator small {
+  color: #70878e;
+  font-size: 7px;
+  letter-spacing: 1.2px;
+}
+
+#feha-cyberdeck-v2 .cd2-net-operator b {
+  margin-top: 2px;
+  color: #fff;
+  font-size: 12px;
+}
+
+/* Encounter nodes */
+#feha-cyberdeck-v2 .cd2-combat-node {
+  position: absolute;
+  left: var(--node-x);
+  top: var(--node-y);
+  z-index: 5;
+  width: 170px;
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: 52px minmax(0,1fr);
+  grid-template-rows: 1fr auto;
+  gap: 4px 9px;
+  align-items: center;
+  padding: 8px 9px;
+  transform: translate(-50%,-50%);
+  color: #dcecef;
+  background:
+    linear-gradient(105deg, rgba(var(--cd2-persona), .04), transparent 58%),
+    rgba(2,8,10,.95);
+  border: 1px solid rgba(var(--cd2-cyan), .22);
+  border-radius: 0;
+  clip-path: polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,0 100%);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 7px 24px rgba(0,0,0,.25);
+  transition:
+    transform .15s ease,
+    border-color .15s ease,
+    box-shadow .15s ease,
+    background .15s ease;
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node:hover {
+  transform: translate(-50%,-50%) scale(1.055);
+  border-color: rgba(var(--cd2-persona), .62);
+  background:
+    linear-gradient(105deg, rgba(var(--cd2-persona), .10), transparent 62%),
+    rgba(3,11,14,.98);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.32),
+    0 0 24px rgba(var(--cd2-persona), .075);
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node.is-hostile {
+  border-left: 3px solid rgb(var(--cd2-mag));
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node.is-friendly {
+  border-left: 3px solid rgb(var(--cd2-cyan));
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node.is-neutral {
+  border-left: 3px solid rgb(var(--cd2-yellow));
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node.is-self {
+  box-shadow:
+    0 0 0 1px rgba(var(--cd2-persona), .10),
+    0 7px 24px rgba(0,0,0,.25);
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node.is-targeted {
+  border-color: rgb(var(--cd2-yellow));
+  box-shadow:
+    0 0 0 1px rgba(var(--cd2-yellow), .16),
+    0 0 30px rgba(var(--cd2-yellow), .14),
+    0 12px 34px rgba(0,0,0,.32);
+  animation: cd2-target-lock 1.8s ease-in-out infinite;
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node.is-defeated {
+  opacity: .36;
+  filter: grayscale(.55);
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node img {
+  grid-row: 1 / span 2;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  background: #010405;
+  border: 1px solid rgba(var(--cd2-cyan), .18);
+}
+
+#feha-cyberdeck-v2 .cd2-node-copy {
+  min-width: 0;
+}
+
+#feha-cyberdeck-v2 .cd2-node-copy b,
+#feha-cyberdeck-v2 .cd2-node-copy small {
+  display: block;
+}
+
+#feha-cyberdeck-v2 .cd2-node-copy b {
+  overflow: hidden;
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#feha-cyberdeck-v2 .cd2-node-copy small {
+  margin-top: 4px;
+  color: #6f868c;
+  font-size: 7px;
+  letter-spacing: .55px;
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node > i {
+  grid-column: 2;
+  color: rgba(var(--cd2-persona), .60);
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+#feha-cyberdeck-v2 .cd2-combat-node.is-targeted > i {
+  color: rgb(var(--cd2-yellow));
+}
+
+#feha-cyberdeck-v2 .cd2-node-index {
+  position: absolute;
+  right: 7px;
+  top: 6px;
+  color: rgba(var(--cd2-persona), .28);
+  font-size: 6px;
+  font-weight: 900;
+}
+
+/* Encounter status spine */
+#feha-cyberdeck-v2 .cd2-network-hud {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 7;
+  display: grid;
+  grid-template-columns: 110px 76px 76px minmax(220px,1fr);
+  gap: 6px;
+  pointer-events: none;
+}
+
+#feha-cyberdeck-v2 .cd2-network-hud > div {
+  padding: 8px 10px;
+  background: rgba(1,6,8,.90);
+  border-top: 1px solid rgba(var(--cd2-persona), .18);
+}
+
+#feha-cyberdeck-v2 .cd2-network-hud span,
+#feha-cyberdeck-v2 .cd2-network-hud b {
+  display: block;
+}
+
+#feha-cyberdeck-v2 .cd2-network-hud span {
+  color: #657d84;
+  font-size: 6px;
+  letter-spacing: 1px;
+}
+
+#feha-cyberdeck-v2 .cd2-network-hud b {
+  margin-top: 3px;
+  color: #fff;
+  font-size: 9px;
+}
+
+#feha-cyberdeck-v2 .cd2-network-lock.has-lock {
+  border-top-color: rgb(var(--cd2-yellow));
+}
+
+#feha-cyberdeck-v2 .cd2-network-lock.has-lock b {
+  color: rgb(var(--cd2-yellow));
+}
+
+/* Idle / no combat */
+#feha-cyberdeck-v2 .cd2-network-idle-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  transform: translate(-50%,-50%);
+  text-align: center;
+}
+
+#feha-cyberdeck-v2 .cd2-network-idle-reticle {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 6px;
+  border: 1px solid rgba(var(--cd2-mag), .25);
+  transform: rotate(45deg);
+}
+
+#feha-cyberdeck-v2 .cd2-network-idle-reticle span {
+  color: rgb(var(--cd2-mag));
+  font-size: 38px;
+  transform: rotate(-45deg);
+}
+
+#feha-cyberdeck-v2 .cd2-network-idle-core small {
+  color: rgb(var(--cd2-mag));
+  font-size: 8px;
+  letter-spacing: 1.5px;
+}
+
+#feha-cyberdeck-v2 .cd2-network-idle-core b {
+  color: #fff;
+  font-size: 16px;
+}
+
+#feha-cyberdeck-v2 .cd2-network-idle-core > span {
+  max-width: 420px;
+  color: #6b8288;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   HUGE / UNCOMPRESSED BOTTOM ACTION DECK
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-main {
+  grid-template-rows: auto 54px minmax(0,1fr) 132px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-footer {
+  grid-template-columns: minmax(0,1fr) 250px 360px !important;
+  gap: 15px !important;
+  padding-top: 18px !important;
+  align-items: stretch !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log {
+  min-height: 104px !important;
+  padding: 0 18px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-rest {
+  min-width: 250px !important;
+  min-height: 104px !important;
+  padding: 0 18px !important;
+  font-size: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack {
+  min-width: 360px !important;
+  min-height: 104px !important;
+  padding: 0 28px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack span {
+  font-size: 10px !important;
+  letter-spacing: 1.7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack b {
+  margin-top: 8px !important;
+  font-size: 42px !important;
+  letter-spacing: 2px !important;
+}
+
+@keyframes cd2-net-flow {
+  to { stroke-dashoffset: -26; }
+}
+
+@keyframes cd2-net-ring {
+  to { transform: rotate(405deg); }
+}
+
+@keyframes cd2-target-lock {
+  0%,100% { filter: brightness(.96); }
+  50% { filter: brightness(1.12); }
+}
+
+@media (max-width: 1550px) {
+  #feha-cyberdeck-v2 .cd2-network-grid {
+    min-height: 430px !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-combat-node {
+    width: 148px;
+    min-height: 66px;
+    grid-template-columns: 44px minmax(0,1fr);
+  }
+
+  #feha-cyberdeck-v2 .cd2-combat-node img {
+    width: 42px;
+    height: 42px;
+  }
+
+  #feha-cyberdeck-v2 .cd2-footer {
+    grid-template-columns: minmax(0,1fr) 205px 300px !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-jack {
+    min-width: 300px !important;
+  }
+}
