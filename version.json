@@ -1,13 +1,11 @@
 {
-  "version": "0.2.6",
+  "version": "0.2.7",
   "updated": "2026-09-25",
-  "scope": "chrome-actor-switch-stabilization",
+  "scope": "chrome-center-title-spacing",
   "notes": [
-    "Takes ownership of Chrome actor-selector change events before the old delayed handler can race the theme service",
-    "Switches the canonical ADKChromeBackend actor synchronously",
-    "Forces the native Chrome UI to rerender from the new backend actor immediately",
-    "Repairs the selected actor's Cyberware Cache metadata after switching",
-    "Keeps dropdown, portrait, subject block, capacity, owned chrome and character palette synchronized",
-    "If a switch fails, the dropdown snaps back to the backend's actual actor instead of leaving a mixed-character UI"
+    "Moved the center metric strip above the large subsystem title",
+    "Reserved a dedicated bottom zone for subsystem titles on every system",
+    "Added a subtle dark fade behind the title for readability over portrait art",
+    "Applies globally to every subsystem title"
   ]
 }
