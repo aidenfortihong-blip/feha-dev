@@ -203,9 +203,9 @@
 
     try {
       await actor.updateEmbeddedDocuments("Item", repairs);
-      console.info("FEHA DEV 0.2.6 // repaired cached chrome metadata", repairs.length);
+      console.info("FEHA DEV " + BUILD + " // repaired cached chrome metadata", repairs.length);
     } catch (err) {
-      console.warn("FEHA DEV 0.2.1 // cache metadata repair failed", err);
+      console.warn("FEHA DEV " + BUILD + " // cache metadata repair failed", err);
     }
   }
 
@@ -872,7 +872,7 @@
           api.setActor(actorId);
         } catch (renderErr) {
           console.warn(
-            "FEHA DEV 0.2.6 // backend switched actor but its inline render failed; forcing native render",
+            "FEHA DEV " + BUILD + " // backend switched actor but its inline render failed; forcing native render",
             renderErr
           );
         }
@@ -915,12 +915,12 @@
         });
 
         console.info(
-          "FEHA DEV 0.2.6 // subject switch complete:",
+          "FEHA DEV " + BUILD + " // subject switch complete:",
           desired.name,
           actorId
         );
       } catch (err) {
-        console.error("FEHA DEV 0.2.6 // actor switch failed", err);
+        console.error("FEHA DEV " + BUILD + " // actor switch failed", err);
         ui?.notifications?.error?.(
           "FEHA subject switch failed — send me a screenshot of the visible error."
         );
@@ -937,7 +937,7 @@
           globalThis.ADKChromeNative?.render?.();
           globalThis.ADKTheme?.refresh?.();
         } catch (fallbackErr) {
-          console.error("FEHA DEV 0.2.6 // actor switch fallback render failed", fallbackErr);
+          console.error("FEHA DEV " + BUILD + " // actor switch fallback render failed", fallbackErr);
         }
       } finally {
         switching = false;
