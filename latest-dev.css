@@ -3746,3 +3746,31 @@
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.20
+   PORTRAIT HUD LINE CLEANUP
+   ========================================================================== */
+
+/* Remove the floating telemetry bars / line clutter around the portrait.
+   Keep the portrait art and useful identity block; kill the decorative line UI. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-topology-mark,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-coords,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-side-ticks {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Remove remaining decorative portrait frame line pseudo-elements. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-corners::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-corners::after,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
