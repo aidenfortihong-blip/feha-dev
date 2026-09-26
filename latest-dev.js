@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.2.9";
+  const BUILD = "0.3.0";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -126,12 +126,25 @@
     return true;
   }
 
+
+  function normalizeDossierSchematics() {
+    const root = document.getElementById("adk-chrome-manager-34");
+    if (!root) return;
+
+    root.querySelectorAll(".dossier-visual .adk-v6-system-viz").forEach(svg => {
+      // The production SVGs ship as xMidYMid slice, which deliberately crops
+      // their top/bottom edges. For the inspector we want the entire schematic.
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    });
+  }
+
   function markRoot() {
     const root = document.getElementById("adk-chrome-manager-34");
     if (!root) return false;
     root.classList.add("adk-live-dev");
     root.dataset.fehaDevBuild = BUILD;
     patchBackend();
+    normalizeDossierSchematics();
     return true;
   }
 
@@ -964,6 +977,7 @@
     observer = new MutationObserver(() => {
       patchBackend();
       markRoot();
+      normalizeDossierSchematics();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
@@ -1029,7 +1043,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // guttural digital visceral sound pass loaded"
+    "FEHA DEV " + BUILD + " // clean schematics + port text fix loaded"
   );
 
   state.reopenChrome();
