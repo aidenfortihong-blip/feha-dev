@@ -820,7 +820,9 @@
 
   const previous = game.adk?.openCyberdeck;
   if (game.adk) {
-    game.adk.__fehaV3PreviousOpenCyberdeck ??= previous;
+    // Always capture the opener that exists immediately before THIS V3 install.
+    // Reusing a stale value from an earlier hot reload can restore old V2 code.
+    game.adk.__fehaV3PreviousOpenCyberdeck = previous;
     game.adk.openCyberdeck = open;
   }
 
@@ -850,8 +852,12 @@
       }
       document.getElementById(ROOT_ID)?.remove();
       document.getElementById(JACK_ID)?.remove();
-      if (game.adk?.__fehaV3PreviousOpenCyberdeck) {
-        game.adk.openCyberdeck = game.adk.__fehaV3PreviousOpenCyberdeck;
+      if (game.adk) {
+        const prior = game.adk.__fehaV3PreviousOpenCyberdeck;
+        if (game.adk.openCyberdeck === open && typeof prior === "function") {
+          game.adk.openCyberdeck = prior;
+        }
+        delete game.adk.__fehaV3PreviousOpenCyberdeck;
       }
       delete globalThis.FEHA_CYBERDECK_V3_ACTIVE;
     }
