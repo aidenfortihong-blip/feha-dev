@@ -1,13 +1,12 @@
 {
-  "version": "0.2.0",
+  "version": "0.2.1",
   "updated": "2026-09-25",
-  "scope": "chrome-portrait-inspector",
+  "scope": "chrome-owned-cache-and-rail-type",
   "notes": [
-    "Left system rail intentionally unchanged",
-    "Moved technical HUD behind portrait and removed intrusive biometric/grid overlays",
-    "Reframed portrait telemetry around canvas perimeter",
-    "Rebuilt right inspector around a single alignment datum",
-    "Full-width subsystem visualization with composed copy/metrics block",
-    "Normalized port, hardware, and action spacing"
+    "Increased left system rail labels and subtitles for readability",
+    "Owned Chrome now reads embedded items from the selected actor's Cyberware Cache",
+    "Legacy cached chrome is normalized to marketPurchased=true and installed=false",
+    "Cached items receive inferred cyberwareSlot metadata for compatibility filtering",
+    "Optional FEHA_DEV_DIAGNOSTICS console table for owned-item rejection debugging"
   ]
 }
