@@ -3698,3 +3698,33 @@
 .feha-wallet-legacy-shell {
   display: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.18
+   SUBSYSTEM RAIL // NO ROW LINES
+   ========================================================================== */
+
+/* User direction: subsystem entries should have no separator/outline lines.
+   Selection is communicated with fill/color only. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system:hover,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
