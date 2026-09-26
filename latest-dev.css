@@ -3658,3 +3658,28 @@
 #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port-stack:not(:has(> .adk-v6-port.is-filled)):has(> .adk-v6-port:nth-child(3)) {
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.16
+   SUBSYSTEM RAIL // REMOVE DOUBLE BAR
+   ========================================================================== */
+
+/* The narrow decorative system-state strip beside each subsystem counter was
+   reading as a second vertical bar next to the rail/scroll edge. Remove it and
+   let the counter be the clean terminal element of each row. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system {
+  grid-template-columns: 25px 38px minmax(0,1fr) 32px !important;
+  column-gap: 7px !important;
+  padding-right: 12px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .system-state {
+  display: none !important;
+}
+
+/* Keep the counter comfortably clear of the outer rail edge. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .system-count {
+  justify-self: end !important;
+  margin-right: 1px !important;
+}
