@@ -152,6 +152,8 @@
     api.__fehaOriginalGetOwned021 = originalGetOwned;
   }
 
+  let cacheRepairBusy = false;
+
   async function repairCacheMetadata(api) {
     const actor = api?.getActor?.();
     if (!actor) return;
@@ -210,7 +212,20 @@
   function patchBackend() {
     const api = globalThis.ADKChromeBackend;
     if (!api) return false;
+
     installOwnedBridge(api);
+
+    if (!cacheRepairBusy) {
+      cacheRepairBusy = true;
+      Promise.resolve(repairCacheMetadata(api))
+        .catch(err => {
+          console.warn("FEHA DEV 0.8.4 // cache repair attach failed", err);
+        })
+        .finally(() => {
+          cacheRepairBusy = false;
+        });
+    }
+
     return true;
   }
 
