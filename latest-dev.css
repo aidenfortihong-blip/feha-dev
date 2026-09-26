@@ -624,3 +624,300 @@
 #adk-chrome-manager-34 .adk-v6-cache-card .cache-meta i:first-child {
   color: var(--v6-hot) !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.2.3
+   GLOBAL TYPOGRAPHY PASS
+   Substantial readability increase, especially all micro / support text.
+   ========================================================================== */
+
+/* TOP BAR */
+#adk-chrome-manager-34 .adk-v6-brand small {
+  font-size: 9px !important;
+  letter-spacing: 1.7px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-capacity-head span {
+  font-size: 9px !important;
+  letter-spacing: 1.05px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-capacity-head b {
+  font-size: 13px !important;
+}
+
+/* LEFT RAIL */
+#adk-chrome-manager-34 .adk-v6-systems > header,
+#adk-chrome-manager-34 .adk-v6-systems > header b {
+  font-size: 8px !important;
+  letter-spacing: 1.15px !important;
+}
+
+#adk-chrome-manager-34 .subject-mini small {
+  font-size: 8px !important;
+  letter-spacing: 1.15px !important;
+}
+
+#adk-chrome-manager-34 .subject-mini b {
+  font-size: 20px !important;
+}
+
+#adk-chrome-manager-34 .subject-mini span {
+  font-size: 8px !important;
+  letter-spacing: 1px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-system {
+  min-height: 52px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-system .slot-no,
+#adk-chrome-manager-34 .adk-v6-system .system-count {
+  font-size: 8px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-system .system-copy b {
+  font-size: 13px !important;
+  line-height: 1.04 !important;
+  letter-spacing: .45px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-system .system-copy small {
+  margin-top: 4px !important;
+  font-size: 8px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .72px !important;
+  color: #71878f !important;
+  opacity: .92 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-system.is-active .system-copy small {
+  color: rgba(var(--adk-primary-rgb), .92) !important;
+}
+
+#adk-chrome-manager-34 .cache-trigger {
+  min-height: 46px !important;
+  font-size: 12px !important;
+}
+
+/* CENTER PORTRAIT TELEMETRY */
+#adk-chrome-manager-34 .portrait-topology-mark {
+  font-size: 9px !important;
+}
+
+#adk-chrome-manager-34 .portrait-topology-mark b {
+  font-size: 14px !important;
+}
+
+#adk-chrome-manager-34 .portrait-id small,
+#adk-chrome-manager-34 .portrait-id span,
+#adk-chrome-manager-34 .portrait-coords,
+#adk-chrome-manager-34 .portrait-coords b {
+  font-size: 8px !important;
+  letter-spacing: .95px !important;
+}
+
+#adk-chrome-manager-34 .portrait-id b {
+  font-size: 15px !important;
+}
+
+#adk-chrome-manager-34 .subject-system-title small,
+#adk-chrome-manager-34 .subject-system-title span {
+  font-size: 8px !important;
+  letter-spacing: 1.1px !important;
+}
+
+#adk-chrome-manager-34 .subject-status span {
+  font-size: 8px !important;
+  letter-spacing: .65px !important;
+}
+
+#adk-chrome-manager-34 .subject-status b {
+  font-size: 10px !important;
+}
+
+/* RIGHT INSPECTOR */
+#adk-chrome-manager-34 .inspector-header span,
+#adk-chrome-manager-34 .inspector-header small,
+#adk-chrome-manager-34 .inspector-header b {
+  font-size: 8px !important;
+  line-height: 1.15 !important;
+  letter-spacing: 1px !important;
+}
+
+#adk-chrome-manager-34 .inspector-title small {
+  font-size: 8px !important;
+  letter-spacing: 1.15px !important;
+}
+
+#adk-chrome-manager-34 .port-heading {
+  font-size: 8px !important;
+  letter-spacing: 1px !important;
+}
+
+#adk-chrome-manager-34 .port-id {
+  font-size: 8px !important;
+}
+
+#adk-chrome-manager-34 .port-copy b {
+  font-size: 12px !important;
+  line-height: 1.08 !important;
+}
+
+#adk-chrome-manager-34 .port-copy small {
+  font-size: 8px !important;
+  line-height: 1.08 !important;
+  letter-spacing: .6px !important;
+  color: #84989f !important;
+}
+
+#adk-chrome-manager-34 .port-actions button {
+  font-size: 8px !important;
+}
+
+#adk-chrome-manager-34 .dossier-legend {
+  font-size: 8px !important;
+  letter-spacing: .9px !important;
+}
+
+#adk-chrome-manager-34 .dossier-copy span {
+  font-size: 8px !important;
+  letter-spacing: .9px !important;
+}
+
+#adk-chrome-manager-34 .dossier-copy p {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  color: #c2cfd3 !important;
+}
+
+#adk-chrome-manager-34 .dossier-metrics span {
+  font-size: 8px !important;
+  letter-spacing: .7px !important;
+}
+
+#adk-chrome-manager-34 .dossier-metrics b {
+  font-size: 13px !important;
+}
+
+#adk-chrome-manager-34 .tech-head,
+#adk-chrome-manager-34 .tech-coords {
+  font-size: 8px !important;
+  letter-spacing: .8px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-browse span,
+#adk-chrome-manager-34 .adk-v6-primary span {
+  font-size: 12px !important;
+  line-height: 1.05 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-browse small,
+#adk-chrome-manager-34 .adk-v6-primary small {
+  font-size: 8px !important;
+  line-height: 1.05 !important;
+}
+
+/* HARDWARE DOSSIER */
+#adk-chrome-manager-34 .hardware-mk,
+#adk-chrome-manager-34 .hardware-serial {
+  font-size: 9px !important;
+}
+
+#adk-chrome-manager-34 .hardware-title small {
+  font-size: 8px !important;
+  letter-spacing: .9px !important;
+}
+
+#adk-chrome-manager-34 .hardware-title span {
+  font-size: 8px !important;
+  line-height: 1.15 !important;
+  color: #82969d !important;
+}
+
+#adk-chrome-manager-34 .hardware-specs span {
+  font-size: 8px !important;
+  letter-spacing: .65px !important;
+}
+
+#adk-chrome-manager-34 .hardware-specs b {
+  font-size: 12px !important;
+}
+
+#adk-chrome-manager-34 .hardware-effect span {
+  font-size: 8px !important;
+  letter-spacing: .9px !important;
+}
+
+#adk-chrome-manager-34 .hardware-effect p {
+  font-size: 12px !important;
+  line-height: 1.42 !important;
+}
+
+#adk-chrome-manager-34 .hardware-load > div:first-child {
+  font-size: 8px !important;
+  letter-spacing: .75px !important;
+}
+
+/* CACHE DRAWER */
+#adk-chrome-manager-34 .adk-v6-cache header span {
+  font-size: 10px !important;
+  letter-spacing: 1px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-cache header b {
+  font-size: 8px !important;
+  letter-spacing: .85px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-cache-card .cache-code {
+  font-size: 9px !important;
+  letter-spacing: .9px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-cache-card .cache-mk {
+  font-size: 10px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-cache-card .cache-copy small {
+  font-size: 9px !important;
+  letter-spacing: .75px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-cache-card .cache-copy b {
+  font-size: 17px !important;
+  line-height: 1.08 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-cache-card .cache-meta i {
+  font-size: 9px !important;
+  letter-spacing: .55px !important;
+}
+
+#adk-chrome-manager-34 .cache-empty {
+  font-size: 11px !important;
+}
+
+#adk-chrome-manager-34 .cache-empty b {
+  font-size: 15px !important;
+}
+
+/* STATUS BAR / FOOTER */
+#adk-chrome-manager-34 .adk-v6-statusbar,
+#adk-chrome-manager-34 .adk-v6-statusbar b {
+  font-size: 7px !important;
+  letter-spacing: .75px !important;
+}
+
+/* Prevent the existing responsive fallback from shrinking rail type again. */
+@media (max-width: 1180px) {
+  #adk-chrome-manager-34 .system-copy b {
+    font-size: 11px !important;
+  }
+
+  #adk-chrome-manager-34 .system-copy small {
+    display: block !important;
+    font-size: 7px !important;
+  }
+}
