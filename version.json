@@ -1,10 +1,11 @@
 {
-  "version": "0.4.13",
+  "version": "0.4.14",
   "updated": "2026-09-25",
-  "scope": "derke-portrait-update",
+  "scope": "derke-and-ponyboy-portrait-update",
   "notes": [
-    "Updated Derke's Augmentation Theatre portrait to the new user-uploaded Forge image",
-    "Derke portrait now uses GFDGFDGFD.png from the private Forge asset library",
+    "Updated Derke to the new Forge portrait image_2026-09-25_233904481.png",
+    "Updated Ponyboy to the correct Forge portrait 40e1fb5d-6265-4dfd-93d3-d6344dc14180.png",
+    "Replaced the one-off Derke portrait hook with a shared actor portrait override map",
     "Xiao, Nina, Florence and Cael remain hidden from the Theatre selector"
   ]
 }
