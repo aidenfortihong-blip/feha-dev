@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.8.4";
+  const VERSION = "0.8.5";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -507,7 +507,11 @@
     const rw = Math.max(1,Number(rect.width)||1);
     const rh = Math.max(1,Number(rect.height)||1);
     const all = [...(scene.tokens?.contents ?? scene.tokens ?? [])]
-      .filter(t => (game.user?.isGM || !t.hidden) && (t.actor || t.actorId));
+      .filter(t => {
+        if (!(game.user?.isGM || !t.hidden) || !(t.actor || t.actorId)) return false;
+        const tokenActor = t.actor ?? game.actors?.get?.(t.actorId) ?? null;
+        return tokenActor?.id !== actor?.id;
+      });
 
     const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
 
@@ -518,15 +522,34 @@
       const rawX = ((Number(token.x??0)-Number(rect.x??0))/rw)*100;
       const rawY = ((Number(token.y??0)-Number(rect.y??0))/rh)*100;
 
+      const count = Math.max(1,all.length);
+      const sceneX = clamp(10+rawX*.80,10,90);
+      const sceneY = clamp(12+rawY*.62,12,74);
+
+      // Sparse scenes need composition, not literal empty-map coordinates.
+      // Blend token geography with a clean orbital layout. As density rises,
+      // preserve more of the original scene relationship.
+      const orbitalAngle =
+        (-Math.PI / 2) +
+        ((Math.PI * 2 * index) / count) +
+        ((index % 2) ? 0.18 : -0.12);
+      const orbitalX = 50 + Math.cos(orbitalAngle) * (count <= 3 ? 25 : 31);
+      const orbitalY = 45 + Math.sin(orbitalAngle) * (count <= 3 ? 22 : 27);
+      const sceneWeight =
+        count <= 2 ? 0.22 :
+        count <= 4 ? 0.38 :
+        count <= 8 ? 0.58 :
+        0.72;
+
       return {
         id:token.id,
         name:token.name ?? a?.name ?? "UNKNOWN",
         img:token.texture?.src ?? a?.img ?? "icons/svg/mystery-man.svg",
         relation,
-        self:a?.id === actor?.id,
+        self:false,
         targeted:targeted.has(token.id),
-        x:clamp(8+rawX*.84,8,92),
-        y:clamp(12+rawY*.60,12,72),
+        x:clamp(orbitalX*(1-sceneWeight)+sceneX*sceneWeight,10,90),
+        y:clamp(orbitalY*(1-sceneWeight)+sceneY*sceneWeight,12,72),
         index
       };
     });
@@ -535,7 +558,7 @@
     // can overlap. Pick the nearest collision-free candidate around each
     // original position while preserving the scene's general spatial layout.
     const placed = [];
-    const operator = {x:50,y:54};
+    const operator = {x:50,y:50};
 
     const separationScore = (x,y) => {
       let min = Infinity;
@@ -678,7 +701,7 @@
         <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
         <div class="jack-operator"><div></div><img src="${esc(portrait(actor))}" alt=""><span><small>OPERATOR</small><b>${esc(actor.name)}</b></span></div>
         ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
-        <div class="jack-lock-readout"><small>TARGET LOCK</small><b>${selected?esc(selected.name):"NO TARGET"}</b><span>${net.nodes.length} SCENE SIGNATURES DETECTED</span></div>
+        <div class="jack-lock-readout"><small>TARGET LOCK</small><b>${selected?esc(selected.name):"NO TARGET"}</b><span>${net.nodes.length + 1} SCENE SIGNATURES DETECTED // OPERATOR INCLUDED</span></div>
       </main>
       <footer class="jack-actions">
         <div class="jack-actions-title"><small>LOADED SOFTWARE</small><b>QUICKHACK EXECUTION</b><span>${selected?"TARGET // "+esc(selected.name):"SELECT A TARGET NODE"}</span></div>
