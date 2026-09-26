@@ -6308,3 +6308,65 @@
     grid-template-columns: repeat(auto-fit,minmax(210px,1fr)) !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.6.3
+   CYBERDECK V2 // GM EXPORT TOOLS
+   ========================================================================== */
+
+#feha-cyberdeck-v2 .cd2-gm-exports {
+  border-top-color: rgba(var(--cd2-yellow), .42) !important;
+  background:
+    var(--cd2-cp-button-2) center / 100% 100% no-repeat,
+    linear-gradient(120deg, rgba(var(--cd2-yellow), .045), transparent 60%),
+    #03080b !important;
+}
+
+#feha-cyberdeck-v2 .cd2-gm-exports .cd2-subhead {
+  color: rgb(var(--cd2-yellow)) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-gm-exports p {
+  margin: 0 0 10px;
+  color: #7f9297;
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+#feha-cyberdeck-v2 .cd2-gm-exports button {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 7px;
+  padding: 8px 11px;
+  color: #eaffff;
+  background:
+    var(--cd2-cp-button) center / 100% 100% no-repeat,
+    rgba(var(--cd2-cyan), .028);
+  border: 1px solid rgba(var(--cd2-cyan), .22);
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+#feha-cyberdeck-v2 .cd2-gm-exports button:hover {
+  background-color: rgba(var(--cd2-cyan), .07);
+  border-color: rgba(var(--cd2-cyan), .52);
+}
+
+#feha-cyberdeck-v2 .cd2-gm-exports button span {
+  color: #70868c;
+  font-size: 6px;
+  letter-spacing: 1px;
+}
+
+#feha-cyberdeck-v2 .cd2-gm-exports button b {
+  color: rgb(var(--cd2-cyan));
+  font-size: 9px;
+  letter-spacing: .7px;
+}
