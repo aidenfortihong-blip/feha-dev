@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.2.6";
+  const BUILD = "0.2.7";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -368,7 +368,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // actor switching stabilization loaded"
+    "FEHA DEV " + BUILD + " // center title collision fix loaded"
   );
 
   state.reopenChrome();
