@@ -38,6 +38,8 @@
       globalThis.FEHA_TABLETOP_UI_V3?.destroy?.();
     } catch (err) {
       console.warn("FEHA DEV // previous V3 cleanup warning", err);
+    } finally {
+      delete globalThis.FEHA_TABLETOP_UI_V3;
     }
 
     try {
@@ -45,6 +47,10 @@
     } catch (err) {
       console.warn("FEHA DEV // previous base cleanup warning", err);
     }
+
+    // Tell the base patch not to install its deprecated V2 Cyberdeck while
+    // this loader is building V3. If V3 fails, the catch block resumes V2.
+    globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
 
     document.getElementById("adk-dev-live-css")?.remove();
     document.getElementById("feha-jackin-overlay")?.remove();
@@ -122,6 +128,15 @@
     );
   } catch (err) {
     console.error("FEHA DEV LOADER failed", err);
+
+    delete globalThis.FEHA_CYBERDECK_V3_ACTIVE;
+
+    try {
+      globalThis.ADKDevPatch?.resumeCyberdeckV2?.();
+    } catch (fallbackErr) {
+      console.warn("FEHA DEV // V2 recovery warning", fallbackErr);
+    }
+
     ui.notifications.error(
       "FEHA DEV LOADER failed — send me the visible error or a screenshot."
     );
