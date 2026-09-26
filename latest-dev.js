@@ -557,9 +557,10 @@
         }
 
         const audio = template.cloneNode(true);
+        audio.__fehaLevel = LEVELS[event] ?? 0.75;
         audio.volume = Math.max(
           0,
-          Math.min(1, master * (LEVELS[event] ?? 0.75))
+          Math.min(1, master * audio.__fehaLevel)
         );
         audio.playbackRate = 1;
 
@@ -669,7 +670,10 @@
         master = Math.max(0, Math.min(1, Number(value) || 0));
         localStorage.setItem("fehaRealSfxVolume", String(master));
         for (const audio of active) {
-          audio.volume = Math.max(0, Math.min(1, master));
+          audio.volume = Math.max(
+            0,
+            Math.min(1, master * (audio.__fehaLevel ?? 0.75))
+          );
         }
         return master;
       },
@@ -686,7 +690,7 @@
         );
       },
       hasCyberpunkPack() {
-        return Boolean(readLocalPack());
+        return Boolean(readLocalPack() ?? readPrivateAssets()?.audio);
       }
     };
 
@@ -933,7 +937,10 @@
     if (!scope?.querySelectorAll) return 0;
 
     const labels = [];
-    const all = scope.querySelectorAll("*");
+    const all = [
+      ...(scope instanceof Element ? [scope] : []),
+      ...scope.querySelectorAll("*")
+    ];
 
     for (const el of all) {
       if (el.children.length > 0) continue;
@@ -2840,14 +2847,37 @@ if (!game.user?.isGM) {
 
   function startObserver() {
     observer?.disconnect?.();
-    observer = new MutationObserver(() => {
-      patchBackend();
-      markRoot();
-      normalizeDossierSchematics();
-      tagLegacyWallets();
-      suppressLegacyWalletChrome();
-      installCyberdeckV2();
+
+    let scheduled = false;
+    const addedScopes = new Set();
+
+    observer = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes ?? []) {
+          if (node instanceof Element) addedScopes.add(node);
+        }
+      }
+
+      if (scheduled) return;
+      scheduled = true;
+
+      requestAnimationFrame(() => {
+        scheduled = false;
+
+        patchBackend();
+        markRoot();
+        normalizeDossierSchematics();
+
+        for (const scope of addedScopes) {
+          if (scope.isConnected) tagLegacyWallets(scope);
+        }
+        addedScopes.clear();
+
+        suppressLegacyWalletChrome();
+        installCyberdeckV2();
+      });
     });
+
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
@@ -2871,6 +2901,10 @@ if (!game.user?.isGM) {
       if (root && root.dataset?.fehaV3 !== "1") root.remove();
 
       return true;
+    },
+    resumeCyberdeckV2() {
+      delete globalThis.FEHA_CYBERDECK_V3_ACTIVE;
+      return installCyberdeckV2();
     },
     cleanup() {
       observer?.disconnect?.();
@@ -2949,5 +2983,7 @@ if (!game.user?.isGM) {
     "FEHA DEV " + BUILD + " // base patch active; Cyberdeck V3 may supersede V2"
   );
 
-  state.reopenChrome();
+  if (document.getElementById("adk-chrome-manager-34")) {
+    state.reopenChrome();
+  }
 })();
