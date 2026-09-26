@@ -1,11 +1,11 @@
 {
-  "version": "0.4.20",
+  "version": "0.4.21",
   "updated": "2026-09-26",
-  "scope": "portrait-hud-line-cleanup",
+  "scope": "portrait-stage-bar-removal",
   "notes": [
-    "Removed floating portrait telemetry bars and decorative line clutter",
-    "Hidden portrait topology, coordinate, side-tick, and mini technical-line overlays",
-    "Kept portrait art, identity block, active-system dock, and core Chrome Manager behavior intact",
-    "Legacy wallet launcher suppression from 0.4.19 remains active"
+    "Removed the portrait stage ::before and ::after mask layers that were still drawing floating cyan/red bars",
+    "Removed the legacy subject-background and portrait-corners decorative layers",
+    "Portrait art, identity telemetry, active-system dock, and right-side dossier remain intact",
+    "Wallet suppression and subsystem line cleanup remain active"
   ]
 }
