@@ -1,14 +1,14 @@
 {
-  "version": "0.3.2",
+  "version": "0.3.3",
   "updated": "2026-09-25",
-  "scope": "chrome-sound-lab",
+  "scope": "chrome-real-game-sfx-and-ponyboy-center",
   "notes": [
-    "Stopped blind-tuning one procedural sound set and added three genuinely different material directions",
-    "A // MEAT + MACHINE emphasizes sub impact, servo strain, metal and body",
-    "B // DATA VIOLENCE emphasizes bitcrushed digital tearing, corruption and aggressive electronics",
-    "C // SURGICAL BRUTAL emphasizes short precise relays, metal snaps and controlled force",
-    "Added FEHA_SOUNDS.openLab() for side-by-side auditioning of Select, Drawer, Scan, Install, Remove, Error and Confirm",
-    "USE A/B/C persists the chosen style in localStorage and immediately becomes the live Augmentation Theatre sound language",
-    "All previous Chrome UI fixes remain intact"
+    "Replaced the procedural WebAudio synth sound design with actual CC0 game sound assets",
+    "Uses Kenney Interface Sounds for hover, select, error and confirmation",
+    "Uses Kenney Sci-Fi Sounds for drawer, scan, install impact and remove",
+    "Install layers a real metal impact with a delayed confirmation cue",
+    "Sound assets are copied into feha-dev/audio/kenney with CC0 license files",
+    "Ponyboy portrait is now centered independently via actor-specific crop positioning",
+    "All prior Chrome UI fixes remain active"
   ]
 }
