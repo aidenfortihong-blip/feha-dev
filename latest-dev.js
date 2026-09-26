@@ -1,5 +1,6 @@
 (() => {
   const BUILD = "0.8.4";
+  let lifecycleActive = true;
   let observer = null;
   let walletGuard = null;
   let cyberdeckCombatHooks = [];
@@ -317,6 +318,7 @@
         // Let the native handler set selectedItemId and rerender the hardware
         // dossier, then retract the cache visually so the result is obvious.
         setTimeout(() => {
+          if (!lifecycleActive) return;
           document
             .getElementById("adk-chrome-manager-34")
             ?.classList.add("feha-cache-selection-focus");
@@ -885,6 +887,7 @@
           globalThis.ADKTheme?.refresh?.();
 
           setTimeout(() => {
+            if (!lifecycleActive) return;
             globalThis.ADKChromeNative?.render?.();
             globalThis.ADKTheme?.refresh?.();
             document
@@ -921,6 +924,7 @@
       } finally {
         switching = false;
         setTimeout(() => {
+          if (!lifecycleActive) return;
           document
             .getElementById("adk-chrome-manager-34")
             ?.classList.remove("is-subject-switching");
@@ -1926,8 +1930,11 @@
       if (!root || root.dataset.tab !== "network") return;
       const actorId = root.dataset.actorId;
       setTimeout(() => {
+        if (!lifecycleActive || globalThis.FEHA_CYBERDECK_V3_ACTIVE === true) return;
         const live = document.getElementById(CYBERDECK_V2_ID);
-        if (live?.dataset.tab === "network") renderCyberdeckV2(actorId,"network");
+        if (live?.dataset.tab === "network" && live?.dataset?.fehaV3 !== "1") {
+          renderCyberdeckV2(actorId,"network");
+        }
       },40);
     };
     for (const event of ["updateCombat","createCombat","deleteCombat","createCombatant","updateCombatant","deleteCombatant","targetToken"]) {
@@ -2765,8 +2772,12 @@ if (!game.user?.isGM) {
         if (typeof actor?.shortRest === "function") {
           await actor.shortRest();
           setTimeout(() => {
+            if (!lifecycleActive || globalThis.FEHA_CYBERDECK_V3_ACTIVE === true) return;
             globalThis.FEHA_SOUNDS?.play?.("compatibility_ok", {cooldown:0});
-            renderCyberdeckV2(actor.id, root.dataset.tab || "quickhacks");
+            const live = document.getElementById(CYBERDECK_V2_ID);
+            if (live?.dataset?.fehaV3 !== "1") {
+              renderCyberdeckV2(actor.id, root.dataset.tab || "quickhacks");
+            }
           }, 250);
         } else {
           globalThis.FEHA_SOUNDS?.play?.("error", {cooldown:0});
@@ -2777,12 +2788,18 @@ if (!game.user?.isGM) {
 
       if (action === "jack") {
         globalThis.FEHA_SOUNDS?.play?.("scan", {cooldown:0});
-        setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0}), 150);
+        setTimeout(() => {
+          if (lifecycleActive) globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0});
+        }, 150);
         root.classList.remove("is-jacking");
         void root.offsetWidth;
         root.classList.add("is-jacking");
         renderCyberdeckV2(actor.id, "network");
-        setTimeout(() => document.getElementById(CYBERDECK_V2_ID)?.classList.add("is-jacking"), 0);
+        setTimeout(() => {
+          if (!lifecycleActive || globalThis.FEHA_CYBERDECK_V3_ACTIVE === true) return;
+          const live = document.getElementById(CYBERDECK_V2_ID);
+          if (live?.dataset?.fehaV3 !== "1") live?.classList.add("is-jacking");
+        }, 0);
         return;
       }
     };
@@ -2836,7 +2853,12 @@ if (!game.user?.isGM) {
     const legacy = findCyberdeckRoots(document.body);
     const wasOpen = legacy.length > 0;
     legacy.forEach(el => el.remove());
-    if (wasOpen) setTimeout(() => openCyberdeckV2(), 60);
+    if (wasOpen) {
+      setTimeout(() => {
+        if (!lifecycleActive || globalThis.FEHA_CYBERDECK_V3_ACTIVE === true) return;
+        openCyberdeckV2();
+      }, 60);
+    }
 
     return true;
   }
@@ -2918,6 +2940,7 @@ if (!game.user?.isGM) {
       return installCyberdeckV2();
     },
     cleanup() {
+      lifecycleActive = false;
       observer?.disconnect?.();
       observer = null;
       const root = document.getElementById("adk-chrome-manager-34");
@@ -2954,12 +2977,16 @@ if (!game.user?.isGM) {
         document.getElementById("adk-chrome-manager-34")?.remove();
         if (globalThis.game?.adk?.openChrome) {
           setTimeout(async () => {
+            if (!lifecycleActive) return;
             game.adk.openChrome();
             setTimeout(async () => {
+              if (!lifecycleActive) return;
               patchBackend();
               await repairCacheMetadata(globalThis.ADKChromeBackend);
               globalThis.ADKChromeBackend?.refresh?.();
-              setTimeout(markRoot, 80);
+              setTimeout(() => {
+                if (lifecycleActive) markRoot();
+              }, 80);
             }, 180);
           }, 80);
         }
