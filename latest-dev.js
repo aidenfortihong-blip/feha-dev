@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.4.16";
+  const BUILD = "0.4.17";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -495,7 +495,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.16 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.17 // preload failed", event, err);
         }
       }
     }
@@ -553,11 +553,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.16 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.17 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.16 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.17 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -580,7 +580,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.16 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.17 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -704,12 +704,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.16 // sound source: ${source}`
+      `FEHA DEV 0.4.17 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.16 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.17 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -742,7 +742,7 @@
 
   const FEHA_PORTRAIT_OVERRIDES = Object.freeze({
     derke:
-      "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/image_2026-09-25_233904481.png",
+      "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
     ponyboy:
       "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/40e1fb5d-6265-4dfd-93d3-d6344dc14180.png"
   });
@@ -909,12 +909,94 @@
     delete globalThis.__FEHA_ACTOR_SWITCH_FIX_026;
   }
 
+  function tagLegacyWallets(scope = document.body) {
+    if (!scope?.querySelectorAll) return 0;
+
+    const labels = [];
+    const all = scope.querySelectorAll("*");
+
+    for (const el of all) {
+      if (el.children.length > 0) continue;
+      const text = String(el.textContent ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+      if (text === "adk // wallet" || text === "adk wallet") {
+        labels.push(el);
+      }
+    }
+
+    let tagged = 0;
+
+    for (const label of labels) {
+      let shell = label;
+      let cursor = label.parentElement;
+
+      // Pick the smallest nearby wrapper that contains both the wallet label
+      // and the visible €$ balance. This keeps the rest of the sheet untouched.
+      for (let depth = 0; cursor && depth < 7; depth++, cursor = cursor.parentElement) {
+        const text = String(cursor.innerText ?? cursor.textContent ?? "")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        if (/ADK\s*\/\/\s*WALLET/i.test(text) && /€\$\s*[-+]?\d/i.test(text)) {
+          shell = cursor;
+          break;
+        }
+      }
+
+      if (shell === label) shell = label.parentElement ?? label;
+
+      shell.dataset.fehaWalletShell = "legacy";
+      shell.classList.add("feha-wallet-legacy-shell");
+
+      if (!shell.id) {
+        const token =
+          shell.closest?.("[data-document-id]")?.dataset?.documentId ??
+          shell.closest?.("[data-actor-id]")?.dataset?.actorId ??
+          shell.closest?.(".application,.app,.window-app")?.id ??
+          String(tagged + 1);
+        shell.id = "feha-wallet-legacy-" + String(token).replace(/[^a-z0-9_-]+/gi, "-");
+        shell.dataset.fehaWalletAssignedId = "1";
+      }
+
+      const descendants = [...shell.querySelectorAll("*")];
+      const balance = descendants.find(el => {
+        if (el.children.length > 0) return false;
+        return /€\$\s*[-+]?\d/i.test(String(el.textContent ?? "").replace(/\s+/g, " ").trim());
+      });
+
+      if (balance) {
+        balance.dataset.fehaWalletBalance = "1";
+        if (!balance.id) {
+          balance.id = shell.id + "-balance";
+          balance.dataset.fehaWalletAssignedId = "1";
+        }
+      }
+
+      tagged++;
+    }
+
+    return tagged;
+  }
+
+  function clearLegacyWalletTags() {
+    document.querySelectorAll('[data-feha-wallet-shell="legacy"], [data-feha-wallet-balance="1"]').forEach(el => {
+      el.classList?.remove?.("feha-wallet-legacy-shell");
+      delete el.dataset.fehaWalletShell;
+      delete el.dataset.fehaWalletBalance;
+
+      if (el.dataset.fehaWalletAssignedId === "1") {
+        el.removeAttribute("id");
+        delete el.dataset.fehaWalletAssignedId;
+      }
+    });
+  }
+
   function startObserver() {
     observer?.disconnect?.();
     observer = new MutationObserver(() => {
       patchBackend();
       markRoot();
       normalizeDossierSchematics();
+      tagLegacyWallets();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
@@ -944,6 +1026,7 @@
       removeActorSwitchFix();
       removeTelemetryMotion();
       removeSoundEngine();
+      clearLegacyWalletTags();
       document
         .getElementById("adk-chrome-manager-34")
         ?.classList.remove("feha-cache-selection-focus");
@@ -979,6 +1062,7 @@
   startObserver();
   patchBackend();
   markRoot();
+  tagLegacyWallets();
 
   console.log(
     "%cFEHA DEV PATCH %c" + BUILD,
@@ -987,7 +1071,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // subsystem rail cleanup loaded"
+    "FEHA DEV " + BUILD + " // legacy sheet wallets removed"
   );
 
   state.reopenChrome();
