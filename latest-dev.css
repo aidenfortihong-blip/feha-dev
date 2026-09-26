@@ -3138,3 +3138,234 @@
     bottom: 18px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.6
+   CENTER DOCK + HARDWARE PORT CLEANUP
+   ========================================================================== */
+
+/* CENTER HERO
+   The center status row was redundant with the right-side metrics and kept
+   visually fighting the active-system title. Remove it entirely. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Make the active subsystem a single clean bottom dock. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+  position: absolute !important;
+  left: 18px !important;
+  right: 18px !important;
+  bottom: 18px !important;
+  z-index: 60 !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto !important;
+  align-items: end !important;
+  column-gap: 18px !important;
+  row-gap: 5px !important;
+
+  min-height: 86px !important;
+  padding: 12px 16px 11px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+
+  background:
+    linear-gradient(90deg,
+      rgba(2,7,10,.975) 0%,
+      rgba(2,7,10,.94) 58%,
+      rgba(2,7,10,.76) 82%,
+      rgba(2,7,10,.40) 100%) !important;
+
+  border-left: 2px solid rgb(var(--cp-red)) !important;
+  border-top: 1px solid rgba(var(--cp-cyan), .08) !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .11) !important;
+  box-shadow:
+    0 -12px 34px rgba(0,0,0,.22),
+    inset 0 0 0 1px rgba(255,255,255,.008) !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title::after {
+  content: none !important;
+  display: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title small {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  margin: 0 !important;
+  color: rgb(var(--cp-red)) !important;
+  font-size: 8px !important;
+  line-height: 1 !important;
+  letter-spacing: 1.1px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title h1 {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  color: #fff !important;
+  font-size: clamp(30px, 2.5vw, 45px) !important;
+  line-height: .90 !important;
+  letter-spacing: 1.7px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-shadow: 0 8px 24px rgba(0,0,0,.78) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title > span {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  align-self: center !important;
+  margin: 0 !important;
+  padding: 0 0 1px !important;
+  color: rgb(var(--cp-cyan)) !important;
+  font-size: 8px !important;
+  line-height: 1 !important;
+  letter-spacing: .95px !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+  opacity: .90 !important;
+}
+
+/* Keep every portrait overlay behind the dock, no exceptions. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-art {
+  z-index: 8 !important;
+}
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-portrait-overlays {
+  z-index: 12 !important;
+}
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-background {
+  z-index: 1 !important;
+}
+
+/* HARDWARE PORTS
+   P01/P02/P03 added no useful information and made the cards look broken.
+   Remove them and give the actual socket/name the space. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-id {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port-stack {
+  display: grid !important;
+  gap: 8px !important;
+  padding: 8px 0 12px !important;
+}
+
+/* Three compatible ports fit cleanly across the normal inspector. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port-stack:has(> .adk-v6-port:nth-child(3)) {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port-stack:has(> .adk-v6-port:nth-child(2)):not(:has(> .adk-v6-port:nth-child(3))) {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port-stack:has(> .adk-v6-port:only-child) {
+  grid-template-columns: 1fr !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port {
+  position: relative !important;
+  min-height: 68px !important;
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  column-gap: 9px !important;
+  row-gap: 5px !important;
+  align-items: center !important;
+  padding: 9px 10px !important;
+  overflow: hidden !important;
+
+  background:
+    linear-gradient(90deg, rgba(var(--cp-cyan), .045), transparent 64%),
+    #02080b !important;
+
+  border: 1px solid rgba(var(--cp-cyan), .15) !important;
+  clip-path: polygon(0 0, 94% 0, 100% 18%, 100% 100%, 0 100%) !important;
+}
+
+/* Remove the tiny decorative HUD patch from every port. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port::after {
+  content: none !important;
+  display: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-socket,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-thumb {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  position: relative !important;
+  width: 30px !important;
+  height: 30px !important;
+  margin: 0 !important;
+  align-self: center !important;
+  justify-self: center !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-copy {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  align-self: center !important;
+  text-align: left !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-copy b {
+  display: block !important;
+  margin: 0 !important;
+  color: #f2f7f8 !important;
+  font-size: 11px !important;
+  line-height: 1.02 !important;
+  letter-spacing: .35px !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-copy small {
+  display: block !important;
+  margin: 4px 0 0 !important;
+  color: #789097 !important;
+  font-size: 6px !important;
+  line-height: 1.08 !important;
+  letter-spacing: .45px !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-actions {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+  margin: 0 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-empty {
+  grid-template-rows: 1fr !important;
+  min-height: 68px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-filled {
+  min-height: 88px !important;
+}
+
+/* Only collapse the port row when the whole app is genuinely narrow. */
+@media (max-width: 1180px) {
+  #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port-stack:has(> .adk-v6-port:nth-child(2)) {
+    grid-template-columns: 1fr !important;
+  }
+}
