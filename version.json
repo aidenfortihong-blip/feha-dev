@@ -1,18 +1,15 @@
 {
-  "version": "0.2.9",
+  "version": "0.3.0",
   "updated": "2026-09-25",
-  "scope": "chrome-guttural-digital-sound-pass",
+  "scope": "chrome-clean-schematics-and-port-readability",
   "notes": [
-    "Shifted the sound language from clean sci-fi UI toward guttural, digital and visceral cyberware hardware",
-    "Added low-frequency impact transients, distortion, compressed noise and sample-and-hold digital tearing",
-    "Hover is now an electrical tooth-click",
-    "Select is now a hard relay thunk with corrupted lock tone",
-    "Drawer is a low motor strain with physical latch",
-    "Scan is a dirty data scrape rather than a bright scanner chirp",
-    "Install is a heavy body-impact, machinery, handshake and seal sequence",
-    "Remove is a mechanical tear-away and decompression sound",
-    "Error now combines malfunction buzz with a low body hit",
-    "Confirm stays positive but uses a physical relay punch",
-    "Use FEHA_SOUNDS.visceralDemo() to audition the core set"
+    "Removed the colored subsystem core glyph from every system dossier",
+    "Changed dossier SVGs from crop/slice mode to full-image meet mode",
+    "Shifted the full grey schematic slightly downward so the complete artwork is visible in the inspector window",
+    "Fixed P01/P02/P03 being overlapped by the diamond hardware socket",
+    "Separated port ID, socket and text into dedicated grid columns",
+    "Removed ellipsis clipping from VACANT PORT and OPEN HARDWARE CACHE text",
+    "Stacks ports vertically on narrower inspector widths to preserve readability",
+    "Preserved the 0.2.9 guttural digital sound engine"
   ]
 }
