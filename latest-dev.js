@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.7";
+  const BUILD = "0.6.8";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.7 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.8 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.7 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.8 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.7 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.8 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.7 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.8 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.7 // sound source: ${source}`
+      `FEHA DEV 0.6.8 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.7 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.8 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
