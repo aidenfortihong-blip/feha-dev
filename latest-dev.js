@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.2.5";
+  const BUILD = "0.2.6";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -113,7 +113,7 @@
 
     try {
       await actor.updateEmbeddedDocuments("Item", repairs);
-      console.info("FEHA DEV 0.2.5 // repaired cached chrome metadata", repairs.length);
+      console.info("FEHA DEV 0.2.6 // repaired cached chrome metadata", repairs.length);
     } catch (err) {
       console.warn("FEHA DEV 0.2.1 // cache metadata repair failed", err);
     }
@@ -177,6 +177,129 @@
     delete globalThis.__FEHA_CACHE_SELECTION_UX_025;
   }
 
+  function installActorSwitchFix() {
+    if (globalThis.__FEHA_ACTOR_SWITCH_FIX_026) return;
+
+    let switching = false;
+
+    const handler = async event => {
+      const select = event.target?.closest?.("#adk-chrome-manager-34 #actor-select");
+      if (!select) return;
+
+      // Own the subject-switch transaction so the native delayed handler and
+      // the theme service cannot race one another.
+      event.stopImmediatePropagation();
+
+      const actorId = String(select.value ?? "");
+      const api = globalThis.ADKChromeBackend;
+      const root = document.getElementById("adk-chrome-manager-34");
+
+      if (!actorId || !api || switching) return;
+      if (api.getActor?.()?.id === actorId) {
+        globalThis.ADKTheme?.refresh?.();
+        return;
+      }
+
+      switching = true;
+      root?.classList.add("is-subject-switching");
+
+      try {
+        const desired = game.actors.get(actorId);
+        if (!desired) throw new Error("Actor not found: " + actorId);
+
+        // setActor updates the private legacy backend state. Its internal render
+        // is allowed to fail without leaving us stuck; we force the native pass
+        // immediately afterward from the now-correct backend state.
+        try {
+          api.setActor(actorId);
+        } catch (renderErr) {
+          console.warn(
+            "FEHA DEV 0.2.6 // backend switched actor but its inline render failed; forcing native render",
+            renderErr
+          );
+        }
+
+        if (api.getActor?.()?.id !== actorId) {
+          throw new Error(
+            "Backend actor mismatch after switch. Expected " +
+            actorId +
+            ", got " +
+            (api.getActor?.()?.id ?? "null")
+          );
+        }
+
+        await repairCacheMetadata(api);
+
+        // Clear any cache/item selection state visually before the new subject
+        // frame resolves.
+        document
+          .getElementById("adk-chrome-manager-34")
+          ?.classList.remove("feha-cache-selection-focus");
+
+        globalThis.ADKChromeNative?.render?.();
+
+        requestAnimationFrame(() => {
+          const liveRoot = document.getElementById("adk-chrome-manager-34");
+          const liveSelect = liveRoot?.querySelector("#actor-select");
+          if (liveSelect && liveSelect.value !== actorId) liveSelect.value = actorId;
+
+          globalThis.ADKTheme?.refresh?.();
+
+          setTimeout(() => {
+            globalThis.ADKChromeNative?.render?.();
+            globalThis.ADKTheme?.refresh?.();
+            document
+              .getElementById("adk-chrome-manager-34")
+              ?.classList.remove("is-subject-switching");
+          }, 80);
+        });
+
+        console.info(
+          "FEHA DEV 0.2.6 // subject switch complete:",
+          desired.name,
+          actorId
+        );
+      } catch (err) {
+        console.error("FEHA DEV 0.2.6 // actor switch failed", err);
+        ui?.notifications?.error?.(
+          "FEHA subject switch failed — press F12 and send the red FEHA error."
+        );
+
+        // Put the selector back on the backend's actual actor so the UI can no
+        // longer show Florence while the backend still thinks Ponyboy.
+        const actualId = api?.getActor?.()?.id;
+        const liveSelect = document
+          .getElementById("adk-chrome-manager-34")
+          ?.querySelector("#actor-select");
+        if (liveSelect && actualId) liveSelect.value = actualId;
+
+        try {
+          globalThis.ADKChromeNative?.render?.();
+          globalThis.ADKTheme?.refresh?.();
+        } catch (fallbackErr) {
+          console.error("FEHA DEV 0.2.6 // actor switch fallback render failed", fallbackErr);
+        }
+      } finally {
+        switching = false;
+        setTimeout(() => {
+          document
+            .getElementById("adk-chrome-manager-34")
+            ?.classList.remove("is-subject-switching");
+        }, 260);
+      }
+    };
+
+    document.addEventListener("change", handler, true);
+    globalThis.__FEHA_ACTOR_SWITCH_FIX_026 = { handler };
+  }
+
+  function removeActorSwitchFix() {
+    const fix = globalThis.__FEHA_ACTOR_SWITCH_FIX_026;
+    if (!fix) return;
+    document.removeEventListener("change", fix.handler, true);
+    delete globalThis.__FEHA_ACTOR_SWITCH_FIX_026;
+  }
+
   function startObserver() {
     observer?.disconnect?.();
     observer = new MutationObserver(() => {
@@ -203,6 +326,7 @@
       }
 
       removeCacheSelectionUX();
+      removeActorSwitchFix();
       document
         .getElementById("adk-chrome-manager-34")
         ?.classList.remove("feha-cache-selection-focus");
@@ -232,6 +356,7 @@
   globalThis.FEHA_DEV_DIAGNOSTICS = globalThis.FEHA_DEV_DIAGNOSTICS ?? false;
 
   installCacheSelectionUX();
+  installActorSwitchFix();
   startObserver();
   patchBackend();
   markRoot();
@@ -243,7 +368,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // true glyph centering + cache selection UX loaded"
+    "FEHA DEV " + BUILD + " // actor switching stabilization loaded"
   );
 
   state.reopenChrome();
