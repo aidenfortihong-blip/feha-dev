@@ -1,14 +1,14 @@
 {
-  "version": "0.3.3",
+  "version": "0.3.4",
   "updated": "2026-09-25",
-  "scope": "chrome-real-game-sfx-and-ponyboy-center",
+  "scope": "cyberpunk-local-sfx-runtime",
   "notes": [
-    "Replaced the procedural WebAudio synth sound design with actual CC0 game sound assets",
-    "Uses Kenney Interface Sounds for hover, select, error and confirmation",
-    "Uses Kenney Sci-Fi Sounds for drawer, scan, install impact and remove",
-    "Install layers a real metal impact with a delayed confirmation cue",
-    "Sound assets are copied into feha-dev/audio/kenney with CC0 license files",
-    "Ponyboy portrait is now centered independently via actor-specific crop positioning",
-    "All prior Chrome UI fixes remain active"
+    "Added private local Cyberpunk 2077 SFX pack support through browser localStorage",
+    "No Cyberpunk audio bytes are committed to the public repository",
+    "Automatically uses the local CP2077 pack when installed and falls back to Kenney when absent",
+    "Added explicit sounds for subsystem changes, actor switching, cache open/close and cyberware selection",
+    "Legacy Chrome hover/select/drawer/scan/install/remove/error/confirm calls are still routed",
+    "Install/remove buttons get event-specific CP2077 cues",
+    "Ponyboy centering and all prior UI fixes remain intact"
   ]
 }
