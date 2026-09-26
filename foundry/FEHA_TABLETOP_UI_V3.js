@@ -108,7 +108,7 @@
 
   function isSupport(item) {
     if (!isInstalledCyberware(item) || isDeck(item)) return false;
-    const text = norm(item.name + " " + (flags(item).effectText ?? description(item)));
+    const text = norm(item.name + " " + (flags(item).effectText || description(item)));
     return ["ram","quickhack","cyberdeck","neural","self ice","memory","cortex","netrunner","intrusion"]
       .some(term => text.includes(term));
   }
@@ -132,7 +132,7 @@
 
   function hackEffect(item) {
     const cost = hackCost(item);
-    const raw = String(flags(item).effectText ?? description(item) ?? "Quickhack software.");
+    const raw = String(flags(item).effectText || description(item) || "Quickhack software.");
     return raw.replace(/\bRAM\s+\d+\b/i, "RAM " + cost);
   }
 
@@ -200,7 +200,7 @@
       dc:hackDC(actor),
       manufacturer:String(df.manufacturer ?? df.company ?? "UNKNOWN"),
       mk:String(df.mk ?? df.rating ?? df.tier ?? ""),
-      deckEffect: deck ? String(df.effectText ?? description(deck) ?? "") : ""
+      deckEffect: deck ? String(df.effectText || description(deck) || "") : ""
     };
   }
 
@@ -337,7 +337,7 @@
     return m.support.map(item =>
       '<article class="cd2-support-card">'+
         '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
-        '<div><b>'+esc(item.name)+'</b><span>'+esc(flags(item).ratingLabel ?? "")+'</span><small>'+esc(flags(item).effectText ?? description(item))+'</small></div>'+
+        '<div><b>'+esc(item.name)+'</b><span>'+esc(flags(item).ratingLabel ?? "")+'</span><small>'+esc(flags(item).effectText || description(item))+'</small></div>'+
       '</article>'
     ).join("");
   }
