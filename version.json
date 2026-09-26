@@ -1,14 +1,12 @@
 {
-  "version": "0.2.3",
+  "version": "0.2.4",
   "updated": "2026-09-25",
-  "scope": "chrome-global-typography",
+  "scope": "chrome-dossier-centering-and-capacity",
   "notes": [
-    "Substantially increased microtext across the entire Chrome UI",
-    "Raised left rail system names and subtitles again",
-    "Increased inspector headers, port labels, dossier labels and descriptions",
-    "Increased center telemetry, system status and portrait metadata",
-    "Increased cache metadata, hardware specs, action button subtext and footer text",
-    "Reduced excessive letter spacing on the smallest text to preserve readability",
-    "Existing layout and approved visual structure left intact"
+    "Forced every subsystem grey diagram and blue active glyph to share the same exact center point",
+    "Removed inset-based diagram positioning in favor of explicit 50/50 centering",
+    "Made the Cyberware Capacity label and value substantially larger",
+    "Increased the capacity rail from 8px to 12px and added stronger color/glow treatment",
+    "Preserved all 0.2.1 owned-cache, 0.2.2 cache-card, and 0.2.3 typography fixes"
   ]
 }
