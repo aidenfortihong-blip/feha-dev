@@ -1,1 +1,667 @@
-/* FEHA Cyberdeck V3 supplemental styles */
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.0
+   SINGLE-SCREEN LOADOUT + JACK IN SPACE
+   ========================================================================== */
+
+/* BASE CYBERDECK = ONE SCREEN */
+#feha-cyberdeck-v2 .cd2-tabs {
+  display: none !important;
+}
+
+#feha-cyberdeck-v2 .cd2-view[data-view="network"],
+#feha-cyberdeck-v2 .cd2-view[data-view="diagnostics"] {
+  display: none !important;
+}
+
+#feha-cyberdeck-v2 .cd2-view[data-view="quickhacks"],
+#feha-cyberdeck-v2 .cd2-view[data-view="memory"] {
+  display: block !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+#feha-cyberdeck-v2 .cd2-main {
+  grid-template-rows: auto minmax(0,1fr) 138px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-tabbody {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  grid-auto-rows: max-content !important;
+  gap: 24px !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  padding: 0 6px 18px 0;
+}
+
+#feha-cyberdeck-v2 .cd2-view[data-view="memory"] {
+  padding-top: 20px !important;
+  border-top: 1px solid rgba(var(--cd2-persona), .16);
+}
+
+#feha-cyberdeck-v2 .cd2-library-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+  gap: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-library-list .cd2-hack-card {
+  min-height: 158px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-run {
+  display: none !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot {
+  cursor: default !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card button {
+  min-width: 86px !important;
+  height: 42px !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  letter-spacing: .9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-footer {
+  grid-template-columns: minmax(0,1fr) 280px 420px !important;
+  gap: 16px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log,
+#feha-cyberdeck-v2 .cd2-rest,
+#feha-cyberdeck-v2 .cd2-jack {
+  min-height: 114px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack {
+  min-width: 420px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack span {
+  font-size: 11px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack b {
+  font-size: 50px !important;
+  line-height: .9 !important;
+}
+
+/* JACK IN FULLSCREEN */
+#feha-jackin-overlay {
+  --jack-green: 91,255,142;
+  --jack-cyan: 92,239,255;
+  --jack-mag: 255,70,126;
+  --jack-yellow: 255,216,84;
+
+  position: fixed;
+  inset: 0;
+  z-index: 120000;
+  overflow: hidden;
+  color: #eafff2;
+  background: #010503;
+  font-family: "Share Tech Mono","Consolas",monospace;
+}
+
+#feha-jackin-overlay * {
+  box-sizing: border-box;
+}
+
+/* BOOT / GREEN CODE SWEEP */
+#feha-jackin-overlay .jack-boot {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--jack-green),.08), transparent 32%),
+    #010503;
+}
+
+#feha-jackin-overlay .jack-code-rain {
+  position: absolute;
+  inset: -18% 0 0;
+  display: grid;
+  grid-template-columns: repeat(34,1fr);
+  gap: 4px;
+  opacity: .56;
+  filter: blur(.15px);
+}
+
+#feha-jackin-overlay .jack-code-rain i {
+  display: block;
+  color: rgba(var(--jack-green), .62);
+  font-size: 10px;
+  font-style: normal;
+  line-height: 1.35;
+  text-align: center;
+  text-shadow: 0 0 8px rgba(var(--jack-green), .28);
+  transform: translateY(calc((var(--jack-col) % 9) * -46px));
+  animation: jack-code-fall 1.45s linear infinite;
+  animation-delay: calc((var(--jack-col) % 7) * -.14s);
+}
+
+#feha-jackin-overlay .jack-boot-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: min(760px,80vw);
+  padding: 34px 38px;
+  transform: translate(-50%,-50%);
+  background: rgba(0,10,5,.80);
+  border-left: 4px solid rgb(var(--jack-green));
+  border-top: 1px solid rgba(var(--jack-green),.26);
+  border-bottom: 1px solid rgba(var(--jack-green),.13);
+  box-shadow: 0 0 70px rgba(var(--jack-green),.08);
+}
+
+#feha-jackin-overlay .jack-boot-core small,
+#feha-jackin-overlay .jack-boot-core b,
+#feha-jackin-overlay .jack-boot-core span {
+  display: block;
+}
+
+#feha-jackin-overlay .jack-boot-core small {
+  color: rgb(var(--jack-green));
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+#feha-jackin-overlay .jack-boot-core h1 {
+  margin: 14px 0 10px;
+  color: #f4fff8;
+  font-family: "Oxanium","Arial Narrow",sans-serif;
+  font-size: clamp(48px,7vw,104px);
+  line-height: .88;
+  letter-spacing: 5px;
+}
+
+#feha-jackin-overlay .jack-boot-core b {
+  color: #bafbd1;
+  font-size: 15px;
+  letter-spacing: 1.4px;
+}
+
+#feha-jackin-overlay .jack-boot-core span {
+  margin-top: 8px;
+  color: #57916b;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+}
+
+#feha-jackin-overlay .jack-boot-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -12%;
+  z-index: 4;
+  height: 14%;
+  background: linear-gradient(180deg,transparent,rgba(var(--jack-green),.10),rgba(var(--jack-green),.30),transparent);
+  animation: jack-scan 1.05s linear forwards;
+}
+
+#feha-jackin-overlay.is-glitching {
+  animation: jack-glitch .18s steps(2,end);
+}
+
+/* LIVE SPACE */
+#feha-jackin-overlay .jack-header {
+  height: 104px;
+  display: grid;
+  grid-template-columns: minmax(360px,1fr) minmax(220px,auto) 160px 54px;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 20px 14px 24px;
+  background: #020708;
+  border-bottom: 1px solid rgba(var(--jack-cyan),.25);
+}
+
+#feha-jackin-overlay .jack-header small {
+  color: rgb(var(--jack-mag));
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+#feha-jackin-overlay .jack-header h1 {
+  margin: 5px 0 0;
+  color: #fff;
+  font-family: "Oxanium","Arial Narrow",sans-serif;
+  font-size: 32px;
+  letter-spacing: 3px;
+}
+
+#feha-jackin-overlay .jack-header h1 span {
+  color: rgb(var(--jack-cyan));
+}
+
+#feha-jackin-overlay .jack-head-stat {
+  padding: 10px 13px;
+  background: #030b0e;
+  border-top: 1px solid rgba(var(--jack-cyan),.20);
+}
+
+#feha-jackin-overlay .jack-head-stat span,
+#feha-jackin-overlay .jack-head-stat b {
+  display: block;
+}
+
+#feha-jackin-overlay .jack-head-stat span {
+  color: #617c83;
+  font-size: 7px;
+  letter-spacing: 1.1px;
+}
+
+#feha-jackin-overlay .jack-head-stat b {
+  margin-top: 4px;
+  color: #fff;
+  font-size: 11px;
+}
+
+#feha-jackin-overlay .jack-close {
+  width: 50px;
+  height: 50px;
+  color: rgb(var(--jack-mag));
+  background: rgba(var(--jack-mag),.035);
+  border: 1px solid rgba(var(--jack-mag),.45);
+  border-radius: 0;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+#feha-jackin-overlay .jack-space {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 120px;
+  bottom: 210px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center,rgba(var(--jack-cyan),.07),transparent 20%),
+    linear-gradient(rgba(var(--jack-cyan),.034) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--jack-cyan),.028) 1px,transparent 1px),
+    #010608;
+  background-size: auto,44px 44px,44px 44px,auto;
+  border: 1px solid rgba(var(--jack-cyan),.17);
+  clip-path: polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,0 100%);
+}
+
+#feha-jackin-overlay .jack-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#feha-jackin-overlay .jack-net-line {
+  stroke: rgba(var(--jack-cyan),.22);
+  stroke-width: 1.4;
+  stroke-dasharray: 6 8;
+  vector-effect: non-scaling-stroke;
+  animation: jack-line-flow 5s linear infinite;
+}
+
+#feha-jackin-overlay .jack-net-line.is-hostile { stroke: rgba(var(--jack-mag),.38); }
+#feha-jackin-overlay .jack-net-line.is-friendly { stroke: rgba(var(--jack-cyan),.33); }
+#feha-jackin-overlay .jack-net-line.is-neutral { stroke: rgba(var(--jack-yellow),.30); }
+
+#feha-jackin-overlay .jack-net-line.is-targeted {
+  stroke: rgb(var(--jack-yellow));
+  stroke-width: 2.7;
+  stroke-dasharray: 10 4;
+  filter: drop-shadow(0 0 5px rgba(var(--jack-yellow),.50));
+}
+
+#feha-jackin-overlay .jack-operator {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  z-index: 5;
+  width: 170px;
+  height: 170px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%,-50%);
+}
+
+#feha-jackin-overlay .jack-operator > div {
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(var(--jack-cyan),.48);
+  transform: rotate(45deg);
+  box-shadow: 0 0 34px rgba(var(--jack-cyan),.08);
+  animation: jack-ring 10s linear infinite;
+}
+
+#feha-jackin-overlay .jack-operator img {
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  object-position: center 24%;
+  z-index: 1;
+  border: 1px solid rgba(var(--jack-cyan),.42);
+  background: #010405;
+}
+
+#feha-jackin-overlay .jack-operator > span {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 56px);
+  min-width: 140px;
+  padding: 7px 9px;
+  transform: translateX(-50%);
+  z-index: 2;
+  background: rgba(1,6,8,.90);
+  border-left: 2px solid rgb(var(--jack-cyan));
+  text-align: center;
+}
+
+#feha-jackin-overlay .jack-operator small,
+#feha-jackin-overlay .jack-operator b {
+  display: block;
+}
+
+#feha-jackin-overlay .jack-operator small {
+  color: #668087;
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+
+#feha-jackin-overlay .jack-operator b {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+#feha-jackin-overlay .jack-node {
+  position: absolute;
+  left: var(--jack-x);
+  top: var(--jack-y);
+  z-index: 6;
+  width: 182px;
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 56px minmax(0,1fr);
+  grid-template-rows: 1fr auto;
+  gap: 4px 10px;
+  align-items: center;
+  padding: 9px 10px;
+  transform: translate(-50%,-50%);
+  color: #eaf9fc;
+  background: rgba(2,9,12,.95);
+  border: 1px solid rgba(var(--jack-cyan),.23);
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+  clip-path: polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);
+  box-shadow: 0 9px 26px rgba(0,0,0,.28);
+  transition: transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+}
+
+#feha-jackin-overlay .jack-node:hover {
+  transform: translate(-50%,-50%) scale(1.055);
+  border-color: rgba(var(--jack-cyan),.62);
+  box-shadow: 0 12px 34px rgba(0,0,0,.34),0 0 24px rgba(var(--jack-cyan),.07);
+}
+
+#feha-jackin-overlay .jack-node.is-hostile { border-left: 3px solid rgb(var(--jack-mag)); }
+#feha-jackin-overlay .jack-node.is-friendly { border-left: 3px solid rgb(var(--jack-cyan)); }
+#feha-jackin-overlay .jack-node.is-neutral { border-left: 3px solid rgb(var(--jack-yellow)); }
+
+#feha-jackin-overlay .jack-node.is-targeted {
+  border-color: rgb(var(--jack-yellow));
+  box-shadow: 0 0 0 1px rgba(var(--jack-yellow),.16),0 0 32px rgba(var(--jack-yellow),.15);
+  animation: jack-lock 1.7s ease-in-out infinite;
+}
+
+#feha-jackin-overlay .jack-node img {
+  grid-row: 1 / span 2;
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  background: #010405;
+  border: 1px solid rgba(var(--jack-cyan),.18);
+}
+
+#feha-jackin-overlay .jack-node-copy b,
+#feha-jackin-overlay .jack-node-copy small {
+  display: block;
+}
+
+#feha-jackin-overlay .jack-node-copy b {
+  overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#feha-jackin-overlay .jack-node-copy small {
+  margin-top: 4px;
+  color: #70888f;
+  font-size: 7px;
+  letter-spacing: .7px;
+}
+
+#feha-jackin-overlay .jack-node > em {
+  grid-column: 2;
+  color: rgba(var(--jack-cyan),.62);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted > em {
+  color: rgb(var(--jack-yellow));
+}
+
+#feha-jackin-overlay .jack-node-num {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  color: rgba(var(--jack-cyan),.28);
+  font-size: 6px;
+}
+
+#feha-jackin-overlay .jack-lock-readout {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 8;
+  min-width: 320px;
+  padding: 10px 12px;
+  background: rgba(1,6,8,.90);
+  border-left: 3px solid rgb(var(--jack-yellow));
+}
+
+#feha-jackin-overlay .jack-lock-readout small,
+#feha-jackin-overlay .jack-lock-readout b,
+#feha-jackin-overlay .jack-lock-readout span {
+  display: block;
+}
+
+#feha-jackin-overlay .jack-lock-readout small {
+  color: #687f85;
+  font-size: 7px;
+}
+
+#feha-jackin-overlay .jack-lock-readout b {
+  margin-top: 3px;
+  color: rgb(var(--jack-yellow));
+  font-size: 13px;
+}
+
+#feha-jackin-overlay .jack-lock-readout span {
+  margin-top: 3px;
+  color: #567078;
+  font-size: 7px;
+}
+
+#feha-jackin-overlay .jack-empty-scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  gap: 7px;
+  transform: translate(-50%,-50%);
+  text-align: center;
+}
+
+#feha-jackin-overlay .jack-empty-scene b { font-size: 18px; }
+#feha-jackin-overlay .jack-empty-scene span { color:#607a81;font-size:9px; }
+
+#feha-jackin-overlay .jack-actions {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  height: 180px;
+  display: grid;
+  grid-template-columns: 260px minmax(0,1fr);
+  gap: 12px;
+  padding: 12px;
+  background: #020708;
+  border-top: 1px solid rgba(var(--jack-yellow),.25);
+}
+
+#feha-jackin-overlay .jack-actions-title {
+  padding: 12px;
+  background: #030a0d;
+  border-left: 3px solid rgb(var(--jack-yellow));
+}
+
+#feha-jackin-overlay .jack-actions-title small,
+#feha-jackin-overlay .jack-actions-title b,
+#feha-jackin-overlay .jack-actions-title span {
+  display: block;
+}
+
+#feha-jackin-overlay .jack-actions-title small {
+  color: rgb(var(--jack-mag));
+  font-size: 8px;
+  letter-spacing: 1.4px;
+}
+
+#feha-jackin-overlay .jack-actions-title b {
+  margin-top: 7px;
+  color: #fff;
+  font-size: 17px;
+}
+
+#feha-jackin-overlay .jack-actions-title span {
+  margin-top: 8px;
+  color: rgb(var(--jack-yellow));
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+#feha-jackin-overlay .jack-hacks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+  gap: 8px;
+  overflow: auto;
+}
+
+#feha-jackin-overlay .jack-hack {
+  display: grid;
+  grid-template-columns: 54px minmax(0,1fr) auto;
+  gap: 9px;
+  align-items: center;
+  min-height: 72px;
+  padding: 8px 10px;
+  color: #eaffff;
+  background: #030b0e;
+  border: 1px solid rgba(var(--jack-cyan),.20);
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+#feha-jackin-overlay .jack-hack:hover:not(:disabled) {
+  border-color: rgba(var(--jack-yellow),.55);
+  background: rgba(var(--jack-yellow),.04);
+}
+
+#feha-jackin-overlay .jack-hack:disabled {
+  opacity: .34;
+  cursor: default;
+}
+
+#feha-jackin-overlay .jack-hack img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  background: #010405;
+}
+
+#feha-jackin-overlay .jack-hack b,
+#feha-jackin-overlay .jack-hack small {
+  display: block;
+}
+
+#feha-jackin-overlay .jack-hack b { font-size: 11px; }
+#feha-jackin-overlay .jack-hack small { margin-top:4px;color:#73898f;font-size:7px; }
+#feha-jackin-overlay .jack-hack em { color:rgb(var(--jack-yellow));font-size:7px;font-style:normal;font-weight:900; }
+
+#feha-jackin-overlay .jack-no-hacks {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  color: #637b82;
+  border: 1px dashed rgba(var(--jack-cyan),.16);
+  font-size: 9px;
+}
+
+@keyframes jack-code-fall {
+  to { transform: translateY(170px); }
+}
+
+@keyframes jack-scan {
+  to { transform: translateY(930px); }
+}
+
+@keyframes jack-glitch {
+  0% { transform:translateX(0); filter:none; }
+  25% { transform:translateX(7px); filter:hue-rotate(38deg) contrast(1.3); }
+  50% { transform:translateX(-8px); filter:hue-rotate(-28deg) contrast(1.6); }
+  75% { transform:translateX(4px); filter:brightness(1.35); }
+  100% { transform:translateX(0); filter:none; }
+}
+
+@keyframes jack-line-flow {
+  to { stroke-dashoffset:-28; }
+}
+
+@keyframes jack-ring {
+  to { transform:rotate(405deg); }
+}
+
+@keyframes jack-lock {
+  0%,100% { filter:brightness(.96); }
+  50% { filter:brightness(1.15); }
+}
+
+@media(max-width:1500px) {
+  #feha-cyberdeck-v2 .cd2-library-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-footer {
+    grid-template-columns: minmax(0,1fr) 220px 330px !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-jack {
+    min-width: 330px !important;
+  }
+
+  #feha-jackin-overlay .jack-node {
+    width: 158px;
+    min-height: 72px;
+  }
+
+  #feha-jackin-overlay .jack-actions {
+    grid-template-columns: 220px minmax(0,1fr);
+  }
+}
