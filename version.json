@@ -1,11 +1,10 @@
 {
-  "version": "0.4.12",
+  "version": "0.4.13",
   "updated": "2026-09-25",
-  "scope": "derke-forge-portrait",
+  "scope": "derke-portrait-update",
   "notes": [
-    "Switched Derke's Augmentation Theatre portrait to the user-uploaded Forge asset URL",
-    "Removed the temporary repo-hosted base64 portrait loader from runtime use",
-    "Derke portrait now loads directly from Forge and reapplies on Theatre rerenders",
+    "Updated Derke's Augmentation Theatre portrait to the new user-uploaded Forge image",
+    "Derke portrait now uses GFDGFDGFD.png from the private Forge asset library",
     "Xiao, Nina, Florence and Cael remain hidden from the Theatre selector"
   ]
 }
