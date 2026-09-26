@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.3.1";
+  const BUILD = "0.3.2";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -215,22 +215,26 @@
   }
 
   function installSoundEngine() {
-    if (globalThis.__FEHA_SOUND_ENGINE_029) return;
+    if (globalThis.__FEHA_SOUND_ENGINE_032) return;
 
     const OriginalPlay = HTMLMediaElement.prototype.play;
     let ctx = null;
     let masterBus = null;
 
-    const MASTER = {
-      volume: 0.74,
+    const STATE = {
+      volume: 0.76,
+      style: localStorage.getItem("fehaSoundStyle") || "A"
+    };
+
+    const PER_EVENT = {
       hover: 0.30,
-      select: 0.70,
-      drawer: 0.78,
-      scan: 0.70,
-      install: 0.92,
-      remove: 0.82,
-      error: 0.82,
-      confirm: 0.76
+      select: 0.72,
+      drawer: 0.80,
+      scan: 0.74,
+      install: 0.98,
+      remove: 0.88,
+      error: 0.86,
+      confirm: 0.78
     };
 
     function audioCtx() {
@@ -239,42 +243,38 @@
         masterBus = null;
       }
 
-      if (ctx.state === "suspended") {
-        ctx.resume().catch(() => {});
-      }
+      if (ctx.state === "suspended") ctx.resume().catch(() => {});
 
       if (!masterBus) {
         const comp = ctx.createDynamicsCompressor();
-        comp.threshold.value = -18;
-        comp.knee.value = 10;
-        comp.ratio.value = 7;
-        comp.attack.value = 0.003;
-        comp.release.value = 0.16;
+        comp.threshold.value = -16;
+        comp.knee.value = 7;
+        comp.ratio.value = 9;
+        comp.attack.value = 0.002;
+        comp.release.value = 0.18;
 
         const master = ctx.createGain();
-        master.gain.value = MASTER.volume;
+        master.gain.value = STATE.volume;
 
         comp.connect(master);
         master.connect(ctx.destination);
-
         masterBus = { comp, master };
       }
 
-      masterBus.master.gain.value = MASTER.volume;
+      masterBus.master.gain.value = STATE.volume;
       return ctx;
     }
 
-    function makeDistortion(amount = 35) {
+    function distortion(amount = 45) {
       const c = audioCtx();
       const shaper = c.createWaveShaper();
-      const n = 2048;
+      const n = 4096;
       const curve = new Float32Array(n);
       const k = Math.max(1, amount);
 
       for (let i = 0; i < n; i++) {
         const x = i * 2 / n - 1;
-        curve[i] = ((3 + k) * x * 20 * Math.PI / 180) /
-          (Math.PI + k * Math.abs(x));
+        curve[i] = (1 + k) * x / (1 + k * Math.abs(x));
       }
 
       shaper.curve = curve;
@@ -282,16 +282,13 @@
       return shaper;
     }
 
-    function destination(kind, drive = 0) {
+    function dest(kind, drive = 0) {
       const c = audioCtx();
       const g = c.createGain();
-      g.gain.value = Math.max(
-        0,
-        Math.min(1.2, MASTER[kind] ?? 0.6)
-      );
+      g.gain.value = PER_EVENT[kind] ?? 0.65;
 
       if (drive > 0) {
-        const d = makeDistortion(drive);
+        const d = distortion(drive);
         g.connect(d);
         d.connect(masterBus.comp);
       } else {
@@ -307,67 +304,58 @@
       endFreq = null,
       delay = 0,
       dur = 0.10,
-      gain = 0.16,
-      attack = 0.003,
+      gain = 0.12,
       pan = 0,
       drive = 0,
       lowpass = null,
       highpass = null
     } = {}) {
       const c = audioCtx();
-      const start = c.currentTime + delay;
-      const endAt = start + dur;
+      const startAt = c.currentTime + delay;
+      const endAt = startAt + dur;
 
       const o = c.createOscillator();
-      const amp = c.createGain();
+      const a = c.createGain();
       const p = c.createStereoPanner ? c.createStereoPanner() : null;
-      const lp = lowpass ? c.createBiquadFilter() : null;
-      const hp = highpass ? c.createBiquadFilter() : null;
-
-      o.type = type;
-      o.frequency.setValueAtTime(Math.max(20, freq), start);
-
-      if (endFreq != null) {
-        o.frequency.exponentialRampToValueAtTime(
-          Math.max(20, endFreq),
-          endAt
-        );
-      }
-
-      amp.gain.setValueAtTime(0.0001, start);
-      amp.gain.exponentialRampToValueAtTime(
-        Math.max(0.0002, gain),
-        start + attack
-      );
-      amp.gain.exponentialRampToValueAtTime(0.0001, endAt);
-
       let node = o;
 
-      if (hp) {
+      o.type = type;
+      o.frequency.setValueAtTime(Math.max(20, freq), startAt);
+      if (endFreq != null) {
+        o.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq), endAt);
+      }
+
+      if (highpass) {
+        const hp = c.createBiquadFilter();
         hp.type = "highpass";
         hp.frequency.value = highpass;
         node.connect(hp);
         node = hp;
       }
 
-      if (lp) {
+      if (lowpass) {
+        const lp = c.createBiquadFilter();
         lp.type = "lowpass";
         lp.frequency.value = lowpass;
         node.connect(lp);
         node = lp;
       }
 
-      node.connect(amp);
+      a.gain.setValueAtTime(0.0001, startAt);
+      a.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), startAt + 0.003);
+      a.gain.exponentialRampToValueAtTime(0.0001, endAt);
+
+      node.connect(a);
 
       if (p) {
         p.pan.value = Math.max(-1, Math.min(1, pan));
-        amp.connect(p);
-        p.connect(destination(kind, drive));
+        a.connect(p);
+        p.connect(dest(kind, drive));
       } else {
-        amp.connect(destination(kind, drive));
+        a.connect(dest(kind, drive));
       }
 
-      o.start(start);
+      o.start(startAt);
       o.stop(endAt + 0.03);
     }
 
@@ -375,65 +363,88 @@
       delay = 0,
       dur = 0.08,
       gain = 0.10,
-      low = 120,
-      high = 5000,
+      low = 100,
+      high = 6000,
       pan = 0,
-      drive = 0
+      drive = 0,
+      crush = 5
     } = {}) {
       const c = audioCtx();
-      const start = c.currentTime + delay;
+      const startAt = c.currentTime + delay;
       const length = Math.max(1, Math.floor(c.sampleRate * dur));
       const buffer = c.createBuffer(1, length, c.sampleRate);
       const data = buffer.getChannelData(0);
 
       let hold = 0;
+      const step = Math.max(1, Math.round(crush));
+
       for (let i = 0; i < length; i++) {
-        // Slight sample-and-hold roughness: less "hiss", more digital tearing.
-        if (i % 7 === 0) hold = Math.random() * 2 - 1;
-        const env = Math.pow(1 - i / length, 1.5);
+        if (i % step === 0) hold = Math.random() * 2 - 1;
+        const env = Math.pow(1 - i / length, 1.25);
         data[i] = hold * env;
       }
 
       const src = c.createBufferSource();
       const hp = c.createBiquadFilter();
       const lp = c.createBiquadFilter();
-      const amp = c.createGain();
+      const a = c.createGain();
       const p = c.createStereoPanner ? c.createStereoPanner() : null;
-
-      src.buffer = buffer;
 
       hp.type = "highpass";
       hp.frequency.value = low;
-
       lp.type = "lowpass";
       lp.frequency.value = high;
 
-      amp.gain.setValueAtTime(Math.max(0.0001, gain), start);
-      amp.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      a.gain.setValueAtTime(Math.max(0.0001, gain), startAt);
+      a.gain.exponentialRampToValueAtTime(0.0001, startAt + dur);
 
+      src.buffer = buffer;
       src.connect(hp);
       hp.connect(lp);
-      lp.connect(amp);
+      lp.connect(a);
 
       if (p) {
         p.pan.value = Math.max(-1, Math.min(1, pan));
-        amp.connect(p);
-        p.connect(destination(kind, drive));
+        a.connect(p);
+        p.connect(dest(kind, drive));
       } else {
-        amp.connect(destination(kind, drive));
+        a.connect(dest(kind, drive));
       }
 
-      src.start(start);
-      src.stop(start + dur + 0.03);
+      src.start(startAt);
+      src.stop(startAt + dur + 0.03);
     }
 
-    function impact(kind, {
+    function metal(kind, {
       delay = 0,
-      freq = 72,
-      endFreq = 34,
-      dur = 0.16,
-      gain = 0.22,
-      drive = 55
+      base = 620,
+      dur = 0.11,
+      gain = 0.06,
+      drive = 55,
+      pan = 0
+    } = {}) {
+      [1, 1.43, 2.07, 2.81].forEach((ratio, i) => {
+        tone(kind, {
+          type: i % 2 ? "square" : "triangle",
+          freq: base * ratio,
+          endFreq: base * ratio * 0.71,
+          delay: delay + i * 0.002,
+          dur: dur * (1 - i * 0.10),
+          gain: gain * (1 - i * 0.15),
+          drive,
+          highpass: 180,
+          pan: pan + (i - 1.5) * 0.03
+        });
+      });
+    }
+
+    function sub(kind, {
+      delay = 0,
+      freq = 74,
+      endFreq = 31,
+      dur = 0.17,
+      gain = 0.25,
+      drive = 36
     } = {}) {
       tone(kind, {
         type: "sine",
@@ -443,336 +454,286 @@
         dur,
         gain,
         drive,
-        lowpass: 220
-      });
-
-      tone(kind, {
-        type: "square",
-        freq: freq * 1.9,
-        endFreq: endFreq * 1.4,
-        delay,
-        dur: dur * 0.62,
-        gain: gain * 0.20,
-        drive: drive + 18,
-        lowpass: 520
-      });
-
-      noise(kind, {
-        delay,
-        dur: Math.min(0.065, dur * 0.45),
-        gain: gain * 0.33,
-        low: 90,
-        high: 1500,
-        drive: drive + 12
+        lowpass: 180
       });
     }
 
-    function play(kind = "select") {
+    function servo(kind, {
+      delay = 0,
+      from = 150,
+      to = 55,
+      dur = 0.20,
+      gain = 0.11,
+      drive = 72
+    } = {}) {
+      tone(kind, {
+        type: "sawtooth",
+        freq: from,
+        endFreq: to,
+        delay,
+        dur,
+        gain,
+        drive,
+        lowpass: 900
+      });
+      noise(kind, {
+        delay,
+        dur,
+        gain: gain * 0.7,
+        low: 180,
+        high: 2400,
+        drive,
+        crush: 11
+      });
+    }
+
+    function dataRip(kind, {
+      delay = 0,
+      dur = 0.09,
+      gain = 0.085,
+      drive = 92,
+      pan = 0
+    } = {}) {
+      noise(kind, {
+        delay,
+        dur,
+        gain,
+        low: 850,
+        high: 7800,
+        drive,
+        crush: 13,
+        pan
+      });
+      tone(kind, {
+        type: "square",
+        freq: 880,
+        endFreq: 190,
+        delay,
+        dur: dur * 0.72,
+        gain: gain * 0.42,
+        drive: drive + 10,
+        pan: -pan
+      });
+    }
+
+    function relay(kind, { delay = 0, gain = 0.10, drive = 66 } = {}) {
+      metal(kind, { delay, base: 1050, dur: 0.035, gain, drive });
+      noise(kind, { delay, dur: 0.022, gain: gain * 0.8, low: 1400, high: 9200, drive: drive + 12, crush: 3 });
+    }
+
+    function playVariant(kind = "select", style = STATE.style) {
       try {
         audioCtx();
 
+        const A = style === "A"; // MEAT//MACHINE
+        const B = style === "B"; // DATA//VIOLENCE
+        const C = style === "C"; // SURGICAL//BRUTAL
+
         switch (kind) {
           case "hover":
-            // Tiny electrical tooth-click, not a friendly UI chirp.
-            noise(kind, {
-              dur: 0.018,
-              gain: 0.052,
-              low: 1800,
-              high: 7200,
-              drive: 75
-            });
-            tone(kind, {
-              type: "square",
-              freq: 1120,
-              endFreq: 760,
-              dur: 0.026,
-              gain: 0.032,
-              drive: 52,
-              highpass: 500
-            });
+            if (A) {
+              relay(kind, { gain: 0.035, drive: 52 });
+            } else if (B) {
+              dataRip(kind, { dur: 0.025, gain: 0.038, drive: 90 });
+            } else {
+              metal(kind, { base: 1450, dur: 0.025, gain: 0.028, drive: 45 });
+            }
             break;
 
           case "select":
-            // Hard relay thunk + short corrupted lock tone.
-            impact(kind, {
-              freq: 86,
-              endFreq: 42,
-              dur: 0.105,
-              gain: 0.19,
-              drive: 62
-            });
-            noise(kind, {
-              delay: 0.018,
-              dur: 0.042,
-              gain: 0.085,
-              low: 700,
-              high: 4200,
-              pan: 0.10,
-              drive: 88
-            });
-            tone(kind, {
-              type: "square",
-              freq: 510,
-              endFreq: 295,
-              delay: 0.038,
-              dur: 0.055,
-              gain: 0.055,
-              pan: -0.08,
-              drive: 74
-            });
+            if (A) {
+              sub(kind, { freq: 88, endFreq: 44, dur: 0.10, gain: 0.16 });
+              relay(kind, { delay: 0.006, gain: 0.075, drive: 70 });
+              dataRip(kind, { delay: 0.025, dur: 0.045, gain: 0.055, drive: 82 });
+            } else if (B) {
+              dataRip(kind, { dur: 0.07, gain: 0.11, drive: 110 });
+              tone(kind, { type: "square", freq: 420, endFreq: 110, delay: 0.018, dur: 0.07, gain: 0.08, drive: 96 });
+            } else {
+              relay(kind, { gain: 0.095, drive: 58 });
+              sub(kind, { delay: 0.004, freq: 104, endFreq: 58, dur: 0.075, gain: 0.12 });
+            }
             break;
 
           case "drawer":
-            // Low motor strain, scraping servo, physical latch.
-            tone(kind, {
-              type: "sawtooth",
-              freq: 74,
-              endFreq: 43,
-              dur: 0.22,
-              gain: 0.13,
-              drive: 72,
-              lowpass: 480
-            });
-            noise(kind, {
-              delay: 0.018,
-              dur: 0.19,
-              gain: 0.12,
-              low: 150,
-              high: 2600,
-              drive: 68
-            });
-            impact(kind, {
-              delay: 0.155,
-              freq: 96,
-              endFreq: 45,
-              dur: 0.11,
-              gain: 0.15,
-              drive: 58
-            });
+            if (A) {
+              sub(kind, { freq: 65, endFreq: 29, dur: 0.23, gain: 0.20 });
+              servo(kind, { from: 122, to: 43, dur: 0.26, gain: 0.13, drive: 78 });
+              metal(kind, { delay: 0.20, base: 510, dur: 0.08, gain: 0.055, drive: 64 });
+            } else if (B) {
+              dataRip(kind, { dur: 0.19, gain: 0.10, drive: 105, pan: -0.15 });
+              dataRip(kind, { delay: 0.10, dur: 0.12, gain: 0.08, drive: 112, pan: 0.15 });
+              relay(kind, { delay: 0.19, gain: 0.075, drive: 82 });
+            } else {
+              servo(kind, { from: 210, to: 82, dur: 0.18, gain: 0.10, drive: 54 });
+              relay(kind, { delay: 0.15, gain: 0.10, drive: 48 });
+            }
             break;
 
           case "scan":
-            // Data scrape + stepping digital interrogation, less "pretty scanner".
-            noise(kind, {
-              dur: 0.20,
-              gain: 0.078,
-              low: 600,
-              high: 6800,
-              drive: 76
-            });
-            tone(kind, {
-              type: "square",
-              freq: 168,
-              endFreq: 285,
-              dur: 0.07,
-              gain: 0.065,
-              pan: -0.24,
-              drive: 65
-            });
-            tone(kind, {
-              type: "square",
-              freq: 312,
-              endFreq: 520,
-              delay: 0.07,
-              dur: 0.07,
-              gain: 0.07,
-              drive: 72
-            });
-            tone(kind, {
-              type: "square",
-              freq: 590,
-              endFreq: 980,
-              delay: 0.14,
-              dur: 0.075,
-              gain: 0.075,
-              pan: 0.24,
-              drive: 78
-            });
-            impact(kind, {
-              delay: 0.185,
-              freq: 58,
-              endFreq: 34,
-              dur: 0.09,
-              gain: 0.10,
-              drive: 55
-            });
+            if (A) {
+              noise(kind, { dur: 0.18, gain: 0.075, low: 350, high: 4800, drive: 72, crush: 9 });
+              tone(kind, { type: "square", freq: 210, endFreq: 760, dur: 0.19, gain: 0.07, drive: 75 });
+              sub(kind, { delay: 0.17, freq: 58, endFreq: 35, dur: 0.07, gain: 0.09 });
+            } else if (B) {
+              dataRip(kind, { dur: 0.08, gain: 0.10, drive: 120, pan: -0.25 });
+              dataRip(kind, { delay: 0.07, dur: 0.08, gain: 0.10, drive: 120 });
+              dataRip(kind, { delay: 0.14, dur: 0.09, gain: 0.11, drive: 120, pan: 0.25 });
+            } else {
+              tone(kind, { type: "square", freq: 390, endFreq: 1180, dur: 0.15, gain: 0.07, drive: 52 });
+              relay(kind, { delay: 0.14, gain: 0.06, drive: 48 });
+            }
             break;
 
           case "install":
-            // Visceral cyberware event: impact -> machinery -> dirty handshake -> seal.
-            impact(kind, {
-              freq: 62,
-              endFreq: 29,
-              dur: 0.22,
-              gain: 0.30,
-              drive: 82
-            });
-            noise(kind, {
-              delay: 0.025,
-              dur: 0.18,
-              gain: 0.15,
-              low: 120,
-              high: 3200,
-              drive: 92
-            });
-            tone(kind, {
-              type: "sawtooth",
-              freq: 118,
-              endFreq: 74,
-              delay: 0.055,
-              dur: 0.19,
-              gain: 0.12,
-              drive: 88,
-              lowpass: 650
-            });
-            tone(kind, {
-              type: "square",
-              freq: 330,
-              endFreq: 176,
-              delay: 0.16,
-              dur: 0.085,
-              gain: 0.065,
-              pan: -0.16,
-              drive: 92
-            });
-            tone(kind, {
-              type: "square",
-              freq: 620,
-              endFreq: 410,
-              delay: 0.205,
-              dur: 0.075,
-              gain: 0.065,
-              pan: 0.16,
-              drive: 88
-            });
-            impact(kind, {
-              delay: 0.255,
-              freq: 104,
-              endFreq: 48,
-              dur: 0.12,
-              gain: 0.18,
-              drive: 70
-            });
+            if (A) {
+              sub(kind, { freq: 57, endFreq: 24, dur: 0.30, gain: 0.34, drive: 48 });
+              metal(kind, { delay: 0.006, base: 420, dur: 0.12, gain: 0.085, drive: 86 });
+              servo(kind, { delay: 0.05, from: 138, to: 46, dur: 0.27, gain: 0.15, drive: 92 });
+              dataRip(kind, { delay: 0.18, dur: 0.10, gain: 0.09, drive: 112 });
+              relay(kind, { delay: 0.30, gain: 0.11, drive: 72 });
+            } else if (B) {
+              sub(kind, { freq: 71, endFreq: 30, dur: 0.18, gain: 0.24, drive: 72 });
+              dataRip(kind, { delay: 0.00, dur: 0.13, gain: 0.14, drive: 130, pan: -0.18 });
+              dataRip(kind, { delay: 0.08, dur: 0.14, gain: 0.13, drive: 130, pan: 0.18 });
+              tone(kind, { type: "square", freq: 188, endFreq: 61, delay: 0.17, dur: 0.16, gain: 0.11, drive: 118 });
+              metal(kind, { delay: 0.29, base: 830, dur: 0.07, gain: 0.07, drive: 98 });
+            } else {
+              relay(kind, { gain: 0.12, drive: 58 });
+              metal(kind, { delay: 0.035, base: 570, dur: 0.10, gain: 0.08, drive: 58 });
+              sub(kind, { delay: 0.02, freq: 92, endFreq: 39, dur: 0.16, gain: 0.20, drive: 42 });
+              servo(kind, { delay: 0.10, from: 175, to: 72, dur: 0.14, gain: 0.085, drive: 50 });
+              relay(kind, { delay: 0.245, gain: 0.095, drive: 54 });
+            }
             break;
 
           case "remove":
-            // Mechanical tear-away, decompression, dead relay snap.
-            impact(kind, {
-              freq: 72,
-              endFreq: 38,
-              dur: 0.13,
-              gain: 0.20,
-              drive: 74
-            });
-            noise(kind, {
-              delay: 0.028,
-              dur: 0.19,
-              gain: 0.15,
-              low: 110,
-              high: 2900,
-              drive: 90
-            });
-            tone(kind, {
-              type: "sawtooth",
-              freq: 240,
-              endFreq: 58,
-              delay: 0.035,
-              dur: 0.19,
-              gain: 0.11,
-              drive: 80,
-              lowpass: 720
-            });
-            tone(kind, {
-              type: "square",
-              freq: 510,
-              endFreq: 105,
-              delay: 0.17,
-              dur: 0.065,
-              gain: 0.055,
-              drive: 85
-            });
+            if (A) {
+              metal(kind, { base: 390, dur: 0.08, gain: 0.08, drive: 88 });
+              servo(kind, { delay: 0.025, from: 250, to: 52, dur: 0.23, gain: 0.14, drive: 90 });
+              noise(kind, { delay: 0.04, dur: 0.20, gain: 0.13, low: 90, high: 2300, drive: 84, crush: 10 });
+              sub(kind, { delay: 0.17, freq: 74, endFreq: 31, dur: 0.12, gain: 0.19 });
+            } else if (B) {
+              dataRip(kind, { dur: 0.17, gain: 0.14, drive: 125 });
+              tone(kind, { type: "square", freq: 650, endFreq: 75, delay: 0.02, dur: 0.18, gain: 0.11, drive: 110 });
+              sub(kind, { delay: 0.14, freq: 61, endFreq: 28, dur: 0.10, gain: 0.16 });
+            } else {
+              relay(kind, { gain: 0.10, drive: 62 });
+              servo(kind, { delay: 0.02, from: 220, to: 68, dur: 0.16, gain: 0.09, drive: 58 });
+              metal(kind, { delay: 0.145, base: 470, dur: 0.07, gain: 0.07, drive: 62 });
+            }
             break;
 
           case "error":
-            // Malfunction buzz + low body hit.
-            impact(kind, {
-              freq: 68,
-              endFreq: 33,
-              dur: 0.14,
-              gain: 0.18,
-              drive: 82
-            });
-            noise(kind, {
-              dur: 0.16,
-              gain: 0.13,
-              low: 220,
-              high: 3600,
-              drive: 100
-            });
-            tone(kind, {
-              type: "square",
-              freq: 178,
-              endFreq: 142,
-              dur: 0.095,
-              gain: 0.085,
-              pan: -0.12,
-              drive: 100
-            });
-            tone(kind, {
-              type: "square",
-              freq: 132,
-              endFreq: 98,
-              delay: 0.095,
-              dur: 0.105,
-              gain: 0.09,
-              pan: 0.12,
-              drive: 100
-            });
+            if (A) {
+              sub(kind, { freq: 69, endFreq: 31, dur: 0.16, gain: 0.20, drive: 68 });
+              dataRip(kind, { dur: 0.14, gain: 0.12, drive: 125 });
+              tone(kind, { type: "square", freq: 171, endFreq: 91, dur: 0.16, gain: 0.09, drive: 120 });
+            } else if (B) {
+              dataRip(kind, { dur: 0.20, gain: 0.16, drive: 145 });
+              tone(kind, { type: "square", freq: 255, endFreq: 74, dur: 0.20, gain: 0.12, drive: 130 });
+            } else {
+              relay(kind, { gain: 0.10, drive: 78 });
+              tone(kind, { type: "square", freq: 205, endFreq: 145, delay: 0.025, dur: 0.12, gain: 0.08, drive: 86 });
+            }
             break;
 
           case "confirm":
-            // Positive, but still physical: relay punch + dirty authorization chirp.
-            impact(kind, {
-              freq: 92,
-              endFreq: 48,
-              dur: 0.095,
-              gain: 0.16,
-              drive: 58
-            });
-            tone(kind, {
-              type: "square",
-              freq: 450,
-              endFreq: 640,
-              delay: 0.045,
-              dur: 0.06,
-              gain: 0.055,
-              drive: 66
-            });
-            tone(kind, {
-              type: "square",
-              freq: 680,
-              endFreq: 980,
-              delay: 0.10,
-              dur: 0.07,
-              gain: 0.065,
-              drive: 72
-            });
-            noise(kind, {
-              delay: 0.095,
-              dur: 0.03,
-              gain: 0.05,
-              low: 1900,
-              high: 7200,
-              drive: 82
-            });
+            if (A) {
+              sub(kind, { freq: 96, endFreq: 53, dur: 0.08, gain: 0.13 });
+              relay(kind, { delay: 0.012, gain: 0.075, drive: 58 });
+              tone(kind, { type: "square", freq: 420, endFreq: 710, delay: 0.055, dur: 0.06, gain: 0.05, drive: 62 });
+            } else if (B) {
+              dataRip(kind, { dur: 0.055, gain: 0.08, drive: 105 });
+              tone(kind, { type: "square", freq: 540, endFreq: 980, delay: 0.045, dur: 0.07, gain: 0.065, drive: 86 });
+            } else {
+              relay(kind, { gain: 0.09, drive: 48 });
+              tone(kind, { type: "triangle", freq: 510, endFreq: 760, delay: 0.045, dur: 0.06, gain: 0.05, drive: 40 });
+            }
             break;
-
-          default:
-            play("select");
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.2.9 // visceral sound failed", err);
+        console.warn("FEHA DEV 0.3.2 // sound variant failed", err);
       }
+    }
+
+    function play(kind = "select") {
+      return playVariant(kind, STATE.style);
+    }
+
+    async function openLab() {
+      const labels = {
+        A: "A // MEAT + MACHINE",
+        B: "B // DATA VIOLENCE",
+        C: "C // SURGICAL BRUTAL"
+      };
+
+      const rows = [
+        ["select", "SELECT"],
+        ["drawer", "DRAWER"],
+        ["scan", "SCAN"],
+        ["install", "INSTALL"],
+        ["remove", "REMOVE"],
+        ["error", "ERROR"],
+        ["confirm", "CONFIRM"]
+      ];
+
+      const rowHtml = rows.map(([kind, title]) => `
+        <div style="display:grid;grid-template-columns:110px repeat(3,1fr);gap:6px;align-items:center;margin:6px 0">
+          <b style="font-family:monospace;letter-spacing:1px">${title}</b>
+          <button data-feha-audition="${kind}|A">A</button>
+          <button data-feha-audition="${kind}|B">B</button>
+          <button data-feha-audition="${kind}|C">C</button>
+        </div>
+      `).join("");
+
+      const dlg = new Dialog({
+        title: "FEHA // SOUND LAB",
+        content: `
+          <div style="padding:10px;min-width:520px">
+            <p style="opacity:.8">Pick the MATERIAL LANGUAGE first. These are deliberately different, not tiny EQ tweaks.</p>
+            <div style="display:grid;grid-template-columns:110px repeat(3,1fr);gap:6px;margin:10px 0 8px">
+              <span></span>
+              <b>A // MEAT<br>+ MACHINE</b>
+              <b>B // DATA<br>VIOLENCE</b>
+              <b>C // SURGICAL<br>BRUTAL</b>
+            </div>
+            ${rowHtml}
+            <hr>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
+              <button data-feha-use-style="A">USE A</button>
+              <button data-feha-use-style="B">USE B</button>
+              <button data-feha-use-style="C">USE C</button>
+            </div>
+            <p style="margin-top:10px;font-size:12px;opacity:.65">Current: <b id="feha-current-sound-style">${labels[STATE.style]}</b></p>
+          </div>
+        `,
+        buttons: {
+          close: {
+            label: "CLOSE"
+          }
+        },
+        render: html => {
+          html[0].querySelectorAll("[data-feha-audition]").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const [kind, style] = btn.dataset.fehaAudition.split("|");
+              playVariant(kind, style);
+            });
+          });
+
+          html[0].querySelectorAll("[data-feha-use-style]").forEach(btn => {
+            btn.addEventListener("click", () => {
+              STATE.style = btn.dataset.fehaUseStyle;
+              localStorage.setItem("fehaSoundStyle", STATE.style);
+              const label = html[0].querySelector("#feha-current-sound-style");
+              if (label) label.textContent = labels[STATE.style];
+              playVariant("confirm", STATE.style);
+              ui?.notifications?.info?.("FEHA SOUND STYLE // " + labels[STATE.style]);
+            });
+          });
+        }
+      });
+
+      dlg.render(true);
     }
 
     HTMLMediaElement.prototype.play = function(...args) {
@@ -793,7 +754,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.2.9 // sound routing failed", err);
+        console.warn("FEHA DEV 0.3.2 // sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -801,60 +762,35 @@
 
     globalThis.FEHA_SOUNDS = {
       play,
-      profile: MASTER,
-
+      playVariant,
+      openLab,
+      state: STATE,
+      setStyle(style) {
+        if (!["A", "B", "C"].includes(style)) return STATE.style;
+        STATE.style = style;
+        localStorage.setItem("fehaSoundStyle", style);
+        return STATE.style;
+      },
       setVolume(value) {
-        MASTER.volume = Math.max(
-          0,
-          Math.min(1, Number(value) || 0)
-        );
-
-        if (masterBus?.master) {
-          masterBus.master.gain.value = MASTER.volume;
-        }
-
-        return MASTER.volume;
-      },
-
-      demo() {
-        const order = [
-          "hover",
-          "select",
-          "drawer",
-          "scan",
-          "install",
-          "remove",
-          "error",
-          "confirm"
-        ];
-
-        order.forEach(
-          (kind, i) =>
-            setTimeout(() => play(kind), i * 650)
-        );
-      },
-
-      visceralDemo() {
-        ["select", "drawer", "scan", "install", "remove", "error"]
-          .forEach(
-            (kind, i) =>
-              setTimeout(() => play(kind), i * 760)
-          );
+        STATE.volume = Math.max(0, Math.min(1, Number(value) || 0));
+        if (masterBus?.master) masterBus.master.gain.value = STATE.volume;
+        return STATE.volume;
       }
     };
 
-    globalThis.__FEHA_SOUND_ENGINE_029 = {
+    globalThis.__FEHA_SOUND_ENGINE_032 = {
       originalPlay: OriginalPlay,
       get context() { return ctx; }
     };
 
     console.info(
-      "FEHA DEV 0.2.9 // GUTTURAL DIGITAL sound engine armed. Test FEHA_SOUNDS.visceralDemo()"
+      "FEHA DEV 0.3.2 // Sound Lab armed. Run FEHA_SOUNDS.openLab()"
     );
   }
 
   function removeSoundEngine() {
     const engine =
+      globalThis.__FEHA_SOUND_ENGINE_032 ??
       globalThis.__FEHA_SOUND_ENGINE_029 ??
       globalThis.__FEHA_SOUND_ENGINE_028;
 
@@ -869,6 +805,7 @@
     } catch {}
 
     delete globalThis.FEHA_SOUNDS;
+    delete globalThis.__FEHA_SOUND_ENGINE_032;
     delete globalThis.__FEHA_SOUND_ENGINE_029;
     delete globalThis.__FEHA_SOUND_ENGINE_028;
   }
@@ -1067,7 +1004,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // schematic scale + port grid + legend fix loaded"
+    "FEHA DEV " + BUILD + " // sound lab loaded"
   );
 
   state.reopenChrome();
