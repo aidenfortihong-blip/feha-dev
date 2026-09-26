@@ -1,12 +1,12 @@
 {
-  "version": "0.4.7",
+  "version": "0.4.8",
   "updated": "2026-09-25",
-  "scope": "installed-port-cleanup",
+  "scope": "empty-cache-cleanup",
   "notes": [
-    "Rebuilt filled hardware ports so installed chrome no longer looks crushed compared with vacant ports",
-    "Installed hardware now uses a dedicated thumbnail, title/meta column and aligned action column",
-    "EJECT no longer floats at the bottom of the card",
-    "Empty ports keep the simpler socket plus label layout",
-    "No behavior changes to install/eject actions"
+    "Removed the raw CP2077 highlight image that caused giant white horizontal bars across the NO COMPATIBLE HARDWARE state",
+    "Rebuilt the empty cache message as a clean FEHA panel with no atlas-text overlays",
+    "Constrained the empty panel width and aligned it cleanly within the cache rail",
+    "Reduced empty-drawer height so a no-results state does not consume the same space as a populated hardware rail",
+    "Preserved all cache functionality and the 0.4.7 installed-port layout"
   ]
 }
