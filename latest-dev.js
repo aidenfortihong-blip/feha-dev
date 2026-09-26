@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.5.3";
+  const BUILD = "0.6.0";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.5.3 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.0 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.5.3 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.0 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.5.3 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.0 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.5.3 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.0 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.5.3 // sound source: ${source}`
+      `FEHA DEV 0.6.0 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.5.3 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.0 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1363,6 +1363,684 @@
     });
   }
 
+  /* ------------------------------------------------------------------------
+     CYBERDECK V2 // full FEHA-owned replacement
+     ------------------------------------------------------------------------ */
+
+  const CYBERDECK_V2_ID = "feha-cyberdeck-v2";
+  let cyberdeckOriginalOpen = null;
+
+  function esc(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function itemData(item) {
+    try {
+      return item?.toObject?.() ?? item ?? {};
+    } catch {
+      return item ?? {};
+    }
+  }
+
+  function deepNumber(source, names) {
+    if (!source || typeof source !== "object") return null;
+    const wanted = new Set(names.map(x => String(x).toLowerCase().replace(/[^a-z0-9]/g, "")));
+    const seen = new Set();
+    const queue = [{value: source, depth: 0}];
+
+    while (queue.length) {
+      const {value, depth} = queue.shift();
+      if (!value || typeof value !== "object" || seen.has(value) || depth > 6) continue;
+      seen.add(value);
+
+      for (const [key, raw] of Object.entries(value)) {
+        const clean = String(key).toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (wanted.has(clean)) {
+          const n = Number(raw?.value ?? raw);
+          if (Number.isFinite(n)) return n;
+        }
+        if (raw && typeof raw === "object") queue.push({value: raw, depth: depth + 1});
+      }
+    }
+    return null;
+  }
+
+  function deepString(source, names) {
+    if (!source || typeof source !== "object") return null;
+    const wanted = new Set(names.map(x => String(x).toLowerCase().replace(/[^a-z0-9]/g, "")));
+    const seen = new Set();
+    const queue = [{value: source, depth: 0}];
+
+    while (queue.length) {
+      const {value, depth} = queue.shift();
+      if (!value || typeof value !== "object" || seen.has(value) || depth > 6) continue;
+      seen.add(value);
+
+      for (const [key, raw] of Object.entries(value)) {
+        const clean = String(key).toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (wanted.has(clean) && (typeof raw === "string" || typeof raw === "number")) {
+          return String(raw);
+        }
+        if (raw && typeof raw === "object") queue.push({value: raw, depth: depth + 1});
+      }
+    }
+    return null;
+  }
+
+  function fehaFlags(item) {
+    return item?.flags?.fleshEnshrouded ?? item?.flags?.feha ?? {};
+  }
+
+  function installedChrome(item) {
+    const f = fehaFlags(item);
+    return (
+      f.installed === true ||
+      f.isInstalled === true ||
+      item?.system?.equipped === true ||
+      item?.system?.equipped?.value === true
+    );
+  }
+
+  function isQuickhack(item) {
+    if (!item) return false;
+    const f = fehaFlags(item);
+    const folder = String(item.folder?.name ?? "");
+    const blob = [
+      item.name,
+      item.type,
+      folder,
+      f.itemType,
+      f.kind,
+      f.category,
+      f.quickhack,
+      f.isQuickhack,
+      item.system?.type?.value,
+      item.system?.identifier
+    ].join(" ").toLowerCase();
+
+    // In the ADK build, quickhacks are represented by spell documents.
+    return item.type === "spell" || /quick\s*hack|quickhack/.test(blob);
+  }
+
+  function isCyberdeck(item) {
+    if (!item || !installedChrome(item)) return false;
+    const f = fehaFlags(item);
+    const slot = String(f.cyberwareSlot ?? f.slot ?? "").toLowerCase();
+    const blob = [
+      item.name,
+      item.folder?.name,
+      f.kind,
+      f.category,
+      f.cyberdeck,
+      f.isCyberdeck,
+      slot
+    ].join(" ").toLowerCase();
+
+    return (
+      f.cyberdeck === true ||
+      f.isCyberdeck === true ||
+      /cyberdeck|netdriver|nets*driver/.test(blob) ||
+      /operating\s*system/.test(slot)
+    );
+  }
+
+  function itemDescription(item) {
+    const raw =
+      item?.system?.description?.value ??
+      item?.system?.description ??
+      item?.system?.chatFlavor ??
+      "";
+    const div = document.createElement("div");
+    div.innerHTML = String(raw ?? "");
+    return textNorm(div.textContent ?? "").slice(0, 220);
+  }
+
+  function isSupportChrome(item, deck) {
+    if (!item || item === deck || !installedChrome(item) || isQuickhack(item)) return false;
+    const f = fehaFlags(item);
+    const blob = [
+      item.name,
+      item.folder?.name,
+      f.kind,
+      f.category,
+      f.netrunnerSupport,
+      f.netSupport,
+      f.cyberwareSlot,
+      itemDescription(item)
+    ].join(" ").toLowerCase();
+
+    return (
+      f.netrunnerSupport === true ||
+      f.netSupport === true ||
+      /netrunner|quickhack|neural intrusion|self ice|black ice|ram\b|network/.test(blob)
+    );
+  }
+
+  function quickhackPrepared(item) {
+    const prep = item?.system?.preparation;
+    if (prep && typeof prep === "object" && "prepared" in prep) return prep.prepared === true;
+    const f = fehaFlags(item);
+    return f.loaded === true || f.quickhackLoaded === true || f.installed === true;
+  }
+
+  function getCyberdeckModel(actor) {
+    if (!actor) return null;
+    const items = [...(actor.items ?? [])];
+    const deck = items.find(isCyberdeck) ?? null;
+    const quickhacks = items.filter(isQuickhack);
+    const loaded = quickhacks.filter(quickhackPrepared);
+    const library = quickhacks.filter(item => !quickhackPrepared(item));
+    const support = items.filter(item => isSupportChrome(item, deck));
+
+    const deckObj = itemData(deck);
+    const actorObj = (() => {
+      try { return actor.toObject?.() ?? actor; } catch { return actor; }
+    })();
+
+    const baseRam =
+      deepNumber(deckObj, ["baseRam","ramMax","maxRam","ramCapacity"]) ??
+      deepNumber(actorObj, ["ramMax","maxRam","ramCapacity"]) ??
+      0;
+
+    const currentRam =
+      deepNumber(actorObj, ["currentRam","ramCurrent","activeRam"]) ??
+      deepNumber(deckObj, ["currentRam","ramCurrent","activeRam"]) ??
+      baseRam;
+
+    const softwareSlots =
+      deepNumber(deckObj, ["softwareSlots","quickhackSlots","programSlots","deckSlots"]) ??
+      Math.max(loaded.length, 0);
+
+    const quickhackDc =
+      deepNumber(deckObj, ["quickhackDc","hackDc","quickhackDifficulty"]) ??
+      deepNumber(actorObj, ["quickhackDc","hackDc"]) ??
+      null;
+
+    const heat = deepNumber(actorObj, ["currentHeat","heatCurrent","heat"]);
+    const heatMax = deepNumber(actorObj, ["heatMax","maxHeat"]) ?? 100;
+    const humanity = deepNumber(actorObj, ["currentHumanity","humanityCurrent","humanity"]);
+    const humanityMax = deepNumber(actorObj, ["humanityMax","maxHumanity"]) ?? 100;
+
+    const f = fehaFlags(deck);
+    const manufacturer =
+      f.manufacturer ??
+      deepString(deckObj, ["manufacturer","maker","brand"]) ??
+      deck?.folder?.name ??
+      "UNKNOWN";
+
+    const mk =
+      f.mk ??
+      deepString(deckObj, ["mk","mark","tier"]) ??
+      "";
+
+    return {
+      actor,
+      deck,
+      loaded,
+      library,
+      support,
+      baseRam,
+      currentRam: Math.max(0, currentRam),
+      softwareSlots: Math.max(0, softwareSlots),
+      quickhackDc,
+      heat,
+      heatMax,
+      humanity,
+      humanityMax,
+      manufacturer: String(manufacturer ?? "UNKNOWN").replace(/^-+/, ""),
+      mk: String(mk ?? "")
+    };
+  }
+
+  function cyberActors() {
+    const all = [...(game?.actors ?? [])];
+    return all
+      .filter(actor => game.user?.isGM || actor.isOwner)
+      .sort((a,b) => String(a.name).localeCompare(String(b.name)));
+  }
+
+  function cyberActorById(id) {
+    return game?.actors?.get?.(id) ?? null;
+  }
+
+  function cyberPortrait(actor) {
+    const override = FEHA_PORTRAIT_OVERRIDES?.[norm(actor?.name)];
+    return override || actor?.img || "icons/svg/mystery-man.svg";
+  }
+
+  function cyberPct(value, max) {
+    const v = Number(value);
+    const m = Number(max);
+    if (!Number.isFinite(v) || !Number.isFinite(m) || m <= 0) return null;
+    return Math.max(0, Math.min(100, (v / m) * 100));
+  }
+
+  function segmentBar(value, max, segments = 20, cls = "") {
+    const pct = cyberPct(value, max);
+    const filled = pct == null ? 0 : Math.round((pct / 100) * segments);
+    return `<div class="cd2-segments ${cls}" aria-hidden="true">${Array.from(
+      {length: segments},
+      (_,i) => `<i class="${i < filled ? "is-filled" : ""}"></i>`
+    ).join("")}</div>`;
+  }
+
+  function quickhackCard(item, loaded = false) {
+    if (!item) return "";
+    const f = fehaFlags(item);
+    const ram =
+      deepNumber(itemData(item), ["ramCost","ram","costRam","quickhackRam"]) ??
+      deepNumber(f, ["ramCost","ram","costRam"]) ??
+      null;
+    const dc =
+      deepNumber(itemData(item), ["dc","quickhackDc","hackDc"]) ??
+      null;
+    const action = loaded ? "EJECT" : "LOAD";
+    return `
+      <article class="cd2-hack-card" data-item-id="${esc(item.id)}">
+        <div class="cd2-hack-code">QH.${esc(String(item.id ?? "").slice(-4).toUpperCase())}</div>
+        <img src="${esc(item.img || "icons/svg/item-bag.svg")}" alt="">
+        <div class="cd2-hack-copy">
+          <b>${esc(item.name)}</b>
+          <span>${ram == null ? "RAM —" : "RAM " + ram}${dc == null ? "" : " // DC " + dc}</span>
+          <small>${esc(itemDescription(item) || "Quickhack software package.")}</small>
+        </div>
+        <button type="button" data-cd-action="${loaded ? "unload" : "load"}" data-item-id="${esc(item.id)}">${action}</button>
+        ${loaded ? `<button type="button" class="cd2-run" data-cd-action="run" data-item-id="${esc(item.id)}">RUN</button>` : ""}
+      </article>
+    `;
+  }
+
+  function loadedSlots(model) {
+    if (!model.deck) {
+      return `
+        <div class="cd2-no-deck">
+          <div class="cd2-no-deck-glyph">×</div>
+          <b>NO CYBERDECK INSTALLED</b>
+          <span>Install an Operating System / Cyberdeck through Chrome Manager.</span>
+        </div>
+      `;
+    }
+
+    const capacity = Math.max(model.softwareSlots || model.loaded.length || 1, model.loaded.length);
+    const cards = [];
+    for (let i = 0; i < capacity; i++) {
+      const item = model.loaded[i];
+      if (item) {
+        cards.push(quickhackCard(item, true));
+      } else {
+        cards.push(`
+          <button type="button" class="cd2-empty-slot" data-cd-action="tab" data-tab="memory">
+            <span>+</span>
+            <b>EMPTY SLOT</b>
+            <small>LOAD SOFTWARE</small>
+          </button>
+        `);
+      }
+    }
+    return cards.join("");
+  }
+
+  function supportCards(model) {
+    if (!model.support.length) {
+      return `<div class="cd2-empty-message">NO SUPPORT CHROME DETECTED</div>`;
+    }
+    return model.support.map(item => `
+      <article class="cd2-support-card">
+        <img src="${esc(item.img || "icons/svg/item-bag.svg")}" alt="">
+        <div>
+          <b>${esc(item.name)}</b>
+          <span>${esc(fehaFlags(item).mk ?? "")}</span>
+          <small>${esc(itemDescription(item) || "Netrunner support hardware.")}</small>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  function renderCyberdeckV2(actorId = null, tab = "quickhacks") {
+    const actors = cyberActors();
+    const saved = localStorage.getItem("fehaCyberdeckActorV2");
+    const fallback =
+      cyberActorById(actorId) ??
+      cyberActorById(saved) ??
+      globalThis.ADKChromeBackend?.getActor?.() ??
+      game.user?.character ??
+      actors[0] ??
+      null;
+
+    if (!fallback) {
+      ui?.notifications?.warn?.("FEHA // No accessible actors for Cyberdeck.");
+      return null;
+    }
+
+    localStorage.setItem("fehaCyberdeckActorV2", fallback.id);
+
+    const model = getCyberdeckModel(fallback);
+    let root = document.getElementById(CYBERDECK_V2_ID);
+    if (!root) {
+      root = document.createElement("section");
+      root.id = CYBERDECK_V2_ID;
+      document.body.appendChild(root);
+    }
+
+    const ramMax = Math.max(1, model.baseRam || model.currentRam || 1);
+    const ramText = model.deck ? `${model.currentRam} / ${ramMax}` : "OFFLINE";
+    const heatText = model.heat == null ? "—" : `${model.heat} / ${model.heatMax}`;
+    const humanityText = model.humanity == null ? "—" : `${model.humanity} / ${model.humanityMax}`;
+
+    root.dataset.actorId = fallback.id;
+    root.dataset.tab = tab;
+
+    root.innerHTML = `
+      <div class="cd2-scanlines"></div>
+
+      <header class="cd2-header">
+        <div class="cd2-brand">
+          <small>NOCTURNE // NETRUNNER OPERATING ENVIRONMENT</small>
+          <h1>CYBERDECK <span>OS</span></h1>
+          <div class="cd2-build">FEHA / ADK // ${esc(BUILD)}</div>
+        </div>
+
+        <div class="cd2-header-status">
+          <div><span>LINK</span><b>${model.deck ? "STANDBY" : "OFFLINE"}</b></div>
+          <div><span>DECK</span><b>${model.deck ? "ONLINE" : "NONE"}</b></div>
+          <div><span>SOFTWARE</span><b>${model.loaded.length}/${model.softwareSlots || 0}</b></div>
+        </div>
+
+        <div class="cd2-header-actions">
+          <select id="cd2-actor">
+            ${actors.map(actor => `<option value="${esc(actor.id)}" ${actor.id === fallback.id ? "selected" : ""}>${esc(actor.name)}</option>`).join("")}
+          </select>
+          <button type="button" class="cd2-close" data-cd-action="close">×</button>
+        </div>
+      </header>
+
+      <aside class="cd2-operator">
+        <div class="cd2-portrait">
+          <img src="${esc(cyberPortrait(fallback))}" alt="${esc(fallback.name)}">
+          <div class="cd2-portrait-grid"></div>
+          <div class="cd2-operator-tag">OPERATOR // ${esc(fallback.name.toUpperCase())}</div>
+        </div>
+
+        <div class="cd2-operator-meta">
+          <div><span>SUBJECT</span><b>${esc(fallback.name)}</b></div>
+          <div><span>NODE</span><b>${esc(String(fallback.id).slice(-6).toUpperCase())}</b></div>
+          <div><span>PROFILE</span><b>NETRUNNER</b></div>
+        </div>
+
+        <div class="cd2-deck-summary ${model.deck ? "" : "is-offline"}">
+          <small>INSTALLED CYBERDECK</small>
+          ${model.deck ? `
+            <div class="cd2-deck-head">
+              <img src="${esc(model.deck.img || "icons/svg/cog.svg")}" alt="">
+              <div>
+                <h2>${esc(model.deck.name)}</h2>
+                <span>${esc(model.manufacturer)}${model.mk ? " // MK." + esc(model.mk) : ""}</span>
+              </div>
+            </div>
+            <div class="cd2-deck-specs">
+              <div><span>RAM</span><b>${esc(model.baseRam)}</b></div>
+              <div><span>SLOTS</span><b>${esc(model.softwareSlots)}</b></div>
+              <div><span>QH DC</span><b>${model.quickhackDc ?? "—"}</b></div>
+            </div>
+          ` : `
+            <div class="cd2-offline-copy">NO HARDWARE LINK<br><span>INSTALL THROUGH CHROME MANAGER</span></div>
+          `}
+        </div>
+      </aside>
+
+      <main class="cd2-main">
+        <section class="cd2-telemetry">
+          <div class="cd2-meter cd2-meter-ram">
+            <div class="cd2-meter-head"><span>RAM // ACTIVE MEMORY</span><b>${ramText}</b></div>
+            ${segmentBar(model.currentRam, ramMax, 24, "is-ram")}
+          </div>
+          <div class="cd2-meter">
+            <div class="cd2-meter-head"><span>HEAT // TRACE LOAD</span><b>${heatText}</b></div>
+            ${segmentBar(model.heat, model.heatMax, 12, "is-heat")}
+          </div>
+          <div class="cd2-meter">
+            <div class="cd2-meter-head"><span>HUMANITY // SIGNAL INTEGRITY</span><b>${humanityText}</b></div>
+            ${segmentBar(model.humanity, model.humanityMax, 12, "is-humanity")}
+          </div>
+        </section>
+
+        <nav class="cd2-tabs">
+          ${[
+            ["quickhacks","QUICKHACKS"],
+            ["network","NETWORK"],
+            ["memory","MEMORY"],
+            ["diagnostics","DIAGNOSTICS"]
+          ].map(([id,label]) => `<button type="button" data-cd-action="tab" data-tab="${id}" class="${tab === id ? "is-active" : ""}">${label}</button>`).join("")}
+        </nav>
+
+        <section class="cd2-tabbody">
+          <div class="cd2-view ${tab === "quickhacks" ? "is-active" : ""}" data-view="quickhacks">
+            <div class="cd2-section-head">
+              <div><small>EXECUTION ARRAY</small><h3>LOADED QUICKHACKS</h3></div>
+              <span>${model.loaded.length} / ${model.softwareSlots || 0} SLOTS</span>
+            </div>
+            <div class="cd2-loaded-grid">${loadedSlots(model)}</div>
+          </div>
+
+          <div class="cd2-view ${tab === "network" ? "is-active" : ""}" data-view="network">
+            <div class="cd2-section-head">
+              <div><small>NETWORK TOPOLOGY</small><h3>TARGET ACQUISITION</h3></div>
+              <span>PASSIVE SCAN</span>
+            </div>
+            <div class="cd2-network-grid">
+              <div class="cd2-crosshair"><i></i><i></i><i></i><i></i></div>
+              <div class="cd2-node n1">01</div>
+              <div class="cd2-node n2">02</div>
+              <div class="cd2-node n3">03</div>
+              <div class="cd2-node n4">04</div>
+              <div class="cd2-network-copy">
+                <b>NO TARGET LOCK</b>
+                <span>Awaiting network target / token integration.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cd2-view ${tab === "memory" ? "is-active" : ""}" data-view="memory">
+            <div class="cd2-section-head">
+              <div><small>PERSISTENT STORAGE</small><h3>SOFTWARE LIBRARY</h3></div>
+              <span>${model.library.length} PACKAGES</span>
+            </div>
+            <div class="cd2-library-list">
+              ${model.library.length ? model.library.map(item => quickhackCard(item, false)).join("") : `<div class="cd2-empty-message">NO UNLOADED QUICKHACK SOFTWARE</div>`}
+            </div>
+          </div>
+
+          <div class="cd2-view ${tab === "diagnostics" ? "is-active" : ""}" data-view="diagnostics">
+            <div class="cd2-section-head">
+              <div><small>LOCAL HARDWARE BUS</small><h3>DIAGNOSTICS</h3></div>
+              <span>READ ONLY</span>
+            </div>
+            <div class="cd2-diagnostics-grid">
+              <div><span>CYBERDECK</span><b>${model.deck ? esc(model.deck.name) : "NOT INSTALLED"}</b></div>
+              <div><span>MANUFACTURER</span><b>${model.deck ? esc(model.manufacturer) : "—"}</b></div>
+              <div><span>SOFTWARE BUS</span><b>${model.deck ? model.softwareSlots + " SLOTS" : "OFFLINE"}</b></div>
+              <div><span>QUICKHACK DC</span><b>${model.quickhackDc ?? "—"}</b></div>
+            </div>
+            <div class="cd2-support-list">
+              <div class="cd2-subhead">NETRUNNER SUPPORT CHROME</div>
+              ${supportCards(model)}
+            </div>
+          </div>
+        </section>
+
+        <footer class="cd2-footer">
+          <div class="cd2-log">
+            <span>SYS&gt;</span>
+            <b>${model.deck ? "CYBERDECK READY // AWAITING COMMAND" : "CYBERDECK OFFLINE // HARDWARE REQUIRED"}</b>
+          </div>
+          <button type="button" class="cd2-rest" data-cd-action="rest" ${model.deck ? "" : "disabled"}>SHORT REST // RECOVER RAM</button>
+          <button type="button" class="cd2-jack" data-cd-action="jack" ${model.deck ? "" : "disabled"}>
+            <span>LINK PROTOCOL</span>
+            <b>JACK IN</b>
+          </button>
+        </footer>
+      </main>
+
+      <aside class="cd2-right">
+        <section>
+          <div class="cd2-subhead">SOFTWARE BUS</div>
+          <div class="cd2-right-stat"><span>LOADED</span><b>${model.loaded.length}</b></div>
+          <div class="cd2-right-stat"><span>LIBRARY</span><b>${model.library.length}</b></div>
+          <div class="cd2-right-stat"><span>CAPACITY</span><b>${model.softwareSlots || "—"}</b></div>
+        </section>
+
+        <section>
+          <div class="cd2-subhead">SUPPORT CHROME</div>
+          <div class="cd2-mini-support">${supportCards(model)}</div>
+        </section>
+
+        <section class="cd2-session">
+          <div class="cd2-subhead">SESSION</div>
+          <p>RAM recovers on <b>Short Rest</b>. Quickhacks are persistent software and loaded into the installed deck's software slots.</p>
+        </section>
+      </aside>
+    `;
+
+    bindCyberdeckV2(root, model);
+    return root;
+  }
+
+  async function setQuickhackPrepared(actor, itemId, prepared) {
+    const item = actor?.items?.get?.(itemId) ?? actor?.items?.find?.(x => x.id === itemId);
+    if (!item) return false;
+
+    if (item.system?.preparation && typeof item.system.preparation === "object") {
+      await item.update({"system.preparation.prepared": prepared});
+      return true;
+    }
+
+    await item.update({"flags.fleshEnshrouded.quickhackLoaded": prepared});
+    return true;
+  }
+
+  function bindCyberdeckV2(root, model) {
+    root.querySelector("#cd2-actor")?.addEventListener("change", event => {
+      const id = String(event.currentTarget.value ?? "");
+      renderCyberdeckV2(id, root.dataset.tab || "quickhacks");
+      globalThis.FEHA_SOUNDS?.play?.("actor_switch");
+    });
+
+    root.addEventListener("click", async event => {
+      const button = event.target?.closest?.("[data-cd-action]");
+      if (!button || !root.contains(button)) return;
+
+      const action = button.dataset.cdAction;
+      const actor = model.actor;
+
+      if (action === "close") {
+        root.remove();
+        globalThis.FEHA_SOUNDS?.play?.("drawer_close");
+        return;
+      }
+
+      if (action === "tab") {
+        renderCyberdeckV2(actor.id, button.dataset.tab || "quickhacks");
+        globalThis.FEHA_SOUNDS?.play?.("select");
+        return;
+      }
+
+      if (action === "load" || action === "unload") {
+        const prepared = action === "load";
+        await setQuickhackPrepared(actor, button.dataset.itemId, prepared);
+        renderCyberdeckV2(actor.id, prepared ? "quickhacks" : "memory");
+        globalThis.FEHA_SOUNDS?.play?.(prepared ? "install" : "remove");
+        return;
+      }
+
+      if (action === "run") {
+        const item = actor?.items?.get?.(button.dataset.itemId) ?? actor?.items?.find?.(x => x.id === button.dataset.itemId);
+        if (!item) return;
+        globalThis.FEHA_SOUNDS?.play?.("confirm");
+        if (typeof item.use === "function") {
+          await item.use();
+        } else if (typeof item.roll === "function") {
+          await item.roll();
+        } else {
+          item.sheet?.render?.(true);
+        }
+        return;
+      }
+
+      if (action === "rest") {
+        globalThis.FEHA_SOUNDS?.play?.("confirm");
+        if (typeof actor?.shortRest === "function") {
+          await actor.shortRest();
+          setTimeout(() => renderCyberdeckV2(actor.id, root.dataset.tab || "quickhacks"), 250);
+        } else {
+          ui?.notifications?.warn?.("FEHA // Short Rest action is unavailable on this actor.");
+        }
+        return;
+      }
+
+      if (action === "jack") {
+        root.classList.remove("is-jacking");
+        void root.offsetWidth;
+        root.classList.add("is-jacking");
+        renderCyberdeckV2(actor.id, "network");
+        setTimeout(() => document.getElementById(CYBERDECK_V2_ID)?.classList.add("is-jacking"), 0);
+        globalThis.FEHA_SOUNDS?.play?.("scan");
+        return;
+      }
+    });
+  }
+
+  function openCyberdeckV2(actorId = null) {
+    // If the old native Cyberdeck is already on screen, remove it. We keep its
+    // data model, not its presentation.
+    findCyberdeckRoots(document.body).forEach(el => el.remove());
+    return renderCyberdeckV2(actorId, "quickhacks");
+  }
+
+  function installCyberdeckV2() {
+    const adk = globalThis.game?.adk;
+    if (!adk || typeof adk.openCyberdeck !== "function") return false;
+
+    if (!cyberdeckOriginalOpen) {
+      cyberdeckOriginalOpen = adk.openCyberdeck.bind(adk);
+    }
+
+    if (!adk.__fehaOriginalOpenCyberdeck) {
+      adk.__fehaOriginalOpenCyberdeck = cyberdeckOriginalOpen;
+    }
+
+    adk.openCyberdeck = openCyberdeckV2;
+    globalThis.FEHA_CYBERDECK_V2 = {
+      open: openCyberdeckV2,
+      render: renderCyberdeckV2,
+      model: getCyberdeckModel
+    };
+
+    // Replace an already-open native window immediately.
+    const legacy = findCyberdeckRoots(document.body);
+    const wasOpen = legacy.length > 0;
+    legacy.forEach(el => el.remove());
+    if (wasOpen) setTimeout(() => openCyberdeckV2(), 60);
+
+    return true;
+  }
+
+  function removeCyberdeckV2() {
+    document.getElementById(CYBERDECK_V2_ID)?.remove();
+    const adk = globalThis.game?.adk;
+    const original = adk?.__fehaOriginalOpenCyberdeck ?? cyberdeckOriginalOpen;
+    if (adk && original) {
+      adk.openCyberdeck = original;
+      delete adk.__fehaOriginalOpenCyberdeck;
+    }
+    delete globalThis.FEHA_CYBERDECK_V2;
+    cyberdeckOriginalOpen = null;
+  }
+
   function startObserver() {
     observer?.disconnect?.();
     observer = new MutationObserver(() => {
@@ -1371,7 +2049,7 @@
       normalizeDossierSchematics();
       tagLegacyWallets();
       suppressLegacyWalletChrome();
-      markCyberdecks();
+      installCyberdeckV2();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
@@ -1405,6 +2083,7 @@
       removeWalletGuard();
       clearLegacyWalletTags();
       clearCyberdeckMarks();
+      removeCyberdeckV2();
       document
         .getElementById("adk-chrome-manager-34")
         ?.classList.remove("feha-cache-selection-focus");
@@ -1443,7 +2122,7 @@
   markRoot();
   tagLegacyWallets();
   suppressLegacyWalletChrome();
-  markCyberdecks();
+  installCyberdeckV2();
 
   console.log(
     "%cFEHA DEV PATCH %c" + BUILD,
@@ -1452,7 +2131,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // Cyberdeck foundation active"
+    "FEHA DEV " + BUILD + " // Cyberdeck V2 replacement active"
   );
 
   state.reopenChrome();
