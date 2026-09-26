@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.4";
+  const BUILD = "0.6.5";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.4 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.5 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.4 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.5 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.4 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.5 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.4 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.5 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.4 // sound source: ${source}`
+      `FEHA DEV 0.6.5 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.4 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.5 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -2226,8 +2226,16 @@ if (!game.user?.isGM) {
     if (list.length === 1) return list[0];
 
     const suggested =
-      list.find(m => /\b(adk|feha)\b/i.test(`${m.id} ${m.title}`)) ??
-      list.find(m => m.active) ??
+      list.find(m => m.id === "flesh-enshrouded-heart-ablaze") ??
+      list.find(m =>
+        /flesh.*enshrouded|heart.*ablaze/i.test(`${m.id} ${m.title}`) &&
+        !/gateway/i.test(`${m.id} ${m.title}`)
+      ) ??
+      list.find(m =>
+        /\b(adk|feha)\b/i.test(`${m.id} ${m.title}`) &&
+        !/gateway/i.test(`${m.id} ${m.title}`)
+      ) ??
+      list.find(m => m.active && !/gateway/i.test(`${m.id} ${m.title}`)) ??
       list[0];
 
     const menu = list
