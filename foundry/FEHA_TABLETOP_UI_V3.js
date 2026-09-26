@@ -567,6 +567,23 @@
         }
       }
 
+      // Dense-scene fallback: stable screen lanes. These are appended after
+      // local candidates, so normal encounters still preserve scene geometry.
+      const gridX = [8,20,32,44,56,68,80,92];
+      const gridY = [12,28,44,60,72];
+
+      for (const x of gridX) {
+        for (const y of gridY) {
+          // Keep the operator's central identity area visually sacred.
+          const opDx = (x-operator.x)/14;
+          const opDy = (y-operator.y)/18;
+          if (Math.hypot(opDx,opDy) < 1.05) continue;
+
+          const drift = Math.hypot(x-node.x,y-node.y);
+          points.push({x,y,drift});
+        }
+      }
+
       return points;
     };
 
