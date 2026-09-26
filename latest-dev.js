@@ -2979,9 +2979,11 @@ if (!game.user?.isGM) {
     "color:#fff"
   );
 
-  ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // base patch active; Cyberdeck V3 may supersede V2"
-  );
+  if (!globalThis.FEHA_CYBERDECK_V3_ACTIVE) {
+    ui?.notifications?.info?.(
+      "FEHA DEV " + BUILD + " // base services ready"
+    );
+  }
 
   if (document.getElementById("adk-chrome-manager-34")) {
     state.reopenChrome();
