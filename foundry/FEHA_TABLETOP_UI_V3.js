@@ -13,6 +13,28 @@
   const JACK_ID = "feha-jackin-overlay";
   const FLAG = "fleshEnshrouded";
 
+  const actionLocks = new Set();
+
+  function actionKey(kind,actorId) {
+    return String(kind) + ":" + String(actorId ?? "");
+  }
+
+  function beginAction(kind,actorId) {
+    const key = actionKey(kind,actorId);
+    if (actionLocks.has(key)) return null;
+    actionLocks.add(key);
+    return key;
+  }
+
+  function endAction(key) {
+    if (key) actionLocks.delete(key);
+  }
+
+  function actorActionBusy(actorId) {
+    const suffix = ":" + String(actorId ?? "");
+    return [...actionLocks].some(key => key.endsWith(suffix));
+  }
+
   const norm = v => String(v ?? "").trim().toLowerCase();
   const esc = v => String(v ?? "")
     .replace(/&/g,"&amp;")
@@ -606,10 +628,11 @@
       }
 
       if (action === "load" || action === "unload") {
-        if (button.dataset.busy === "1") return;
+        const lock = beginAction("software",actor.id);
+        if (!lock) return;
+
         button.dataset.busy = "1";
         button.disabled = true;
-
         const value = action === "load";
 
         try {
@@ -625,14 +648,19 @@
             button.disabled = false;
             delete button.dataset.busy;
           }
+        } finally {
+          endAction(lock);
         }
         return;
       }
 
       if (action === "rest") {
-        if (button.dataset.busy === "1") return;
+        const lock = beginAction("rest",actor.id);
+        if (!lock) return;
+
         const live = model(actor);
         if (!live.deck) {
+          endAction(lock);
           return ui?.notifications?.warn?.("No Cyberdeck installed.");
         }
 
@@ -661,6 +689,8 @@
             button.disabled = false;
             delete button.dataset.busy;
           }
+        } finally {
+          endAction(lock);
         }
         return;
       }
@@ -701,7 +731,8 @@
       }
 
       if (action === "run") {
-        if (root.dataset.executing === "1") return;
+        const lock = beginAction("execute",actor.id);
+        if (!lock) return;
 
         const item = actor.items?.get?.(button.dataset.itemId);
         const target = [...(game.user?.targets ?? [])][0] ?? null;
@@ -714,12 +745,14 @@
           !target ||
           !liveNet.nodes.some(node => node.id === targetId)
         ) {
+          endAction(lock);
           return ui?.notifications?.warn?.("Select a live scene target and load that Quickhack first.");
         }
 
         const m = model(actor);
         const cost = hackCost(item);
         if (m.currentRam < cost) {
+          endAction(lock);
           return ui?.notifications?.warn?.("Not enough RAM. "+m.currentRam+"/"+cost+".");
         }
 
@@ -744,6 +777,8 @@
             delete root.dataset.executing;
             button.disabled = false;
           }
+        } finally {
+          endAction(lock);
         }
       }
     };
@@ -795,7 +830,12 @@
     v3Hooks.push([
       "updateActor",
       Hooks.on("updateActor", actor => {
-        if (actor?.id === visibleActorId()) queueV3Refresh("auto");
+        if (
+          actor?.id === visibleActorId() &&
+          !actorActionBusy(actor.id)
+        ) {
+          queueV3Refresh("auto");
+        }
       })
     ]);
 
@@ -803,7 +843,12 @@
       v3Hooks.push([
         event,
         Hooks.on(event, item => {
-          if (item?.parent?.id === visibleActorId()) queueV3Refresh("auto");
+          if (
+            item?.parent?.id === visibleActorId() &&
+            !actorActionBusy(item.parent.id)
+          ) {
+            queueV3Refresh("auto");
+          }
         })
       ]);
     }
@@ -850,6 +895,7 @@
     model,
     destroy() {
       lifecycleActive = false;
+      actionLocks.clear();
       v3Observer?.disconnect?.();
       for (const [event,id] of v3Hooks) {
         try { Hooks.off(event,id); } catch {}
