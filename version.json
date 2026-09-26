@@ -1,14 +1,15 @@
 {
-  "version": "0.8.2",
+  "version": "0.8.3",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-v3-surgical-cleanup",
+  "scope": "cyberdeck-v3-lock-quality",
   "notes": [
-    "Removed raw white-mask CP2077 asset backgrounds from the header, Short Rest control, loaded Quickhack cards, empty slots, and JACK IN",
-    "Darkened and simplified the header so it matches the rest of the Cyberdeck",
-    "Short Rest is now a compact utility control inside the RAM module",
-    "Rebuilt loaded Quickhack slots into readable compact memory cards with clean EJECT controls",
-    "Simplified empty bays and software library cards",
-    "Tightened the right passive rail and increased useful text readability",
-    "Kept JACK IN full-width while removing noisy fake-detail blocks and preserving only subtle asset dressing"
+    "Aligned Cyberdeck detection with the installed FEHA module: Cyberdeck, Paraline, Netdriver, Tetratronic, and Raven Micro names are recognized",
+    "Support Chrome now excludes all Cyberdecks and follows the canonical FEHA support-chrome text rules",
+    "Short Rest now directly restores ramCurrent to computed maximum RAM and posts the same style of rest chat message as the original Cyberdeck",
+    "V3 destroys its previous observer/hooks before reloading so repeated dev-loader runs no longer stack duplicate listeners",
+    "Base Cyberdeck and JACK IN now live-refresh when relevant Foundry actors, items, scene tokens, or user targeting changes",
+    "Replaced generic Session filler with the installed Cyberdeck's actual passive effect text",
+    "Added character-specific accent cohesion, quiet ambient scanning, restrained RAM animation, cleaner card hovers, passive-rail hierarchy, and final JACK IN polish",
+    "JavaScript syntax verification passed after the final patch"
   ]
 }
