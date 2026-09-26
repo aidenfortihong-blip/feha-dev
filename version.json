@@ -1,12 +1,14 @@
 {
-  "version": "0.2.2",
+  "version": "0.2.3",
   "updated": "2026-09-25",
-  "scope": "chrome-cache-readability",
+  "scope": "chrome-global-typography",
   "notes": [
-    "Preserved the 0.2.1 owned-cache detection fix",
-    "Redesigned cache cards into large 330x176 hardware tiles",
-    "Made cyberware art, manufacturer, full item name, Mk and capacity clearly readable",
-    "Removed tiny-pill presentation that hid owned-item identity",
-    "Left rail typography bump remains active"
+    "Substantially increased microtext across the entire Chrome UI",
+    "Raised left rail system names and subtitles again",
+    "Increased inspector headers, port labels, dossier labels and descriptions",
+    "Increased center telemetry, system status and portrait metadata",
+    "Increased cache metadata, hardware specs, action button subtext and footer text",
+    "Reduced excessive letter spacing on the smallest text to preserve readability",
+    "Existing layout and approved visual structure left intact"
   ]
 }
