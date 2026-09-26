@@ -4,7 +4,7 @@
 // It does not access external systems, credentials, devices, or real computer networks.
 
 (() => {
-  const VERSION = "0.8.0";
+  const VERSION = "0.8.1";
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
   const FLAG = "fleshEnshrouded";
@@ -214,6 +214,8 @@
     document.getElementById(ROOT_ID)?.remove();
     const root = document.createElement("section");
     root.id = ROOT_ID;
+    root.classList.add("feha-v3");
+    root.dataset.fehaV3 = "1";
     root.dataset.actor = norm(chosen?.flags?.[FLAG]?.adkCharacter ?? chosen.name);
     root.dataset.actorId = chosen.id;
 
@@ -284,11 +286,6 @@
           </section>
         </div>
 
-        <footer class="cd2-footer">
-          <div class="cd2-log"><span>SYS&gt;</span><b>${m.deck?"LOADOUT READY // JACK IN TO ACQUIRE TARGETS":"CYBERDECK OFFLINE // HARDWARE REQUIRED"}</b></div>
-          <div class="v3-passive"><small>SUPPORT</small><b>${m.support.length} MODULE${m.support.length===1?"":"S"}</b></div>
-          <button type="button" class="cd2-jack" data-v3-action="jack" ${m.deck?"":"disabled"}><span>NEURAL SCENE SWEEP</span><b>JACK IN</b></button>
-        </footer>
       </main>
 
       <aside class="cd2-right">
@@ -308,6 +305,14 @@
           <p>Assign software here. RAM returns on <b>Short Rest</b>. Execute loaded Quickhacks after JACK IN.</p>
         </section>
       </aside>
+
+      <footer class="v3-bottom">
+        <button type="button" class="v3-jackbar" data-v3-action="jack" ${m.deck?"":"disabled"}>
+          <span class="v3-jack-state">${m.deck?"SYSTEM READY":"HARDWARE OFFLINE"}</span>
+          <span class="v3-jack-main"><small>NEURAL SCENE SWEEP</small><b>JACK IN</b></span>
+          <span class="v3-jack-meta">${m.loaded.length} LOADED // ${m.currentRam} RAM // SCENE SCAN</span>
+        </button>
+      </footer>
     `;
 
     document.body.appendChild(root);
@@ -558,14 +563,54 @@
     game.adk.openCyberdeck = open;
   }
 
+  let reclaimQueued = false;
+  const reclaimV3 = () => {
+    if (reclaimQueued) return;
+    reclaimQueued = true;
+    requestAnimationFrame(() => {
+      reclaimQueued = false;
+
+      if (game.adk && game.adk.openCyberdeck !== open) {
+        game.adk.openCyberdeck = open;
+      }
+
+      const current = document.getElementById(ROOT_ID);
+      if (current && current.dataset.fehaV3 !== "1" && !document.getElementById(JACK_ID)) {
+        const actorId = current.dataset.actorId ?? localStorage.getItem("fehaCyberdeckActorV3");
+        current.remove();
+        render(actorId);
+      }
+    });
+  };
+
+  const existing = document.getElementById(ROOT_ID);
+  const existingActorId = existing?.dataset?.actorId ?? null;
+  const wasOpen = Boolean(existing);
+  existing?.remove();
+
+  const v3Observer = new MutationObserver(reclaimV3);
+  v3Observer.observe(document.body,{childList:true,subtree:true});
+
   globalThis.FEHA_TABLETOP_UI_V3 = {
     version:VERSION,
     open,
     render,
     openJack,
-    model
+    model,
+    destroy() {
+      v3Observer.disconnect();
+      document.getElementById(ROOT_ID)?.remove();
+      document.getElementById(JACK_ID)?.remove();
+      if (game.adk?.__fehaV3PreviousOpenCyberdeck) {
+        game.adk.openCyberdeck = game.adk.__fehaV3PreviousOpenCyberdeck;
+      }
+    }
   };
 
-  document.getElementById(ROOT_ID)?.remove();
+  if (wasOpen) {
+    setTimeout(() => render(existingActorId),60);
+  }
+
+  setTimeout(reclaimV3,120);
   ui?.notifications?.info?.("FEHA Cyberdeck V3 "+VERSION+" ready.");
 })();
