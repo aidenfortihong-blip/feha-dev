@@ -1,15 +1,13 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-live-combat-network",
+  "scope": "cyberdeck-v3-single-screen-scene-jack-in",
   "notes": [
-    "TARGET ACQUISITION is now a live Foundry combat topology rather than flavor text",
-    "Every combatant token in the active encounter branches from the current Cyberdeck operator",
-    "Clicking any combat node targets that token in Foundry and shows a live lock state",
-    "Network topology refreshes on combat changes and token-target changes",
-    "Friendly, hostile, neutral, self, defeated, and targeted combatants receive distinct states",
-    "JACK IN now opens directly into the live encounter network",
-    "Expanded the entire bottom action deck and made JACK IN substantially larger",
-    "Removed the cinematic portrait filter and reduced portrait overlay strength"
+    "Actor inventory Quickhacks are now recognized without requiring market purchase metadata",
+    "Added standalone Foundry tabletop Cyberdeck V3 runtime in foundry/FEHA_TABLETOP_UI_V3.js",
+    "Added cyberdeck-v3.css for the single-screen loadout UI and fullscreen scene JACK IN presentation",
+    "Base Cyberdeck is reduced to RAM, loaded software, owned software assignment, Short Rest, passive deck/support readouts, and JACK IN",
+    "JACK IN performs a Foundry active-scene actor-token sweep, shows a green code transition, then opens a separate full-screen targeting view",
+    "Loaded Quickhacks execute from the JACK IN view against the currently targeted scene token"
   ]
 }
