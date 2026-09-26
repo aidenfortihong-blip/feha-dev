@@ -1,12 +1,11 @@
 {
-  "version": "0.4.11",
+  "version": "0.4.12",
   "updated": "2026-09-25",
-  "scope": "derke-portrait-and-roster",
+  "scope": "derke-forge-portrait",
   "notes": [
-    "Removed Xiao from the Augmentation Theatre selector alongside Nina, Florence and Cael",
-    "Added the user-provided Derke portrait as a repo-hosted compressed WebP payload",
-    "When Derke is selected, the Theatre automatically replaces the center portrait with the supplied Derke art",
-    "Portrait override reapplies after Theatre rerenders without modifying Derke's underlying Foundry actor document",
-    "Ponyboy, Sasha, Zach, Jing, Derke and any other non-blocked actors remain available"
+    "Switched Derke's Augmentation Theatre portrait to the user-uploaded Forge asset URL",
+    "Removed the temporary repo-hosted base64 portrait loader from runtime use",
+    "Derke portrait now loads directly from Forge and reapplies on Theatre rerenders",
+    "Xiao, Nina, Florence and Cael remain hidden from the Theatre selector"
   ]
 }
