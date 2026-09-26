@@ -1,11 +1,18 @@
 {
-  "version": "0.2.7",
+  "version": "0.2.8",
   "updated": "2026-09-25",
-  "scope": "chrome-center-title-spacing",
+  "scope": "chrome-cyber-sound-redesign",
   "notes": [
-    "Moved the center metric strip above the large subsystem title",
-    "Reserved a dedicated bottom zone for subsystem titles on every system",
-    "Added a subtle dark fade behind the title for readability over portrait art",
-    "Applies globally to every subsystem title"
+    "Replaced the original Chrome WAV playback with a custom FEHA WebAudio sound engine",
+    "Hover is now a restrained glass/servo tick",
+    "Select is a mechanical lock-on click",
+    "Owned Chrome drawer uses a heavier servo tray sound",
+    "Scan is a rising biometric sweep",
+    "Install uses a clamp, handshake and authorization sequence",
+    "Eject uses a reverse pneumatic disengage",
+    "Error is a short hostile digital rejection",
+    "Confirm is a crisp two-stage handshake",
+    "All sound volumes are centralized under global FEHA_SOUNDS.profile",
+    "Run FEHA_SOUNDS.demo() in the console to audition every sound"
   ]
 }
