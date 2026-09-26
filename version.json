@@ -1,13 +1,15 @@
 {
-  "version": "0.8.0",
+  "version": "0.8.1",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-v3-single-screen-scene-jack-in",
+  "scope": "cyberdeck-v3-polish-and-jack-routing",
   "notes": [
-    "Actor inventory Quickhacks are now recognized without requiring market purchase metadata",
-    "Added standalone Foundry tabletop Cyberdeck V3 runtime in foundry/FEHA_TABLETOP_UI_V3.js",
-    "Added cyberdeck-v3.css for the single-screen loadout UI and fullscreen scene JACK IN presentation",
-    "Base Cyberdeck is reduced to RAM, loaded software, owned software assignment, Short Rest, passive deck/support readouts, and JACK IN",
-    "JACK IN performs a Foundry active-scene actor-token sweep, shows a green code transition, then opens a separate full-screen targeting view",
-    "Loaded Quickhacks execute from the JACK IN view against the currently targeted scene token"
+    "Cyberdeck V3 now reclaims the Cyberdeck launcher from the older V2 observer and replaces an already-open V2 window",
+    "JACK IN now routes through the separate fullscreen scene-sweep overlay",
+    "Moved Short Rest into the RAM module instead of the bottom action row",
+    "JACK IN is now a full-width bottom action bar across the Cyberdeck",
+    "Rebuilt loaded Quickhack cards for readability and simplified empty memory bays",
+    "Expanded the portrait and typography while reducing cramped software text",
+    "Applied the user's private Cyberpunk UI assets to V3 when available",
+    "Actor inventory Quickhacks continue to count as owned without requiring market purchase metadata"
   ]
 }
