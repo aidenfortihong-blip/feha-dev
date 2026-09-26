@@ -2439,3 +2439,193 @@
     grid-template-columns:220px minmax(0,1fr) !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.6 SPARSE POLISH
+   One/few-target composition + stronger Quickhack execution affordances.
+   ========================================================================== */
+
+/* Sparse encounters should feel intentional instead of empty. */
+#feha-jackin-overlay .jack-space.is-sparse .jack-operator {
+  width:236px !important;
+  height:236px !important;
+  top:53% !important;
+}
+
+#feha-jackin-overlay .jack-space.is-sparse .jack-operator img {
+  width:128px !important;
+  height:128px !important;
+}
+
+#feha-jackin-overlay .jack-space.is-sparse .jack-operator > span {
+  top:calc(50% + 77px) !important;
+  min-width:178px !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node {
+  width:244px !important;
+  min-height:106px !important;
+  left:50% !important;
+  top:22% !important;
+  grid-template-columns:72px minmax(0,1fr) !important;
+  padding:12px 14px !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node img {
+  width:70px !important;
+  height:70px !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node-copy b {
+  font-size:15px !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node-copy small {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-net-line {
+  stroke-width:2.1 !important;
+  opacity:.78;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-net-line.is-targeted {
+  stroke-width:3.8 !important;
+}
+
+/* For two-target scenes, create a deliberate left/right composition. */
+#feha-jackin-overlay .jack-space[data-node-count="2"] .jack-node {
+  width:224px !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="2"] .jack-node:nth-of-type(1) {
+  left:31% !important;
+  top:24% !important;
+}
+
+#feha-jackin-overlay .jack-space[data-node-count="2"] .jack-node:nth-of-type(2) {
+  left:69% !important;
+  top:24% !important;
+}
+
+/* Execution dock: cards become compact action modules instead of long text bars. */
+#feha-jackin-overlay .jack-actions {
+  height:170px !important;
+}
+
+#feha-jackin-overlay .jack-hacks {
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr)) !important;
+  gap:12px !important;
+}
+
+#feha-jackin-overlay .jack-hack {
+  min-height:88px !important;
+  grid-template-columns:62px minmax(0,1fr) 96px !important;
+  gap:12px !important;
+  padding:10px 12px !important;
+  background:
+    linear-gradient(110deg,rgba(var(--jack-cyan),.03),transparent 62%),
+    #03090b !important;
+}
+
+#feha-jackin-overlay .jack-hack img {
+  width:60px !important;
+  height:60px !important;
+}
+
+#feha-jackin-overlay .jack-hack b {
+  font-size:13px !important;
+}
+
+#feha-jackin-overlay .jack-hack small {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-hack em {
+  width:92px;
+  min-height:52px;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:2px;
+  justify-self:end;
+  color:#050708 !important;
+  background:rgb(var(--jack-yellow)) !important;
+  border:1px solid rgba(255,242,170,.60);
+  font-style:normal !important;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);
+  box-shadow:0 0 18px rgba(var(--jack-yellow),.08);
+}
+
+#feha-jackin-overlay .jack-hack em span,
+#feha-jackin-overlay .jack-hack em b {
+  display:block;
+  color:#050708 !important;
+}
+
+#feha-jackin-overlay .jack-hack em span {
+  font-size:6.5px !important;
+  letter-spacing:.9px;
+}
+
+#feha-jackin-overlay .jack-hack em b {
+  font-size:15px !important;
+  line-height:1;
+}
+
+#feha-jackin-overlay .jack-hack:hover:not(:disabled) em {
+  filter:brightness(1.05);
+  box-shadow:0 0 26px rgba(var(--jack-yellow),.14);
+}
+
+#feha-jackin-overlay .jack-hack:disabled em {
+  filter:grayscale(.2);
+  opacity:.58;
+}
+
+/* Target lock readout feels integrated with the live graph. */
+#feha-jackin-overlay .jack-lock-readout {
+  min-width:320px !important;
+  padding:12px 14px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout b {
+  font-size:15px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout span {
+  font-size:8px !important;
+  letter-spacing:.5px;
+}
+
+/* Slightly stronger header contrast without adding more decoration. */
+#feha-jackin-overlay .jack-header {
+  box-shadow:
+    0 8px 28px rgba(0,0,0,.24),
+    inset 0 -1px 0 rgba(var(--jack-cyan),.025) !important;
+}
+
+@media(max-width:1500px) {
+  #feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node {
+    width:216px !important;
+    min-height:94px !important;
+  }
+
+  #feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node img {
+    width:62px !important;
+    height:62px !important;
+  }
+
+  #feha-jackin-overlay .jack-actions {
+    height:164px !important;
+  }
+
+  #feha-jackin-overlay .jack-hack {
+    grid-template-columns:56px minmax(0,1fr) 84px !important;
+  }
+
+  #feha-jackin-overlay .jack-hack em {
+    width:82px !important;
+  }
+}
