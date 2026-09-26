@@ -1543,15 +1543,15 @@
 
 #adk-chrome-manager-34[data-feha-cp2077-assets="1"] .adk-v6-cache > header {
   position: relative !important;
-  padding-right: 176px !important;
+  padding-right: 18px !important;
 }
 
 #adk-chrome-manager-34[data-feha-cp2077-assets="1"] .adk-v6-cache > header::after {
   content: "" !important;
   position: absolute !important;
-  right: 18px !important;
+  right: 58px !important;
   top: 50% !important;
-  width: 145px !important;
+  width: 132px !important;
   height: 16px !important;
   transform: translateY(-50%) !important;
   background:
@@ -1566,17 +1566,9 @@
 }
 
 #adk-chrome-manager-34[data-feha-cp2077-assets="1"] .adk-v6-system.is-active::after {
-  content: "" !important;
-  position: absolute !important;
-  right: 8px !important;
-  top: 50% !important;
-  width: 15px !important;
-  height: 15px !important;
-  transform: translateY(-50%) !important;
-  background:
-    var(--feha-cp-arrow-right) center / contain no-repeat !important;
-  opacity: .54 !important;
-  pointer-events: none !important;
+  content: none !important;
+  display: none !important;
+  background: none !important;
 }
 
 /* Source-measured Ink timing: ripper intro and choice intro are 0.25s fades. */
