@@ -4,7 +4,8 @@
 // It does not access external systems, credentials, devices, or real computer networks.
 
 (() => {
-  const VERSION = "0.8.2";
+  try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
+  const VERSION = "0.8.3";
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
   const FLAG = "fleshEnshrouded";
@@ -52,20 +53,19 @@
 
   function isDeck(item) {
     if (!isInstalledCyberware(item)) return false;
-    const f = flags(item);
-    const text = [item.name,f.cyberwareSlot,f.kind,f.category]
-      .filter(Boolean).join(" ").toLowerCase();
+    const n = norm(item.name);
     return (
-      f.cyberdeck === true ||
-      f.isCyberdeck === true ||
-      /cyberdeck|netdriver|net\s*driver|operating\s*system/.test(text)
+      flags(item).cyberdeck === true ||
+      flags(item).isCyberdeck === true ||
+      ["cyberdeck","paraline","netdriver","tetratronic","raven micro"]
+        .some(term => n.includes(term))
     );
   }
 
-  function isSupport(item,deck) {
-    if (!isInstalledCyberware(item) || item === deck) return false;
-    const text = (item.name + " " + description(item)).toLowerCase();
-    return ["ram","quickhack","neural","self ice","memory","cortex","intrusion"]
+  function isSupport(item) {
+    if (!isInstalledCyberware(item) || isDeck(item)) return false;
+    const text = norm(item.name + " " + (flags(item).effectText ?? description(item)));
+    return ["ram","quickhack","cyberdeck","neural","self ice","memory","cortex","netrunner","intrusion"]
       .some(term => text.includes(term));
   }
 
@@ -99,7 +99,7 @@
       .sort((a,b) => String(a.name).localeCompare(String(b.name)));
     const loaded = quickhacks.filter(item => flags(item).loadedQuickhack === true);
     const library = quickhacks.filter(item => flags(item).loadedQuickhack !== true);
-    const support = items.filter(item => isSupport(item,deck));
+    const support = items.filter(isSupport);
 
     const df = flags(deck);
     const rating = Math.max(1,Math.min(5,Number(df.rating ?? df.tier ?? 2) || 2));
@@ -123,7 +123,8 @@
       maxRam,currentRam,slots,
       dc:hackDC(actor),
       manufacturer:String(df.manufacturer ?? df.company ?? "UNKNOWN"),
-      mk:String(df.mk ?? df.rating ?? df.tier ?? "")
+      mk:String(df.mk ?? df.rating ?? df.tier ?? ""),
+      deckEffect: deck ? String(df.effectText ?? description(deck) ?? "") : ""
     };
   }
 
@@ -335,9 +336,9 @@
           <div class="cd2-subhead">SUPPORT CHROME</div>
           <div class="cd2-mini-support">${supportCards(m)}</div>
         </section>
-        <section class="cd2-session">
-          <div class="cd2-subhead">SESSION</div>
-          <p>Assign software here. RAM returns on <b>Short Rest</b>. Execute loaded Quickhacks after JACK IN.</p>
+        <section class="cd2-session v3-deck-passive">
+          <div class="cd2-subhead">DECK PASSIVE</div>
+          <p>${m.deckEffect ? esc(m.deckEffect) : "No additional deck passive detected."}</p>
         </section>
       </aside>
 
@@ -463,6 +464,7 @@
     const actor = actorById(actorId);
     if (!root || !actor) return;
     root.dataset.phase = "live";
+    root.dataset.actorId = actor.id;
     root.innerHTML = jackMarkup(actor);
     bindJack(root,actor);
   }
@@ -518,11 +520,25 @@
       }
 
       if (action === "rest") {
-        if (typeof actor.shortRest === "function") {
-          globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
-          await actor.shortRest();
-          setTimeout(() => render(actor.id),250);
+        const live = model(actor);
+        if (!live.deck) {
+          return ui?.notifications?.warn?.("No Cyberdeck installed.");
         }
+
+        globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+        await actor.update({
+          [`flags.${FLAG}.ramCurrent`]:live.maxRam
+        });
+
+        await ChatMessage.create({
+          speaker:ChatMessage.getSpeaker({actor}),
+          content:
+            "<p><strong>"+esc(actor.name)+
+            "</strong> completed a Short Rest. RAM restored to <strong>"+
+            live.maxRam+"</strong>.</p>"
+        });
+
+        render(actor.id);
         return;
       }
 
@@ -593,6 +609,44 @@
     return render(actor.id);
   }
 
+  const v3Hooks = [];
+  let refreshQueued = false;
+
+  function queueV3Refresh() {
+    if (refreshQueued) return;
+    refreshQueued = true;
+    requestAnimationFrame(() => {
+      refreshQueued = false;
+
+      const jack = document.getElementById(JACK_ID);
+      if (jack?.dataset?.phase === "live") {
+        renderJack(jack.dataset.actorId);
+        return;
+      }
+
+      const root = document.getElementById(ROOT_ID);
+      if (root?.dataset?.fehaV3 === "1") {
+        render(root.dataset.actorId);
+      }
+    });
+  }
+
+  if (globalThis.Hooks?.on) {
+    for (const event of [
+      "updateActor",
+      "createItem",
+      "updateItem",
+      "deleteItem",
+      "createToken",
+      "updateToken",
+      "deleteToken",
+      "targetToken",
+      "canvasReady"
+    ]) {
+      v3Hooks.push([event,Hooks.on(event,queueV3Refresh)]);
+    }
+  }
+
   const previous = game.adk?.openCyberdeck;
   if (game.adk) {
     game.adk.__fehaV3PreviousOpenCyberdeck ??= previous;
@@ -635,6 +689,9 @@
     model,
     destroy() {
       v3Observer.disconnect();
+      for (const [event,id] of v3Hooks) {
+        try { Hooks.off(event,id); } catch {}
+      }
       document.getElementById(ROOT_ID)?.remove();
       document.getElementById(JACK_ID)?.remove();
       if (game.adk?.__fehaV3PreviousOpenCyberdeck) {
