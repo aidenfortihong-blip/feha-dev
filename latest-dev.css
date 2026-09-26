@@ -404,3 +404,46 @@
     grid-row: 5 !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.2.1
+   LEFT RAIL TYPOGRAPHY BUMP
+   ========================================================================== */
+
+#adk-chrome-manager-34 .adk-v6-system .system-copy b {
+  font-size: 11.5px !important;
+  letter-spacing: .55px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-system .system-copy small {
+  font-size: 6.4px !important;
+  letter-spacing: 1.05px !important;
+  opacity: .78 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-system .slot-no {
+  font-size: 6.4px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-systems > header span,
+#adk-chrome-manager-34 .adk-v6-systems > header b {
+  font-size: 6.1px !important;
+}
+
+#adk-chrome-manager-34 .subject-mini small {
+  font-size: 6.2px !important;
+}
+
+#adk-chrome-manager-34 .subject-mini b {
+  font-size: 18px !important;
+  letter-spacing: 1.2px !important;
+}
+
+#adk-chrome-manager-34 .subject-mini span {
+  font-size: 6.6px !important;
+}
+
+#adk-chrome-manager-34 .cache-trigger span {
+  font-size: 10.5px !important;
+}
