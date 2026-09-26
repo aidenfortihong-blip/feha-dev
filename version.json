@@ -1,11 +1,14 @@
 {
-  "version": "0.5.3",
+  "version": "0.6.0",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-dom-diagnostics",
+  "scope": "cyberdeck-v2-full-replacement",
   "notes": [
-    "Removed speculative geometry-based Cyberdeck wrapper tagging from 0.5.2",
-    "Added ADKDevPatch.inspectCyberdeckDOM() to capture exact live Cyberdeck tags/classes/actions and dimensions",
-    "Kept only safe text-anchored Cyberdeck styling until the installed-deck DOM is captured",
-    "No Chrome Manager mechanics or actor data changed"
+    "Replaced game.adk.openCyberdeck() with a completely new FEHA-owned Cyberdeck interface",
+    "The legacy purple Cyberdeck template is no longer used for presentation",
+    "New UI includes operator portrait, installed deck detection, segmented RAM/Heat/Humanity telemetry, terminal tabs, loaded quickhacks, software library, support chrome, network target grid, and JACK IN",
+    "Quickhack spell documents can be loaded/unloaded through preparation state and run directly from the Cyberdeck",
+    "Short Rest action remains the RAM recovery path",
+    "No wallet/eurodollar UI exists in Cyberdeck V2",
+    "Underlying actor/item data remains the source of truth"
   ]
 }
