@@ -1,11 +1,13 @@
 {
-  "version": "0.4.21",
+  "version": "0.5.0",
   "updated": "2026-09-26",
-  "scope": "portrait-stage-bar-removal",
+  "scope": "cyberdeck-foundation",
   "notes": [
-    "Removed the portrait stage ::before and ::after mask layers that were still drawing floating cyan/red bars",
-    "Removed the legacy subject-background and portrait-corners decorative layers",
-    "Portrait art, identity telemetry, active-system dock, and right-side dossier remain intact",
-    "Wallet suppression and subsystem line cleanup remain active"
+    "Started the Cyberdeck visual rebuild as a distinct terminal application",
+    "Live Cyberdeck windows are detected and tagged from their actual UI labels without touching unrelated Foundry apps",
+    "Established black CRT styling with cyan/magenta/yellow functional accents, clipped geometry, scanlines, and denser terminal states",
+    "Restyled the portrait card, empty cyberdeck hardware state, Software Library, and Netrunner Support Chrome areas",
+    "Removed the legacy €$ launcher from the Cyberdeck while preserving backend wallet data",
+    "Chrome Manager 0.4.x cleanup remains intact"
   ]
 }
