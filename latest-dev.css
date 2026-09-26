@@ -3032,3 +3032,109 @@
   content: none !important;
   display: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.5
+   HERO TITLE STACKING + MINI SIGNAL REMOVAL
+   ========================================================================== */
+
+/* User requested the upper/portrait-side signal profile be removed entirely.
+   Keep only the full signal profile in the right inspector. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Give the hero title its own isolated paint layer above portrait telemetry. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+  z-index: 40 !important;
+  overflow: visible !important;
+  isolation: isolate !important;
+  padding: 8px 14px 10px !important;
+  background:
+    linear-gradient(90deg,
+      rgba(1,6,9,.96) 0%,
+      rgba(1,6,9,.86) 58%,
+      rgba(1,6,9,.48) 82%,
+      transparent 100%) !important;
+}
+
+/* Remove every old title pseudo-overlay from earlier passes. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
+
+/* Make sure all title text is above every other center-panel element. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title small {
+  display: block !important;
+  margin: 0 0 4px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title h1 {
+  margin: 0 !important;
+  line-height: .92 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title > span {
+  display: block !important;
+  margin-top: 5px !important;
+}
+
+/* Move the LINK/LATENCY/INTEGRITY/AUGMENTS strip cleanly ABOVE the title.
+   It was visually sitting behind the title block in the screenshots. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status {
+  left: 31% !important;
+  right: 27% !important;
+  bottom: 92px !important;
+  z-index: 30 !important;
+  min-height: 34px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background: rgba(2,8,11,.82) !important;
+  border-top: 1px solid rgba(var(--cp-cyan), .10) !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .08) !important;
+}
+
+/* Prevent any inherited transforms or pseudo elements from drifting into title. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status,
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status * {
+  transform: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Keep center portrait/overlays below the title and metrics. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-art {
+  z-index: 8 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-portrait-overlays {
+  z-index: 12 !important;
+}
+
+@media (max-width: 1450px) {
+  #adk-chrome-manager-34[data-feha-rerun="040"] .subject-status {
+    left: 34% !important;
+    right: 24% !important;
+    bottom: 90px !important;
+  }
+
+  #adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+    bottom: 18px !important;
+  }
+}
