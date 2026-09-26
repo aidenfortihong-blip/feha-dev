@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.3.2";
+  const BUILD = "0.3.3";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -167,6 +167,10 @@
     if (!root) return false;
     root.classList.add("adk-live-dev");
     root.dataset.fehaDevBuild = BUILD;
+    const subject = globalThis.ADKChromeBackend?.getActor?.();
+    root.dataset.fehaSubject = norm(subject?.name)
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
     patchBackend();
     normalizeDossierSchematics();
     return true;
@@ -215,525 +219,62 @@
   }
 
   function installSoundEngine() {
-    if (globalThis.__FEHA_SOUND_ENGINE_032) return;
+    if (globalThis.__FEHA_SOUND_ENGINE_033) return;
 
     const OriginalPlay = HTMLMediaElement.prototype.play;
-    let ctx = null;
-    let masterBus = null;
+    const BASE = "https://raw.githubusercontent.com/aidenfortihong-blip/feha-dev/main/audio/kenney";
 
-    const STATE = {
-      volume: 0.76,
-      style: localStorage.getItem("fehaSoundStyle") || "A"
+    const MAP = {
+      hover:   [{ file: "tick_002.wav", volume: 0.18, rate: 1.08 }],
+      select:  [{ file: "select_005.wav", volume: 0.42, rate: 0.96 }],
+      drawer:  [{ file: "doorOpen_000.ogg", volume: 0.48, rate: 1.00 }],
+      scan:    [{ file: "laserSmall_002.ogg", volume: 0.34, rate: 0.78 }],
+      install: [
+        { file: "impactMetal_001.ogg", volume: 0.50, rate: 0.92 },
+        { file: "confirmation_003.wav", volume: 0.27, rate: 0.82, delay: 95 }
+      ],
+      remove:  [{ file: "doorClose_000.ogg", volume: 0.47, rate: 0.96 }],
+      error:   [{ file: "error_003.wav", volume: 0.42, rate: 0.88 }],
+      confirm: [{ file: "confirmation_003.wav", volume: 0.38, rate: 0.92 }]
     };
 
-    const PER_EVENT = {
-      hover: 0.30,
-      select: 0.72,
-      drawer: 0.80,
-      scan: 0.74,
-      install: 0.98,
-      remove: 0.88,
-      error: 0.86,
-      confirm: 0.78
-    };
+    let master = Number(localStorage.getItem("fehaRealSfxVolume") ?? 0.82);
+    if (!Number.isFinite(master)) master = 0.82;
+    master = Math.max(0, Math.min(1, master));
 
-    function audioCtx() {
-      if (!ctx || ctx.state === "closed") {
-        ctx = new (window.AudioContext || window.webkitAudioContext)();
-        masterBus = null;
-      }
+    const cache = new Map();
 
-      if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    function prime() {
+      const files = [...new Set(
+        Object.values(MAP).flat().map(x => x.file)
+      )];
 
-      if (!masterBus) {
-        const comp = ctx.createDynamicsCompressor();
-        comp.threshold.value = -16;
-        comp.knee.value = 7;
-        comp.ratio.value = 9;
-        comp.attack.value = 0.002;
-        comp.release.value = 0.18;
-
-        const master = ctx.createGain();
-        master.gain.value = STATE.volume;
-
-        comp.connect(master);
-        master.connect(ctx.destination);
-        masterBus = { comp, master };
-      }
-
-      masterBus.master.gain.value = STATE.volume;
-      return ctx;
+      files.forEach(file => {
+        const a = new Audio(`${BASE}/${file}`);
+        a.preload = "auto";
+        cache.set(file, a);
+      });
     }
 
-    function distortion(amount = 45) {
-      const c = audioCtx();
-      const shaper = c.createWaveShaper();
-      const n = 4096;
-      const curve = new Float32Array(n);
-      const k = Math.max(1, amount);
+    function playLayer(layer) {
+      const base = cache.get(layer.file) ?? new Audio(`${BASE}/${layer.file}`);
+      const audio = base.cloneNode(true);
+      audio.volume = Math.max(0, Math.min(1, (layer.volume ?? 0.4) * master));
+      audio.playbackRate = Math.max(0.5, Math.min(1.6, layer.rate ?? 1));
 
-      for (let i = 0; i < n; i++) {
-        const x = i * 2 / n - 1;
-        curve[i] = (1 + k) * x / (1 + k * Math.abs(x));
-      }
-
-      shaper.curve = curve;
-      shaper.oversample = "4x";
-      return shaper;
-    }
-
-    function dest(kind, drive = 0) {
-      const c = audioCtx();
-      const g = c.createGain();
-      g.gain.value = PER_EVENT[kind] ?? 0.65;
-
-      if (drive > 0) {
-        const d = distortion(drive);
-        g.connect(d);
-        d.connect(masterBus.comp);
-      } else {
-        g.connect(masterBus.comp);
-      }
-
-      return g;
-    }
-
-    function tone(kind, {
-      type = "sine",
-      freq = 120,
-      endFreq = null,
-      delay = 0,
-      dur = 0.10,
-      gain = 0.12,
-      pan = 0,
-      drive = 0,
-      lowpass = null,
-      highpass = null
-    } = {}) {
-      const c = audioCtx();
-      const startAt = c.currentTime + delay;
-      const endAt = startAt + dur;
-
-      const o = c.createOscillator();
-      const a = c.createGain();
-      const p = c.createStereoPanner ? c.createStereoPanner() : null;
-      let node = o;
-
-      o.type = type;
-      o.frequency.setValueAtTime(Math.max(20, freq), startAt);
-      if (endFreq != null) {
-        o.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq), endAt);
-      }
-
-      if (highpass) {
-        const hp = c.createBiquadFilter();
-        hp.type = "highpass";
-        hp.frequency.value = highpass;
-        node.connect(hp);
-        node = hp;
-      }
-
-      if (lowpass) {
-        const lp = c.createBiquadFilter();
-        lp.type = "lowpass";
-        lp.frequency.value = lowpass;
-        node.connect(lp);
-        node = lp;
-      }
-
-      a.gain.setValueAtTime(0.0001, startAt);
-      a.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), startAt + 0.003);
-      a.gain.exponentialRampToValueAtTime(0.0001, endAt);
-
-      node.connect(a);
-
-      if (p) {
-        p.pan.value = Math.max(-1, Math.min(1, pan));
-        a.connect(p);
-        p.connect(dest(kind, drive));
-      } else {
-        a.connect(dest(kind, drive));
-      }
-
-      o.start(startAt);
-      o.stop(endAt + 0.03);
-    }
-
-    function noise(kind, {
-      delay = 0,
-      dur = 0.08,
-      gain = 0.10,
-      low = 100,
-      high = 6000,
-      pan = 0,
-      drive = 0,
-      crush = 5
-    } = {}) {
-      const c = audioCtx();
-      const startAt = c.currentTime + delay;
-      const length = Math.max(1, Math.floor(c.sampleRate * dur));
-      const buffer = c.createBuffer(1, length, c.sampleRate);
-      const data = buffer.getChannelData(0);
-
-      let hold = 0;
-      const step = Math.max(1, Math.round(crush));
-
-      for (let i = 0; i < length; i++) {
-        if (i % step === 0) hold = Math.random() * 2 - 1;
-        const env = Math.pow(1 - i / length, 1.25);
-        data[i] = hold * env;
-      }
-
-      const src = c.createBufferSource();
-      const hp = c.createBiquadFilter();
-      const lp = c.createBiquadFilter();
-      const a = c.createGain();
-      const p = c.createStereoPanner ? c.createStereoPanner() : null;
-
-      hp.type = "highpass";
-      hp.frequency.value = low;
-      lp.type = "lowpass";
-      lp.frequency.value = high;
-
-      a.gain.setValueAtTime(Math.max(0.0001, gain), startAt);
-      a.gain.exponentialRampToValueAtTime(0.0001, startAt + dur);
-
-      src.buffer = buffer;
-      src.connect(hp);
-      hp.connect(lp);
-      lp.connect(a);
-
-      if (p) {
-        p.pan.value = Math.max(-1, Math.min(1, pan));
-        a.connect(p);
-        p.connect(dest(kind, drive));
-      } else {
-        a.connect(dest(kind, drive));
-      }
-
-      src.start(startAt);
-      src.stop(startAt + dur + 0.03);
-    }
-
-    function metal(kind, {
-      delay = 0,
-      base = 620,
-      dur = 0.11,
-      gain = 0.06,
-      drive = 55,
-      pan = 0
-    } = {}) {
-      [1, 1.43, 2.07, 2.81].forEach((ratio, i) => {
-        tone(kind, {
-          type: i % 2 ? "square" : "triangle",
-          freq: base * ratio,
-          endFreq: base * ratio * 0.71,
-          delay: delay + i * 0.002,
-          dur: dur * (1 - i * 0.10),
-          gain: gain * (1 - i * 0.15),
-          drive,
-          highpass: 180,
-          pan: pan + (i - 1.5) * 0.03
+      const go = () => {
+        OriginalPlay.call(audio).catch(err => {
+          console.warn("FEHA DEV 0.3.3 // real SFX playback failed", layer.file, err);
         });
-      });
-    }
+      };
 
-    function sub(kind, {
-      delay = 0,
-      freq = 74,
-      endFreq = 31,
-      dur = 0.17,
-      gain = 0.25,
-      drive = 36
-    } = {}) {
-      tone(kind, {
-        type: "sine",
-        freq,
-        endFreq,
-        delay,
-        dur,
-        gain,
-        drive,
-        lowpass: 180
-      });
-    }
-
-    function servo(kind, {
-      delay = 0,
-      from = 150,
-      to = 55,
-      dur = 0.20,
-      gain = 0.11,
-      drive = 72
-    } = {}) {
-      tone(kind, {
-        type: "sawtooth",
-        freq: from,
-        endFreq: to,
-        delay,
-        dur,
-        gain,
-        drive,
-        lowpass: 900
-      });
-      noise(kind, {
-        delay,
-        dur,
-        gain: gain * 0.7,
-        low: 180,
-        high: 2400,
-        drive,
-        crush: 11
-      });
-    }
-
-    function dataRip(kind, {
-      delay = 0,
-      dur = 0.09,
-      gain = 0.085,
-      drive = 92,
-      pan = 0
-    } = {}) {
-      noise(kind, {
-        delay,
-        dur,
-        gain,
-        low: 850,
-        high: 7800,
-        drive,
-        crush: 13,
-        pan
-      });
-      tone(kind, {
-        type: "square",
-        freq: 880,
-        endFreq: 190,
-        delay,
-        dur: dur * 0.72,
-        gain: gain * 0.42,
-        drive: drive + 10,
-        pan: -pan
-      });
-    }
-
-    function relay(kind, { delay = 0, gain = 0.10, drive = 66 } = {}) {
-      metal(kind, { delay, base: 1050, dur: 0.035, gain, drive });
-      noise(kind, { delay, dur: 0.022, gain: gain * 0.8, low: 1400, high: 9200, drive: drive + 12, crush: 3 });
-    }
-
-    function playVariant(kind = "select", style = STATE.style) {
-      try {
-        audioCtx();
-
-        const A = style === "A"; // MEAT//MACHINE
-        const B = style === "B"; // DATA//VIOLENCE
-        const C = style === "C"; // SURGICAL//BRUTAL
-
-        switch (kind) {
-          case "hover":
-            if (A) {
-              relay(kind, { gain: 0.035, drive: 52 });
-            } else if (B) {
-              dataRip(kind, { dur: 0.025, gain: 0.038, drive: 90 });
-            } else {
-              metal(kind, { base: 1450, dur: 0.025, gain: 0.028, drive: 45 });
-            }
-            break;
-
-          case "select":
-            if (A) {
-              sub(kind, { freq: 88, endFreq: 44, dur: 0.10, gain: 0.16 });
-              relay(kind, { delay: 0.006, gain: 0.075, drive: 70 });
-              dataRip(kind, { delay: 0.025, dur: 0.045, gain: 0.055, drive: 82 });
-            } else if (B) {
-              dataRip(kind, { dur: 0.07, gain: 0.11, drive: 110 });
-              tone(kind, { type: "square", freq: 420, endFreq: 110, delay: 0.018, dur: 0.07, gain: 0.08, drive: 96 });
-            } else {
-              relay(kind, { gain: 0.095, drive: 58 });
-              sub(kind, { delay: 0.004, freq: 104, endFreq: 58, dur: 0.075, gain: 0.12 });
-            }
-            break;
-
-          case "drawer":
-            if (A) {
-              sub(kind, { freq: 65, endFreq: 29, dur: 0.23, gain: 0.20 });
-              servo(kind, { from: 122, to: 43, dur: 0.26, gain: 0.13, drive: 78 });
-              metal(kind, { delay: 0.20, base: 510, dur: 0.08, gain: 0.055, drive: 64 });
-            } else if (B) {
-              dataRip(kind, { dur: 0.19, gain: 0.10, drive: 105, pan: -0.15 });
-              dataRip(kind, { delay: 0.10, dur: 0.12, gain: 0.08, drive: 112, pan: 0.15 });
-              relay(kind, { delay: 0.19, gain: 0.075, drive: 82 });
-            } else {
-              servo(kind, { from: 210, to: 82, dur: 0.18, gain: 0.10, drive: 54 });
-              relay(kind, { delay: 0.15, gain: 0.10, drive: 48 });
-            }
-            break;
-
-          case "scan":
-            if (A) {
-              noise(kind, { dur: 0.18, gain: 0.075, low: 350, high: 4800, drive: 72, crush: 9 });
-              tone(kind, { type: "square", freq: 210, endFreq: 760, dur: 0.19, gain: 0.07, drive: 75 });
-              sub(kind, { delay: 0.17, freq: 58, endFreq: 35, dur: 0.07, gain: 0.09 });
-            } else if (B) {
-              dataRip(kind, { dur: 0.08, gain: 0.10, drive: 120, pan: -0.25 });
-              dataRip(kind, { delay: 0.07, dur: 0.08, gain: 0.10, drive: 120 });
-              dataRip(kind, { delay: 0.14, dur: 0.09, gain: 0.11, drive: 120, pan: 0.25 });
-            } else {
-              tone(kind, { type: "square", freq: 390, endFreq: 1180, dur: 0.15, gain: 0.07, drive: 52 });
-              relay(kind, { delay: 0.14, gain: 0.06, drive: 48 });
-            }
-            break;
-
-          case "install":
-            if (A) {
-              sub(kind, { freq: 57, endFreq: 24, dur: 0.30, gain: 0.34, drive: 48 });
-              metal(kind, { delay: 0.006, base: 420, dur: 0.12, gain: 0.085, drive: 86 });
-              servo(kind, { delay: 0.05, from: 138, to: 46, dur: 0.27, gain: 0.15, drive: 92 });
-              dataRip(kind, { delay: 0.18, dur: 0.10, gain: 0.09, drive: 112 });
-              relay(kind, { delay: 0.30, gain: 0.11, drive: 72 });
-            } else if (B) {
-              sub(kind, { freq: 71, endFreq: 30, dur: 0.18, gain: 0.24, drive: 72 });
-              dataRip(kind, { delay: 0.00, dur: 0.13, gain: 0.14, drive: 130, pan: -0.18 });
-              dataRip(kind, { delay: 0.08, dur: 0.14, gain: 0.13, drive: 130, pan: 0.18 });
-              tone(kind, { type: "square", freq: 188, endFreq: 61, delay: 0.17, dur: 0.16, gain: 0.11, drive: 118 });
-              metal(kind, { delay: 0.29, base: 830, dur: 0.07, gain: 0.07, drive: 98 });
-            } else {
-              relay(kind, { gain: 0.12, drive: 58 });
-              metal(kind, { delay: 0.035, base: 570, dur: 0.10, gain: 0.08, drive: 58 });
-              sub(kind, { delay: 0.02, freq: 92, endFreq: 39, dur: 0.16, gain: 0.20, drive: 42 });
-              servo(kind, { delay: 0.10, from: 175, to: 72, dur: 0.14, gain: 0.085, drive: 50 });
-              relay(kind, { delay: 0.245, gain: 0.095, drive: 54 });
-            }
-            break;
-
-          case "remove":
-            if (A) {
-              metal(kind, { base: 390, dur: 0.08, gain: 0.08, drive: 88 });
-              servo(kind, { delay: 0.025, from: 250, to: 52, dur: 0.23, gain: 0.14, drive: 90 });
-              noise(kind, { delay: 0.04, dur: 0.20, gain: 0.13, low: 90, high: 2300, drive: 84, crush: 10 });
-              sub(kind, { delay: 0.17, freq: 74, endFreq: 31, dur: 0.12, gain: 0.19 });
-            } else if (B) {
-              dataRip(kind, { dur: 0.17, gain: 0.14, drive: 125 });
-              tone(kind, { type: "square", freq: 650, endFreq: 75, delay: 0.02, dur: 0.18, gain: 0.11, drive: 110 });
-              sub(kind, { delay: 0.14, freq: 61, endFreq: 28, dur: 0.10, gain: 0.16 });
-            } else {
-              relay(kind, { gain: 0.10, drive: 62 });
-              servo(kind, { delay: 0.02, from: 220, to: 68, dur: 0.16, gain: 0.09, drive: 58 });
-              metal(kind, { delay: 0.145, base: 470, dur: 0.07, gain: 0.07, drive: 62 });
-            }
-            break;
-
-          case "error":
-            if (A) {
-              sub(kind, { freq: 69, endFreq: 31, dur: 0.16, gain: 0.20, drive: 68 });
-              dataRip(kind, { dur: 0.14, gain: 0.12, drive: 125 });
-              tone(kind, { type: "square", freq: 171, endFreq: 91, dur: 0.16, gain: 0.09, drive: 120 });
-            } else if (B) {
-              dataRip(kind, { dur: 0.20, gain: 0.16, drive: 145 });
-              tone(kind, { type: "square", freq: 255, endFreq: 74, dur: 0.20, gain: 0.12, drive: 130 });
-            } else {
-              relay(kind, { gain: 0.10, drive: 78 });
-              tone(kind, { type: "square", freq: 205, endFreq: 145, delay: 0.025, dur: 0.12, gain: 0.08, drive: 86 });
-            }
-            break;
-
-          case "confirm":
-            if (A) {
-              sub(kind, { freq: 96, endFreq: 53, dur: 0.08, gain: 0.13 });
-              relay(kind, { delay: 0.012, gain: 0.075, drive: 58 });
-              tone(kind, { type: "square", freq: 420, endFreq: 710, delay: 0.055, dur: 0.06, gain: 0.05, drive: 62 });
-            } else if (B) {
-              dataRip(kind, { dur: 0.055, gain: 0.08, drive: 105 });
-              tone(kind, { type: "square", freq: 540, endFreq: 980, delay: 0.045, dur: 0.07, gain: 0.065, drive: 86 });
-            } else {
-              relay(kind, { gain: 0.09, drive: 48 });
-              tone(kind, { type: "triangle", freq: 510, endFreq: 760, delay: 0.045, dur: 0.06, gain: 0.05, drive: 40 });
-            }
-            break;
-        }
-      } catch (err) {
-        console.warn("FEHA DEV 0.3.2 // sound variant failed", err);
-      }
+      if (layer.delay) setTimeout(go, layer.delay);
+      else go();
     }
 
     function play(kind = "select") {
-      return playVariant(kind, STATE.style);
-    }
-
-    async function openLab() {
-      const labels = {
-        A: "A // MEAT + MACHINE",
-        B: "B // DATA VIOLENCE",
-        C: "C // SURGICAL BRUTAL"
-      };
-
-      const rows = [
-        ["select", "SELECT"],
-        ["drawer", "DRAWER"],
-        ["scan", "SCAN"],
-        ["install", "INSTALL"],
-        ["remove", "REMOVE"],
-        ["error", "ERROR"],
-        ["confirm", "CONFIRM"]
-      ];
-
-      const rowHtml = rows.map(([kind, title]) => `
-        <div style="display:grid;grid-template-columns:110px repeat(3,1fr);gap:6px;align-items:center;margin:6px 0">
-          <b style="font-family:monospace;letter-spacing:1px">${title}</b>
-          <button data-feha-audition="${kind}|A">A</button>
-          <button data-feha-audition="${kind}|B">B</button>
-          <button data-feha-audition="${kind}|C">C</button>
-        </div>
-      `).join("");
-
-      const dlg = new Dialog({
-        title: "FEHA // SOUND LAB",
-        content: `
-          <div style="padding:10px;min-width:520px">
-            <p style="opacity:.8">Pick the MATERIAL LANGUAGE first. These are deliberately different, not tiny EQ tweaks.</p>
-            <div style="display:grid;grid-template-columns:110px repeat(3,1fr);gap:6px;margin:10px 0 8px">
-              <span></span>
-              <b>A // MEAT<br>+ MACHINE</b>
-              <b>B // DATA<br>VIOLENCE</b>
-              <b>C // SURGICAL<br>BRUTAL</b>
-            </div>
-            ${rowHtml}
-            <hr>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
-              <button data-feha-use-style="A">USE A</button>
-              <button data-feha-use-style="B">USE B</button>
-              <button data-feha-use-style="C">USE C</button>
-            </div>
-            <p style="margin-top:10px;font-size:12px;opacity:.65">Current: <b id="feha-current-sound-style">${labels[STATE.style]}</b></p>
-          </div>
-        `,
-        buttons: {
-          close: {
-            label: "CLOSE"
-          }
-        },
-        render: html => {
-          html[0].querySelectorAll("[data-feha-audition]").forEach(btn => {
-            btn.addEventListener("click", () => {
-              const [kind, style] = btn.dataset.fehaAudition.split("|");
-              playVariant(kind, style);
-            });
-          });
-
-          html[0].querySelectorAll("[data-feha-use-style]").forEach(btn => {
-            btn.addEventListener("click", () => {
-              STATE.style = btn.dataset.fehaUseStyle;
-              localStorage.setItem("fehaSoundStyle", STATE.style);
-              const label = html[0].querySelector("#feha-current-sound-style");
-              if (label) label.textContent = labels[STATE.style];
-              playVariant("confirm", STATE.style);
-              ui?.notifications?.info?.("FEHA SOUND STYLE // " + labels[STATE.style]);
-            });
-          });
-        }
-      });
-
-      dlg.render(true);
+      const layers = MAP[kind] ?? MAP.select;
+      layers.forEach(playLayer);
     }
 
     HTMLMediaElement.prototype.play = function(...args) {
@@ -754,42 +295,41 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.3.2 // sound routing failed", err);
+        console.warn("FEHA DEV 0.3.3 // sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
     };
 
+    prime();
+
     globalThis.FEHA_SOUNDS = {
       play,
-      playVariant,
-      openLab,
-      state: STATE,
-      setStyle(style) {
-        if (!["A", "B", "C"].includes(style)) return STATE.style;
-        STATE.style = style;
-        localStorage.setItem("fehaSoundStyle", style);
-        return STATE.style;
-      },
+      map: MAP,
+      get volume() { return master; },
       setVolume(value) {
-        STATE.volume = Math.max(0, Math.min(1, Number(value) || 0));
-        if (masterBus?.master) masterBus.master.gain.value = STATE.volume;
-        return STATE.volume;
+        master = Math.max(0, Math.min(1, Number(value) || 0));
+        localStorage.setItem("fehaRealSfxVolume", String(master));
+        return master;
+      },
+      demo() {
+        const order = ["hover","select","drawer","scan","install","remove","error","confirm"];
+        order.forEach((kind, i) => setTimeout(() => play(kind), i * 850));
       }
     };
 
-    globalThis.__FEHA_SOUND_ENGINE_032 = {
-      originalPlay: OriginalPlay,
-      get context() { return ctx; }
+    globalThis.__FEHA_SOUND_ENGINE_033 = {
+      originalPlay: OriginalPlay
     };
 
     console.info(
-      "FEHA DEV 0.3.2 // Sound Lab armed. Run FEHA_SOUNDS.openLab()"
+      "FEHA DEV 0.3.3 // real CC0 game SFX armed. Test FEHA_SOUNDS.demo()"
     );
   }
 
   function removeSoundEngine() {
     const engine =
+      globalThis.__FEHA_SOUND_ENGINE_033 ??
       globalThis.__FEHA_SOUND_ENGINE_032 ??
       globalThis.__FEHA_SOUND_ENGINE_029 ??
       globalThis.__FEHA_SOUND_ENGINE_028;
@@ -800,11 +340,8 @@
       HTMLMediaElement.prototype.play = engine.originalPlay;
     }
 
-    try {
-      engine.context?.close?.();
-    } catch {}
-
     delete globalThis.FEHA_SOUNDS;
+    delete globalThis.__FEHA_SOUND_ENGINE_033;
     delete globalThis.__FEHA_SOUND_ENGINE_032;
     delete globalThis.__FEHA_SOUND_ENGINE_029;
     delete globalThis.__FEHA_SOUND_ENGINE_028;
@@ -1004,7 +541,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // sound lab loaded"
+    "FEHA DEV " + BUILD + " // real game SFX + Ponyboy centering loaded"
   );
 
   state.reopenChrome();
