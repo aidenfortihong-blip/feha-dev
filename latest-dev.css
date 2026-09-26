@@ -2763,3 +2763,134 @@
   justify-self: end !important;
   margin-left: 1px !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.3
+   TELEMETRY ISOLATION + HERO TITLE CLEANUP
+   ========================================================================== */
+
+/* The small portrait-side signal profile inherits the full inspector readout
+   grid. On a ~200px host that caused its barcode/coords/sweep layers to collide
+   and paint outside the intended mini panel. Treat it as its own compact widget. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer {
+  width: min(214px, 28%) !important;
+  max-height: 94px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  contain: layout paint !important;
+  opacity: .42 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .adk-v6-tech-readout {
+  min-height: 86px !important;
+  height: 86px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 20px minmax(0, 1fr) !important;
+  gap: 5px !important;
+  padding: 7px 9px 8px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background:
+    linear-gradient(180deg, rgba(var(--cp-cyan), .022), transparent 74%),
+    rgba(1,6,9,.76) !important;
+  border: 1px solid rgba(var(--cp-cyan), .09) !important;
+  box-shadow: none !important;
+}
+
+/* Mini readout should be signal only. The full inspector keeps the animated
+   barcode and coordinates. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .tech-head {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  font-size: 6px !important;
+  letter-spacing: .85px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .tech-head span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .tech-head b {
+  flex: 0 0 auto !important;
+  margin-left: 8px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .tech-wave {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  height: 46px !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .tech-wave polyline {
+  vector-effect: non-scaling-stroke !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .tech-barcode,
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .tech-coords,
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .adk-v6-tech-readout::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-technical-layer .adk-v6-tech-readout::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* The extracted highlight mask in the hero title created the horizontal
+   banding visible behind DERMAL SHELL. Keep the title authored and clean. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background:
+    linear-gradient(90deg,
+      rgba(1,6,9,.94) 0%,
+      rgba(1,6,9,.78) 54%,
+      rgba(1,6,9,.34) 82%,
+      transparent 100%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title::before {
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  z-index: -1 !important;
+  background:
+    linear-gradient(180deg,
+      rgba(2,6,8,.08) 0%,
+      rgba(2,6,8,.30) 44%,
+      rgba(2,6,8,.72) 100%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
+
+/* Keep the center metrics from leaking into the title's paint context. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-status {
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background: rgba(2,8,11,.74) !important;
+  backdrop-filter: none !important;
+}
+
+/* Full inspector signal panel remains animated, but must clip all moving
+   scan/barcode layers to its own box. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system-dossier > .adk-v6-tech-readout,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-hardware-dossier > .adk-v6-tech-readout {
+  overflow: hidden !important;
+  isolation: isolate !important;
+  contain: paint !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system-dossier > .adk-v6-tech-readout .tech-wave,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-hardware-dossier > .adk-v6-tech-readout .tech-wave {
+  overflow: hidden !important;
+}
