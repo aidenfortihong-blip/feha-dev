@@ -1,12 +1,12 @@
 {
-  "version": "0.4.2",
+  "version": "0.4.3",
   "updated": "2026-09-25",
-  "scope": "left-rail-polish",
+  "scope": "telemetry-isolation",
   "notes": [
-    "Fixed the Owned Chrome button CP2077 mask overlapping the count and launch glyph",
-    "Reserved dedicated clean columns for Owned Chrome label, item count and launch action",
-    "Reduced decorative mask opacity and kept the source-derived frame away from interactive data",
-    "Tightened subsystem count/state spacing so the right edge no longer visually collides at narrow rail widths",
-    "Retained the 0.4.1 CP2077 mask cleanup, continuous telemetry motion and private CP2077 sound integration"
+    "Isolated the compact portrait-side signal profile from the full inspector telemetry grid",
+    "Removed barcode, coordinate, scan-sweep and extracted code overlays from the mini signal panel while keeping its live waveform",
+    "Clipped all moving inspector telemetry to its own panel to prevent paint bleed during subsystem rerenders",
+    "Removed the extracted highlight mask from the hero subsystem title because it produced horizontal banding behind the title",
+    "Isolated the center metric strip and title paint contexts without removing the 0.4.0 continuous waveform animation"
   ]
 }
