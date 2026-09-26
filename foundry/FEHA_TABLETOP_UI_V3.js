@@ -196,7 +196,7 @@
   function portrait(actor) {
     const k = norm(actor?.flags?.[FLAG]?.adkCharacter ?? actor?.name);
     const fixed = {
-      derke:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/74981913-bd87-4289-a524-7d987e699cfd.png",
+      derke:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
       ponyboy:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/40e1fb5d-6265-4dfd-93d3-d6344dc14180.png"
     };
     return fixed[k] || actor?.flags?.[FLAG]?.characterChooserPortrait || actor?.img || "icons/svg/mystery-man.svg";
