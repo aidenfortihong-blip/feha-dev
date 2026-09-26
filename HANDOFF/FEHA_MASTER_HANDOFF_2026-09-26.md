@@ -351,12 +351,12 @@ Important files:
 - `foundry/ADK_DEV_LOADER.js`
 - `audio/kenney/*`
 
-Loader v2:
+Canonical V3 dev loader:
 - resolves main -> exact commit SHA
-- fetches immutable JS/CSS from that SHA
-- cleans previous patch
-- injects CSS
-- evals JS
+- fetches immutable base CSS/JS + Cyberdeck V3 CSS/JS from that SHA
+- cleans previous V3/base runtime
+- suppresses deprecated V2 presentation while V3 owns the launcher
+- restores V2 only as a recovery fallback if V3 load fails
 - reports build + SHA
 
 ## Build history
@@ -380,6 +380,9 @@ Loader v2:
 - 0.6.0 complete FEHA-owned Cyberdeck V2 replacement
 - 0.6.1 larger/readable Cyberdeck + roster locked to Ponyboy/Derke/Sasha/Zach
 - 0.6.2 Heat/Humanity removed; Cyberpunk asset-heavy beauty pass + expanded sound feedback
+- 0.8.0 Cyberdeck V3 single-screen loadout + separate fullscreen JACK IN scene view
+- 0.8.1–0.8.3 V3 layout/readability/polish, full-width JACK IN, live refresh, canonical Short Rest behavior
+- 0.8.4 deep audit/hardening: V2/V3 race removed, canonical V3 loader, lifecycle/action locks, cache/deck/support detection fixes, overflow handling, active-scene target validation, collision avoidance, sound/observer cleanup
 
 ## Signal profile
 There is already a native telemetry engine in current dev JS:
@@ -465,8 +468,87 @@ Upload both JSON files into the next chat/project. Those two files are the bridg
 2. Inspect current repo, especially `latest-dev.js`, `latest-dev.css`, and `version.json`.
 3. Load and inspect the two Foundry export JSON files if provided.
 4. Treat exported installed-module source and live actor/item data as authoritative over guessed field names.
-5. Continue Cyberdeck V2 from build 0.6.2 rather than reviving the legacy purple template.
+5. Continue **Cyberdeck V3 from build 0.8.4**. V2 is recovery fallback only; do not revive it as the primary UI.
 6. Keep Cyberdeck roster to Ponyboy / Derke / Sasha / Zach.
 7. Continue character-sheet work: Spells -> Quickhacks presentation and RAM display, grounded in exported data.
 8. Start moving important systems from live patch code into the real module source once module source is available.
 9. Preserve the current Chrome Manager visual language and wallet suppression.
+
+
+---
+
+# AUTHORITATIVE CYBERDECK V3 ADDENDUM — 2026-09-26 // BUILD 0.8.4
+
+This section supersedes older Cyberdeck V2 continuation language elsewhere in this document.
+
+## Active runtime
+- Base shared patch: `latest-dev.js` build 0.8.4.
+- Cyberdeck UI/runtime: `foundry/FEHA_TABLETOP_UI_V3.js` build 0.8.4.
+- Cyberdeck presentation: `cyberdeck-v3.css`.
+- Canonical loader: `foundry/ADK_DEV_LOADER.js`.
+- `version.json` is the compact machine-readable audit summary.
+- V2 remains in `latest-dev.js` only as a fallback if V3 cannot load.
+
+## Locked Cyberdeck architecture
+The normal Cyberdeck is a **single loadout screen**, not a tabbed app:
+- operator portrait
+- RAM
+- compact Short Rest RAM restore
+- installed Cyberdeck
+- support chrome
+- loaded Quickhacks
+- owned software library / LOAD-EJECT
+- large full-width JACK IN action
+
+Do not restore Network / Memory / Diagnostics tabs.
+Do not restore Heat or Humanity.
+
+JACK IN opens a separate fullscreen active-scene view:
+- green code/handshake transition
+- scene actor-token sweep
+- operator center node
+- scene target nodes
+- Foundry target acquisition
+- loaded Quickhack execution bar
+- closing JACK IN returns to the loadout screen
+
+## Roster
+Only:
+- Ponyboy
+- Derke
+- Sasha
+- Zach
+
+## Mechanics
+- RAM restores on Short Rest only.
+- Long Rest does not restore RAM.
+- No passive RAM regeneration.
+- Actor inventory Quickhacks count as owned even if legacy purchase metadata is absent.
+- `flags.fleshEnshrouded.ramCost` is canonical when present.
+- Over-capacity loaded Quickhacks after a deck downgrade remain visible but cannot execute until ejected.
+- Deck passives / Quickhack saves, damage, conditions, and chained effects remain descriptive/manual unless the stable FEHA module later gains canonical automation.
+
+## 0.8.4 audit fixes
+- removed V2/V3 launcher race
+- removed document-wide V3 reclaim observer
+- canonical repo loader now loads V3 directly
+- dead hot-reload callbacks cannot resurrect old builds
+- runtime action locks survive rerenders
+- Cyberdeck recognition matches module names (Cyberdeck / Paraline / Netdriver / Tetratronic / Raven Micro)
+- other Cyberdecks cannot count as support chrome
+- stashed cache cyberware is not treated as installed
+- ordinary inventory cannot leak into owned chrome through fallback slot inference
+- exporter APIs remain available under V3
+- base observer only scans newly-added DOM subtrees rather than the full document on each mutation
+- private UI/audio assets can bootstrap directly from the private Forge/localStorage map
+- sound volume preserves per-event mix and missing private sounds fall back individually
+- JACK IN validates current-scene targets and avoids common node/operator overlap
+- closing JACK IN returns to Cyberdeck
+- failed LOAD no longer leaves controls disabled
+- async actor switching no longer gets pulled back to an old operator
+- Derke V3 portrait uses the approved `1 Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png` Forge source
+- user-facing F12 recovery instructions removed
+- shipped JS syntax + CSS structure verified after audit
+
+## Known data caveat
+The 2026-09-26 handoff export contains legacy Quickhack records whose prose RAM number can disagree with `flags.ramCost`. V3 treats the flag as canonical and corrects its own displayed text without silently rewriting world source items. A fresh live export should be used before any catalog-wide source-data migration.
