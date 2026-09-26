@@ -4085,3 +4085,148 @@
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.5.1
+   CYBERDECK LAYOUT / DENSITY PASS
+   ========================================================================== */
+
+/* Force the app away from the inherited purple card language. */
+[data-feha-cyberdeck="1"],
+[data-feha-cyberdeck="1"] .window-content,
+[data-feha-cyberdeck="1"] .application-content,
+[data-feha-cyberdeck="1"] form {
+  background-color: #020406 !important;
+  background-image:
+    linear-gradient(rgba(95,239,255,.010) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(95,239,255,.008) 1px, transparent 1px) !important;
+  background-size: 5px 5px !important;
+  color: #dffcff !important;
+}
+
+/* Strip purple inherited borders/shadows from major descendants. */
+[data-feha-cyberdeck="1"] :is(section, article, aside, main, nav, header, footer, fieldset) {
+  border-color: rgba(95,239,255,.12) !important;
+  box-shadow: none !important;
+}
+
+/* Hide the leftover Cyberdeck €$ widget completely. */
+[data-feha-cyberdeck="1"] .feha-cd-wallet,
+[data-feha-cyberdeck="1"] [data-feha-wallet-launcher="legacy"],
+[data-feha-cyberdeck="1"] .feha-wallet-legacy-launcher {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* The portrait should read as a narrow identity terminal, not a giant card. */
+[data-feha-cyberdeck="1"] .feha-cd-portrait-card {
+  background:
+    linear-gradient(180deg, rgba(95,239,255,.020), transparent 40%),
+    #030609 !important;
+  border-color: rgba(95,239,255,.22) !important;
+}
+
+/* Deck / RAM block gets the strongest visual priority. */
+[data-feha-cyberdeck="1"] .feha-cd-deck-panel {
+  background:
+    radial-gradient(circle at 50% 54%, rgba(95,239,255,.045), transparent 36%),
+    linear-gradient(rgba(95,239,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(95,239,255,.014) 1px, transparent 1px),
+    #03080b !important;
+  background-size: auto, 24px 24px, 24px 24px, auto !important;
+  border-color: rgba(95,239,255,.24) !important;
+}
+
+/* Loaded quickhacks: compact rack instead of giant empty slabs. */
+[data-feha-cyberdeck="1"] .feha-cd-loaded-section {
+  position: relative !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 10px 12px 14px !important;
+  margin-top: 10px !important;
+  background: #020609 !important;
+  border-top: 1px solid rgba(255,219,92,.24) !important;
+  border-bottom: 1px solid rgba(95,239,255,.08) !important;
+  overflow: visible !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-loaded-title {
+  color: rgb(255,219,92) !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: 1.6px !important;
+  text-transform: uppercase !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-loaded-section > :not(.feha-cd-loaded-title) {
+  max-height: none !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-quickhack-slot {
+  min-width: 0 !important;
+  width: auto !important;
+  height: 74px !important;
+  min-height: 74px !important;
+  max-height: 74px !important;
+  padding: 8px !important;
+  color: rgba(223,252,255,.68) !important;
+  background:
+    linear-gradient(135deg, rgba(95,239,255,.032), transparent 64%),
+    #03080b !important;
+  border: 1px dashed rgba(95,239,255,.20) !important;
+  box-shadow: none !important;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-quickhack-slot:hover {
+  color: rgb(95,239,255) !important;
+  background: rgba(95,239,255,.055) !important;
+  border-color: rgba(95,239,255,.56) !important;
+}
+
+/* Right-side data panels should feel dense and terminal-like. */
+[data-feha-cyberdeck="1"] .feha-cd-library,
+[data-feha-cyberdeck="1"] .feha-cd-support {
+  background:
+    linear-gradient(90deg, rgba(255,76,132,.020), transparent 38%),
+    #020609 !important;
+  border-right: 0 !important;
+  border-top: 1px solid rgba(255,76,132,.26) !important;
+  border-bottom: 1px solid rgba(95,239,255,.075) !important;
+  padding: 13px 14px 15px !important;
+}
+
+/* Make empty-state boxes much shorter; they should communicate absence, not
+   occupy half the interface. */
+[data-feha-cyberdeck="1"] .feha-cd-library .feha-cd-empty-copy,
+[data-feha-cyberdeck="1"] .feha-cd-support .feha-cd-empty-copy {
+  min-height: 56px !important;
+  margin-top: 10px !important;
+  padding: 16px 14px !important;
+}
+
+/* Header controls: lean terminal strip. */
+[data-feha-cyberdeck="1"] .feha-cd-select,
+[data-feha-cyberdeck="1"] .feha-cd-check,
+[data-feha-cyberdeck="1"] .feha-cd-close {
+  box-shadow: none !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-select {
+  background: #02070a !important;
+  border-color: rgba(95,239,255,.34) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-check {
+  color: rgb(95,239,255) !important;
+  background: rgba(95,239,255,.028) !important;
+  border-color: rgba(95,239,255,.42) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-close {
+  background: rgba(255,76,132,.028) !important;
+  border-color: rgba(255,76,132,.44) !important;
+}
