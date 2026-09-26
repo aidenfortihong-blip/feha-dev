@@ -1,6 +1,7 @@
 (() => {
-  const BUILD = "0.4.18";
+  const BUILD = "0.4.19";
   let observer = null;
+  let walletGuard = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
 
@@ -495,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.18 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.19 // preload failed", event, err);
         }
       }
     }
@@ -553,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.18 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.19 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.18 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.19 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -580,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.18 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.19 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -704,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.18 // sound source: ${source}`
+      `FEHA DEV 0.4.19 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.18 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.19 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -977,6 +978,121 @@
     return tagged;
   }
 
+  function euroBalanceText(value) {
+    const text = String(value ?? "").replace(/\s+/g, " ").trim();
+    return /^€\$\s*[-+]?\d[\d,.]*$/i.test(text);
+  }
+
+  function suppressLegacyWalletChrome(root = document.getElementById("adk-chrome-manager-34")) {
+    if (!root?.querySelectorAll) return 0;
+
+    let suppressed = 0;
+
+    // The Chrome Manager's old top-bar balance control survived the sheet-wallet
+    // removal. Tag any interactive €$ balance launcher so CSS can remove it.
+    root.querySelectorAll("button, a, [role='button']").forEach(el => {
+      const text = String(el.innerText ?? el.textContent ?? "").replace(/\s+/g, " ").trim();
+      if (!euroBalanceText(text)) return;
+
+      el.dataset.fehaWalletLauncher = "legacy";
+      el.classList.add("feha-wallet-legacy-launcher");
+      el.setAttribute("aria-hidden", "true");
+      el.setAttribute("tabindex", "-1");
+      suppressed++;
+    });
+
+    // Fallback for non-semantic clickable shells: find an exact €$ leaf and climb
+    // only until the first compact ancestor that still contains only that balance.
+    [...root.querySelectorAll("*")].forEach(leaf => {
+      if (leaf.children.length > 0 || !euroBalanceText(leaf.textContent)) return;
+
+      let cursor = leaf.parentElement;
+      for (let depth = 0; cursor && cursor !== root && depth < 4; depth++, cursor = cursor.parentElement) {
+        const text = String(cursor.innerText ?? cursor.textContent ?? "").replace(/\s+/g, " ").trim();
+        if (!euroBalanceText(text)) break;
+
+        const interactive =
+          cursor.matches?.("button, a, [role='button']") ||
+          typeof cursor.onclick === "function" ||
+          cursor.hasAttribute?.("data-action");
+
+        if (interactive || depth === 0) {
+          cursor.dataset.fehaWalletLauncher = "legacy";
+          cursor.classList.add("feha-wallet-legacy-launcher");
+          cursor.setAttribute("aria-hidden", "true");
+          cursor.setAttribute("tabindex", "-1");
+          suppressed++;
+          break;
+        }
+      }
+    });
+
+    // The legacy wallet click can spawn a giant raw textarea over the portrait.
+    // Chrome Manager has no legitimate textarea UI, so remove only large visible
+    // textareas inside this app; small/hidden controls elsewhere are untouched.
+    root.querySelectorAll("textarea").forEach(area => {
+      const rect = area.getBoundingClientRect?.();
+      if (!rect) return;
+      const style = getComputedStyle(area);
+      const visible = style.display !== "none" && style.visibility !== "hidden";
+      const legacySized = rect.width >= 240 && rect.height >= 120;
+      if (!visible || !legacySized) return;
+
+      area.dataset.fehaWalletEditor = "legacy";
+      area.classList.add("feha-wallet-legacy-editor");
+      area.remove();
+      suppressed++;
+    });
+
+    return suppressed;
+  }
+
+  function installWalletGuard() {
+    if (walletGuard) {
+      document.removeEventListener("click", walletGuard, true);
+      walletGuard = null;
+    }
+
+    walletGuard = event => {
+      const root = document.getElementById("adk-chrome-manager-34");
+      if (!root || !event.target?.closest) return;
+
+      const target = event.target.closest(
+        '[data-feha-wallet-launcher="legacy"], .feha-wallet-legacy-launcher, button, a, [role="button"]'
+      );
+      if (!target || !root.contains(target)) return;
+
+      const text = String(target.innerText ?? target.textContent ?? "").replace(/\s+/g, " ").trim();
+      if (
+        target.matches?.('[data-feha-wallet-launcher="legacy"], .feha-wallet-legacy-launcher') ||
+        euroBalanceText(text)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation?.();
+        suppressLegacyWalletChrome(root);
+      }
+    };
+
+    document.addEventListener("click", walletGuard, true);
+  }
+
+  function removeWalletGuard() {
+    if (walletGuard) {
+      document.removeEventListener("click", walletGuard, true);
+      walletGuard = null;
+    }
+
+    document
+      .querySelectorAll('[data-feha-wallet-launcher="legacy"], .feha-wallet-legacy-launcher')
+      .forEach(el => {
+        delete el.dataset.fehaWalletLauncher;
+        el.classList.remove("feha-wallet-legacy-launcher");
+        el.removeAttribute("aria-hidden");
+        el.removeAttribute("tabindex");
+      });
+  }
+
   function clearLegacyWalletTags() {
     document.querySelectorAll('[data-feha-wallet-shell="legacy"], [data-feha-wallet-balance="1"]').forEach(el => {
       el.classList?.remove?.("feha-wallet-legacy-shell");
@@ -997,6 +1113,7 @@
       markRoot();
       normalizeDossierSchematics();
       tagLegacyWallets();
+      suppressLegacyWalletChrome();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
@@ -1026,6 +1143,7 @@
       removeActorSwitchFix();
       removeTelemetryMotion();
       removeSoundEngine();
+      removeWalletGuard();
       clearLegacyWalletTags();
       document
         .getElementById("adk-chrome-manager-34")
@@ -1059,10 +1177,12 @@
   installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
+  installWalletGuard();
   startObserver();
   patchBackend();
   markRoot();
   tagLegacyWallets();
+  suppressLegacyWalletChrome();
 
   console.log(
     "%cFEHA DEV PATCH %c" + BUILD,
@@ -1071,7 +1191,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // legacy sheet wallets removed"
+    "FEHA DEV " + BUILD + " // legacy wallet UI fully suppressed"
   );
 
   state.reopenChrome();
