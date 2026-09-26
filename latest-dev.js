@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.2";
+  const BUILD = "0.6.3";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.2 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.3 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.2 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.3 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.2 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.3 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.2 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.3 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.2 // sound source: ${source}`
+      `FEHA DEV 0.6.3 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.2 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.3 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1971,6 +1971,15 @@
           <div class="cd2-mini-support">${supportCards(model)}</div>
         </section>
 
+        ${game.user?.isGM ? `
+        <section class="cd2-gm-exports">
+          <div class="cd2-subhead">GM EXPORTS</div>
+          <p>Download the live-world handoff package and the installed ADK/FEHA module source.</p>
+          <button type="button" data-cd-action="export-handoff"><span>LIVE WORLD</span><b>EXPORT DATA</b></button>
+          <button type="button" data-cd-action="export-source"><span>INSTALLED MODULE</span><b>EXPORT SOURCE</b></button>
+        </section>
+        ` : ""}
+
         <section class="cd2-session">
           <div class="cd2-subhead">SESSION</div>
           <p>RAM recovers on <b>Short Rest</b>. Quickhacks are persistent software and loaded into the installed deck's software slots.</p>
@@ -1993,6 +2002,438 @@
 
     await item.update({"flags.fleshEnshrouded.quickhackLoaded": prepared});
     return true;
+  }
+
+  async function exportFehaHandoff() {
+if (!game.user?.isGM) {
+    return ui.notifications.error("FEHA HANDOFF EXPORTER is GM only.");
+  }
+
+  const ACTORS = ["Ponyboy", "Derke", "Sasha", "Zach"];
+  const norm = v => String(v ?? "").trim().toLowerCase();
+
+  function parseJson(value) {
+    try { return JSON.parse(value); }
+    catch { return null; }
+  }
+
+  function folderPath(folder) {
+    const parts = [];
+    let cur = folder;
+    let guard = 0;
+    while (cur && guard++ < 30) {
+      parts.unshift(cur.name);
+      cur = cur.folder ?? cur.parent ?? null;
+    }
+    return parts.join("/");
+  }
+
+  function save(filename, text) {
+    if (typeof saveDataToFile === "function") {
+      saveDataToFile(text, "application/json", filename);
+      return;
+    }
+
+    const blob = new Blob([text], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function findModule() {
+    const mods = [...game.modules.values()];
+    const matches = mods.filter(m =>
+      /\b(adk|feha)\b|flesh.*enshrouded|heart.*ablaze/i.test(
+        [m.id, m.title, m.description].filter(Boolean).join(" ")
+      )
+    );
+
+    if (matches.length === 1) return matches[0];
+    if (matches.length > 1) {
+      return matches.find(m => m.active) ?? matches[0];
+    }
+
+    return mods.find(m => m.active && /cyber|adk/i.test(m.title ?? "")) ?? null;
+  }
+
+  async function fetchText(path) {
+    try {
+      const res = await fetch(path, {cache:"no-store"});
+      if (!res.ok) return {ok:false, status:res.status, path};
+      return {ok:true, path, text:await res.text()};
+    } catch (err) {
+      return {ok:false, path, error:String(err?.message ?? err)};
+    }
+  }
+
+  const mod = findModule();
+  const moduleSource = {
+    selectedModule: mod ? {
+      id: mod.id,
+      title: mod.title,
+      version: mod.version,
+      active: mod.active,
+      manifest: mod.manifest,
+      scripts: [...(mod.scripts ?? [])],
+      esmodules: [...(mod.esmodules ?? [])],
+      styles: [...(mod.styles ?? [])],
+      languages: [...(mod.languages ?? [])],
+      packs: [...(mod.packs ?? [])]
+    } : null,
+    files: {}
+  };
+
+  if (mod) {
+    const base = `/modules/${mod.id}/`;
+    const files = new Set(["module.json"]);
+
+    for (const p of mod.scripts ?? []) files.add(String(p));
+    for (const p of mod.esmodules ?? []) files.add(String(p));
+    for (const p of mod.styles ?? []) files.add(String(p));
+    for (const lang of mod.languages ?? []) {
+      if (lang?.path) files.add(String(lang.path));
+    }
+
+    for (const file of files) {
+      moduleSource.files[file] = await fetchText(base + file);
+    }
+  }
+
+  const actors = {};
+  for (const name of ACTORS) {
+    const actor = game.actors.find(a => norm(a.name) === norm(name));
+    actors[name] = actor ? {
+      id: actor.id,
+      uuid: actor.uuid,
+      folder: actor.folder ? folderPath(actor.folder) : "",
+      data: actor.toObject()
+    } : null;
+  }
+
+  const worldItems = game.items.contents.map(item => ({
+    id: item.id,
+    uuid: item.uuid,
+    name: item.name,
+    type: item.type,
+    folder: item.folder ? folderPath(item.folder) : "",
+    data: item.toObject()
+  }));
+
+  const folders = game.folders.contents.map(folder => ({
+    id: folder.id,
+    name: folder.name,
+    type: folder.type,
+    parentId: folder.folder?.id ?? null,
+    path: folderPath(folder),
+    data: folder.toObject()
+  }));
+
+  const privateAssets = {
+    fehaCP2077PrivateAssetsV1:
+      parseJson(localStorage.getItem("fehaCP2077PrivateAssetsV1") || "null"),
+    fehaCP2077LocalSfxV1:
+      parseJson(localStorage.getItem("fehaCP2077LocalSfxV1") || "null"),
+    runtimeAssets:
+      globalThis.FEHA_CP2077_ASSETS
+        ? JSON.parse(JSON.stringify(globalThis.FEHA_CP2077_ASSETS))
+        : null
+  };
+
+  const runtime = {};
+  for (const name of [
+    "ADKWallet",
+    "ADKCore",
+    "ADKChromeBackend",
+    "ADKChromeNative",
+    "ADKTheme",
+    "ADKDevPatch"
+  ]) {
+    const value = globalThis[name];
+    runtime[name] = value
+      ? Object.getOwnPropertyNames(value).filter(k => k !== "constructor")
+      : null;
+  }
+
+  const payload = {
+    exportType: "FEHA_ADK_HANDOFF",
+    exporterVersion: "1.0",
+    generatedAt: new Date().toISOString(),
+    environment: {
+      foundryVersion: game.version,
+      systemId: game.system?.id,
+      systemVersion: game.system?.version,
+      worldId: game.world?.id,
+      worldTitle: game.world?.title
+    },
+    moduleSource,
+    privateAssets,
+    actors,
+    worldItems,
+    folders,
+    runtime,
+    note:
+      "No passwords, API keys, Forge credentials, GitHub tokens, OAuth secrets, cookies, or auth headers are intentionally collected."
+  };
+
+  const filename =
+    "FEHA_ADK_HANDOFF_" +
+    new Date().toISOString().replace(/[:.]/g, "-") +
+    ".json";
+
+  save(filename, JSON.stringify(payload, null, 2));
+  console.log("FEHA HANDOFF EXPORT", payload);
+  ui.notifications.info("FEHA HANDOFF EXPORTER // downloaded " + filename);
+  }
+
+  async function exportFehaModuleSource() {
+if (!game.user?.isGM) {
+    return ui.notifications.error("FEHA MODULE SOURCE EXPORTER is GM only.");
+  }
+
+  const MAX_FILES = 800;
+  const MAX_CHARS_PER_FILE = 5_000_000;
+
+  function save(filename, text) {
+    if (typeof saveDataToFile === "function") {
+      saveDataToFile(text, "application/json", filename);
+      return;
+    }
+    const blob = new Blob([text], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function candidateModules() {
+    const all = [...game.modules.values()];
+    const matches = all.filter(m =>
+      /\b(adk|feha)\b|flesh.*enshrouded|heart.*ablaze/i.test(
+        [m.id, m.title, m.description].filter(Boolean).join(" ")
+      )
+    );
+    return matches.length ? matches : all.filter(m => m.active);
+  }
+
+  function chooseModule() {
+    const list = candidateModules();
+    if (!list.length) return null;
+    if (list.length === 1) return list[0];
+
+    const suggested =
+      list.find(m => /\b(adk|feha)\b/i.test(`${m.id} ${m.title}`)) ??
+      list.find(m => m.active) ??
+      list[0];
+
+    const menu = list
+      .map((m, i) => `${i + 1}. ${m.title} [${m.id}] ${m.active ? "(active)" : ""}`)
+      .join("\n");
+
+    const input = window.prompt(
+      "FEHA MODULE SOURCE EXPORTER\n\nChoose the installed ADK/FEHA module.\n\n" +
+      menu +
+      "\n\nEnter module ID or list number:",
+      suggested.id
+    );
+
+    if (!input) return null;
+    const raw = input.trim();
+
+    const byId = list.find(m => m.id === raw) ?? game.modules.get(raw);
+    if (byId) return byId;
+
+    const n = Number(raw);
+    if (Number.isInteger(n) && n >= 1 && n <= list.length) {
+      return list[n - 1];
+    }
+    return null;
+  }
+
+  const TEXT_EXT = /\.(?:js|mjs|cjs|css|hbs|html|htm|json|txt|md)$/i;
+  const BINARY_EXT = /\.(?:png|webp|jpe?g|gif|svg|wav|ogg|mp3|flac|woff2?|ttf|otf)(?:[?#].*)?$/i;
+
+  function stripQuery(value) {
+    return String(value ?? "").trim().replace(/[?#].*$/, "");
+  }
+
+  function resolvePath(moduleId, currentPath, ref) {
+    ref = stripQuery(ref);
+    if (!ref) return null;
+    if (/^(?:https?:|data:|blob:|#)/i.test(ref)) return null;
+
+    const prefix = `/modules/${moduleId}/`;
+    const prefixNoSlash = `modules/${moduleId}/`;
+
+    let path = null;
+
+    if (ref.startsWith(prefix)) {
+      path = ref.slice(prefix.length);
+    } else if (ref.startsWith(prefixNoSlash)) {
+      path = ref.slice(prefixNoSlash.length);
+    } else if (ref.startsWith("./") || ref.startsWith("../")) {
+      const base = new URL(prefix + currentPath, location.origin);
+      const resolved = new URL(ref, base).pathname;
+      if (!resolved.startsWith(prefix)) return null;
+      path = resolved.slice(prefix.length);
+    } else {
+      return null;
+    }
+
+    try { path = decodeURIComponent(path); } catch {}
+    path = path.replace(/^\/+/, "");
+    if (!path || path.split("/").includes("..")) return null;
+    return path;
+  }
+
+  function scanReferences(moduleId, currentPath, text) {
+    const source = new Set();
+    const binary = new Set();
+
+    const add = ref => {
+      const path = resolvePath(moduleId, currentPath, ref);
+      if (!path) return;
+      if (TEXT_EXT.test(path)) source.add(path);
+      else if (BINARY_EXT.test(path)) binary.add(path);
+    };
+
+    const patterns = [
+      /(?:import\s*(?:[^"'()]*?\sfrom\s*)?|export\s+[^"']*?\sfrom\s*|import\s*\()\s*["']([^"']+)["']/g,
+      /(?:fetch|getTemplate|loadTemplate|loadTemplates)\s*\(\s*["']([^"']+)["']/g,
+      /["']((?:\.\.?\/|\/modules\/|modules\/)[^"']+\.(?:js|mjs|cjs|css|hbs|html|htm|json|txt|md|png|webp|jpe?g|gif|svg|wav|ogg|mp3|flac|woff2?|ttf|otf)(?:[?#][^"']*)?)["']/gi
+    ];
+
+    for (const regex of patterns) {
+      let match;
+      while ((match = regex.exec(text))) add(match[1]);
+    }
+
+    const cssUrls = /url\(\s*["']?([^"')]+)["']?\s*\)/gi;
+    let match;
+    while ((match = cssUrls.exec(text))) add(match[1]);
+
+    return {
+      source: [...source],
+      binary: [...binary]
+    };
+  }
+
+  async function fetchText(url) {
+    const response = await fetch(url, {cache:"no-store"});
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+    const text = await response.text();
+    if (text.length > MAX_CHARS_PER_FILE) {
+      throw new Error("file too large for text export");
+    }
+    return text;
+  }
+
+  const mod = chooseModule();
+  if (!mod) {
+    return ui.notifications.error("FEHA MODULE SOURCE EXPORTER // no module selected.");
+  }
+
+  const moduleId = mod.id;
+  const base = `/modules/${moduleId}/`;
+
+  const queue = [];
+  const queued = new Set();
+  const files = {};
+  const binaryAssets = new Set();
+  const failures = [];
+
+  const enqueue = path => {
+    path = stripQuery(path).replace(/^\/+/, "");
+    if (!path || queued.has(path) || queued.size >= MAX_FILES) return;
+    queued.add(path);
+    queue.push(path);
+  };
+
+  enqueue("module.json");
+  for (const p of mod.scripts ?? []) enqueue(String(p));
+  for (const p of mod.esmodules ?? []) enqueue(String(p));
+  for (const p of mod.styles ?? []) enqueue(String(p));
+  for (const lang of mod.languages ?? []) {
+    if (lang?.path) enqueue(String(lang.path));
+  }
+
+  ui.notifications.info(
+    `FEHA MODULE SOURCE // scanning ${mod.title} [${moduleId}]...`
+  );
+
+  while (queue.length && Object.keys(files).length < MAX_FILES) {
+    const path = queue.shift();
+
+    try {
+      const text = await fetchText(base + path);
+      files[path] = text;
+
+      const refs = scanReferences(moduleId, path, text);
+      for (const next of refs.source) enqueue(next);
+      for (const asset of refs.binary) binaryAssets.add(asset);
+    } catch (err) {
+      failures.push({
+        path,
+        url: base + path,
+        error: String(err?.message ?? err)
+      });
+    }
+
+    const count = Object.keys(files).length;
+    if (count && count % 25 === 0) {
+      ui.notifications.info(`FEHA MODULE SOURCE // ${count} text files captured...`);
+      await new Promise(r => setTimeout(r, 0));
+    }
+  }
+
+  const payload = {
+    exportType: "FEHA_ADK_MODULE_SOURCE",
+    exporterVersion: "1.0",
+    generatedAt: new Date().toISOString(),
+    environment: {
+      foundryVersion: game.version,
+      systemId: game.system?.id,
+      systemVersion: game.system?.version
+    },
+    module: {
+      id: mod.id,
+      title: mod.title,
+      version: mod.version,
+      active: mod.active,
+      manifest: mod.manifest,
+      scripts: [...(mod.scripts ?? [])],
+      esmodules: [...(mod.esmodules ?? [])],
+      styles: [...(mod.styles ?? [])],
+      languages: [...(mod.languages ?? [])],
+      packs: [...(mod.packs ?? [])]
+    },
+    textFiles: files,
+    referencedBinaryAssets: [...binaryAssets].sort(),
+    unresolvedOrFailed: failures,
+    limits: {
+      maxFiles: MAX_FILES,
+      maxCharsPerFile: MAX_CHARS_PER_FILE
+    },
+    note:
+      "This export contains module text source and referenced asset paths only. It does not intentionally collect credentials, tokens, cookies, API keys, OAuth secrets, or authorization headers."
+  };
+
+  const filename =
+    `FEHA_ADK_MODULE_SOURCE_${moduleId}_` +
+    new Date().toISOString().replace(/[:.]/g, "-") +
+    ".json";
+
+  save(filename, JSON.stringify(payload, null, 2));
+  console.log("FEHA MODULE SOURCE EXPORT COMPLETE", payload);
+  ui.notifications.info(
+    `FEHA MODULE SOURCE // complete: ${Object.keys(files).length} files -> ${filename}`
+  );
   }
 
   function bindCyberdeckV2(root, model) {
@@ -2051,6 +2492,16 @@
         return;
       }
 
+      if (action === "export-handoff") {
+        await exportFehaHandoff();
+        return;
+      }
+
+      if (action === "export-source") {
+        await exportFehaModuleSource();
+        return;
+      }
+
       if (action === "rest") {
         globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0});
         if (typeof actor?.shortRest === "function") {
@@ -2101,6 +2552,8 @@
     }
 
     adk.openCyberdeck = openCyberdeckV2;
+    adk.exportHandoff = exportFehaHandoff;
+    adk.exportModuleSource = exportFehaModuleSource;
     globalThis.FEHA_CYBERDECK_V2 = {
       open: openCyberdeckV2,
       render: renderCyberdeckV2,
@@ -2123,6 +2576,8 @@
     if (adk && original) {
       adk.openCyberdeck = original;
       delete adk.__fehaOriginalOpenCyberdeck;
+      delete adk.exportHandoff;
+      delete adk.exportModuleSource;
     }
     delete globalThis.FEHA_CYBERDECK_V2;
     cyberdeckOriginalOpen = null;
