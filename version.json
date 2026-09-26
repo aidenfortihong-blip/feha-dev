@@ -1,12 +1,13 @@
 {
-  "version": "0.2.5",
+  "version": "0.2.6",
   "updated": "2026-09-25",
-  "scope": "chrome-system-registration-and-cache-selection",
+  "scope": "chrome-actor-switch-stabilization",
   "notes": [
-    "Registered the blue core glyph to each system illustration's actual authored optical center",
-    "Added calibrated centers for Cortex, Face, OS, Arms, Hands, Structure, Neural, Circulatory, Dermal and Legs",
-    "Clicking an Owned Chrome card now retracts the cache drawer so the selected hardware dossier is immediately visible",
-    "Browse Compatible Hardware or Owned Chrome restores the drawer normally",
-    "Preserved the 0.2.4 capacity-bar emphasis and all earlier typography/cache fixes"
+    "Takes ownership of Chrome actor-selector change events before the old delayed handler can race the theme service",
+    "Switches the canonical ADKChromeBackend actor synchronously",
+    "Forces the native Chrome UI to rerender from the new backend actor immediately",
+    "Repairs the selected actor's Cyberware Cache metadata after switching",
+    "Keeps dropdown, portrait, subject block, capacity, owned chrome and character palette synchronized",
+    "If a switch fails, the dropdown snaps back to the backend's actual actor instead of leaving a mixed-character UI"
   ]
 }
