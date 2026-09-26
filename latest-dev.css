@@ -3728,3 +3728,21 @@
   outline: 0 !important;
   box-shadow: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.19
+   LEGACY WALLET LAUNCHER / EDITOR SUPPRESSION
+   ========================================================================== */
+
+/* Wallet backend remains intact. The old Chrome Manager launcher and its broken
+   legacy editor are intentionally not player-facing until the standalone wallet
+   is designed. */
+#adk-chrome-manager-34 [data-feha-wallet-launcher="legacy"],
+#adk-chrome-manager-34 .feha-wallet-legacy-launcher,
+#adk-chrome-manager-34 [data-feha-wallet-editor="legacy"],
+#adk-chrome-manager-34 .feha-wallet-legacy-editor {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
