@@ -1,13 +1,13 @@
 {
-  "version": "0.5.0",
+  "version": "0.5.1",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-foundation",
+  "scope": "cyberdeck-layout-density",
   "notes": [
-    "Started the Cyberdeck visual rebuild as a distinct terminal application",
-    "Live Cyberdeck windows are detected and tagged from their actual UI labels without touching unrelated Foundry apps",
-    "Established black CRT styling with cyan/magenta/yellow functional accents, clipped geometry, scanlines, and denser terminal states",
-    "Restyled the portrait card, empty cyberdeck hardware state, Software Library, and Netrunner Support Chrome areas",
-    "Removed the legacy €$ launcher from the Cyberdeck while preserving backend wallet data",
-    "Chrome Manager 0.4.x cleanup remains intact"
+    "Tightened the Cyberdeck into a denser terminal layout instead of oversized purple inventory cards",
+    "Added loaded-quickhack section/slot hooks and reduced empty slot height dramatically",
+    "Strengthened the black terminal shell and reduced inherited purple framing",
+    "Condensed Software Library and Netrunner Support Chrome empty states",
+    "Added a direct Cyberdeck wallet hook so the leftover €$ control is hidden even when it is not a semantic button",
+    "Preserved live RAM/deck data and all existing Chrome Manager fixes"
   ]
 }
