@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.1";
+  const BUILD = "0.6.2";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.1 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.2 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.1 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.2 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.1 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.2 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.1 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.2 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.1 // sound source: ${source}`
+      `FEHA DEV 0.6.2 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.1 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.2 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1561,11 +1561,6 @@
       deepNumber(actorObj, ["quickhackDc","hackDc"]) ??
       null;
 
-    const heat = deepNumber(actorObj, ["currentHeat","heatCurrent","heat"]);
-    const heatMax = deepNumber(actorObj, ["heatMax","maxHeat"]) ?? 100;
-    const humanity = deepNumber(actorObj, ["currentHumanity","humanityCurrent","humanity"]);
-    const humanityMax = deepNumber(actorObj, ["humanityMax","maxHumanity"]) ?? 100;
-
     const f = fehaFlags(deck);
     const manufacturer =
       f.manufacturer ??
@@ -1588,13 +1583,48 @@
       currentRam: Math.max(0, currentRam),
       softwareSlots: Math.max(0, softwareSlots),
       quickhackDc,
-      heat,
-      heatMax,
-      humanity,
-      humanityMax,
       manufacturer: String(manufacturer ?? "UNKNOWN").replace(/^-+/, ""),
       mk: String(mk ?? "")
     };
+  }
+
+  function applyCyberdeckPrivateAssets(root) {
+    if (!root) return false;
+    const ui = readPrivateAssets()?.ui ?? {};
+    const map = {
+      "--cd2-cp-frame": "ffe5273fdf_frame_bg",
+      "--cd2-cp-hud": "6691702ad7_hud_patch_frame",
+      "--cd2-cp-highlight": "2ae8c588ae_fluff_highlight",
+      "--cd2-cp-lines": "ef56f53fa5_fluff_lines",
+      "--cd2-cp-crossline": "d4e7518fde_crossLine",
+      "--cd2-cp-outerline": "9674e9d0b8_outerLine",
+      "--cd2-cp-button": "5c8f822dbf_gog_button_holder",
+      "--cd2-cp-button-2": "ac81a43116_gog_button_holder_02",
+      "--cd2-cp-reward": "a13706adc6_gog_frame_reward",
+      "--cd2-cp-buffer-empty": "697dae4bde_buffer_empty",
+      "--cd2-cp-buffer-active": "4416a73d89_buffer_activated",
+      "--cd2-cp-barcode1": "7c16fcece5_fluff_barcode1",
+      "--cd2-cp-barcode3": "2bead2d3f6_fluff_barcode3",
+      "--cd2-cp-barcode4": "88ab2fcdee_fluff_barcode4",
+      "--cd2-cp-code1": "1a0c3eb3ee_fluff_code1",
+      "--cd2-cp-glow": "59feb7cd32_frame_glow",
+      "--cd2-cp-glow-small": "8cd8de72f8_frame_glow_small"
+    };
+
+    let applied = 0;
+    for (const [cssName,key] of Object.entries(map)) {
+      const url = ui[key];
+      if (url) {
+        root.style.setProperty(cssName, 'url("'+url+'")');
+        applied++;
+      } else {
+        root.style.removeProperty(cssName);
+      }
+    }
+
+    if (applied) root.dataset.cpAssets = "1";
+    else delete root.dataset.cpAssets;
+    return applied > 0;
   }
 
   function cyberActors() {
@@ -1744,11 +1774,10 @@
 
     const ramMax = Math.max(1, model.baseRam || model.currentRam || 1);
     const ramText = model.deck ? `${model.currentRam} / ${ramMax}` : "OFFLINE";
-    const heatText = model.heat == null ? "—" : `${model.heat} / ${model.heatMax}`;
-    const humanityText = model.humanity == null ? "—" : `${model.humanity} / ${model.humanityMax}`;
 
     root.dataset.actorId = fallback.id;
     root.dataset.tab = tab;
+    applyCyberdeckPrivateAssets(root);
 
     root.innerHTML = `
       <div class="cd2-scanlines"></div>
@@ -1812,15 +1841,35 @@
         <section class="cd2-telemetry">
           <div class="cd2-meter cd2-meter-ram">
             <div class="cd2-meter-head"><span>RAM // ACTIVE MEMORY</span><b>${ramText}</b></div>
+            <div class="cd2-ram-number">${model.deck ? `${model.currentRam}<small>/ ${ramMax}</small>` : "OFFLINE"}</div>
             ${segmentBar(model.currentRam, ramMax, 24, "is-ram")}
           </div>
-          <div class="cd2-meter">
-            <div class="cd2-meter-head"><span>HEAT // TRACE LOAD</span><b>${heatText}</b></div>
-            ${segmentBar(model.heat, model.heatMax, 12, "is-heat")}
+
+          <div class="cd2-telemetry-card cd2-telemetry-deck ${model.deck ? "" : "is-offline"}">
+            <div class="cd2-meter-head"><span>DECK // HARDWARE LINK</span><b>${model.deck ? "ONLINE" : "OFFLINE"}</b></div>
+            <div class="cd2-telemetry-core">
+              ${model.deck ? `
+                <img src="${esc(model.deck.img || "icons/svg/cog.svg")}" alt="">
+                <div>
+                  <strong>${esc(model.deck.name)}</strong>
+                  <small>${esc(model.manufacturer)}${model.mk ? " // MK." + esc(model.mk) : ""}</small>
+                </div>
+              ` : `
+                <div class="cd2-telemetry-offline">NO DECK</div>
+              `}
+            </div>
           </div>
-          <div class="cd2-meter">
-            <div class="cd2-meter-head"><span>HUMANITY // SIGNAL INTEGRITY</span><b>${humanityText}</b></div>
-            ${segmentBar(model.humanity, model.humanityMax, 12, "is-humanity")}
+
+          <div class="cd2-telemetry-card cd2-telemetry-software">
+            <div class="cd2-meter-head"><span>SOFTWARE // LOAD MATRIX</span><b>${model.loaded.length} / ${model.softwareSlots || 0}</b></div>
+            <div class="cd2-software-number">
+              <strong>${model.loaded.length}</strong>
+              <span>LOADED</span>
+              <i></i>
+              <strong>${model.library.length}</strong>
+              <span>LIBRARY</span>
+            </div>
+            ${segmentBar(model.loaded.length, Math.max(1,model.softwareSlots || 1), 12, "is-software")}
           </div>
         </section>
 
@@ -1902,11 +1951,19 @@
       </main>
 
       <aside class="cd2-right">
-        <section>
+        <section class="cd2-bus-panel">
           <div class="cd2-subhead">SOFTWARE BUS</div>
+          <div class="cd2-bus-hero">
+            ${model.deck ? `<img src="${esc(model.deck.img || "icons/svg/cog.svg")}" alt="">` : `<div class="cd2-bus-offline">×</div>`}
+            <div>
+              <b>${model.deck ? esc(model.deck.name) : "NO CYBERDECK"}</b>
+              <span>${model.deck ? esc(model.manufacturer) : "HARDWARE OFFLINE"}</span>
+            </div>
+          </div>
           <div class="cd2-right-stat"><span>LOADED</span><b>${model.loaded.length}</b></div>
           <div class="cd2-right-stat"><span>LIBRARY</span><b>${model.library.length}</b></div>
           <div class="cd2-right-stat"><span>CAPACITY</span><b>${model.softwareSlots || "—"}</b></div>
+          <div class="cd2-right-stat"><span>QH DC</span><b>${model.quickhackDc ?? "—"}</b></div>
         </section>
 
         <section>
@@ -1939,13 +1996,20 @@
   }
 
   function bindCyberdeckV2(root, model) {
-    root.querySelector("#cd2-actor")?.addEventListener("change", event => {
-      const id = String(event.currentTarget.value ?? "");
-      renderCyberdeckV2(id, root.dataset.tab || "quickhacks");
-      globalThis.FEHA_SOUNDS?.play?.("actor_switch");
-    });
+    root.onpointerover = event => {
+      const interactive = event.target?.closest?.("button, select, .cd2-hack-card, .cd2-support-card, .cd2-deck-summary, .cd2-telemetry-card");
+      if (!interactive || !root.contains(interactive)) return;
+      globalThis.FEHA_SOUNDS?.play?.("hover", {cooldown:75});
+    };
 
-    root.addEventListener("click", async event => {
+    root.onchange = event => {
+      if (!event.target?.matches?.("#cd2-actor")) return;
+      const id = String(event.target.value ?? "");
+      globalThis.FEHA_SOUNDS?.play?.("actor_switch", {cooldown:90});
+      renderCyberdeckV2(id, root.dataset.tab || "quickhacks");
+    };
+
+    root.onclick = async event => {
       const button = event.target?.closest?.("[data-cd-action]");
       if (!button || !root.contains(button)) return;
 
@@ -1953,29 +2017,30 @@
       const actor = model.actor;
 
       if (action === "close") {
+        globalThis.FEHA_SOUNDS?.play?.("drawer_close", {cooldown:0});
         root.remove();
-        globalThis.FEHA_SOUNDS?.play?.("drawer_close");
         return;
       }
 
       if (action === "tab") {
+        globalThis.FEHA_SOUNDS?.play?.("select", {cooldown:45});
         renderCyberdeckV2(actor.id, button.dataset.tab || "quickhacks");
-        globalThis.FEHA_SOUNDS?.play?.("select");
         return;
       }
 
       if (action === "load" || action === "unload") {
         const prepared = action === "load";
+        globalThis.FEHA_SOUNDS?.play?.(prepared ? "install" : "remove", {cooldown:0});
         await setQuickhackPrepared(actor, button.dataset.itemId, prepared);
         renderCyberdeckV2(actor.id, prepared ? "quickhacks" : "memory");
-        globalThis.FEHA_SOUNDS?.play?.(prepared ? "install" : "remove");
         return;
       }
 
       if (action === "run") {
         const item = actor?.items?.get?.(button.dataset.itemId) ?? actor?.items?.find?.(x => x.id === button.dataset.itemId);
         if (!item) return;
-        globalThis.FEHA_SOUNDS?.play?.("confirm");
+        globalThis.FEHA_SOUNDS?.play?.("scan", {cooldown:0});
+        setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0}), 115);
         if (typeof item.use === "function") {
           await item.use();
         } else if (typeof item.roll === "function") {
@@ -1987,33 +2052,40 @@
       }
 
       if (action === "rest") {
-        globalThis.FEHA_SOUNDS?.play?.("confirm");
+        globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0});
         if (typeof actor?.shortRest === "function") {
           await actor.shortRest();
-          setTimeout(() => renderCyberdeckV2(actor.id, root.dataset.tab || "quickhacks"), 250);
+          setTimeout(() => {
+            globalThis.FEHA_SOUNDS?.play?.("compatibility_ok", {cooldown:0});
+            renderCyberdeckV2(actor.id, root.dataset.tab || "quickhacks");
+          }, 250);
         } else {
+          globalThis.FEHA_SOUNDS?.play?.("error", {cooldown:0});
           ui?.notifications?.warn?.("FEHA // Short Rest action is unavailable on this actor.");
         }
         return;
       }
 
       if (action === "jack") {
+        globalThis.FEHA_SOUNDS?.play?.("scan", {cooldown:0});
+        setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0}), 150);
         root.classList.remove("is-jacking");
         void root.offsetWidth;
         root.classList.add("is-jacking");
         renderCyberdeckV2(actor.id, "network");
         setTimeout(() => document.getElementById(CYBERDECK_V2_ID)?.classList.add("is-jacking"), 0);
-        globalThis.FEHA_SOUNDS?.play?.("scan");
         return;
       }
-    });
+    };
   }
 
   function openCyberdeckV2(actorId = null) {
     // If the old native Cyberdeck is already on screen, remove it. We keep its
     // data model, not its presentation.
     findCyberdeckRoots(document.body).forEach(el => el.remove());
-    return renderCyberdeckV2(actorId, "quickhacks");
+    const root = renderCyberdeckV2(actorId, "quickhacks");
+    globalThis.FEHA_SOUNDS?.play?.("drawer_open", {cooldown:0});
+    return root;
   }
 
   function installCyberdeckV2() {
