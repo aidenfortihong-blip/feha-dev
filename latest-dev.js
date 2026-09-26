@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.2.3";
+  const BUILD = "0.2.4";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -113,7 +113,7 @@
 
     try {
       await actor.updateEmbeddedDocuments("Item", repairs);
-      console.info("FEHA DEV 0.2.3 // repaired cached chrome metadata", repairs.length);
+      console.info("FEHA DEV 0.2.4 // repaired cached chrome metadata", repairs.length);
     } catch (err) {
       console.warn("FEHA DEV 0.2.1 // cache metadata repair failed", err);
     }
@@ -196,7 +196,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // global typography pass loaded"
+    "FEHA DEV " + BUILD + " // glyph centering + capacity emphasis loaded"
   );
 
   state.reopenChrome();
