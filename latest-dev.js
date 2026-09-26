@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.8.0";
+  const BUILD = "0.8.4";
   let observer = null;
   let walletGuard = null;
   let cyberdeckCombatHooks = [];
@@ -101,6 +101,16 @@
         // The Cyberware Cache itself is never hardware.
         if (item.id === cache?.id) return false;
 
+        const f = item.flags?.fleshEnshrouded ?? {};
+        const looksChrome =
+          String(f.sourceCategory ?? "").toLowerCase() === "cyberware" ||
+          Boolean(f.cyberwareSlot) ||
+          Boolean(api.slotOf?.(item));
+
+        // Never leak ordinary inventory into Chrome Manager just because it
+        // was accidentally placed in the cache.
+        if (!looksChrome) return false;
+
         // Anything physically inside the dedicated cache is owned chrome.
         // Explicitly-uninstalled chrome is also considered owned even when
         // older data lost its container link.
@@ -138,7 +148,15 @@
     if (!cache) return;
 
     const repairs = [...actor.items]
-      .filter(item => item.id !== cache.id && isInCache(item, cache))
+      .filter(item => {
+        if (item.id === cache.id || !isInCache(item, cache)) return false;
+        const f = item.flags?.fleshEnshrouded ?? {};
+        return (
+          String(f.sourceCategory ?? "").toLowerCase() === "cyberware" ||
+          Boolean(f.cyberwareSlot) ||
+          Boolean(api.slotOf?.(item))
+        );
+      })
       .map(item => {
         const f = item.flags?.fleshEnshrouded ?? {};
         const update = { _id: item.id };
@@ -497,7 +515,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.8.0 // preload failed", event, err);
+          console.warn("FEHA DEV 0.8.4 // preload failed", event, err);
         }
       }
     }
@@ -555,11 +573,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.8.0 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.8.4 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.8.0 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.8.4 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -582,7 +600,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.8.0 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.8.4 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -706,12 +724,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.8.0 // sound source: ${source}`
+      `FEHA DEV 0.8.4 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.8.0 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.8.4 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1472,22 +1490,13 @@
   function isCyberdeck(item) {
     if (!item || !installedChrome(item)) return false;
     const f = fehaFlags(item);
-    const slot = String(f.cyberwareSlot ?? f.slot ?? "").toLowerCase();
-    const blob = [
-      item.name,
-      item.folder?.name,
-      f.kind,
-      f.category,
-      f.cyberdeck,
-      f.isCyberdeck,
-      slot
-    ].join(" ").toLowerCase();
+    const name = norm(item.name);
 
     return (
       f.cyberdeck === true ||
       f.isCyberdeck === true ||
-      /cyberdeck|netdriver|nets*driver/.test(blob) ||
-      /operating\s*system/.test(slot)
+      ["cyberdeck","paraline","netdriver","tetratronic","raven micro"]
+        .some(term => name.includes(term))
     );
   }
 
@@ -1503,7 +1512,7 @@
   }
 
   function isSupportChrome(item, deck) {
-    if (!item || item === deck || !installedChrome(item) || isQuickhack(item)) return false;
+    if (!item || item === deck || !installedChrome(item) || isQuickhack(item) || isCyberdeck(item)) return false;
 
     const text = norm(
       [
@@ -2776,6 +2785,14 @@ if (!game.user?.isGM) {
   }
 
   function installCyberdeckV2() {
+    if (
+      globalThis.FEHA_CYBERDECK_V3_ACTIVE === true ||
+      globalThis.FEHA_TABLETOP_UI_V3?.version
+    ) {
+      removeCyberdeckCombatHooks();
+      return false;
+    }
+
     const adk = globalThis.game?.adk;
     if (!adk || typeof adk.openCyberdeck !== "function") return false;
 
@@ -2837,6 +2854,24 @@ if (!game.user?.isGM) {
   const state = {
     build: BUILD,
     inspectCyberdeckDOM,
+    suspendCyberdeckV2() {
+      globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
+      removeCyberdeckCombatHooks();
+
+      const adk = globalThis.game?.adk;
+      const original =
+        adk?.__fehaOriginalOpenCyberdeck ??
+        cyberdeckOriginalOpen;
+
+      if (adk?.openCyberdeck === openCyberdeckV2 && original) {
+        adk.openCyberdeck = original;
+      }
+
+      const root = document.getElementById(CYBERDECK_V2_ID);
+      if (root && root.dataset?.fehaV3 !== "1") root.remove();
+
+      return true;
+    },
     cleanup() {
       observer?.disconnect?.();
       observer = null;
@@ -2911,7 +2946,7 @@ if (!game.user?.isGM) {
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // Cyberdeck V2 replacement active"
+    "FEHA DEV " + BUILD + " // base patch active; Cyberdeck V3 may supersede V2"
   );
 
   state.reopenChrome();
