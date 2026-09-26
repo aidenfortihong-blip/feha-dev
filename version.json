@@ -1,12 +1,12 @@
 {
-  "version": "0.2.1",
+  "version": "0.2.2",
   "updated": "2026-09-25",
-  "scope": "chrome-owned-cache-and-rail-type",
+  "scope": "chrome-cache-readability",
   "notes": [
-    "Increased left system rail labels and subtitles for readability",
-    "Owned Chrome now reads embedded items from the selected actor's Cyberware Cache",
-    "Legacy cached chrome is normalized to marketPurchased=true and installed=false",
-    "Cached items receive inferred cyberwareSlot metadata for compatibility filtering",
-    "Optional FEHA_DEV_DIAGNOSTICS console table for owned-item rejection debugging"
+    "Preserved the 0.2.1 owned-cache detection fix",
+    "Redesigned cache cards into large 330x176 hardware tiles",
+    "Made cyberware art, manufacturer, full item name, Mk and capacity clearly readable",
+    "Removed tiny-pill presentation that hid owned-item identity",
+    "Left rail typography bump remains active"
   ]
 }
