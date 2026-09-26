@@ -82,6 +82,22 @@
     return container === cache.id || container?.id === cache.id;
   }
 
+  function looksLikeCyberwareItem(item) {
+    if (!item) return false;
+
+    const f = item.flags?.fleshEnshrouded ?? {};
+    const category = String(f.sourceCategory ?? "").trim().toLowerCase();
+    const shopType = String(f.shopType ?? "").trim().toLowerCase();
+    const rawDescription = String(item?.system?.description?.value ?? "");
+
+    return (
+      category === "cyberware" ||
+      Boolean(f.cyberwareSlot) ||
+      shopType === "chrome" ||
+      /category\s*:?\s*(?:<[^>]*>\s*)*cyberware/i.test(rawDescription)
+    );
+  }
+
   function installOwnedBridge(api) {
     if (!api || api.__fehaOwnedBridge021) return;
     api.__fehaOwnedBridge021 = true;
@@ -101,15 +117,10 @@
         // The Cyberware Cache itself is never hardware.
         if (item.id === cache?.id) return false;
 
-        const f = item.flags?.fleshEnshrouded ?? {};
-        const looksChrome =
-          String(f.sourceCategory ?? "").toLowerCase() === "cyberware" ||
-          Boolean(f.cyberwareSlot) ||
-          Boolean(api.slotOf?.(item));
-
         // Never leak ordinary inventory into Chrome Manager just because it
-        // was accidentally placed in the cache.
-        if (!looksChrome) return false;
+        // was accidentally placed in the cache. Slot inference is NOT proof:
+        // the legacy inferSlot helper has a default fallback slot.
+        if (!looksLikeCyberwareItem(item)) return false;
 
         // Anything physically inside the dedicated cache is owned chrome.
         // Explicitly-uninstalled chrome is also considered owned even when
@@ -150,12 +161,7 @@
     const repairs = [...actor.items]
       .filter(item => {
         if (item.id === cache.id || !isInCache(item, cache)) return false;
-        const f = item.flags?.fleshEnshrouded ?? {};
-        return (
-          String(f.sourceCategory ?? "").toLowerCase() === "cyberware" ||
-          Boolean(f.cyberwareSlot) ||
-          Boolean(api.slotOf?.(item))
-        );
+        return looksLikeCyberwareItem(item);
       })
       .map(item => {
         const f = item.flags?.fleshEnshrouded ?? {};
@@ -2792,6 +2798,14 @@ if (!game.user?.isGM) {
   }
 
   function installCyberdeckV2() {
+    const adk = globalThis.game?.adk;
+    if (!adk) return false;
+
+    // Export utilities are base services, not V2 presentation features.
+    // Keep them available even while V3 owns the Cyberdeck launcher.
+    adk.exportHandoff = exportFehaHandoff;
+    adk.exportModuleSource = exportFehaModuleSource;
+
     if (
       globalThis.FEHA_CYBERDECK_V3_ACTIVE === true ||
       globalThis.FEHA_TABLETOP_UI_V3?.version
@@ -2800,8 +2814,7 @@ if (!game.user?.isGM) {
       return false;
     }
 
-    const adk = globalThis.game?.adk;
-    if (!adk || typeof adk.openCyberdeck !== "function") return false;
+    if (typeof adk.openCyberdeck !== "function") return false;
 
     if (!cyberdeckOriginalOpen) {
       cyberdeckOriginalOpen = adk.openCyberdeck.bind(adk);
@@ -2813,8 +2826,6 @@ if (!game.user?.isGM) {
 
     adk.openCyberdeck = openCyberdeckV2;
     installCyberdeckCombatHooks();
-    adk.exportHandoff = exportFehaHandoff;
-    adk.exportModuleSource = exportFehaModuleSource;
     globalThis.FEHA_CYBERDECK_V2 = {
       open: openCyberdeckV2,
       render: renderCyberdeckV2,
