@@ -1,11 +1,12 @@
 {
-  "version": "0.4.14",
-  "updated": "2026-09-25",
-  "scope": "derke-and-ponyboy-portrait-update",
+  "version": "0.4.15",
+  "updated": "2026-09-26",
+  "scope": "chrome-manager-naming",
   "notes": [
-    "Updated Derke to the new Forge portrait image_2026-09-25_233904481.png",
-    "Updated Ponyboy to the correct Forge portrait 40e1fb5d-6265-4dfd-93d3-d6344dc14180.png",
-    "Replaced the one-off Derke portrait hook with a shared actor portrait override map",
-    "Xiao, Nina, Florence and Cael remain hidden from the Theatre selector"
+    "Renamed the player-facing Augmentation Theatre label to Chrome Manager",
+    "Added a runtime terminology normalizer so legacy backend renders cannot reintroduce the old name",
+    "Updated dev stylesheet comments to use Chrome Manager / portrait stage terminology",
+    "Derke and Ponyboy portrait overrides remain active",
+    "Xiao, Nina, Florence and Cael remain hidden from the Chrome Manager selector"
   ]
 }
