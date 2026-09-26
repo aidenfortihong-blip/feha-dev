@@ -2894,3 +2894,141 @@
 #adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-hardware-dossier > .adk-v6-tech-readout .tech-wave {
   overflow: hidden !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.4
+   NUMERIC / MICROTEXT CLUTTER CLEANUP
+   Keep actual game-state numbers. Remove decorative source-atlas text/numerals.
+   ========================================================================== */
+
+/* TOP CAPACITY
+   Keep only FEHA's real label + real used/max number. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head::after {
+  content: none !important;
+  display: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  gap: 12px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head > div:first-child > span {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head > div:first-child > b {
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  min-width: 52px !important;
+  text-align: right !important;
+  white-space: nowrap !important;
+}
+
+/* LEFT SUBJECT CARD
+   Remove decorative barcode/microtext behind the real subject data. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* OWNED CHROME
+   Remove source-atlas glyph clutter from the control. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger::before {
+  content: none !important;
+  display: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > b,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > i {
+  background: rgba(3,10,14,.92) !important;
+}
+
+/* RIGHT HEADER
+   Kill decorative barcodes that read like stray numbers/text. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* METRIC CELLS
+   The extracted counter sprite looked like random little number boxes.
+   Actual BUS SYNC / INTEGRITY / LATENCY / THROUGHPUT values stay untouched. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics > div::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* SIGNAL PANELS
+   Keep: SIGNAL PROFILE label, live waveform, real hash.
+   Remove: decorative source code block + X/Y/CRC micro-coordinates. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout::after {
+  content: none !important;
+  display: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout .tech-coords {
+  display: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout {
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  padding-bottom: 8px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout .tech-head {
+  align-items: center !important;
+  min-height: 18px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout .tech-head b {
+  margin-left: auto !important;
+  white-space: nowrap !important;
+  color: rgb(var(--cp-cyan)) !important;
+  opacity: .82 !important;
+}
+
+/* Full right-side signal profile: waveform + animated barcode only.
+   No loose coordinates along the bottom edge. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system-dossier > .adk-v6-tech-readout,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-hardware-dossier > .adk-v6-tech-readout {
+  min-height: 88px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system-dossier > .adk-v6-tech-readout .tech-wave,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-hardware-dossier > .adk-v6-tech-readout .tech-wave {
+  grid-row: 2 !important;
+  align-self: center !important;
+}
+
+/* BROWSE BUTTON
+   Preserve FEHA's actual local-match count; remove decorative source text mask. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* CACHE HEADER
+   Remove atlas barcode/microtext near the close button. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache > header::after,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* CACHE CARDS
+   Remove decorative header strip / glow if it introduces unreadable source text.
+   Keep the actual FEHA item image/name/Mk/capacity. */
+#adk-chrome-manager-34[data-feha-rerun="040"] button.adk-v6-cache-card::before {
+  content: none !important;
+  display: none !important;
+}
