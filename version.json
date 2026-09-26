@@ -1,12 +1,11 @@
 {
-  "version": "0.4.15",
+  "version": "0.4.16",
   "updated": "2026-09-26",
-  "scope": "chrome-manager-naming",
+  "scope": "subsystem-rail-cleanup",
   "notes": [
-    "Renamed the player-facing Augmentation Theatre label to Chrome Manager",
-    "Added a runtime terminology normalizer so legacy backend renders cannot reintroduce the old name",
-    "Updated dev stylesheet comments to use Chrome Manager / portrait stage terminology",
-    "Derke and Ponyboy portrait overrides remain active",
-    "Xiao, Nina, Florence and Cael remain hidden from the Chrome Manager selector"
+    "Removed the decorative system-state strip beside subsystem counters",
+    "Collapsed subsystem rows from five columns to four so the counter is the clean rightmost element",
+    "Added a little right-side breathing room so the counter no longer crowds the rail edge",
+    "This specifically removes the double-bar look visible beside the Cortex row"
   ]
 }
