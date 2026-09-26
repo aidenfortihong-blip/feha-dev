@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.4.13";
+  const BUILD = "0.4.14";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -236,7 +236,7 @@
     normalizeDossierSchematics();
     applyPrivateAssets(root);
     filterActorRoster(root);
-    applyDerkePortrait(root);
+    applyActorPortraitOverride(root);
     return true;
   }
 
@@ -456,7 +456,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.13 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.14 // preload failed", event, err);
         }
       }
     }
@@ -514,11 +514,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.13 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.14 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.13 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.14 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -541,7 +541,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.13 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.14 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -665,12 +665,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.13 // sound source: ${source}`
+      `FEHA DEV 0.4.14 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.13 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.14 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -701,14 +701,19 @@
     delete globalThis.__FEHA_SOUND_ENGINE_028;
   }
 
-  const DERKE_PORTRAIT_URL =
-    "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/GFDGFDGFD.png";
+  const FEHA_PORTRAIT_OVERRIDES = Object.freeze({
+    derke:
+      "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/image_2026-09-25_233904481.png",
+    ponyboy:
+      "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/40e1fb5d-6265-4dfd-93d3-d6344dc14180.png"
+  });
 
-  function applyDerkePortrait(root = document.getElementById("adk-chrome-manager-34")) {
+  function applyActorPortraitOverride(root = document.getElementById("adk-chrome-manager-34")) {
     const actor = globalThis.ADKChromeBackend?.getActor?.();
     const actorName = norm(actor?.name);
+    const url = FEHA_PORTRAIT_OVERRIDES[actorName];
 
-    if (actorName !== "derke") {
+    if (!url) {
       if (root?.dataset) delete root.dataset.fehaPortraitOverride;
       return false;
     }
@@ -716,14 +721,14 @@
     const portrait = root?.querySelector?.(".subject-art img");
     if (!portrait) return false;
 
-    root.dataset.fehaPortraitOverride = "derke";
+    root.dataset.fehaPortraitOverride = actorName;
 
-    if (portrait.src !== DERKE_PORTRAIT_URL) {
-      portrait.src = DERKE_PORTRAIT_URL;
+    if (portrait.src !== url) {
+      portrait.src = url;
     }
 
-    portrait.alt = "Derke";
-    portrait.dataset.fehaPortrait = "derke";
+    portrait.alt = actor?.name ?? actorName;
+    portrait.dataset.fehaPortrait = actorName;
     return true;
   }
 
@@ -943,7 +948,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // Derke portrait updated"
+    "FEHA DEV " + BUILD + " // Derke + Ponyboy portraits updated"
   );
 
   state.reopenChrome();
