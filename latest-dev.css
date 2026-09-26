@@ -6370,3 +6370,144 @@
   font-size: 9px;
   letter-spacing: .7px;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.6.7
+   CYBERDECK V2 // OFFLINE STATE CLEANUP
+   ========================================================================== */
+
+/* Exporters remain callable through game.adk, but they are no longer part of
+   the production Cyberdeck interface. */
+#feha-cyberdeck-v2 .cd2-gm-exports {
+  display: none !important;
+}
+
+/* Offline deck cards should not paint raw source-frame imagery. */
+#feha-cyberdeck-v2 .cd2-deck-summary.is-offline::before {
+  background-image: none !important;
+}
+
+#feha-cyberdeck-v2 .cd2-bus-panel:has(.cd2-bus-offline) {
+  background:
+    linear-gradient(120deg, rgba(var(--cd2-mag), .035), transparent 58%),
+    #03080b !important;
+}
+
+/* Intentional hardware-lock screen instead of a giant empty placeholder. */
+#feha-cyberdeck-v2 .cd2-no-deck {
+  position: relative;
+  min-height: 225px !important;
+  gap: 7px !important;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, transparent 49.9%, rgba(var(--cd2-mag), .045) 50%, transparent 50.1%),
+    linear-gradient(0deg, transparent 49.9%, rgba(var(--cd2-cyan), .035) 50%, transparent 50.1%),
+    radial-gradient(circle at center, rgba(var(--cd2-mag), .045), transparent 31%),
+    #020608 !important;
+  border: 1px solid rgba(var(--cd2-mag), .16) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck::before,
+#feha-cyberdeck-v2 .cd2-no-deck::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck::before {
+  inset: 18px;
+  border:
+    1px solid rgba(var(--cd2-cyan), .045);
+  clip-path: polygon(
+    0 0, 84px 0, 84px 1px, 1px 1px,
+    1px calc(100% - 1px), 84px calc(100% - 1px), 84px 100%,
+    0 100%
+  );
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck::after {
+  width: 160px;
+  height: 1px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  background: linear-gradient(90deg, transparent, rgba(var(--cd2-mag), .4), transparent);
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck-reticle {
+  position: relative;
+  width: 78px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 3px;
+  border: 1px solid rgba(var(--cd2-mag), .28);
+  transform: rotate(45deg);
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck-reticle::before,
+#feha-cyberdeck-v2 .cd2-no-deck-reticle::after,
+#feha-cyberdeck-v2 .cd2-no-deck-reticle i {
+  content: "";
+  position: absolute;
+  background: rgba(var(--cd2-cyan), .13);
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck-reticle::before {
+  width: 1px;
+  height: 116px;
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck-reticle::after {
+  width: 116px;
+  height: 1px;
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck-reticle span {
+  color: rgb(var(--cd2-mag));
+  font-size: 34px;
+  line-height: 1;
+  transform: rotate(-45deg);
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck > small {
+  color: rgb(var(--cd2-mag));
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck > b {
+  font-size: 14px !important;
+  letter-spacing: 1px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck > span {
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-no-deck > em {
+  margin-top: 5px;
+  color: #52686f;
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* When no deck exists, keep the Quickhack surface compact rather than
+   dedicating most of the application to an unusable empty rack. */
+#feha-cyberdeck-v2:has(.cd2-no-deck) .cd2-loaded-grid {
+  display: block !important;
+}
+
+#feha-cyberdeck-v2:has(.cd2-no-deck) .cd2-view[data-view="quickhacks"] {
+  max-width: none;
+}
+
+/* Slightly quiet raw CP source dressing on right-rail cards. */
+#feha-cyberdeck-v2 .cd2-right > section::before {
+  opacity: .055 !important;
+}
