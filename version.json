@@ -1,12 +1,11 @@
 {
-  "version": "0.6.7",
+  "version": "0.6.8",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-offline-production-cleanup",
+  "scope": "cyberdeck-quickhack-memory-rack",
   "notes": [
-    "Removed the temporary GM export controls from the production Cyberdeck interface now that the handoff exports are complete",
-    "QH DC now displays as unavailable while no Cyberdeck is installed",
-    "Rebuilt the no-deck Quickhacks state into a compact intentional hardware-lock screen",
-    "Suppressed raw CP2077 frame imagery on offline deck/software panels to prevent white-mask artifacts",
-    "Exporter APIs remain available through game.adk if another export is needed later"
+    "Removed oversized raw CP2077 white-mask imagery from empty Quickhack slots",
+    "Rebuilt empty slots as clean Cyberdeck memory bays with subtle extracted asset overlays",
+    "All five software slots now stay in a single horizontal rack on normal desktop layouts",
+    "Reduced extracted HUD/button texture intensity on Quickhack cards and tabs while keeping the asset-heavy Cyberpunk identity"
   ]
 }
