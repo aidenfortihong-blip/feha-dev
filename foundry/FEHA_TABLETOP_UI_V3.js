@@ -1,6 +1,571 @@
 // FEHA Foundry VTT tabletop UI customization.
 // Fictional cyberpunk game interface only.
-// This file interacts only with Foundry actor/item/token documents in the current game world.
+// This code reads and updates Foundry actor/item/token documents in the current tabletop world.
 // It does not access external systems, credentials, devices, or real computer networks.
 
-globalThis.FEHA_TABLETOP_UI_V3 = { version: "0.8.0" };
+(() => {
+  const VERSION = "0.8.0";
+  const ROOT_ID = "feha-cyberdeck-v2";
+  const JACK_ID = "feha-jackin-overlay";
+  const FLAG = "fleshEnshrouded";
+
+  const norm = v => String(v ?? "").trim().toLowerCase();
+  const esc = v => String(v ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+  function flags(item) {
+    return item?.flags?.[FLAG] ?? {};
+  }
+
+  function description(item) {
+    const raw = String(item?.system?.description?.value ?? "");
+    const div = document.createElement("div");
+    div.innerHTML = raw;
+    return String(div.textContent ?? "").replace(/\s+/g," ").trim();
+  }
+
+  function isQuickhack(item) {
+    if (!item) return false;
+    const f = flags(item);
+    const category = String(f.sourceCategory ?? f.category ?? "").toLowerCase();
+    return (
+      category === "quickhacks" ||
+      f.quickhack === true ||
+      f.ownedQuickhack === true ||
+      f.quickhackOwned === true ||
+      /\/quickhacks\//i.test(String(f.sourcePath ?? "")) ||
+      /category\s*:?\s*quickhacks/i.test(description(item))
+    );
+  }
+
+  function isInstalledCyberware(item) {
+    if (!item) return false;
+    const f = flags(item);
+    const category = String(f.sourceCategory ?? "").toLowerCase();
+    const looksCyberware = category === "cyberware" || Boolean(f.cyberwareSlot);
+    return looksCyberware && f.installed !== false;
+  }
+
+  function isDeck(item) {
+    if (!isInstalledCyberware(item)) return false;
+    const f = flags(item);
+    const text = [item.name,f.cyberwareSlot,f.kind,f.category]
+      .filter(Boolean).join(" ").toLowerCase();
+    return (
+      f.cyberdeck === true ||
+      f.isCyberdeck === true ||
+      /cyberdeck|netdriver|net\s*driver|operating\s*system/.test(text)
+    );
+  }
+
+  function isSupport(item,deck) {
+    if (!isInstalledCyberware(item) || item === deck) return false;
+    const text = (item.name + " " + description(item)).toLowerCase();
+    return ["ram","quickhack","neural","self ice","memory","cortex","intrusion"]
+      .some(term => text.includes(term));
+  }
+
+  function supportRamBonus(item) {
+    const f = flags(item);
+    const explicit = Number(f.ramBonus);
+    if (Number.isFinite(explicit) && explicit) return explicit;
+    const n = norm(item?.name);
+    if (n.includes("ex disk") || n.includes("ram upgrade")) return 2;
+    if (n.includes("neuro matrix")) return 1;
+    return 0;
+  }
+
+  function hackCost(item) {
+    const explicit = Number(flags(item).ramCost);
+    if (Number.isFinite(explicit) && explicit > 0) return explicit;
+    const match = description(item).match(/\bRAM\s+(\d+)/i);
+    return match ? Number(match[1]) : 2;
+  }
+
+  function hackDC(actor) {
+    const intMod = Number(actor?.system?.abilities?.int?.mod ?? 0);
+    const prof = Number(actor?.system?.attributes?.prof ?? actor?.system?.details?.prof ?? 2);
+    return 8 + prof + intMod;
+  }
+
+  function model(actor) {
+    const items = [...(actor?.items ?? [])];
+    const deck = items.find(isDeck) ?? null;
+    const quickhacks = items.filter(isQuickhack)
+      .sort((a,b) => String(a.name).localeCompare(String(b.name)));
+    const loaded = quickhacks.filter(item => flags(item).loadedQuickhack === true);
+    const library = quickhacks.filter(item => flags(item).loadedQuickhack !== true);
+    const support = items.filter(item => isSupport(item,deck));
+
+    const df = flags(deck);
+    const rating = Math.max(1,Math.min(5,Number(df.rating ?? df.tier ?? 2) || 2));
+    const baseRam = deck
+      ? (Number(df.ramMax) || (4 + 2 * rating))
+      : 0;
+    const supportRam = support.reduce((sum,item) => sum + supportRamBonus(item),0);
+    const maxRam = deck ? baseRam + supportRam : 0;
+    const stored = actor?.flags?.[FLAG]?.ramCurrent;
+    const currentRam = !deck
+      ? 0
+      : stored == null
+        ? maxRam
+        : Math.max(0,Math.min(maxRam,Number(stored) || 0));
+    const slots = deck
+      ? (Number(df.quickhackSlots) || (2 + rating))
+      : 0;
+
+    return {
+      actor,deck,quickhacks,loaded,library,support,
+      maxRam,currentRam,slots,
+      dc:hackDC(actor),
+      manufacturer:String(df.manufacturer ?? df.company ?? "UNKNOWN"),
+      mk:String(df.mk ?? df.rating ?? df.tier ?? "")
+    };
+  }
+
+  function roster() {
+    const order = new Map([["ponyboy",0],["derke",1],["sasha",2],["zach",3]]);
+    const key = actor => norm(actor?.flags?.[FLAG]?.adkCharacter ?? actor?.name);
+    return [...(game.actors ?? [])]
+      .filter(actor => order.has(key(actor)) && (game.user?.isGM || actor.isOwner))
+      .sort((a,b) => (order.get(key(a)) ?? 99) - (order.get(key(b)) ?? 99));
+  }
+
+  function actorById(id) {
+    return game.actors?.get?.(id) ?? null;
+  }
+
+  function portrait(actor) {
+    const k = norm(actor?.flags?.[FLAG]?.adkCharacter ?? actor?.name);
+    const fixed = {
+      derke:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/74981913-bd87-4289-a524-7d987e699cfd.png",
+      ponyboy:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/40e1fb5d-6265-4dfd-93d3-d6344dc14180.png"
+    };
+    return fixed[k] || actor?.flags?.[FLAG]?.characterChooserPortrait || actor?.img || "icons/svg/mystery-man.svg";
+  }
+
+  function segments(value,max,count=24) {
+    const filled = max > 0 ? Math.round(Math.max(0,Math.min(1,value/max))*count) : 0;
+    return '<div class="cd2-segments is-ram">' +
+      Array.from({length:count},(_,i) => '<i class="'+(i<filled?"is-filled":"")+'"></i>').join("") +
+      '</div>';
+  }
+
+  function hackCard(item,loaded) {
+    const cost = hackCost(item);
+    return [
+      '<article class="cd2-hack-card v3-hack-card">',
+      '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">',
+      '<div class="cd2-hack-copy">',
+      '<b>'+esc(item.name)+'</b>',
+      '<span>RAM '+cost+' // '+esc(flags(item).ratingLabel ?? ("MK."+String(flags(item).mk ?? flags(item).rating ?? "—")))+'</span>',
+      '<small>'+esc(flags(item).effectText ?? description(item) ?? "Quickhack software.")+'</small>',
+      '</div>',
+      '<button type="button" data-v3-action="'+(loaded?"unload":"load")+'" data-item-id="'+esc(item.id)+'">'+(loaded?"EJECT":"LOAD")+'</button>',
+      '</article>'
+    ].join("");
+  }
+
+  function loadedRack(m) {
+    if (!m.deck) {
+      return '<div class="cd2-no-deck"><small>HARDWARE LINK // OFFLINE</small><b>NO CYBERDECK INSTALLED</b><span>Install a Cyberdeck through Chrome Manager.</span></div>';
+    }
+
+    const cards = [];
+    for (let i=0;i<m.slots;i++) {
+      const item = m.loaded[i];
+      if (item) cards.push(hackCard(item,true));
+      else cards.push(
+        '<div class="cd2-empty-slot" data-slot="'+(i+1)+'">'+
+          '<em>SLOT '+String(i+1).padStart(2,"0")+'</em>'+
+          '<span>+</span><b>EMPTY SLOT</b><small>ASSIGN FROM SOFTWARE LIBRARY</small>'+
+        '</div>'
+      );
+    }
+    return cards.join("");
+  }
+
+  function supportCards(m) {
+    if (!m.support.length) return '<div class="cd2-empty-message">NO SUPPORT CHROME DETECTED</div>';
+    return m.support.map(item =>
+      '<article class="cd2-support-card">'+
+        '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
+        '<div><b>'+esc(item.name)+'</b><span>'+esc(flags(item).ratingLabel ?? "")+'</span><small>'+esc(flags(item).effectText ?? description(item))+'</small></div>'+
+      '</article>'
+    ).join("");
+  }
+
+  function render(actorId=null) {
+    const actors = roster();
+    const saved = localStorage.getItem("fehaCyberdeckActorV3");
+    const chosen = actorById(actorId) ?? actorById(saved) ?? actors[0] ?? null;
+    if (!chosen || !actors.some(a => a.id === chosen.id)) {
+      ui?.notifications?.warn?.("FEHA // No Cyberdeck roster actor available.");
+      return null;
+    }
+
+    localStorage.setItem("fehaCyberdeckActorV3",chosen.id);
+    const m = model(chosen);
+
+    document.getElementById(ROOT_ID)?.remove();
+    const root = document.createElement("section");
+    root.id = ROOT_ID;
+    root.dataset.actor = norm(chosen?.flags?.[FLAG]?.adkCharacter ?? chosen.name);
+    root.dataset.actorId = chosen.id;
+
+    root.innerHTML = `
+      <header class="cd2-header">
+        <div class="cd2-brand">
+          <small>NOCTURNE // NETRUNNER LOADOUT</small>
+          <h1>CYBERDECK <span>OS</span></h1>
+          <div class="cd2-build">FEHA / ADK // ${VERSION}</div>
+        </div>
+        <div class="cd2-header-status">
+          <div><span>RAM</span><b>${m.currentRam}/${m.maxRam}</b></div>
+          <div><span>DECK</span><b>${m.deck?"ONLINE":"NONE"}</b></div>
+          <div><span>SOFTWARE</span><b>${m.loaded.length}/${m.slots}</b></div>
+        </div>
+        <div class="cd2-header-actions">
+          <select id="v3-actor">
+            ${actors.map(a => '<option value="'+esc(a.id)+'" '+(a.id===chosen.id?"selected":"")+'>'+esc(a.name)+'</option>').join("")}
+          </select>
+          <button type="button" class="cd2-close" data-v3-action="close">×</button>
+        </div>
+      </header>
+
+      <aside class="cd2-operator">
+        <div class="cd2-portrait">
+          <img src="${esc(portrait(chosen))}" alt="">
+          <div class="cd2-portrait-grid"></div>
+          <div class="cd2-operator-tag">OPERATOR // ${esc(chosen.name.toUpperCase())}</div>
+        </div>
+        <div class="cd2-operator-meta">
+          <div><span>SUBJECT</span><b>${esc(chosen.name)}</b></div>
+          <div><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
+          <div><span>QH DC</span><b>${m.deck?m.dc:"—"}</b></div>
+        </div>
+        <div class="cd2-deck-summary ${m.deck?"":"is-offline"}">
+          <small>INSTALLED CYBERDECK</small>
+          ${m.deck ? '<div class="cd2-deck-head"><img src="'+esc(m.deck.img || "icons/svg/cog.svg")+'" alt=""><div><h2>'+esc(m.deck.name)+'</h2><span>'+esc(m.manufacturer)+(m.mk?" // MK."+esc(m.mk):"")+'</span></div></div><div class="cd2-deck-specs"><div><span>RAM</span><b>'+m.maxRam+'</b></div><div><span>SLOTS</span><b>'+m.slots+'</b></div><div><span>QH DC</span><b>'+m.dc+'</b></div></div>' : '<div class="cd2-offline-copy">NO HARDWARE LINK</div>'}
+        </div>
+      </aside>
+
+      <main class="cd2-main v3-main">
+        <section class="v3-ram">
+          <div>
+            <small>ACTIVE MEMORY // SHORT REST ONLY</small>
+            <strong>${m.currentRam}<em>/ ${m.maxRam}</em></strong>
+            ${segments(m.currentRam,Math.max(1,m.maxRam))}
+          </div>
+          <button type="button" class="cd2-rest" data-v3-action="rest" ${m.deck?"":"disabled"}>SHORT REST // RESTORE RAM</button>
+        </section>
+
+        <div class="v3-scroll">
+          <section class="v3-section">
+            <div class="cd2-section-head">
+              <div><small>DECK MEMORY</small><h3>LOADED QUICKHACKS</h3></div>
+              <span>${m.loaded.length} / ${m.slots} SLOTS</span>
+            </div>
+            <div class="cd2-loaded-grid">${loadedRack(m)}</div>
+          </section>
+
+          <section class="v3-section v3-library">
+            <div class="cd2-section-head">
+              <div><small>OWNED SOFTWARE</small><h3>SOFTWARE LIBRARY</h3></div>
+              <span>${m.library.length} AVAILABLE</span>
+            </div>
+            <div class="cd2-library-list">
+              ${m.library.length ? m.library.map(item => hackCard(item,false)).join("") : '<div class="cd2-empty-message">ALL OWNED QUICKHACKS ARE LOADED</div>'}
+            </div>
+          </section>
+        </div>
+
+        <footer class="cd2-footer">
+          <div class="cd2-log"><span>SYS&gt;</span><b>${m.deck?"LOADOUT READY // JACK IN TO ACQUIRE TARGETS":"CYBERDECK OFFLINE // HARDWARE REQUIRED"}</b></div>
+          <div class="v3-passive"><small>SUPPORT</small><b>${m.support.length} MODULE${m.support.length===1?"":"S"}</b></div>
+          <button type="button" class="cd2-jack" data-v3-action="jack" ${m.deck?"":"disabled"}><span>NEURAL SCENE SWEEP</span><b>JACK IN</b></button>
+        </footer>
+      </main>
+
+      <aside class="cd2-right">
+        <section class="cd2-bus-panel">
+          <div class="cd2-subhead">DECK STATUS</div>
+          <div class="cd2-right-stat"><span>RAM</span><b>${m.currentRam}/${m.maxRam}</b></div>
+          <div class="cd2-right-stat"><span>LOADED</span><b>${m.loaded.length}</b></div>
+          <div class="cd2-right-stat"><span>CAPACITY</span><b>${m.slots||"—"}</b></div>
+          <div class="cd2-right-stat"><span>QH DC</span><b>${m.deck?m.dc:"—"}</b></div>
+        </section>
+        <section>
+          <div class="cd2-subhead">SUPPORT CHROME</div>
+          <div class="cd2-mini-support">${supportCards(m)}</div>
+        </section>
+        <section class="cd2-session">
+          <div class="cd2-subhead">SESSION</div>
+          <p>Assign software here. RAM returns on <b>Short Rest</b>. Execute loaded Quickhacks after JACK IN.</p>
+        </section>
+      </aside>
+    `;
+
+    document.body.appendChild(root);
+    bindBase(root,m);
+    return root;
+  }
+
+  async function setLoaded(actor,itemId,value) {
+    const item = actor?.items?.get?.(itemId);
+    if (!item || !isQuickhack(item)) return false;
+    const m = model(actor);
+    if (value) {
+      if (!m.deck) return ui?.notifications?.warn?.("Install a Cyberdeck first.");
+      if (m.loaded.length >= m.slots) return ui?.notifications?.warn?.("Cyberdeck software slots are full.");
+    }
+    await item.update({[`flags.${FLAG}.loadedQuickhack`]:Boolean(value)});
+    return true;
+  }
+
+  function sceneModel(actor) {
+    const scene = canvas?.scene ?? null;
+    if (!scene) return {scene:null,nodes:[],selected:null};
+
+    const targeted = new Set([...(game.user?.targets ?? [])].map(t => t?.id ?? t?.document?.id).filter(Boolean));
+    const rect = scene.dimensions?.sceneRect ?? canvas?.dimensions?.sceneRect ?? {x:0,y:0,width:1,height:1};
+    const rw = Math.max(1,Number(rect.width)||1);
+    const rh = Math.max(1,Number(rect.height)||1);
+    const all = [...(scene.tokens?.contents ?? scene.tokens ?? [])]
+      .filter(t => (game.user?.isGM || !t.hidden) && (t.actor || t.actorId));
+
+    const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+    const nodes = all.map((token,index) => {
+      const a = token.actor ?? game.actors?.get?.(token.actorId) ?? null;
+      const disp = Number(token.disposition ?? 0);
+      const relation = disp < 0 ? "hostile" : disp > 0 ? "friendly" : "neutral";
+      const rawX = ((Number(token.x??0)-Number(rect.x??0))/rw)*100;
+      const rawY = ((Number(token.y??0)-Number(rect.y??0))/rh)*100;
+      return {
+        id:token.id,
+        name:token.name ?? a?.name ?? "UNKNOWN",
+        img:token.texture?.src ?? a?.img ?? "icons/svg/mystery-man.svg",
+        relation,
+        self:a?.id === actor?.id,
+        targeted:targeted.has(token.id),
+        x:clamp(8+rawX*.84,8,92),
+        y:clamp(12+rawY*.60,12,72),
+        index
+      };
+    });
+
+    return {scene,nodes,selected:nodes.find(n => n.targeted) ?? null};
+  }
+
+  function codeRain() {
+    const bits = ["01","10","0011","1010","1100","0110","010101","111000","001011"];
+    return Array.from({length:34},(_,i) => {
+      const text = Array.from({length:18},(_,j) => bits[(i+j*3)%bits.length]).join("<br>");
+      return '<i style="--jack-col:'+i+'">'+text+'</i>';
+    }).join("");
+  }
+
+  function jackMarkup(actor) {
+    const net = sceneModel(actor);
+    const m = model(actor);
+    const selected = net.selected;
+
+    const lines = net.nodes.map(n =>
+      '<line class="jack-net-line is-'+n.relation+(n.targeted?' is-targeted':'')+'" x1="500" y1="390" x2="'+(n.x*10).toFixed(1)+'" y2="'+(n.y*7.2).toFixed(1)+'" />'
+    ).join("");
+
+    const nodes = net.nodes.map((n,i) =>
+      '<button class="jack-node is-'+n.relation+(n.targeted?' is-targeted':'')+(n.self?' is-self':'')+'" style="--jack-x:'+n.x.toFixed(2)+'%;--jack-y:'+n.y.toFixed(2)+'%" data-jack-action="target" data-token-id="'+esc(n.id)+'">'+
+        '<span class="jack-node-num">'+String(i+1).padStart(2,"0")+'</span>'+
+        '<img src="'+esc(n.img)+'" alt="">'+
+        '<span class="jack-node-copy"><b>'+esc(n.name)+'</b><small>'+(n.self?'SELF':n.relation.toUpperCase())+'</small></span>'+
+        '<em>'+(n.targeted?'LOCKED':'ACQUIRE')+'</em>'+
+      '</button>'
+    ).join("");
+
+    const hacks = m.loaded.length
+      ? m.loaded.map(item => {
+          const cost = hackCost(item);
+          return '<button class="jack-hack" data-jack-action="run" data-item-id="'+esc(item.id)+'" '+(!selected || m.currentRam < cost?'disabled':'')+'>'+
+            '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
+            '<span><b>'+esc(item.name)+'</b><small>RAM '+cost+' // DC '+m.dc+'</small></span>'+
+            '<em>EXECUTE</em>'+
+          '</button>';
+        }).join("")
+      : '<div class="jack-no-hacks">NO QUICKHACKS LOADED</div>';
+
+    return `
+      <header class="jack-header">
+        <div><small>NOCTURNE // LIVE NEURAL SPACE</small><h1>JACKED <span>IN</span></h1></div>
+        <div class="jack-head-stat"><span>SCENE</span><b>${esc(net.scene?.name ?? "NO SCENE")}</b></div>
+        <div class="jack-head-stat"><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
+        <button data-jack-action="close" class="jack-close">×</button>
+      </header>
+      <main class="jack-space">
+        <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
+        <div class="jack-operator"><div></div><img src="${esc(portrait(actor))}" alt=""><span><small>OPERATOR</small><b>${esc(actor.name)}</b></span></div>
+        ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
+        <div class="jack-lock-readout"><small>TARGET LOCK</small><b>${selected?esc(selected.name):"NO TARGET"}</b><span>${net.nodes.length} SCENE SIGNATURES DETECTED</span></div>
+      </main>
+      <footer class="jack-actions">
+        <div class="jack-actions-title"><small>LOADED SOFTWARE</small><b>QUICKHACK EXECUTION</b><span>${selected?"TARGET // "+esc(selected.name):"SELECT A TARGET NODE"}</span></div>
+        <div class="jack-hacks">${hacks}</div>
+      </footer>
+    `;
+  }
+
+  function renderJack(actorId) {
+    const root = document.getElementById(JACK_ID);
+    const actor = actorById(actorId);
+    if (!root || !actor) return;
+    root.dataset.phase = "live";
+    root.innerHTML = jackMarkup(actor);
+    bindJack(root,actor);
+  }
+
+  function openJack(actor) {
+    document.getElementById(JACK_ID)?.remove();
+    const root = document.createElement("section");
+    root.id = JACK_ID;
+    root.dataset.actorId = actor.id;
+    root.dataset.phase = "boot";
+    root.innerHTML = '<div class="jack-boot"><div class="jack-code-rain">'+codeRain()+'</div><div class="jack-boot-core"><small>NEURAL HANDSHAKE // ACTIVE SCENE SWEEP</small><h1>JACKING IN</h1><b>SCANNING ACTOR SIGNATURES...</b><span>BUILDING TABLETOP SCENE MATRIX</span></div><div class="jack-boot-scan"></div></div>';
+    document.body.appendChild(root);
+    globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+
+    setTimeout(() => {
+      if (!root.isConnected) return;
+      root.classList.add("is-glitching");
+      setTimeout(() => {
+        if (!root.isConnected) return;
+        renderJack(actor.id);
+        root.classList.add("is-live");
+        globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+      },180);
+    },1050);
+  }
+
+  function bindBase(root,m) {
+    root.onchange = event => {
+      if (!event.target?.matches?.("#v3-actor")) return;
+      render(String(event.target.value ?? ""));
+      globalThis.FEHA_SOUNDS?.play?.("actor_switch",{cooldown:80});
+    };
+
+    root.onclick = async event => {
+      const button = event.target?.closest?.("[data-v3-action]");
+      if (!button || !root.contains(button)) return;
+      const action = button.dataset.v3Action;
+      const actor = m.actor;
+
+      if (action === "close") {
+        root.remove();
+        globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
+        return;
+      }
+
+      if (action === "load" || action === "unload") {
+        const value = action === "load";
+        await setLoaded(actor,button.dataset.itemId,value);
+        globalThis.FEHA_SOUNDS?.play?.(value?"install":"remove",{cooldown:0});
+        render(actor.id);
+        return;
+      }
+
+      if (action === "rest") {
+        if (typeof actor.shortRest === "function") {
+          globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+          await actor.shortRest();
+          setTimeout(() => render(actor.id),250);
+        }
+        return;
+      }
+
+      if (action === "jack") {
+        openJack(actor);
+      }
+    };
+  }
+
+  function bindJack(root,actor) {
+    root.onclick = async event => {
+      const button = event.target?.closest?.("[data-jack-action]");
+      if (!button || !root.contains(button)) return;
+      const action = button.dataset.jackAction;
+
+      if (action === "close") {
+        root.remove();
+        globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
+        return;
+      }
+
+      if (action === "target") {
+        const token = canvas?.tokens?.get?.(button.dataset.tokenId);
+        if (!token) return ui?.notifications?.warn?.("That scene token is no longer available.");
+        try {
+          await token.setTarget(true,{user:game.user,releaseOthers:true,groupSelection:true});
+          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+          setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),90);
+        } catch (err) {
+          console.warn("FEHA V3 target selection failed",err);
+        }
+        renderJack(actor.id);
+        return;
+      }
+
+      if (action === "run") {
+        const item = actor.items?.get?.(button.dataset.itemId);
+        const target = [...(game.user?.targets ?? [])][0] ?? null;
+        if (!item || flags(item).loadedQuickhack !== true || !target) {
+          return ui?.notifications?.warn?.("Select a target and load that Quickhack first.");
+        }
+
+        const m = model(actor);
+        const cost = hackCost(item);
+        if (m.currentRam < cost) {
+          return ui?.notifications?.warn?.("Not enough RAM. "+m.currentRam+"/"+cost+".");
+        }
+
+        await actor.update({[`flags.${FLAG}.ramCurrent`]:m.currentRam-cost});
+        globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+        setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),100);
+
+        await ChatMessage.create({
+          speaker:ChatMessage.getSpeaker({actor}),
+          content:'<div style="display:flex;gap:10px;align-items:center"><img src="'+esc(item.img)+'" style="width:54px;height:54px;object-fit:contain"><div><h3>'+esc(item.name)+'</h3><p><strong>RAM '+cost+'</strong> • DC '+m.dc+' • TARGET '+esc(target.name ?? target.document?.name ?? "UNKNOWN")+'</p><p>'+esc(flags(item).effectText ?? description(item))+'</p></div></div>'
+        });
+
+        renderJack(actor.id);
+      }
+    };
+  }
+
+  function open(actorId=null) {
+    const actors = roster();
+    const actor = actorById(actorId) ?? actorById(localStorage.getItem("fehaCyberdeckActorV3")) ?? actors[0] ?? null;
+    if (!actor) return ui?.notifications?.warn?.("No Cyberdeck roster actor available.");
+    document.getElementById(JACK_ID)?.remove();
+    return render(actor.id);
+  }
+
+  const previous = game.adk?.openCyberdeck;
+  if (game.adk) {
+    game.adk.__fehaV3PreviousOpenCyberdeck ??= previous;
+    game.adk.openCyberdeck = open;
+  }
+
+  globalThis.FEHA_TABLETOP_UI_V3 = {
+    version:VERSION,
+    open,
+    render,
+    openJack,
+    model
+  };
+
+  document.getElementById(ROOT_ID)?.remove();
+  ui?.notifications?.info?.("FEHA Cyberdeck V3 "+VERSION+" ready.");
+})();
