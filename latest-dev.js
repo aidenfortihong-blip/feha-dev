@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.2.4";
+  const BUILD = "0.2.5";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -113,7 +113,7 @@
 
     try {
       await actor.updateEmbeddedDocuments("Item", repairs);
-      console.info("FEHA DEV 0.2.4 // repaired cached chrome metadata", repairs.length);
+      console.info("FEHA DEV 0.2.5 // repaired cached chrome metadata", repairs.length);
     } catch (err) {
       console.warn("FEHA DEV 0.2.1 // cache metadata repair failed", err);
     }
@@ -133,6 +133,48 @@
     root.dataset.fehaDevBuild = BUILD;
     patchBackend();
     return true;
+  }
+
+  function installCacheSelectionUX() {
+    if (globalThis.__FEHA_CACHE_SELECTION_UX_025) return;
+
+    const handler = event => {
+      const root = event.target?.closest?.("#adk-chrome-manager-34");
+      if (!root) return;
+
+      const cacheItem = event.target.closest?.("[data-cache-item]");
+      if (cacheItem) {
+        // Let the native handler set selectedItemId and rerender the hardware
+        // dossier, then retract the cache visually so the result is obvious.
+        setTimeout(() => {
+          document
+            .getElementById("adk-chrome-manager-34")
+            ?.classList.add("feha-cache-selection-focus");
+        }, 0);
+        return;
+      }
+
+      const openCache = event.target.closest?.("[data-open-cache]");
+      if (openCache) {
+        root.classList.remove("feha-cache-selection-focus");
+        return;
+      }
+
+      const closeCache = event.target.closest?.("[data-close-cache]");
+      if (closeCache) {
+        root.classList.remove("feha-cache-selection-focus");
+      }
+    };
+
+    document.addEventListener("click", handler, true);
+    globalThis.__FEHA_CACHE_SELECTION_UX_025 = { handler };
+  }
+
+  function removeCacheSelectionUX() {
+    const ux = globalThis.__FEHA_CACHE_SELECTION_UX_025;
+    if (!ux) return;
+    document.removeEventListener("click", ux.handler, true);
+    delete globalThis.__FEHA_CACHE_SELECTION_UX_025;
   }
 
   function startObserver() {
@@ -160,6 +202,10 @@
         delete api.__fehaOwnedBridge021;
       }
 
+      removeCacheSelectionUX();
+      document
+        .getElementById("adk-chrome-manager-34")
+        ?.classList.remove("feha-cache-selection-focus");
       delete globalThis.ADKDevPatch;
     },
     reopenChrome() {
@@ -185,6 +231,7 @@
   globalThis.ADKDevPatch = state;
   globalThis.FEHA_DEV_DIAGNOSTICS = globalThis.FEHA_DEV_DIAGNOSTICS ?? false;
 
+  installCacheSelectionUX();
   startObserver();
   patchBackend();
   markRoot();
@@ -196,7 +243,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // glyph centering + capacity emphasis loaded"
+    "FEHA DEV " + BUILD + " // true glyph centering + cache selection UX loaded"
   );
 
   state.reopenChrome();
