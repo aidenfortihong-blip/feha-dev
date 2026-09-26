@@ -19,7 +19,12 @@
     "Added actor roster lifecycle refreshes and live deck validation before JACK IN",
     "Canonicalized displayed Quickhack RAM text to flags.ramCost without mutating world items",
     "Aligned Derke V3 portrait to the approved Forge source and removed unusable F12 recovery instructions",
-    "Final static gate passed: all shipped JavaScript parses, both CSS files are structurally balanced, V3 contains no Heat/Humanity UI, and base/V3/loader all report 0.8.4"
+    "Final static gate passed: all shipped JavaScript parses, both CSS files are structurally balanced, V3 contains no Heat/Humanity UI, and base/V3/loader all report 0.8.4",
+    "Late-opening Chrome Manager now self-heals cached cyberware metadata through a guarded backend-attach repair pass",
+    "V3 saved-actor selection now falls back only within the accessible Ponyboy/Derke/Sasha/Zach roster instead of failing on an unauthorized remembered actor",
+    "JACK IN dense encounters now have deterministic screen-lane fallback placement after local collision-avoidance candidates are exhausted",
+    "Added a final functional text-size floor so operational Cyberdeck/JACK IN labels no longer regress to 6–7 px readability",
+    "Normalized stale historical debug labels to the live BUILD value"
   ],
   "knownManualRules": [
     "Cyberdeck passive effects such as conditional RAM discounts are displayed but not automatically adjudicated because the installed FEHA module also treats them as descriptive/manual rules",
