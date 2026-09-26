@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.2.8";
+  const BUILD = "0.2.9";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -178,91 +178,170 @@
   }
 
   function installSoundEngine() {
-    if (globalThis.__FEHA_SOUND_ENGINE_028) return;
+    if (globalThis.__FEHA_SOUND_ENGINE_029) return;
 
     const OriginalPlay = HTMLMediaElement.prototype.play;
     let ctx = null;
+    let masterBus = null;
 
     const MASTER = {
-      volume: 0.72,
-      hover: 0.34,
-      select: 0.62,
-      drawer: 0.72,
-      scan: 0.66,
-      install: 0.82,
-      remove: 0.72,
-      error: 0.76,
-      confirm: 0.68
+      volume: 0.74,
+      hover: 0.30,
+      select: 0.70,
+      drawer: 0.78,
+      scan: 0.70,
+      install: 0.92,
+      remove: 0.82,
+      error: 0.82,
+      confirm: 0.76
     };
 
     function audioCtx() {
       if (!ctx || ctx.state === "closed") {
         ctx = new (window.AudioContext || window.webkitAudioContext)();
+        masterBus = null;
       }
-      if (ctx.state === "suspended") ctx.resume().catch(() => {});
+
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+
+      if (!masterBus) {
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -18;
+        comp.knee.value = 10;
+        comp.ratio.value = 7;
+        comp.attack.value = 0.003;
+        comp.release.value = 0.16;
+
+        const master = ctx.createGain();
+        master.gain.value = MASTER.volume;
+
+        comp.connect(master);
+        master.connect(ctx.destination);
+
+        masterBus = { comp, master };
+      }
+
+      masterBus.master.gain.value = MASTER.volume;
       return ctx;
     }
 
-    function outGain(kind) {
+    function makeDistortion(amount = 35) {
+      const c = audioCtx();
+      const shaper = c.createWaveShaper();
+      const n = 2048;
+      const curve = new Float32Array(n);
+      const k = Math.max(1, amount);
+
+      for (let i = 0; i < n; i++) {
+        const x = i * 2 / n - 1;
+        curve[i] = ((3 + k) * x * 20 * Math.PI / 180) /
+          (Math.PI + k * Math.abs(x));
+      }
+
+      shaper.curve = curve;
+      shaper.oversample = "4x";
+      return shaper;
+    }
+
+    function destination(kind, drive = 0) {
       const c = audioCtx();
       const g = c.createGain();
       g.gain.value = Math.max(
         0,
-        Math.min(1, MASTER.volume * (MASTER[kind] ?? 0.6))
+        Math.min(1.2, MASTER[kind] ?? 0.6)
       );
-      g.connect(c.destination);
+
+      if (drive > 0) {
+        const d = makeDistortion(drive);
+        g.connect(d);
+        d.connect(masterBus.comp);
+      } else {
+        g.connect(masterBus.comp);
+      }
+
       return g;
     }
 
-    function osc(kind, {
+    function tone(kind, {
       type = "sine",
-      freq = 440,
+      freq = 120,
       endFreq = null,
       delay = 0,
-      dur = 0.08,
-      gain = 0.12,
-      attack = 0.004,
-      pan = 0
+      dur = 0.10,
+      gain = 0.16,
+      attack = 0.003,
+      pan = 0,
+      drive = 0,
+      lowpass = null,
+      highpass = null
     } = {}) {
       const c = audioCtx();
       const start = c.currentTime + delay;
-      const end = start + dur;
+      const endAt = start + dur;
 
       const o = c.createOscillator();
-      const g = c.createGain();
+      const amp = c.createGain();
       const p = c.createStereoPanner ? c.createStereoPanner() : null;
+      const lp = lowpass ? c.createBiquadFilter() : null;
+      const hp = highpass ? c.createBiquadFilter() : null;
 
       o.type = type;
       o.frequency.setValueAtTime(Math.max(20, freq), start);
+
       if (endFreq != null) {
-        o.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq), end);
+        o.frequency.exponentialRampToValueAtTime(
+          Math.max(20, endFreq),
+          endAt
+        );
       }
 
-      g.gain.setValueAtTime(0.0001, start);
-      g.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), start + attack);
-      g.gain.exponentialRampToValueAtTime(0.0001, end);
+      amp.gain.setValueAtTime(0.0001, start);
+      amp.gain.exponentialRampToValueAtTime(
+        Math.max(0.0002, gain),
+        start + attack
+      );
+      amp.gain.exponentialRampToValueAtTime(0.0001, endAt);
+
+      let node = o;
+
+      if (hp) {
+        hp.type = "highpass";
+        hp.frequency.value = highpass;
+        node.connect(hp);
+        node = hp;
+      }
+
+      if (lp) {
+        lp.type = "lowpass";
+        lp.frequency.value = lowpass;
+        node.connect(lp);
+        node = lp;
+      }
+
+      node.connect(amp);
 
       if (p) {
         p.pan.value = Math.max(-1, Math.min(1, pan));
-        o.connect(g);
-        g.connect(p);
-        p.connect(outGain(kind));
+        amp.connect(p);
+        p.connect(destination(kind, drive));
       } else {
-        o.connect(g);
-        g.connect(outGain(kind));
+        amp.connect(destination(kind, drive));
       }
 
       o.start(start);
-      o.stop(end + 0.02);
+      o.stop(endAt + 0.03);
     }
 
     function noise(kind, {
       delay = 0,
-      dur = 0.06,
-      gain = 0.07,
-      low = 600,
-      high = 6000,
-      pan = 0
+      dur = 0.08,
+      gain = 0.10,
+      low = 120,
+      high = 5000,
+      pan = 0,
+      drive = 0
     } = {}) {
       const c = audioCtx();
       const start = c.currentTime + delay;
@@ -270,15 +349,18 @@
       const buffer = c.createBuffer(1, length, c.sampleRate);
       const data = buffer.getChannelData(0);
 
+      let hold = 0;
       for (let i = 0; i < length; i++) {
-        const env = 1 - i / length;
-        data[i] = (Math.random() * 2 - 1) * env;
+        // Slight sample-and-hold roughness: less "hiss", more digital tearing.
+        if (i % 7 === 0) hold = Math.random() * 2 - 1;
+        const env = Math.pow(1 - i / length, 1.5);
+        data[i] = hold * env;
       }
 
       const src = c.createBufferSource();
       const hp = c.createBiquadFilter();
       const lp = c.createBiquadFilter();
-      const g = c.createGain();
+      const amp = c.createGain();
       const p = c.createStereoPanner ? c.createStereoPanner() : null;
 
       src.buffer = buffer;
@@ -289,23 +371,63 @@
       lp.type = "lowpass";
       lp.frequency.value = high;
 
-      g.gain.setValueAtTime(Math.max(0.0001, gain), start);
-      g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      amp.gain.setValueAtTime(Math.max(0.0001, gain), start);
+      amp.gain.exponentialRampToValueAtTime(0.0001, start + dur);
 
       src.connect(hp);
       hp.connect(lp);
-      lp.connect(g);
+      lp.connect(amp);
 
       if (p) {
         p.pan.value = Math.max(-1, Math.min(1, pan));
-        g.connect(p);
-        p.connect(outGain(kind));
+        amp.connect(p);
+        p.connect(destination(kind, drive));
       } else {
-        g.connect(outGain(kind));
+        amp.connect(destination(kind, drive));
       }
 
       src.start(start);
-      src.stop(start + dur + 0.02);
+      src.stop(start + dur + 0.03);
+    }
+
+    function impact(kind, {
+      delay = 0,
+      freq = 72,
+      endFreq = 34,
+      dur = 0.16,
+      gain = 0.22,
+      drive = 55
+    } = {}) {
+      tone(kind, {
+        type: "sine",
+        freq,
+        endFreq,
+        delay,
+        dur,
+        gain,
+        drive,
+        lowpass: 220
+      });
+
+      tone(kind, {
+        type: "square",
+        freq: freq * 1.9,
+        endFreq: endFreq * 1.4,
+        delay,
+        dur: dur * 0.62,
+        gain: gain * 0.20,
+        drive: drive + 18,
+        lowpass: 520
+      });
+
+      noise(kind, {
+        delay,
+        dur: Math.min(0.065, dur * 0.45),
+        gain: gain * 0.33,
+        low: 90,
+        high: 1500,
+        drive: drive + 12
+      });
     }
 
     function play(kind = "select") {
@@ -314,74 +436,317 @@
 
         switch (kind) {
           case "hover":
-            // Tiny glass/servo tick. Audible but never fatiguing.
-            noise(kind, { dur: 0.022, gain: 0.045, low: 2100, high: 9000 });
-            osc(kind, { type: "sine", freq: 1850, endFreq: 1320, dur: 0.032, gain: 0.045 });
+            // Tiny electrical tooth-click, not a friendly UI chirp.
+            noise(kind, {
+              dur: 0.018,
+              gain: 0.052,
+              low: 1800,
+              high: 7200,
+              drive: 75
+            });
+            tone(kind, {
+              type: "square",
+              freq: 1120,
+              endFreq: 760,
+              dur: 0.026,
+              gain: 0.032,
+              drive: 52,
+              highpass: 500
+            });
             break;
 
           case "select":
-            // Mechanical click with a clean digital lock-on.
-            noise(kind, { dur: 0.026, gain: 0.075, low: 850, high: 5200, pan: -0.06 });
-            osc(kind, { type: "triangle", freq: 145, endFreq: 82, dur: 0.072, gain: 0.13 });
-            osc(kind, { type: "sine", freq: 920, endFreq: 1420, delay: 0.018, dur: 0.052, gain: 0.075, pan: 0.08 });
+            // Hard relay thunk + short corrupted lock tone.
+            impact(kind, {
+              freq: 86,
+              endFreq: 42,
+              dur: 0.105,
+              gain: 0.19,
+              drive: 62
+            });
+            noise(kind, {
+              delay: 0.018,
+              dur: 0.042,
+              gain: 0.085,
+              low: 700,
+              high: 4200,
+              pan: 0.10,
+              drive: 88
+            });
+            tone(kind, {
+              type: "square",
+              freq: 510,
+              endFreq: 295,
+              delay: 0.038,
+              dur: 0.055,
+              gain: 0.055,
+              pan: -0.08,
+              drive: 74
+            });
             break;
 
           case "drawer":
-            // Servo door / hardware tray.
-            osc(kind, { type: "sawtooth", freq: 112, endFreq: 58, dur: 0.15, gain: 0.095 });
-            noise(kind, { delay: 0.015, dur: 0.13, gain: 0.095, low: 420, high: 3200 });
-            osc(kind, { type: "triangle", freq: 430, endFreq: 265, delay: 0.085, dur: 0.075, gain: 0.055 });
+            // Low motor strain, scraping servo, physical latch.
+            tone(kind, {
+              type: "sawtooth",
+              freq: 74,
+              endFreq: 43,
+              dur: 0.22,
+              gain: 0.13,
+              drive: 72,
+              lowpass: 480
+            });
+            noise(kind, {
+              delay: 0.018,
+              dur: 0.19,
+              gain: 0.12,
+              low: 150,
+              high: 2600,
+              drive: 68
+            });
+            impact(kind, {
+              delay: 0.155,
+              freq: 96,
+              endFreq: 45,
+              dur: 0.11,
+              gain: 0.15,
+              drive: 58
+            });
             break;
 
           case "scan":
-            // Fast biometric scanner sweep.
-            noise(kind, { dur: 0.13, gain: 0.055, low: 1200, high: 7200 });
-            osc(kind, { type: "sine", freq: 520, endFreq: 760, dur: 0.055, gain: 0.075, pan: -0.18 });
-            osc(kind, { type: "sine", freq: 780, endFreq: 1120, delay: 0.055, dur: 0.055, gain: 0.08 });
-            osc(kind, { type: "sine", freq: 1160, endFreq: 1680, delay: 0.11, dur: 0.065, gain: 0.085, pan: 0.18 });
+            // Data scrape + stepping digital interrogation, less "pretty scanner".
+            noise(kind, {
+              dur: 0.20,
+              gain: 0.078,
+              low: 600,
+              high: 6800,
+              drive: 76
+            });
+            tone(kind, {
+              type: "square",
+              freq: 168,
+              endFreq: 285,
+              dur: 0.07,
+              gain: 0.065,
+              pan: -0.24,
+              drive: 65
+            });
+            tone(kind, {
+              type: "square",
+              freq: 312,
+              endFreq: 520,
+              delay: 0.07,
+              dur: 0.07,
+              gain: 0.07,
+              drive: 72
+            });
+            tone(kind, {
+              type: "square",
+              freq: 590,
+              endFreq: 980,
+              delay: 0.14,
+              dur: 0.075,
+              gain: 0.075,
+              pan: 0.24,
+              drive: 78
+            });
+            impact(kind, {
+              delay: 0.185,
+              freq: 58,
+              endFreq: 34,
+              dur: 0.09,
+              gain: 0.10,
+              drive: 55
+            });
             break;
 
           case "install":
-            // Important event: clamp, handshake, then authorization confirmation.
-            osc(kind, { type: "sine", freq: 92, endFreq: 48, dur: 0.18, gain: 0.18 });
-            noise(kind, { delay: 0.015, dur: 0.075, gain: 0.11, low: 240, high: 2600 });
-            osc(kind, { type: "triangle", freq: 460, endFreq: 610, delay: 0.08, dur: 0.07, gain: 0.07, pan: -0.12 });
-            osc(kind, { type: "triangle", freq: 730, endFreq: 980, delay: 0.15, dur: 0.07, gain: 0.08 });
-            osc(kind, { type: "sine", freq: 1180, endFreq: 1740, delay: 0.225, dur: 0.105, gain: 0.115, pan: 0.12 });
+            // Visceral cyberware event: impact -> machinery -> dirty handshake -> seal.
+            impact(kind, {
+              freq: 62,
+              endFreq: 29,
+              dur: 0.22,
+              gain: 0.30,
+              drive: 82
+            });
+            noise(kind, {
+              delay: 0.025,
+              dur: 0.18,
+              gain: 0.15,
+              low: 120,
+              high: 3200,
+              drive: 92
+            });
+            tone(kind, {
+              type: "sawtooth",
+              freq: 118,
+              endFreq: 74,
+              delay: 0.055,
+              dur: 0.19,
+              gain: 0.12,
+              drive: 88,
+              lowpass: 650
+            });
+            tone(kind, {
+              type: "square",
+              freq: 330,
+              endFreq: 176,
+              delay: 0.16,
+              dur: 0.085,
+              gain: 0.065,
+              pan: -0.16,
+              drive: 92
+            });
+            tone(kind, {
+              type: "square",
+              freq: 620,
+              endFreq: 410,
+              delay: 0.205,
+              dur: 0.075,
+              gain: 0.065,
+              pan: 0.16,
+              drive: 88
+            });
+            impact(kind, {
+              delay: 0.255,
+              freq: 104,
+              endFreq: 48,
+              dur: 0.12,
+              gain: 0.18,
+              drive: 70
+            });
             break;
 
           case "remove":
-            // Reverse disengage / pneumatic release.
-            osc(kind, { type: "triangle", freq: 1320, endFreq: 390, dur: 0.14, gain: 0.085 });
-            noise(kind, { delay: 0.025, dur: 0.12, gain: 0.105, low: 330, high: 3000 });
-            osc(kind, { type: "sine", freq: 105, endFreq: 62, delay: 0.09, dur: 0.11, gain: 0.14 });
+            // Mechanical tear-away, decompression, dead relay snap.
+            impact(kind, {
+              freq: 72,
+              endFreq: 38,
+              dur: 0.13,
+              gain: 0.20,
+              drive: 74
+            });
+            noise(kind, {
+              delay: 0.028,
+              dur: 0.19,
+              gain: 0.15,
+              low: 110,
+              high: 2900,
+              drive: 90
+            });
+            tone(kind, {
+              type: "sawtooth",
+              freq: 240,
+              endFreq: 58,
+              delay: 0.035,
+              dur: 0.19,
+              gain: 0.11,
+              drive: 80,
+              lowpass: 720
+            });
+            tone(kind, {
+              type: "square",
+              freq: 510,
+              endFreq: 105,
+              delay: 0.17,
+              dur: 0.065,
+              gain: 0.055,
+              drive: 85
+            });
             break;
 
           case "error":
-            // Short hostile digital rejection, not a generic Windows beep.
-            noise(kind, { dur: 0.12, gain: 0.095, low: 500, high: 4100 });
-            osc(kind, { type: "square", freq: 245, endFreq: 210, dur: 0.07, gain: 0.07, pan: -0.12 });
-            osc(kind, { type: "square", freq: 188, endFreq: 155, delay: 0.075, dur: 0.085, gain: 0.075, pan: 0.12 });
+            // Malfunction buzz + low body hit.
+            impact(kind, {
+              freq: 68,
+              endFreq: 33,
+              dur: 0.14,
+              gain: 0.18,
+              drive: 82
+            });
+            noise(kind, {
+              dur: 0.16,
+              gain: 0.13,
+              low: 220,
+              high: 3600,
+              drive: 100
+            });
+            tone(kind, {
+              type: "square",
+              freq: 178,
+              endFreq: 142,
+              dur: 0.095,
+              gain: 0.085,
+              pan: -0.12,
+              drive: 100
+            });
+            tone(kind, {
+              type: "square",
+              freq: 132,
+              endFreq: 98,
+              delay: 0.095,
+              dur: 0.105,
+              gain: 0.09,
+              pan: 0.12,
+              drive: 100
+            });
             break;
 
           case "confirm":
-            // Crisp positive two-stage handshake.
-            osc(kind, { type: "sine", freq: 880, endFreq: 1040, dur: 0.055, gain: 0.085, pan: -0.08 });
-            osc(kind, { type: "sine", freq: 1320, endFreq: 1580, delay: 0.065, dur: 0.075, gain: 0.105, pan: 0.08 });
-            noise(kind, { delay: 0.058, dur: 0.022, gain: 0.035, low: 2600, high: 8500 });
+            // Positive, but still physical: relay punch + dirty authorization chirp.
+            impact(kind, {
+              freq: 92,
+              endFreq: 48,
+              dur: 0.095,
+              gain: 0.16,
+              drive: 58
+            });
+            tone(kind, {
+              type: "square",
+              freq: 450,
+              endFreq: 640,
+              delay: 0.045,
+              dur: 0.06,
+              gain: 0.055,
+              drive: 66
+            });
+            tone(kind, {
+              type: "square",
+              freq: 680,
+              endFreq: 980,
+              delay: 0.10,
+              dur: 0.07,
+              gain: 0.065,
+              drive: 72
+            });
+            noise(kind, {
+              delay: 0.095,
+              dur: 0.03,
+              gain: 0.05,
+              low: 1900,
+              high: 7200,
+              drive: 82
+            });
             break;
 
           default:
             play("select");
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.2.8 // synth sound failed", err);
+        console.warn("FEHA DEV 0.2.9 // visceral sound failed", err);
       }
     }
 
     HTMLMediaElement.prototype.play = function(...args) {
       try {
-        const src = String(this.currentSrc || this.src || this.getAttribute?.("src") || "");
+        const src = String(
+          this.currentSrc ||
+          this.src ||
+          this.getAttribute?.("src") ||
+          ""
+        );
+
         const match = src.match(
           /\/assets\/audio\/chrome\/(hover|select|drawer|scan|install|remove|error|confirm)\.wav(?:[?#].*)?$/i
         );
@@ -391,7 +756,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.2.8 // sound routing failed", err);
+        console.warn("FEHA DEV 0.2.9 // sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -400,28 +765,62 @@
     globalThis.FEHA_SOUNDS = {
       play,
       profile: MASTER,
+
       setVolume(value) {
-        MASTER.volume = Math.max(0, Math.min(1, Number(value) || 0));
+        MASTER.volume = Math.max(
+          0,
+          Math.min(1, Number(value) || 0)
+        );
+
+        if (masterBus?.master) {
+          masterBus.master.gain.value = MASTER.volume;
+        }
+
         return MASTER.volume;
       },
+
       demo() {
-        const order = ["hover", "select", "drawer", "scan", "install", "remove", "error", "confirm"];
-        order.forEach((kind, i) => setTimeout(() => play(kind), i * 520));
+        const order = [
+          "hover",
+          "select",
+          "drawer",
+          "scan",
+          "install",
+          "remove",
+          "error",
+          "confirm"
+        ];
+
+        order.forEach(
+          (kind, i) =>
+            setTimeout(() => play(kind), i * 650)
+        );
+      },
+
+      visceralDemo() {
+        ["select", "drawer", "scan", "install", "remove", "error"]
+          .forEach(
+            (kind, i) =>
+              setTimeout(() => play(kind), i * 760)
+          );
       }
     };
 
-    globalThis.__FEHA_SOUND_ENGINE_028 = {
+    globalThis.__FEHA_SOUND_ENGINE_029 = {
       originalPlay: OriginalPlay,
       get context() { return ctx; }
     };
 
     console.info(
-      "FEHA DEV 0.2.8 // cyber sound engine armed. Test with FEHA_SOUNDS.demo()"
+      "FEHA DEV 0.2.9 // GUTTURAL DIGITAL sound engine armed. Test FEHA_SOUNDS.visceralDemo()"
     );
   }
 
   function removeSoundEngine() {
-    const engine = globalThis.__FEHA_SOUND_ENGINE_028;
+    const engine =
+      globalThis.__FEHA_SOUND_ENGINE_029 ??
+      globalThis.__FEHA_SOUND_ENGINE_028;
+
     if (!engine) return;
 
     if (HTMLMediaElement.prototype.play !== engine.originalPlay) {
@@ -433,6 +832,7 @@
     } catch {}
 
     delete globalThis.FEHA_SOUNDS;
+    delete globalThis.__FEHA_SOUND_ENGINE_029;
     delete globalThis.__FEHA_SOUND_ENGINE_028;
   }
 
@@ -629,7 +1029,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // cyber sound redesign loaded"
+    "FEHA DEV " + BUILD + " // guttural digital visceral sound pass loaded"
   );
 
   state.reopenChrome();
