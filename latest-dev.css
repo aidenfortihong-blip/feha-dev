@@ -3683,3 +3683,18 @@
   justify-self: end !important;
   margin-right: 1px !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.17
+   LEGACY CHARACTER-SHEET WALLET SUPPRESSION
+   ========================================================================== */
+
+/* Keep ADKWallet as the canonical backend, but remove the old embedded wallet
+   presentation from character sheets. A standalone wallet UI will own this
+   space later. Runtime JS tags the exact wallet shell and balance before this
+   rule hides it, so unrelated sheet controls are left alone. */
+[data-feha-wallet-shell="legacy"],
+.feha-wallet-legacy-shell {
+  display: none !important;
+}
