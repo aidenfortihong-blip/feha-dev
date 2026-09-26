@@ -3,7 +3,7 @@
 **Date:** 2026-09-26
 **Foundry baseline:** Foundry VTT 14.361 / dnd5e 5.3.3
 **Dev repository:** https://github.com/aidenfortihong-blip/feha-dev
-**Current live dev build:** 0.4.16
+**Current live dev build:** 0.6.2
 
 ## Read this first
 This is a real Foundry VTT cyberpunk rules/UI layer. The long-term goal is to move away from endless browser hotfixes and toward a proper FEHA/ADK module that owns Chrome Manager, Cyberdeck Terminal, Market/shops, character-sheet integrations, wallet/currency presentation, item/manufacturer systems, sound, visual language, and shared components.
@@ -17,18 +17,31 @@ Current dev workflow:
 Do not make the user manually edit GitHub when repo write access is available.
 
 ## Immediate priorities
-### Character-sheet wallet
-The current ADK wallet block is visually glitching in the sheet header near ability scores.
+### Source-of-truth export
+Before major new backend/mechanics work, run both Foundry exporters and upload the resulting JSON files:
+- `foundry/FEHA_MODULE_SOURCE_EXPORTER.js`
+- `foundry/FEHA_HANDOFF_EXPORTER.js`
 
-User direction:
-- remove/hide those embedded wallet blocks for now
-- preserve wallet mechanics
-- later redesign wallet/balance as a dedicated UI with its own identity/container/ID
+These exports should become the authoritative basis for the installed module source, live actor/item structures, runtime APIs, and private CP2077 asset maps.
+
+### Character-sheet integration
+Next desired sheet work:
+- rename **Spells** presentation to **Quickhacks**
+- show **RAM** in the Quickhacks area
+- use the real exported actor/item/backend fields once available rather than guessing
+
+### Wallet
+The broken embedded character-sheet wallet and surviving Chrome/Cyberdeck €$ launchers were suppressed in the dev patch while preserving backend wallet data.
 
 Canonical wallet API:
 - `globalThis.ADKWallet`
 - internally uses GP
 - displays **€$**
+
+Long-term direction:
+- wallet mechanics stay intact
+- wallet/balance gets its own dedicated UI later
+- do not reintroduce embedded wallet blocks into Chrome Manager or Cyberdeck
 
 ### Derke portrait
 Newest requested Derke image:
@@ -38,19 +51,16 @@ Newest requested Derke image:
 Correct Ponyboy image:
 `https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/40e1fb5d-6265-4dfd-93d3-d6344dc14180.png`
 
-### Chrome Manager roster
-Keep visible/core:
+### Core roster
+For current player-facing ADK apps, the canonical active roster is:
 - Ponyboy
 - Derke
 - Sasha
 - Zach
-- Jing may remain if present
 
-Hide from selector:
-- Nina
-- Florence
-- Cael
-- Xiao
+Cyberdeck selector is explicitly locked to those four in build 0.6.1+.
+
+Do not surface Nina, Florence, Cael, Xiao, or Jing in the current Cyberdeck roster. Do not delete their Foundry Actor documents.
 
 Do not delete their Foundry Actor documents.
 
@@ -125,12 +135,15 @@ Avoid:
 
 ## Current UI fixes
 ### Left rail
-Build 0.4.16 removed the narrow `.system-state` strip that created a double-bar look beside the subsystem counter. Do not reintroduce it casually.
+- 0.4.16 removed the narrow `.system-state` strip that created a double-bar look beside the subsystem counter.
+- 0.4.18 removed subsystem-row horizontal separator lines entirely.
+Do not reintroduce either casually.
 
 ### Center
 - portrait-side top mini signal removed
 - center LINK/LATENCY/INTEGRITY/AUGMENTS strip removed
 - system title is a clean bottom dock
+- 0.4.20–0.4.21 removed remaining decorative portrait telemetry bars and stage pseudo-element line clutter
 
 ### Right ports
 Intended:
@@ -140,6 +153,57 @@ Intended:
 
 ### Empty cache
 Giant white atlas bars were fixed in 0.4.8. Do not render CP2077 white mask crops literally.
+
+## Cyberdeck V2
+Build 0.6.0 replaced the legacy purple Cyberdeck presentation entirely.
+
+Canonical entry point remains:
+- `game.adk.openCyberdeck()`
+
+The dev patch now overrides that entry point with a FEHA-owned Cyberdeck UI rather than styling the old template.
+
+Current rules/direction:
+- roster: Ponyboy, Derke, Sasha, Zach only
+- no Heat UI
+- no Humanity UI
+- primary telemetry: RAM, installed deck/hardware link, software load
+- RAM recovery remains Short Rest only
+- Quickhacks are persistent software items and can be loaded/ejected/run from the Cyberdeck
+- use actual actor/item art heavily
+- use CP2077 private UI assets heavily
+- use existing FEHA sound engine heavily
+- no wallet/€$ UI inside Cyberdeck
+
+Current Cyberdeck tabs:
+- Quickhacks
+- Network
+- Memory
+- Diagnostics
+
+Current visual direction:
+- flat black CRT/terminal shell
+- cyan/magenta/yellow functional color
+- clipped/chamfered geometry
+- dense diagnostics
+- segmented RAM
+- large item/quickhack/support-chrome art
+- asset-backed HUD/frame/button/crossline/barcode/glow treatment
+- large JACK IN action
+- stronger sounds on open/close/hover/actor switch/tab/load/eject/run/rest/JACK IN
+
+Build 0.6.2 maps these private CP2077 UI assets into Cyberdeck V2 when the browser asset bridge is present:
+- frame background
+- HUD patch
+- highlight
+- lines
+- crossline
+- outerline
+- button holders
+- reward frame
+- buffer graphics
+- barcodes
+- code strip
+- frame glow / small glow
 
 ## Cyberpunk 2077 private asset pack
 User used ChatGPT Work + WolvenKit against their own local Cyberpunk 2077 install.
@@ -308,6 +372,14 @@ Loader v2:
 - 0.4.11–0.4.14 Derke/Ponyboy portrait override work
 - 0.4.15 naming -> Chrome Manager
 - 0.4.16 subsystem double-bar removed
+- 0.4.17 legacy character-sheet wallet suppression
+- 0.4.18 subsystem row lines removed
+- 0.4.19 surviving €$ launcher / broken legacy wallet editor suppression
+- 0.4.20–0.4.21 portrait HUD/stage line cleanup
+- 0.5.0–0.5.3 exploratory legacy Cyberdeck styling/diagnostics; superseded by Cyberdeck V2
+- 0.6.0 complete FEHA-owned Cyberdeck V2 replacement
+- 0.6.1 larger/readable Cyberdeck + roster locked to Ponyboy/Derke/Sasha/Zach
+- 0.6.2 Heat/Humanity removed; Cyberpunk asset-heavy beauty pass + expanded sound feedback
 
 ## Signal profile
 There is already a native telemetry engine in current dev JS:
@@ -320,12 +392,13 @@ There is already a native telemetry engine in current dev JS:
 User also pasted a standalone signal-profile hotfix macro. Do not accidentally run two independent animation loops. Compare before merging.
 
 ## Delivery preferences
+- if the ADK/dev repo can own a change, patch it directly instead of giving the user a macro/snippet to paste
+- use Foundry macros only when live-world access/export/migration genuinely requires Foundry execution
 - complete Foundry macros, not fragments
 - macro should update/overwrite target automatically when practical
 - show progress/completion for long migrations
-- if GitHub can be patched directly, patch it directly
 - use screenshot-driven iteration
-- inspect actual repo/current CSS before patching
+- inspect actual repo/current CSS/JS before patching
 
 ## Source-of-truth package wanted next
 The next chat should work from:
@@ -389,9 +462,11 @@ Upload both JSON files into the next chat/project. Those two files are the bridg
 
 ## Next-chat first actions
 1. Read this handoff.
-2. Inspect current repo.
-3. Obtain/export actual installed module source and real Foundry data.
-4. Hide/remove broken wallet UI while preserving wallet mechanics.
-5. Update Derke to newest portrait.
-6. Start moving important systems from live patch code into the real module source.
-7. Preserve the current Chrome Manager visual language.
+2. Inspect current repo, especially `latest-dev.js`, `latest-dev.css`, and `version.json`.
+3. Load and inspect the two Foundry export JSON files if provided.
+4. Treat exported installed-module source and live actor/item data as authoritative over guessed field names.
+5. Continue Cyberdeck V2 from build 0.6.2 rather than reviving the legacy purple template.
+6. Keep Cyberdeck roster to Ponyboy / Derke / Sasha / Zach.
+7. Continue character-sheet work: Spells -> Quickhacks presentation and RAM display, grounded in exported data.
+8. Start moving important systems from live patch code into the real module source once module source is available.
+9. Preserve the current Chrome Manager visual language and wallet suppression.
