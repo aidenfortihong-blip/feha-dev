@@ -1,8 +1,51 @@
 (() => {
-  const BUILD = "0.3.4";
+  const BUILD = "0.3.5";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
+
+  const PRIVATE_ASSET_KEY = "fehaCP2077PrivateAssetsV1";
+
+  function readPrivateAssets() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(PRIVATE_ASSET_KEY) || "null");
+      if (!parsed || typeof parsed !== "object") return null;
+      const ok = v => typeof v === "string" && v.startsWith("https://assets.forge-vtt.com/");
+      const audio = Object.fromEntries(Object.entries(parsed.audio ?? {}).filter(([,v]) => ok(v)));
+      const ui = Object.fromEntries(Object.entries(parsed.ui ?? {}).filter(([,v]) => ok(v)));
+      return (Object.keys(audio).length || Object.keys(ui).length) ? {audio, ui} : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function applyPrivateAssets(root = document.getElementById("adk-chrome-manager-34")) {
+    if (!root) return false;
+    const assets = readPrivateAssets();
+    if (!assets) {
+      delete root.dataset.fehaCp2077Assets;
+      delete globalThis.FEHA_CP2077_ASSETS;
+      return false;
+    }
+    const ui = assets.ui ?? {};
+    const names = {
+      "--feha-cp-bar-long": "38888b05f0_bar_long2",
+      "--feha-cp-buffer-empty": "697dae4bde_buffer_empty",
+      "--feha-cp-buffer-active": "4416a73d89_buffer_activated",
+      "--feha-cp-frame-glow": "59feb7cd32_frame_glow",
+      "--feha-cp-barcode1": "7c16fcece5_fluff_barcode1",
+      "--feha-cp-code1": "1a0c3eb3ee_fluff_code1",
+      "--feha-cp-arrow-right": "41df0fe86a_arrow_right"
+    };
+    for (const [cssName,key] of Object.entries(names)) {
+      const url = ui[key];
+      if (url) root.style.setProperty(cssName, `url("${url}")`);
+      else root.style.removeProperty(cssName);
+    }
+    root.dataset.fehaCp2077Assets = "1";
+    globalThis.FEHA_CP2077_ASSETS = assets;
+    return true;
+  }
 
   function findCache(actor) {
     return actor?.items?.find?.(item =>
@@ -173,6 +216,7 @@
       .replace(/^-|-$/g, "");
     patchBackend();
     normalizeDossierSchematics();
+    applyPrivateAssets(root);
     return true;
   }
 
@@ -219,7 +263,7 @@
   }
 
   function installSoundEngine() {
-    if (globalThis.__FEHA_SOUND_ENGINE_034) return;
+    if (globalThis.__FEHA_SOUND_ENGINE_035) return;
 
     const OriginalPlay = HTMLMediaElement.prototype.play;
     const LOCAL_KEY = "fehaCP2077LocalSfxV1";
@@ -262,7 +306,7 @@
         const sounds = parsed.sounds ?? parsed;
         const complete = REQUIRED.every(key =>
           typeof sounds?.[key] === "string" &&
-          sounds[key].startsWith("data:audio/")
+          (sounds[key].startsWith("data:audio/") || sounds[key].startsWith("https://assets.forge-vtt.com/"))
         );
 
         return complete ? sounds : null;
@@ -271,9 +315,10 @@
       }
     }
 
-    const localPack = readLocalPack();
+    const localPack = readLocalPack() ?? readPrivateAssets()?.audio ?? null;
     const paths = localPack ?? FALLBACK_MAP;
-    const source = localPack ? "CYBERPUNK 2077 // LOCAL" : "KENNEY // FALLBACK";
+    const forgeBacked = localPack && Object.values(localPack).some(path => String(path).startsWith("https://assets.forge-vtt.com/"));
+    const source = localPack ? (forgeBacked ? "CYBERPUNK 2077 // FORGE PRIVATE" : "CYBERPUNK 2077 // LOCAL") : "KENNEY // FALLBACK";
 
     const LEVELS = {
       hover: 0.34,
@@ -310,7 +355,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.3.4 // preload failed", event, err);
+          console.warn("FEHA DEV 0.3.5 // preload failed", event, err);
         }
       }
     }
@@ -368,11 +413,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.3.4 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.3.5 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.3.4 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.3.5 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -395,7 +440,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.3.4 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.3.5 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -509,28 +554,29 @@
         }
 
         if (globalThis.FEHA_SOUNDS === api) delete globalThis.FEHA_SOUNDS;
-        if (globalThis.__FEHA_SOUND_ENGINE_034 === engine) {
-          delete globalThis.__FEHA_SOUND_ENGINE_034;
+        if (globalThis.__FEHA_SOUND_ENGINE_035 === engine) {
+          delete globalThis.__FEHA_SOUND_ENGINE_035;
         }
       }
     };
 
     globalThis.FEHA_SOUNDS = api;
-    globalThis.__FEHA_SOUND_ENGINE_034 = engine;
+    globalThis.__FEHA_SOUND_ENGINE_035 = engine;
 
     console.info(
-      `FEHA DEV 0.3.4 // sound source: ${source}`
+      `FEHA DEV 0.3.5 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.3.4 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.3.5 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
 
   function removeSoundEngine() {
     const engine =
+      globalThis.__FEHA_SOUND_ENGINE_035 ??
       globalThis.__FEHA_SOUND_ENGINE_034 ??
       globalThis.__FEHA_SOUND_ENGINE_033 ??
       globalThis.__FEHA_SOUND_ENGINE_032 ??
@@ -546,6 +592,7 @@
     }
 
     delete globalThis.FEHA_SOUNDS;
+    delete globalThis.__FEHA_SOUND_ENGINE_035;
     delete globalThis.__FEHA_SOUND_ENGINE_034;
     delete globalThis.__FEHA_SOUND_ENGINE_033;
     delete globalThis.__FEHA_SOUND_ENGINE_032;
@@ -693,7 +740,8 @@
       observer = null;
       const root = document.getElementById("adk-chrome-manager-34");
       root?.classList?.remove("adk-live-dev");
-      if (root?.dataset) delete root.dataset.fehaDevBuild;
+      if (root?.dataset) { delete root.dataset.fehaDevBuild; delete root.dataset.fehaCp2077Assets; }
+      delete globalThis.FEHA_CP2077_ASSETS;
 
       const api = globalThis.ADKChromeBackend;
       if (api?.__fehaOriginalGetOwned021) {
@@ -747,7 +795,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // Cyberpunk local SFX support loaded"
+    "FEHA DEV " + BUILD + " // private CP2077 UI + Forge SFX bridge loaded"
   );
 
   state.reopenChrome();
