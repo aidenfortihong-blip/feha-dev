@@ -3480,3 +3480,86 @@
   grid-template-rows: 1fr !important;
   min-height: 74px !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.8
+   EMPTY CACHE CLEANUP
+   ========================================================================== */
+
+/* The empty-state was still using the raw CP2077 highlight crop as a normal
+   background image, which produced the giant white horizontal bars. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty {
+  flex: 0 1 520px !important;
+  width: min(520px, calc(100% - 36px)) !important;
+  min-width: 0 !important;
+  max-width: 520px !important;
+  min-height: 94px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  gap: 7px !important;
+
+  margin: 0 !important;
+  padding: 18px 20px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+
+  background:
+    linear-gradient(90deg,
+      rgba(var(--cp-cyan), .055) 0%,
+      rgba(var(--cp-cyan), .018) 58%,
+      transparent 100%) !important;
+
+  border-left: 2px solid rgba(var(--cp-cyan), .58) !important;
+  border-top: 1px solid rgba(var(--cp-cyan), .08) !important;
+  border-bottom: 1px solid rgba(var(--cp-cyan), .06) !important;
+  box-shadow: inset 18px 0 28px rgba(var(--cp-cyan), .02) !important;
+}
+
+/* Absolutely no source-atlas overlays in the empty state. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
+
+/* Center the empty-state vertically in the drawer without centering it
+   horizontally like a modal. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-rail:has(.cache-empty) {
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 16px 20px 18px !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty b {
+  display: block !important;
+  margin: 0 !important;
+  color: #e8f1f3 !important;
+  font-size: 15px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .25px !important;
+  white-space: normal !important;
+  text-shadow: none !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty span,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty p {
+  display: block !important;
+  margin: 0 !important;
+  color: #71858c !important;
+  font-size: 9px !important;
+  line-height: 1.35 !important;
+  letter-spacing: .15px !important;
+  text-decoration: none !important;
+}
+
+/* Empty drawers do not need to occupy as much vertical space as a card rail. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache:has(.cache-empty) {
+  height: min(214px, 29%) !important;
+}
