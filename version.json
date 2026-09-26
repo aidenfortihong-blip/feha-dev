@@ -1,14 +1,15 @@
 {
-  "version": "0.6.9",
+  "version": "0.7.0",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-readability-spunk",
+  "scope": "cyberdeck-live-combat-network",
   "notes": [
-    "Major readability pass across Cyberdeck typography, telemetry, operator rail, quickhack rack, right diagnostic spine, and footer controls",
-    "Added character-tinted interface accents for Ponyboy, Derke, Sasha, and Zach",
-    "Added numbered software memory bays and significantly stronger empty-slot hierarchy",
-    "Made installed deck and support chrome art larger and easier to read",
-    "Upgraded JACK IN into the primary hero action with larger typography, stronger geometry, hover response, and slow idle pulse",
-    "Added slow ambient scan motion, portrait grid drift, RAM shimmer, and active-tab energy without returning to high-frequency HyperFX",
-    "Preserved the real FEHA Cyberdeck mechanics introduced in 0.6.6 and the clean slot treatment from 0.6.8"
+    "TARGET ACQUISITION is now a live Foundry combat topology rather than flavor text",
+    "Every combatant token in the active encounter branches from the current Cyberdeck operator",
+    "Clicking any combat node targets that token in Foundry and shows a live lock state",
+    "Network topology refreshes on combat changes and token-target changes",
+    "Friendly, hostile, neutral, self, defeated, and targeted combatants receive distinct states",
+    "JACK IN now opens directly into the live encounter network",
+    "Expanded the entire bottom action deck and made JACK IN substantially larger",
+    "Removed the cinematic portrait filter and reduced portrait overlay strength"
   ]
 }
