@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.7.0";
+  const BUILD = "0.8.0";
   let observer = null;
   let walletGuard = null;
   let cyberdeckCombatHooks = [];
@@ -497,7 +497,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.7.0 // preload failed", event, err);
+          console.warn("FEHA DEV 0.8.0 // preload failed", event, err);
         }
       }
     }
@@ -555,11 +555,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.7.0 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.8.0 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.7.0 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.8.0 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -582,7 +582,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.7.0 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.8.0 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -706,12 +706,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.7.0 // sound source: ${source}`
+      `FEHA DEV 0.8.0 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.7.0 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.8.0 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1452,16 +1452,21 @@
   function isQuickhack(item) {
     if (!item) return false;
     const f = fehaFlags(item);
+    const description = String(item?.system?.description?.value ?? "");
+    const sourcePath = String(f.sourcePath ?? "");
+    const category = String(f.sourceCategory ?? f.category ?? "").toLowerCase();
     return (
-      String(f.sourceCategory ?? "") === "Quickhacks" ||
-      f.quickhack === true
+      category === "quickhacks" ||
+      f.quickhack === true ||
+      f.ownedQuickhack === true ||
+      f.quickhackOwned === true ||
+      /\/quickhacks\//i.test(sourcePath) ||
+      /category\s*:?\s*quickhacks/i.test(description.replace(/<[^>]+>/g," "))
     );
   }
 
   function isOwnedQuickhack(item) {
-    if (!isQuickhack(item)) return false;
-    const f = fehaFlags(item);
-    return f.marketPurchased === true || f.ownedQuickhack === true;
+    return isQuickhack(item);
   }
 
   function isCyberdeck(item) {
@@ -1734,7 +1739,7 @@
           <small>${esc(itemDescription(item) || "Quickhack software package.")}</small>
         </div>
         <button type="button" data-cd-action="${loaded ? "unload" : "load"}" data-item-id="${esc(item.id)}">${action}</button>
-        ${loaded ? `<button type="button" class="cd2-run" data-cd-action="run" data-item-id="${esc(item.id)}">RUN</button>` : ""}
+
       </article>
     `;
   }
@@ -1760,12 +1765,12 @@
         cards.push(quickhackCard(item, true));
       } else {
         cards.push(`
-          <button type="button" class="cd2-empty-slot" data-cd-action="tab" data-tab="memory" data-slot="${i + 1}">
+          <div class="cd2-empty-slot" data-slot="${i + 1}">
             <em>SLOT ${String(i + 1).padStart(2, "0")}</em>
             <span>+</span>
             <b>EMPTY SLOT</b>
-            <small>LOAD SOFTWARE</small>
-          </button>
+            <small>ASSIGN FROM SOFTWARE LIBRARY</small>
+          </div>
         `);
       }
     }
@@ -2665,7 +2670,7 @@ if (!game.user?.isGM) {
       if (!event.target?.matches?.("#cd2-actor")) return;
       const id = String(event.target.value ?? "");
       globalThis.FEHA_SOUNDS?.play?.("actor_switch", {cooldown:90});
-      renderCyberdeckV2(id, root.dataset.tab || "quickhacks");
+      renderCyberdeckV2(id, "quickhacks");
     };
 
     root.onclick = async event => {
@@ -2681,62 +2686,14 @@ if (!game.user?.isGM) {
         return;
       }
 
-      if (action === "tab") {
-        globalThis.FEHA_SOUNDS?.play?.("select", {cooldown:45});
-        renderCyberdeckV2(actor.id, button.dataset.tab || "quickhacks");
-        return;
-      }
-
       if (action === "load" || action === "unload") {
         const prepared = action === "load";
         globalThis.FEHA_SOUNDS?.play?.(prepared ? "install" : "remove", {cooldown:0});
         await setQuickhackPrepared(actor, button.dataset.itemId, prepared);
-        renderCyberdeckV2(actor.id, prepared ? "quickhacks" : "memory");
+        renderCyberdeckV2(actor.id, "quickhacks");
         return;
       }
 
-      if (action === "run") {
-        const item = actor?.items?.get?.(button.dataset.itemId) ?? actor?.items?.find?.(x => x.id === button.dataset.itemId);
-        if (!item || !quickhackLoaded(item)) return;
-
-        const live = getCyberdeckModel(actor);
-        if (!live?.deck) {
-          globalThis.FEHA_SOUNDS?.play?.("error", {cooldown:0});
-          ui?.notifications?.warn?.("Install a Cyberdeck first.");
-          return;
-        }
-
-        const cost = quickhackRamCost(item);
-        if (live.currentRam < cost) {
-          globalThis.FEHA_SOUNDS?.play?.("error", {cooldown:0});
-          ui?.notifications?.warn?.(`Not enough RAM. ${live.currentRam}/${cost}.`);
-          return;
-        }
-
-        globalThis.FEHA_SOUNDS?.play?.("scan", {cooldown:0});
-        setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0}), 115);
-
-        await actor.update({
-          "flags.fleshEnshrouded.ramCurrent": live.currentRam - cost
-        });
-
-        await ChatMessage.create({
-          speaker: ChatMessage.getSpeaker({actor}),
-          content: `
-            <div style="display:flex;gap:10px;align-items:center">
-              <img src="${esc(item.img)}" style="width:54px;height:54px;object-fit:contain">
-              <div>
-                <h3>${esc(item.name)}</h3>
-                <p><strong>RAM ${cost}</strong> • DC ${live.quickhackDc}</p>
-                <p>${esc(itemDescription(item))}</p>
-              </div>
-            </div>
-          `
-        });
-
-        renderCyberdeckV2(actor.id, root.dataset.tab || "quickhacks");
-        return;
-      }
 
       if (action === "export-handoff") {
         await exportFehaHandoff();
