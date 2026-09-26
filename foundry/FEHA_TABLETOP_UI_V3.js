@@ -488,20 +488,31 @@
     const scene = canvas?.scene ?? null;
     if (!scene) return {scene:null,nodes:[],selected:null};
 
-    const targeted = new Set([...(game.user?.targets ?? [])].map(t => t?.id ?? t?.document?.id).filter(Boolean));
-    const rect = scene.dimensions?.sceneRect ?? canvas?.dimensions?.sceneRect ?? {x:0,y:0,width:1,height:1};
+    const targeted = new Set(
+      [...(game.user?.targets ?? [])]
+        .map(t => t?.id ?? t?.document?.id)
+        .filter(Boolean)
+    );
+
+    const rect =
+      scene.dimensions?.sceneRect ??
+      canvas?.dimensions?.sceneRect ??
+      {x:0,y:0,width:1,height:1};
+
     const rw = Math.max(1,Number(rect.width)||1);
     const rh = Math.max(1,Number(rect.height)||1);
     const all = [...(scene.tokens?.contents ?? scene.tokens ?? [])]
       .filter(t => (game.user?.isGM || !t.hidden) && (t.actor || t.actorId));
 
     const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
-    const nodes = all.map((token,index) => {
+
+    const rawNodes = all.map((token,index) => {
       const a = token.actor ?? game.actors?.get?.(token.actorId) ?? null;
       const disp = Number(token.disposition ?? 0);
       const relation = disp < 0 ? "hostile" : disp > 0 ? "friendly" : "neutral";
       const rawX = ((Number(token.x??0)-Number(rect.x??0))/rw)*100;
       const rawY = ((Number(token.y??0)-Number(rect.y??0))/rh)*100;
+
       return {
         id:token.id,
         name:token.name ?? a?.name ?? "UNKNOWN",
@@ -515,7 +526,86 @@
       };
     });
 
-    return {scene,nodes,selected:nodes.find(n => n.targeted) ?? null};
+    // The screen uses large readable node cards, so literal token coordinates
+    // can overlap. Pick the nearest collision-free candidate around each
+    // original position while preserving the scene's general spatial layout.
+    const placed = [];
+    const operator = {x:50,y:54};
+
+    const separationScore = (x,y) => {
+      let min = Infinity;
+
+      // Reserve the large operator diamond in the center.
+      const opDx = (x-operator.x)/13;
+      const opDy = (y-operator.y)/17;
+      min = Math.min(min,Math.hypot(opDx,opDy));
+
+      for (const node of placed) {
+        const dx = (x-node.x)/12;
+        const dy = (y-node.y)/15;
+        min = Math.min(min,Math.hypot(dx,dy));
+      }
+
+      return min;
+    };
+
+    const candidatesFor = node => {
+      const points = [{x:node.x,y:node.y,drift:0}];
+      const seed = (node.index * 137.507764) * Math.PI / 180;
+
+      for (let ring=1; ring<=4; ring++) {
+        const rx = 6.5 * ring;
+        const ry = 8.0 * ring;
+        const samples = 10 + ring * 4;
+
+        for (let step=0; step<samples; step++) {
+          const angle = seed + (Math.PI*2*step/samples);
+          const x = clamp(node.x + Math.cos(angle)*rx,8,92);
+          const y = clamp(node.y + Math.sin(angle)*ry,12,72);
+          const drift = Math.hypot(x-node.x,y-node.y);
+          points.push({x,y,drift});
+        }
+      }
+
+      return points;
+    };
+
+    const nodes = rawNodes.map(node => {
+      const candidates = candidatesFor(node);
+
+      let best = candidates[0];
+      let bestScore = -Infinity;
+
+      for (const candidate of candidates) {
+        const separation = separationScore(candidate.x,candidate.y);
+
+        // A separation score >= 1 is visually clear. Prefer the nearest clear
+        // candidate; if none are perfectly clear, maximize separation.
+        const score =
+          (separation >= 1 ? 1000 : separation * 100) -
+          candidate.drift * 1.35;
+
+        if (score > bestScore) {
+          bestScore = score;
+          best = candidate;
+        }
+      }
+
+      const laidOut = {
+        ...node,
+        x:best.x,
+        y:best.y
+      };
+
+      placed.push(laidOut);
+      return laidOut;
+    });
+
+    return {
+      scene,
+      nodes,
+      selected:nodes.find(n => n.targeted) ?? null
+    };
   }
 
   function codeRain() {
