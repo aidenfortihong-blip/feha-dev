@@ -1656,3 +1656,292 @@
     grid-template-columns:130px minmax(280px,1fr) 200px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.3 LOCK
+   Final cohesion: character accent, premium motion, readable passive rail.
+   ========================================================================== */
+
+#feha-cyberdeck-v2.feha-v3 {
+  --v3-accent: 92,239,255;
+}
+
+#feha-cyberdeck-v2.feha-v3[data-actor="ponyboy"] { --v3-accent: 255,216,84; }
+#feha-cyberdeck-v2.feha-v3[data-actor="derke"]   { --v3-accent: 255,70,126; }
+#feha-cyberdeck-v2.feha-v3[data-actor="sasha"]   { --v3-accent: 92,239,255; }
+#feha-cyberdeck-v2.feha-v3[data-actor="zach"]    { --v3-accent: 116,182,255; }
+
+/* One restrained ambient sweep across the application. */
+#feha-cyberdeck-v2.feha-v3::before {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-90px;
+  height:120px;
+  z-index:2;
+  pointer-events:none;
+  opacity:.55;
+  background:linear-gradient(
+    180deg,
+    transparent,
+    rgba(var(--v3-accent),.012) 40%,
+    rgba(var(--v3-accent),.04) 50%,
+    rgba(var(--v3-accent),.012) 60%,
+    transparent
+  );
+  animation:v3-lock-scan 10s linear infinite;
+}
+
+/* Cohesive accent edges. */
+#feha-cyberdeck-v2.feha-v3 .cd2-header,
+#feha-cyberdeck-v2.feha-v3 .cd2-portrait,
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary,
+#feha-cyberdeck-v2.feha-v3 .v3-ram > div {
+  border-color:rgba(var(--v3-accent),.24) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-brand h1 span,
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-tag,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot span,
+#feha-cyberdeck-v2.feha-v3 .cd2-hack-card button {
+  color:rgb(var(--v3-accent)) !important;
+}
+
+/* RAM feels active without being noisy. */
+#feha-cyberdeck-v2.feha-v3 .cd2-segments.is-ram i.is-filled {
+  background:linear-gradient(180deg,#ffe985,#ffd653) !important;
+  box-shadow:0 0 8px rgba(var(--cd2-yellow),.10);
+  animation:v3-ram-breathe 3.2s ease-in-out infinite;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-segments.is-ram i:nth-child(3n) {
+  animation-delay:.18s;
+}
+
+/* Stronger but still clean section hierarchy. */
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head {
+  position:relative;
+  padding-left:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head::before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:2px;
+  bottom:4px;
+  width:2px;
+  background:linear-gradient(
+    180deg,
+    rgb(var(--cd2-mag)),
+    rgba(var(--v3-accent),.35)
+  );
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head > span {
+  color:rgb(var(--cd2-yellow)) !important;
+  font-size:8px !important;
+  letter-spacing:1.1px !important;
+}
+
+/* Loaded and library cards share one deliberate language. */
+#feha-cyberdeck-v2.feha-v3 .v3-hack-card {
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .16s ease;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-hack-card:hover {
+  transform:translateY(-2px);
+  border-color:rgba(var(--v3-accent),.38) !important;
+  background:
+    linear-gradient(135deg,rgba(var(--v3-accent),.055),transparent 58%),
+    #030a0d !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.18),
+    0 0 20px rgba(var(--v3-accent),.035) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-hack-card > button {
+  transition:
+    color .14s ease,
+    border-color .14s ease,
+    background .14s ease;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-hack-card > button:hover {
+  color:#fff !important;
+  background:rgba(var(--v3-accent),.075) !important;
+  border-color:rgba(var(--v3-accent),.58) !important;
+}
+
+/* Right rail gets a clearer information hierarchy. */
+#feha-cyberdeck-v2.feha-v3 .cd2-right {
+  border-left:1px solid rgba(var(--v3-accent),.10) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section {
+  position:relative;
+  overflow:hidden;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section::after {
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:46px;
+  height:1px;
+  background:linear-gradient(90deg,rgb(var(--cd2-mag)),transparent);
+  opacity:.72;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+  color:#8ca0a5 !important;
+  font-size:8px !important;
+  line-height:1.55 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p::first-line {
+  color:#d9e8ea;
+}
+
+/* Support chrome cards become compact equipment chips. */
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card {
+  min-height:64px !important;
+  background:
+    linear-gradient(110deg,rgba(var(--v3-accent),.035),transparent 65%),
+    #02080a !important;
+  border-left:2px solid rgba(var(--v3-accent),.40) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card b {
+  font-size:10px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
+  display:block;
+  max-height:28px;
+  margin-top:4px;
+  overflow:hidden;
+  color:#71858b;
+  font-size:7px !important;
+  line-height:1.35;
+}
+
+/* JACK IN is the only large visual punch. */
+#feha-cyberdeck-v2.feha-v3 .v3-jackbar {
+  transition:
+    transform .16s ease,
+    filter .16s ease,
+    box-shadow .16s ease;
+  animation:v3-jack-idle 3.8s ease-in-out infinite;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jackbar:hover:not(:disabled) {
+  transform:translateY(-2px);
+  filter:brightness(1.045) saturate(1.03);
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jack-main b {
+  text-shadow:0 1px 0 rgba(255,255,255,.18);
+}
+
+/* Scrollbars intentionally quiet. */
+#feha-cyberdeck-v2.feha-v3 .v3-scroll,
+#feha-jackin-overlay .jack-hacks {
+  scrollbar-width:thin;
+  scrollbar-color:rgba(var(--v3-accent),.28) rgba(0,0,0,.12);
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-scroll::-webkit-scrollbar,
+#feha-jackin-overlay .jack-hacks::-webkit-scrollbar {
+  width:7px;
+  height:7px;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-scroll::-webkit-scrollbar-thumb,
+#feha-jackin-overlay .jack-hacks::-webkit-scrollbar-thumb {
+  background:rgba(var(--v3-accent),.25);
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-scroll::-webkit-scrollbar-track,
+#feha-jackin-overlay .jack-hacks::-webkit-scrollbar-track {
+  background:rgba(0,0,0,.14);
+}
+
+/* Fullscreen JACK IN refinement. */
+#feha-jackin-overlay .jack-header {
+  background:
+    linear-gradient(90deg,rgba(var(--jack-cyan),.045),transparent 36%),
+    #020708 !important;
+}
+
+#feha-jackin-overlay .jack-space {
+  box-shadow:
+    inset 0 0 80px rgba(var(--jack-cyan),.018),
+    0 12px 50px rgba(0,0,0,.24);
+}
+
+#feha-jackin-overlay .jack-node {
+  transition:
+    transform .14s ease,
+    border-color .14s ease,
+    box-shadow .14s ease,
+    filter .14s ease;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted {
+  animation:jack-lock 1.7s ease-in-out infinite;
+}
+
+#feha-jackin-overlay .jack-hack {
+  transition:
+    border-color .14s ease,
+    background .14s ease,
+    transform .14s ease;
+}
+
+#feha-jackin-overlay .jack-hack:hover:not(:disabled) {
+  transform:translateY(-1px);
+}
+
+@keyframes v3-lock-scan {
+  0%   { transform:translateY(-120px); opacity:0; }
+  12%  { opacity:.5; }
+  86%  { opacity:.38; }
+  100% { transform:translateY(calc(100vh + 150px)); opacity:0; }
+}
+
+@keyframes v3-ram-breathe {
+  0%,100% { filter:brightness(.96); }
+  50%     { filter:brightness(1.08); }
+}
+
+@keyframes v3-jack-idle {
+  0%,100% {
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,.20),
+      0 8px 28px rgba(var(--cd2-yellow),.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,.20),
+      0 8px 36px rgba(var(--cd2-yellow),.14),
+      0 0 22px rgba(var(--cd2-yellow),.05);
+  }
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 .cd2-right {
+    font-size:.94em;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+    font-size:7px !important;
+  }
+}
