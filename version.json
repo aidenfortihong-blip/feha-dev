@@ -1,14 +1,18 @@
 {
-  "version": "0.8.6",
+  "version": "0.8.7",
   "updated": "2026-09-26",
-  "scope": "jack-in-sparse-scene-polish",
+  "scope": "jack-in-live-network-topology",
   "notes": [
-    "Added explicit sparse-scene composition hooks for one- and two-target JACK IN encounters",
-    "One-target scenes now use a larger centered target card and a larger operator anchor instead of wasting most of the canvas",
-    "Two-target scenes use a deliberate left/right composition",
-    "Quickhack execution cards are now compact action modules with a large yellow RUN affordance instead of tiny far-right EXECUTE text",
-    "Target lock readout and live graph hierarchy were strengthened without reintroducing visual clutter",
-    "Retained all 0.8.4 hardening and 0.8.5 mask-removal fixes"
+    "Rebuilt JACK IN from endpoint lines into a branching network topology",
+    "Added synthetic non-interactive gateway, relay, subnet, edge, and port nodes so sparse scenes still read as a live network",
+    "Added backbone, branch, mesh, endpoint, shadow, and selected-route link classes",
+    "Added animated packet traffic across the network and stronger yellow traffic on the selected target route",
+    "Selected targets now highlight the full operator-to-relay-to-endpoint route instead of only the final connection",
+    "Operator is now a network hub with rotating rings, radial uplink spokes, and pulsing port markers",
+    "Selected target nodes use a scanning TRACE LOCK reticle",
+    "Sparse one- and two-target layouts remain readable while synthetic infrastructure fills dead space",
+    "Quickhack execution dock remains intentionally clean so the network field carries the visual complexity",
+    "Retained all 0.8.4 hardening, 0.8.5 mask cleanup, and 0.8.6 execution controls"
   ],
   "knownManualRules": [
     "Cyberdeck passive effects such as conditional RAM discounts are displayed but not automatically adjudicated because the installed FEHA module also treats them as descriptive/manual rules",
