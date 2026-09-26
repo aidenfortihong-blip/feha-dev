@@ -901,7 +901,7 @@
       } catch (err) {
         console.error("FEHA DEV 0.2.6 // actor switch failed", err);
         ui?.notifications?.error?.(
-          "FEHA subject switch failed — press F12 and send the red FEHA error."
+          "FEHA subject switch failed — send me a screenshot of the visible error."
         );
 
         // Put the selector back on the backend's actual actor so the UI can no
@@ -1374,7 +1374,7 @@
     console.groupEnd();
 
     globalThis.FEHA_CYBERDECK_DOM = snapshot;
-    ui?.notifications?.info?.("FEHA // Cyberdeck DOM captured to F12 console");
+    ui?.notifications?.info?.("FEHA // Cyberdeck DOM snapshot captured.");
     return snapshot;
   }
 
