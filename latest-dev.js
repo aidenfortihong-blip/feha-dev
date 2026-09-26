@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.5.2";
+  const BUILD = "0.5.3";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.5.2 // preload failed", event, err);
+          console.warn("FEHA DEV 0.5.3 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.5.2 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.5.3 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.5.2 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.5.3 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.5.2 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.5.3 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.5.2 // sound source: ${source}`
+      `FEHA DEV 0.5.3 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.5.2 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.5.3 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1283,25 +1283,6 @@
       if (/^[×✕✖x]$/i.test(text)) el.classList.add("feha-cd-close");
     });
 
-    // Geometry-based layout hooks: stable template classes are not available in
-    // the dev repo, so tag the major visible columns by screen position/size.
-    const rootRect = root.getBoundingClientRect?.();
-    if (rootRect) {
-      const largeChildren = [...root.querySelectorAll("div, section, main, aside")].filter(el => {
-        const r = el.getBoundingClientRect?.();
-        if (!r) return false;
-        return r.width > rootRect.width * .24 && r.height > rootRect.height * .45;
-      });
-
-      for (const el of largeChildren) {
-        const r = el.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const rel = (cx - rootRect.left) / rootRect.width;
-        if (rel < .62) el.classList.add("feha-cd-main-left");
-        else el.classList.add("feha-cd-main-right");
-      }
-    }
-
     tagCyberdeckPortrait(root);
 
     // The old wallet launcher is not part of the Cyberdeck design.
@@ -1316,6 +1297,55 @@
     return roots.length;
   }
 
+  function inspectCyberdeckDOM() {
+    const root = findCyberdeckRoots(document.body)[0];
+    if (!root) {
+      ui?.notifications?.warn?.("FEHA // Cyberdeck window not found");
+      return null;
+    }
+
+    const rows = [...root.querySelectorAll("*")].map((el, index) => {
+      const r = el.getBoundingClientRect?.();
+      if (!r || r.width < 20 || r.height < 14) return null;
+      const text = textNorm(el.innerText ?? el.textContent).slice(0, 140);
+      if (!text && !["BUTTON","SELECT","IMG"].includes(el.tagName)) return null;
+
+      return {
+        index,
+        tag: el.tagName,
+        id: el.id || "",
+        classes: [...el.classList].join("."),
+        role: el.getAttribute?.("role") || "",
+        action: el.getAttribute?.("data-action") || "",
+        text,
+        x: Math.round(r.x),
+        y: Math.round(r.y),
+        w: Math.round(r.width),
+        h: Math.round(r.height)
+      };
+    }).filter(Boolean);
+
+    const snapshot = {
+      build: BUILD,
+      actor: textNorm(root.querySelector("select option:checked")?.textContent || ""),
+      root: {
+        tag: root.tagName,
+        id: root.id || "",
+        classes: [...root.classList].join(".")
+      },
+      rows
+    };
+
+    console.group("FEHA CYBERDECK DOM " + BUILD);
+    console.table(rows);
+    console.log(snapshot);
+    console.groupEnd();
+
+    globalThis.FEHA_CYBERDECK_DOM = snapshot;
+    ui?.notifications?.info?.("FEHA // Cyberdeck DOM captured to F12 console");
+    return snapshot;
+  }
+
   function clearCyberdeckMarks() {
     document.querySelectorAll('[data-feha-cyberdeck="1"]').forEach(root => {
       delete root.dataset.fehaCyberdeck;
@@ -1325,8 +1355,7 @@
       ".feha-cd-kicker,.feha-cd-title,.feha-cd-deck-panel,.feha-cd-library,.feha-cd-support," +
       ".feha-cd-section-title,.feha-cd-empty-copy,.feha-cd-empty-title,.feha-cd-select," +
       ".feha-cd-check,.feha-cd-close,.feha-cd-portrait-img,.feha-cd-portrait-card," +
-      ".feha-cd-loaded-title,.feha-cd-loaded-section,.feha-cd-quickhack-slot,.feha-cd-wallet," +
-      ".feha-cd-main-left,.feha-cd-main-right"
+      ".feha-cd-loaded-title,.feha-cd-loaded-section,.feha-cd-quickhack-slot,.feha-cd-wallet"
     ).forEach(el => {
       for (const cls of [...el.classList]) {
         if (cls.startsWith("feha-cd-")) el.classList.remove(cls);
@@ -1349,6 +1378,7 @@
 
   const state = {
     build: BUILD,
+    inspectCyberdeckDOM,
     cleanup() {
       observer?.disconnect?.();
       observer = null;
