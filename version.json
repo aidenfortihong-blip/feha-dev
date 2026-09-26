@@ -1,12 +1,11 @@
 {
-  "version": "0.4.9",
+  "version": "0.4.10",
   "updated": "2026-09-25",
-  "scope": "installed-port-layout-polish",
+  "scope": "actor-roster-cleanup",
   "notes": [
-    "Installed chrome now gets a full-width hardware row instead of being cramped into one third of the port rail",
-    "Remaining vacant ports move into a clean two-column row underneath when a subsystem has installed hardware",
-    "Installed item names and metadata can render at readable size without ellipsis",
-    "EJECT remains aligned on the right without stealing most of the title width",
-    "All-vacant subsystems still use the existing three-across layout"
+    "Removed Nina, Florence and Cael from the Augmentation Theatre actor selector",
+    "Roster filtering reapplies after Theatre rerenders and actor switches",
+    "This only removes them from the Theatre selector; it does not delete their Foundry actors or campaign data",
+    "Ponyboy, Sasha, Zach, Jing and any other non-blocked actors remain available"
   ]
 }
