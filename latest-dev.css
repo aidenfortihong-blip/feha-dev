@@ -1177,3 +1177,116 @@
     bottom: 20px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.3.0
+   CLEAN SYSTEM SCHEMATICS + PORT TEXT FIX
+   ========================================================================== */
+
+/* Remove the colored subsystem emblem from ALL right-side system diagrams.
+   The grey technical schematic is now the hero visual by itself. */
+#adk-chrome-manager-34 .dossier-core-glyph {
+  display: none !important;
+}
+
+/* Show the full authored schematic instead of cropping it with the old
+   oversized/slice treatment. Give it breathing room and bias it slightly down. */
+#adk-chrome-manager-34 .dossier-visual .adk-v6-system-viz {
+  position: absolute !important;
+  inset: 8px 10px 22px !important;
+  width: calc(100% - 20px) !important;
+  height: calc(100% - 30px) !important;
+  transform: translateY(6px) !important;
+  opacity: .76 !important;
+  overflow: visible !important;
+}
+
+/* Keep the legend readable without sitting on top of the actual art. */
+#adk-chrome-manager-34 .dossier-legend {
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 7px !important;
+  z-index: 5 !important;
+}
+
+/* --------------------------------------------------------------------------
+   HARDWARE PORTS
+   The old dev layout accidentally put P01/P02/P03 in the same grid cell as
+   the diamond socket, which is why those labels looked cut in half.
+   -------------------------------------------------------------------------- */
+
+#adk-chrome-manager-34 .adk-v6-port {
+  grid-template-columns: 34px 38px minmax(0, 1fr) !important;
+  grid-template-rows: minmax(42px, auto) !important;
+  gap: 8px !important;
+  align-items: center !important;
+  overflow: visible !important;
+  padding: 8px 10px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-id {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  justify-self: start !important;
+  width: 34px !important;
+  min-width: 34px !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  font-size: 8px !important;
+  letter-spacing: .4px !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-socket,
+#adk-chrome-manager-34 .adk-v6-port .port-thumb {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  justify-self: center !important;
+  margin: 0 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-copy {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-copy b {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  font-size: 12px !important;
+  line-height: 1.05 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-copy small {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  font-size: 8px !important;
+  line-height: 1.12 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-port .port-actions {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  justify-content: flex-end !important;
+  margin-top: 3px !important;
+}
+
+/* Empty ports do not need an action row, so keep them compact. */
+#adk-chrome-manager-34 .adk-v6-port.is-empty {
+  min-height: 60px !important;
+}
+
+/* At narrower inspector widths, stop squeezing two ports together until
+   their text gets clipped. */
+@media (max-width: 1450px) {
+  #adk-chrome-manager-34 .adk-v6-port-stack {
+    grid-template-columns: 1fr !important;
+  }
+}
