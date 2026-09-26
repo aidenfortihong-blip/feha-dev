@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.8.5";
+  const VERSION = "0.8.6";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -685,7 +685,7 @@
           return '<button class="jack-hack" data-jack-action="run" data-item-id="'+esc(item.id)+'" '+(!selected || m.currentRam < cost?'disabled':'')+'>'+
             '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
             '<span><b>'+esc(item.name)+'</b><small>RAM '+cost+' // DC '+m.dc+'</small></span>'+
-            '<em>EXECUTE</em>'+
+            '<em><span>EXECUTE</span><b>RUN</b></em>'+
           '</button>';
         }).join("")
       : '<div class="jack-no-hacks">NO QUICKHACKS LOADED</div>';
@@ -697,7 +697,7 @@
         <div class="jack-head-stat"><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
         <button data-jack-action="close" class="jack-close">×</button>
       </header>
-      <main class="jack-space">
+      <main class="jack-space ${net.nodes.length <= 2 ? "is-sparse" : ""}" data-node-count="${net.nodes.length}">
         <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
         <div class="jack-operator"><div></div><img src="${esc(portrait(actor))}" alt=""><span><small>OPERATOR</small><b>${esc(actor.name)}</b></span></div>
         ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
