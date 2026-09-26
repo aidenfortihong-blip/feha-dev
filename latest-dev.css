@@ -3802,3 +3802,286 @@
   visibility: hidden !important;
   opacity: 0 !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.5.0
+   CYBERDECK FOUNDATION
+   ========================================================================== */
+
+[data-feha-cyberdeck="1"] {
+  --cd-bg: #020406;
+  --cd-panel: #05090c;
+  --cd-panel-2: #071015;
+  --cd-cyan: 93, 239, 255;
+  --cd-magenta: 255, 76, 132;
+  --cd-yellow: 255, 219, 92;
+  --cd-muted: #6e858d;
+
+  color: #d9f8fb !important;
+  background:
+    linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.008) 1px, transparent 1px),
+    var(--cd-bg) !important;
+  background-size: 4px 4px, 4px 4px, auto !important;
+  font-family: "Share Tech Mono", "Consolas", monospace !important;
+  border-radius: 0 !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--cd-cyan), .20),
+    0 18px 60px rgba(0,0,0,.72) !important;
+  overflow: hidden !important;
+}
+
+[data-feha-cyberdeck="1"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,.012) 0px,
+      rgba(255,255,255,.012) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  mix-blend-mode: screen;
+  opacity: .26;
+}
+
+[data-feha-cyberdeck="1"] *,
+[data-feha-cyberdeck="1"] *::before,
+[data-feha-cyberdeck="1"] *::after {
+  border-radius: 0 !important;
+}
+
+[data-feha-cyberdeck="1"] .window-content,
+[data-feha-cyberdeck="1"] .application-content {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(var(--cd-magenta), .035), transparent 24%),
+    radial-gradient(circle at 70% 0%, rgba(var(--cd-cyan), .025), transparent 28%),
+    #020406 !important;
+}
+
+/* HEADER / IDENTITY ------------------------------------------------------ */
+
+[data-feha-cyberdeck="1"] .feha-cd-kicker {
+  color: rgb(var(--cd-magenta)) !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: 2.4px !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 16px rgba(var(--cd-magenta), .24) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-title {
+  color: #f3fbfc !important;
+  font-family: "Oxanium", "Arial Narrow", sans-serif !important;
+  font-size: clamp(19px, 1.7vw, 28px) !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  text-shadow:
+    2px 0 rgba(var(--cd-magenta), .18),
+    0 0 18px rgba(var(--cd-cyan), .07) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-select {
+  min-width: 190px !important;
+  height: 42px !important;
+  padding: 0 38px 0 13px !important;
+  color: #dffcff !important;
+  background: #03080b !important;
+  border: 1px solid rgba(var(--cd-cyan), .30) !important;
+  box-shadow: inset 0 -2px 0 rgba(var(--cd-cyan), .08) !important;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-check {
+  height: 42px !important;
+  padding: 0 16px !important;
+  color: rgb(var(--cd-yellow)) !important;
+  background: rgba(var(--cd-yellow), .035) !important;
+  border: 1px solid rgba(var(--cd-yellow), .48) !important;
+  font-weight: 900 !important;
+  letter-spacing: 1.2px !important;
+  text-shadow: 0 0 12px rgba(var(--cd-yellow), .18) !important;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-check:hover {
+  background: rgba(var(--cd-yellow), .10) !important;
+  border-color: rgba(var(--cd-yellow), .80) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-close {
+  width: 42px !important;
+  height: 42px !important;
+  color: rgb(var(--cd-magenta)) !important;
+  background: rgba(var(--cd-magenta), .035) !important;
+  border: 1px solid rgba(var(--cd-magenta), .42) !important;
+}
+
+/* PORTRAIT --------------------------------------------------------------- */
+
+[data-feha-cyberdeck="1"] .feha-cd-portrait-card {
+  position: relative !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(180deg, rgba(var(--cd-cyan), .028), transparent 44%),
+    #03080b !important;
+  border: 1px solid rgba(var(--cd-cyan), .22) !important;
+  clip-path: polygon(0 0, 96% 0, 100% 4%, 100% 100%, 0 100%) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.012),
+    inset 0 -46px 90px rgba(0,0,0,.44) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-portrait-card::before {
+  content: "SUBJECT // NETRUNNER";
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 3;
+  color: rgba(var(--cd-cyan), .60);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.35px;
+  pointer-events: none;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-portrait-img {
+  filter: saturate(.86) contrast(1.08) brightness(.90) !important;
+}
+
+/* MAIN DECK SLOT --------------------------------------------------------- */
+
+[data-feha-cyberdeck="1"] .feha-cd-deck-panel {
+  position: relative !important;
+  min-height: 300px !important;
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  gap: 12px !important;
+  padding: 28px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(rgba(var(--cd-cyan), .022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--cd-cyan), .018) 1px, transparent 1px),
+    radial-gradient(circle at 50% 48%, rgba(var(--cd-cyan), .055), transparent 34%),
+    #03080b !important;
+  background-size: 26px 26px, 26px 26px, auto, auto !important;
+  border: 1px solid rgba(var(--cd-cyan), .20) !important;
+  clip-path: polygon(0 0, 98% 0, 100% 3%, 100% 100%, 0 100%) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-deck-panel::before {
+  content: "DECK BUS // HARDWARE LINK";
+  position: absolute;
+  top: 13px;
+  left: 15px;
+  color: rgba(var(--cd-cyan), .54);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-deck-panel::after {
+  content: "";
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(var(--cd-cyan), .24);
+  transform: rotate(45deg);
+  box-shadow:
+    0 0 0 10px rgba(var(--cd-cyan), .015),
+    0 0 24px rgba(var(--cd-cyan), .05);
+  pointer-events: none;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-empty-title {
+  position: relative !important;
+  z-index: 2 !important;
+  margin-top: 106px !important;
+  color: #eefbfc !important;
+  font-family: "Oxanium", "Arial Narrow", sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  letter-spacing: 1.7px !important;
+  text-transform: uppercase !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-empty-copy {
+  position: relative !important;
+  z-index: 2 !important;
+  color: var(--cd-muted) !important;
+  font-size: 9px !important;
+  line-height: 1.45 !important;
+  letter-spacing: .4px !important;
+}
+
+/* SOFTWARE / SUPPORT ----------------------------------------------------- */
+
+[data-feha-cyberdeck="1"] .feha-cd-library,
+[data-feha-cyberdeck="1"] .feha-cd-support {
+  position: relative !important;
+  padding: 15px 16px 17px !important;
+  background:
+    linear-gradient(90deg, rgba(var(--cd-magenta), .026), transparent 42%),
+    #03070a !important;
+  border-top: 1px solid rgba(var(--cd-magenta), .24) !important;
+  border-bottom: 1px solid rgba(var(--cd-cyan), .08) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-library {
+  border-left: 2px solid rgba(var(--cd-magenta), .82) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-support {
+  border-left: 2px solid rgba(var(--cd-cyan), .62) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-section-title {
+  color: rgb(var(--cd-magenta)) !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: 1.8px !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 14px rgba(var(--cd-magenta), .18) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-support .feha-cd-section-title {
+  color: rgb(var(--cd-cyan)) !important;
+  text-shadow: 0 0 14px rgba(var(--cd-cyan), .15) !important;
+}
+
+/* Empty library/support boxes should feel like terminal states, not forms. */
+[data-feha-cyberdeck="1"] .feha-cd-library .feha-cd-empty-copy,
+[data-feha-cyberdeck="1"] .feha-cd-support .feha-cd-empty-copy {
+  display: block !important;
+  margin-top: 14px !important;
+  padding: 22px 18px !important;
+  text-align: center !important;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(var(--cd-cyan), .012) 0,
+      rgba(var(--cd-cyan), .012) 1px,
+      transparent 1px,
+      transparent 9px
+    ),
+    #020609 !important;
+  border: 1px dashed rgba(var(--cd-cyan), .16) !important;
+}
+
+/* No legacy currency control in this app. */
+[data-feha-cyberdeck="1"] [data-feha-wallet-launcher="legacy"],
+[data-feha-cyberdeck="1"] .feha-wallet-legacy-launcher {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
