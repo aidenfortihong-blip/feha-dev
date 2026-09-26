@@ -4,7 +4,7 @@
 // It does not access external systems, credentials, devices, or real computer networks.
 
 (() => {
-  const VERSION = "0.8.1";
+  const VERSION = "0.8.2";
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
   const FLAG = "fleshEnshrouded";
