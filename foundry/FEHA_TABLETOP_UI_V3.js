@@ -725,21 +725,25 @@
         button.disabled = true;
         const value = action === "load";
 
+        let changed = false;
+
         try {
-          const changed = await setLoaded(actor,button.dataset.itemId,value);
-          if (changed === true) {
+          changed = (await setLoaded(actor,button.dataset.itemId,value)) === true;
+
+          if (changed) {
             globalThis.FEHA_SOUNDS?.play?.(value?"install":"remove",{cooldown:0});
             render(actor.id);
           }
         } catch (err) {
           console.error("FEHA V3 software slot update failed",err);
           ui?.notifications?.error?.("Cyberdeck software update failed.");
-          if (root.isConnected) {
+        } finally {
+          endAction(lock);
+
+          if (!changed && root.isConnected) {
             button.disabled = false;
             delete button.dataset.busy;
           }
-        } finally {
-          endAction(lock);
         }
         return;
       }
@@ -800,6 +804,7 @@
       if (action === "close") {
         root.remove();
         globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
+        render(actor.id);
         return;
       }
 
