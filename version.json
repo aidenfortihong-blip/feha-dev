@@ -1,12 +1,12 @@
 {
-  "version": "0.2.4",
+  "version": "0.2.5",
   "updated": "2026-09-25",
-  "scope": "chrome-dossier-centering-and-capacity",
+  "scope": "chrome-system-registration-and-cache-selection",
   "notes": [
-    "Forced every subsystem grey diagram and blue active glyph to share the same exact center point",
-    "Removed inset-based diagram positioning in favor of explicit 50/50 centering",
-    "Made the Cyberware Capacity label and value substantially larger",
-    "Increased the capacity rail from 8px to 12px and added stronger color/glow treatment",
-    "Preserved all 0.2.1 owned-cache, 0.2.2 cache-card, and 0.2.3 typography fixes"
+    "Registered the blue core glyph to each system illustration's actual authored optical center",
+    "Added calibrated centers for Cortex, Face, OS, Arms, Hands, Structure, Neural, Circulatory, Dermal and Legs",
+    "Clicking an Owned Chrome card now retracts the cache drawer so the selected hardware dossier is immediately visible",
+    "Browse Compatible Hardware or Owned Chrome restores the drawer normally",
+    "Preserved the 0.2.4 capacity-bar emphasis and all earlier typography/cache fixes"
   ]
 }
