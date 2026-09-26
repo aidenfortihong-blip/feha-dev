@@ -1,12 +1,12 @@
 {
-  "version": "0.4.4",
+  "version": "0.4.5",
   "updated": "2026-09-25",
-  "scope": "numeric-clutter-cleanup",
+  "scope": "hero-title-and-mini-signal-cleanup",
   "notes": [
-    "Removed decorative CP2077 source-atlas microtext and numerals that appeared as stray numbers in the live Theatre",
-    "Kept only real FEHA game-state values in the capacity header, subsystem counts, dossier metrics, signal hash and item counts",
-    "Removed decorative subject-card barcode, inspector barcode, metric counter sprites, signal coordinates, cache microtext and browse-button source text masks",
-    "Re-aligned the real 4/23 cyberware capacity number to the top-right of its own capacity header",
-    "Kept the continuous signal-profile waveform and right-side animated barcode behavior"
+    "Removed the upper portrait-side signal profile entirely as requested",
+    "Kept only the full right-side signal profile",
+    "Moved the LINK/LATENCY/INTEGRITY/AUGMENTS strip above the subsystem title instead of allowing it to sit behind the title block",
+    "Raised and isolated the subsystem title paint layer so DERMAL SHELL and other active-system titles cannot be covered by center overlays",
+    "Removed all inherited title/status pseudo overlays that could bleed across the title"
   ]
 }
