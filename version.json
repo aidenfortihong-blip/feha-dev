@@ -1,11 +1,12 @@
 {
-  "version": "0.4.10",
+  "version": "0.4.11",
   "updated": "2026-09-25",
-  "scope": "actor-roster-cleanup",
+  "scope": "derke-portrait-and-roster",
   "notes": [
-    "Removed Nina, Florence and Cael from the Augmentation Theatre actor selector",
-    "Roster filtering reapplies after Theatre rerenders and actor switches",
-    "This only removes them from the Theatre selector; it does not delete their Foundry actors or campaign data",
-    "Ponyboy, Sasha, Zach, Jing and any other non-blocked actors remain available"
+    "Removed Xiao from the Augmentation Theatre selector alongside Nina, Florence and Cael",
+    "Added the user-provided Derke portrait as a repo-hosted compressed WebP payload",
+    "When Derke is selected, the Theatre automatically replaces the center portrait with the supplied Derke art",
+    "Portrait override reapplies after Theatre rerenders without modifying Derke's underlying Foundry actor document",
+    "Ponyboy, Sasha, Zach, Jing, Derke and any other non-blocked actors remain available"
   ]
 }
