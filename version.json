@@ -1,15 +1,13 @@
 {
-  "version": "0.6.2",
+  "version": "0.6.3",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-asset-heavy-beauty-sound",
+  "scope": "integrated-gm-export-tools",
   "notes": [
-    "Removed Heat and Humanity from Cyberdeck V2 entirely",
-    "Rebuilt top telemetry around RAM, installed deck hardware, and software load only",
-    "Mapped the existing private Cyberpunk UI asset pack into Cyberdeck V2 and used frame, HUD, highlight, line, barcode, buffer, button, glow, and reward assets throughout",
-    "Made installed cyberdeck, quickhack, and support-chrome item art substantially larger and more visually dominant",
-    "Upgraded the right rail into a hardware/software rack using actual item art and Cyberpunk UI assets",
-    "Added Cyberdeck open/close, hover, actor switch, tab, load, unload, run, short-rest, error, confirm, and JACK IN sound feedback through the existing Cyberpunk-first sound engine",
-    "Reworked Cyberdeck event binding to avoid duplicate listeners across rerenders",
-    "Roster remains locked to Ponyboy, Derke, Sasha, and Zach"
+    "Integrated the FEHA live-world handoff exporter directly into the ADK dev runtime",
+    "Integrated the installed ADK/FEHA module source exporter directly into the ADK dev runtime",
+    "Added a GM-only Cyberdeck panel with EXPORT DATA and EXPORT SOURCE buttons",
+    "No F12, Macro Directory creation, or manual script pasting is required",
+    "Exporter files remain in foundry/ as standalone backups",
+    "Cyberdeck 0.6.2 asset-heavy visuals, four-character roster, and sound behavior remain intact"
   ]
 }
