@@ -6635,3 +6635,733 @@
     min-height: 138px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.6.9
+   CYBERDECK V2 // READABILITY + SPUNK PASS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CHARACTER IDENTITY
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 {
+  --cd2-persona: 92, 239, 255;
+}
+
+#feha-cyberdeck-v2[data-actor="ponyboy"] { --cd2-persona: 255, 216, 84; }
+#feha-cyberdeck-v2[data-actor="derke"]   { --cd2-persona: 255, 70, 126; }
+#feha-cyberdeck-v2[data-actor="sasha"]   { --cd2-persona: 92, 239, 255; }
+#feha-cyberdeck-v2[data-actor="zach"]    { --cd2-persona: 116, 182, 255; }
+
+/* --------------------------------------------------------------------------
+   GLOBAL SCALE / READABILITY
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 {
+  inset: 8px 10px 14px 10px !important;
+  grid-template-columns: 350px minmax(720px, 1fr) 370px !important;
+  grid-template-rows: 96px minmax(0,1fr) !important;
+  font-size: 1.18em !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header {
+  grid-template-columns: minmax(460px,1fr) auto auto !important;
+  min-height: 96px !important;
+  padding: 17px 18px 15px 24px !important;
+  border-bottom-color: rgba(var(--cd2-persona), .34) !important;
+  box-shadow:
+    inset 0 -1px 0 rgba(var(--cd2-persona), .08),
+    0 8px 24px rgba(0,0,0,.22) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-brand small {
+  font-size: 10px !important;
+  letter-spacing: 2.7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-brand h1 {
+  font-size: 34px !important;
+  letter-spacing: 3.5px !important;
+  text-shadow: 0 0 20px rgba(var(--cd2-persona), .08);
+}
+
+#feha-cyberdeck-v2 .cd2-brand h1 span {
+  color: rgb(var(--cd2-persona)) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-build {
+  font-size: 9px !important;
+  letter-spacing: 1.2px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header-status > div {
+  min-width: 94px !important;
+  padding: 10px 12px !important;
+  border-top-color: rgba(var(--cd2-persona), .18) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header-status span {
+  font-size: 8px !important;
+  letter-spacing: 1.35px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-header-status b {
+  font-size: 11px !important;
+}
+
+#feha-cyberdeck-v2 #cd2-actor {
+  width: 230px !important;
+  height: 48px !important;
+  padding-left: 13px !important;
+  font-size: 15px !important;
+  border-color: rgba(var(--cd2-persona), .34) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-close {
+  width: 48px !important;
+  height: 48px !important;
+  font-size: 23px !important;
+}
+
+/* --------------------------------------------------------------------------
+   OPERATOR / LEFT RAIL
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-operator {
+  padding: 16px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-portrait {
+  height: 390px !important;
+  border-color: rgba(var(--cd2-persona), .30) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--cd2-persona), .035),
+    0 12px 34px rgba(0,0,0,.26) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-portrait-grid {
+  opacity: .22 !important;
+  animation: cd2-portrait-drift 12s linear infinite;
+}
+
+#feha-cyberdeck-v2 .cd2-portrait::after {
+  background:
+    linear-gradient(180deg, transparent 44%, rgba(0,0,0,.76)),
+    linear-gradient(90deg, rgba(var(--cd2-persona), .09), transparent 22%) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-tag {
+  left: 14px !important;
+  bottom: 14px !important;
+  padding: 8px 10px !important;
+  color: rgb(var(--cd2-persona)) !important;
+  border-left-color: rgb(var(--cd2-mag)) !important;
+  font-size: 10px !important;
+  letter-spacing: 1.25px !important;
+  box-shadow: 0 0 18px rgba(var(--cd2-persona), .055);
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta {
+  margin-top: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta > div {
+  padding: 11px 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta span {
+  font-size: 8px !important;
+  letter-spacing: 1.1px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-operator-meta b {
+  font-size: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-summary {
+  min-height: 190px !important;
+  margin-top: 12px !important;
+  padding: 15px !important;
+  border-left-width: 3px !important;
+  border-left-color: rgb(var(--cd2-persona)) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-summary > small {
+  font-size: 8px !important;
+  letter-spacing: 1.25px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head {
+  grid-template-columns: 82px minmax(0,1fr) !important;
+  gap: 14px !important;
+  margin-top: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head img {
+  width: 80px !important;
+  height: 80px !important;
+  border-color: rgba(var(--cd2-persona), .34) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head h2 {
+  font-size: 19px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-head span {
+  margin-top: 6px !important;
+  font-size: 9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-specs {
+  margin-top: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-specs > div {
+  padding: 10px 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-specs span {
+  font-size: 7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-deck-specs b {
+  margin-top: 4px !important;
+  font-size: 13px !important;
+}
+
+/* --------------------------------------------------------------------------
+   TOP TELEMETRY
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-main {
+  grid-template-rows: auto 54px minmax(0,1fr) 98px !important;
+  padding: 16px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-telemetry {
+  gap: 12px !important;
+  padding-bottom: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-meter,
+#feha-cyberdeck-v2 .cd2-telemetry-card {
+  min-height: 118px !important;
+  padding: 13px 14px !important;
+  border-top-width: 2px !important;
+  box-shadow: inset 0 -24px 40px rgba(0,0,0,.12);
+}
+
+#feha-cyberdeck-v2 .cd2-meter-head {
+  margin-bottom: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-meter-head span {
+  font-size: 8px !important;
+  letter-spacing: 1.15px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-meter-head b {
+  font-size: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-ram-number {
+  margin-bottom: 10px !important;
+  font-size: 38px !important;
+  text-shadow: 0 0 20px rgba(var(--cd2-yellow), .10);
+}
+
+#feha-cyberdeck-v2 .cd2-ram-number small {
+  font-size: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-segments {
+  gap: 3px !important;
+  overflow: hidden;
+}
+
+#feha-cyberdeck-v2 .cd2-segments i {
+  height: 11px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-segments.is-ram i.is-filled {
+  animation: cd2-ram-shimmer 2.8s ease-in-out infinite;
+}
+
+#feha-cyberdeck-v2 .cd2-telemetry-core {
+  grid-template-columns: 58px minmax(0,1fr) !important;
+  gap: 12px !important;
+  margin-top: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-telemetry-core img {
+  width: 56px !important;
+  height: 56px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-telemetry-core strong {
+  font-size: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-telemetry-core small {
+  margin-top: 6px !important;
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-software-number {
+  margin: 5px 0 12px !important;
+  gap: 9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-software-number strong {
+  font-size: 30px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-software-number span {
+  font-size: 8px !important;
+  letter-spacing: .9px !important;
+}
+
+/* --------------------------------------------------------------------------
+   NAV / SECTION HIERARCHY
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-tabs {
+  border-top-color: rgba(var(--cd2-persona), .13) !important;
+  border-bottom-color: rgba(var(--cd2-persona), .18) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-tabs button {
+  height: 53px !important;
+  font-size: 10px !important;
+  letter-spacing: 1.5px !important;
+  transition:
+    color .16s ease,
+    background .16s ease,
+    box-shadow .16s ease !important;
+}
+
+#feha-cyberdeck-v2 .cd2-tabs button:hover {
+  color: rgb(var(--cd2-persona)) !important;
+  background: linear-gradient(180deg, rgba(var(--cd2-persona), .055), transparent) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-tabs button.is-active {
+  color: #fff !important;
+  background:
+    linear-gradient(180deg, rgba(var(--cd2-persona), .075), transparent 82%) !important;
+  box-shadow:
+    inset 0 -3px 0 rgb(var(--cd2-persona)),
+    0 8px 24px rgba(var(--cd2-persona), .035) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-tabs button.is-active::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgb(var(--cd2-persona)), transparent);
+  animation: cd2-tab-energy 2.4s ease-in-out infinite;
+}
+
+#feha-cyberdeck-v2 .cd2-view {
+  padding-top: 18px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head {
+  padding: 0 4px 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head small {
+  margin-bottom: 5px !important;
+  font-size: 9px !important;
+  letter-spacing: 1.7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head h3 {
+  font-size: 29px !important;
+  letter-spacing: 1.5px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-section-head > span {
+  font-size: 10px !important;
+  letter-spacing: 1.1px !important;
+}
+
+/* --------------------------------------------------------------------------
+   QUICKHACK MEMORY RACK
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-loaded-grid {
+  gap: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot,
+#feha-cyberdeck-v2 .cd2-hack-card {
+  min-height: 194px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot {
+  border-color: rgba(var(--cd2-persona), .18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    inset 0 -30px 55px rgba(0,0,0,.25),
+    0 0 0 1px rgba(var(--cd2-persona), .018) !important;
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .16s ease !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot::before {
+  content: "MEMORY BAY" !important;
+  left: 12px !important;
+  top: 11px !important;
+  color: rgba(var(--cd2-persona), .34) !important;
+  font-size: 7px !important;
+  letter-spacing: 1.25px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot > em {
+  position: absolute;
+  right: 11px;
+  top: 10px;
+  color: rgba(var(--cd2-yellow), .62);
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot > span {
+  color: rgba(var(--cd2-persona), .80) !important;
+  font-size: 38px !important;
+  text-shadow: 0 0 22px rgba(var(--cd2-persona), .13) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot > b {
+  color: #b4c4c8 !important;
+  font-size: 11px !important;
+  letter-spacing: 1.1px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot > small {
+  color: #698087 !important;
+  font-size: 8px !important;
+  letter-spacing: .9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot:hover {
+  transform: translateY(-3px);
+  border-color: rgba(var(--cd2-persona), .52) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--cd2-persona), .075), transparent 37%),
+    radial-gradient(circle at 50% 55%, rgba(var(--cd2-persona), .045), transparent 48%),
+    #03090c !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 10px 28px rgba(0,0,0,.22),
+    0 0 20px rgba(var(--cd2-persona), .045) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card {
+  grid-template-columns: 92px minmax(0,1fr) auto !important;
+  padding: 15px !important;
+  border-color: rgba(var(--cd2-persona), .22) !important;
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(var(--cd2-persona), .52) !important;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.20),
+    0 0 24px rgba(var(--cd2-persona), .045);
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card > img {
+  width: 88px !important;
+  height: 88px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-copy b {
+  font-size: 16px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-copy span {
+  font-size: 10px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-copy small {
+  font-size: 9px !important;
+  line-height: 1.5 !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card button {
+  min-width: 70px !important;
+  height: 36px !important;
+  font-size: 8px !important;
+}
+
+/* --------------------------------------------------------------------------
+   RIGHT DIAGNOSTIC SPINE
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-right {
+  padding: 16px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right > section {
+  padding: 15px !important;
+  margin-bottom: 12px !important;
+  border-top-width: 2px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-subhead {
+  margin-bottom: 11px !important;
+  font-size: 10px !important;
+  letter-spacing: 1.6px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-bus-panel {
+  min-height: 245px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-bus-hero {
+  grid-template-columns: 86px minmax(0,1fr) !important;
+  gap: 14px !important;
+  margin: 10px 0 15px !important;
+  padding: 11px !important;
+  border-left-color: rgba(var(--cd2-persona), .72) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-bus-hero img {
+  width: 84px !important;
+  height: 84px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-bus-hero b {
+  font-size: 15px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-bus-hero span {
+  margin-top: 6px !important;
+  font-size: 9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right-stat {
+  padding: 10px 0 !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right-stat span {
+  font-size: 9px !important;
+  letter-spacing: .7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-right-stat b {
+  font-size: 12px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card {
+  grid-template-columns: 72px minmax(0,1fr) !important;
+  gap: 14px !important;
+  padding: 13px !important;
+  border-left-width: 3px !important;
+  border-left-color: rgba(var(--cd2-persona), .52) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card img {
+  width: 70px !important;
+  height: 70px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card b {
+  font-size: 14px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card span {
+  margin-top: 3px !important;
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-support-card small {
+  margin-top: 6px !important;
+  font-size: 9px !important;
+  line-height: 1.45 !important;
+}
+
+#feha-cyberdeck-v2 .cd2-session p {
+  font-size: 9px !important;
+  line-height: 1.6 !important;
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER / JACK IN HERO ACTION
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-footer {
+  grid-template-columns: minmax(0,1fr) 210px 260px !important;
+  gap: 12px !important;
+  padding-top: 13px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log {
+  padding: 0 14px !important;
+  border-top-color: rgba(var(--cd2-persona), .13) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log span {
+  font-size: 9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-log b {
+  font-size: 8px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-rest {
+  min-width: 210px !important;
+  font-size: 9px !important;
+  letter-spacing: .9px !important;
+  border-color: rgba(var(--cd2-persona), .32) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-rest:hover:not(:disabled) {
+  color: #fff !important;
+  background: rgba(var(--cd2-persona), .065) !important;
+  border-color: rgba(var(--cd2-persona), .58) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack {
+  min-width: 260px !important;
+  min-height: 78px !important;
+  padding: 0 20px !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--cd2-yellow), .12),
+    0 8px 28px rgba(var(--cd2-yellow), .08) !important;
+  animation: cd2-jack-breathe 3.1s ease-in-out infinite;
+  transition:
+    transform .16s ease,
+    filter .16s ease,
+    box-shadow .16s ease !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.015);
+  filter: brightness(1.09) saturate(1.06);
+  box-shadow:
+    0 0 0 1px rgba(var(--cd2-yellow), .28),
+    0 12px 34px rgba(var(--cd2-yellow), .14),
+    0 0 34px rgba(var(--cd2-yellow), .08) !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack span {
+  font-size: 8px !important;
+  letter-spacing: 1.4px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-jack b {
+  margin-top: 5px !important;
+  font-size: 31px !important;
+  letter-spacing: 1.6px !important;
+}
+
+/* --------------------------------------------------------------------------
+   AMBIENT MOTION — SLOW / SMOOTH
+   -------------------------------------------------------------------------- */
+#feha-cyberdeck-v2 .cd2-main {
+  position: relative;
+  overflow: hidden;
+}
+
+#feha-cyberdeck-v2 .cd2-main::before {
+  content: "";
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: -80px;
+  height: 150px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(var(--cd2-persona), .018) 46%,
+    rgba(var(--cd2-persona), .045) 50%,
+    rgba(var(--cd2-persona), .018) 54%,
+    transparent
+  );
+  animation: cd2-main-scan 9s linear infinite;
+}
+
+#feha-cyberdeck-v2 .cd2-main > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes cd2-main-scan {
+  0%   { transform: translateY(-120px); opacity: 0; }
+  12%  { opacity: 1; }
+  82%  { opacity: .75; }
+  100% { transform: translateY(980px); opacity: 0; }
+}
+
+@keyframes cd2-portrait-drift {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 0 56px, 56px 0; }
+}
+
+@keyframes cd2-ram-shimmer {
+  0%,100% {
+    filter: brightness(.92);
+    box-shadow: 0 0 5px rgba(var(--cd2-yellow), .08);
+  }
+  50% {
+    filter: brightness(1.16);
+    box-shadow: 0 0 11px rgba(var(--cd2-yellow), .17);
+  }
+}
+
+@keyframes cd2-tab-energy {
+  0%,100% { opacity: .32; transform: scaleX(.72); }
+  50%     { opacity: .95; transform: scaleX(1); }
+}
+
+@keyframes cd2-jack-breathe {
+  0%,100% {
+    box-shadow:
+      0 0 0 1px rgba(var(--cd2-yellow), .12),
+      0 8px 28px rgba(var(--cd2-yellow), .07);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(var(--cd2-yellow), .22),
+      0 8px 34px rgba(var(--cd2-yellow), .14),
+      0 0 26px rgba(var(--cd2-yellow), .06);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   DESKTOP SAFETY
+   -------------------------------------------------------------------------- */
+@media (max-width: 1550px) {
+  #feha-cyberdeck-v2 {
+    grid-template-columns: 310px minmax(620px,1fr) 330px !important;
+    font-size: 1.08em !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-portrait {
+    height: 335px !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-empty-slot,
+  #feha-cyberdeck-v2 .cd2-hack-card {
+    min-height: 168px !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-empty-slot > b {
+    font-size: 10px !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-right {
+    padding: 13px !important;
+  }
+}
