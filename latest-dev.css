@@ -1117,3 +1117,63 @@
 #adk-chrome-manager-34.feha-cache-selection-focus .adk-v6-cache.is-open::before {
   opacity: 0 !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.2.7
+   CENTER HERO TITLE / METRIC STRIP COLLISION FIX
+   ========================================================================== */
+
+#adk-chrome-manager-34 .subject-status {
+  position: absolute !important;
+  left: 31% !important;
+  right: 28% !important;
+  bottom: 72px !important;
+  z-index: 14 !important;
+  margin: 0 !important;
+}
+
+#adk-chrome-manager-34 .subject-system-title {
+  position: absolute !important;
+  left: 28px !important;
+  right: 28px !important;
+  bottom: 22px !important;
+  z-index: 16 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+}
+
+#adk-chrome-manager-34 .subject-system-title::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -22px !important;
+  right: -22px !important;
+  top: -18px !important;
+  bottom: -16px !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(2,6,8,0) 0%,
+      rgba(2,6,8,.46) 35%,
+      rgba(2,6,8,.78) 100%
+    ) !important;
+}
+
+#adk-chrome-manager-34 .subject-status,
+#adk-chrome-manager-34 .subject-status * {
+  transform: none !important;
+}
+
+@media (max-width: 1450px) {
+  #adk-chrome-manager-34 .subject-status {
+    left: 34% !important;
+    right: 24% !important;
+    bottom: 70px !important;
+  }
+
+  #adk-chrome-manager-34 .subject-system-title {
+    bottom: 20px !important;
+  }
+}
