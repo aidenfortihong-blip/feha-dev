@@ -1,13 +1,12 @@
 {
-  "version": "0.5.1",
+  "version": "0.5.2",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-layout-density",
+  "scope": "cyberdeck-hard-reset-layout",
   "notes": [
-    "Tightened the Cyberdeck into a denser terminal layout instead of oversized purple inventory cards",
-    "Added loaded-quickhack section/slot hooks and reduced empty slot height dramatically",
-    "Strengthened the black terminal shell and reduced inherited purple framing",
-    "Condensed Software Library and Netrunner Support Chrome empty states",
-    "Added a direct Cyberdeck wallet hook so the leftover €$ control is hidden even when it is not a semantic button",
-    "Preserved live RAM/deck data and all existing Chrome Manager fixes"
+    "Hardened Cyberdeck DOM tagging based on actual visible controls instead of guessed wrappers",
+    "Quickhack '+' controls are now tagged globally inside the Cyberdeck and forced to compact fixed-size slots",
+    "Legacy €$ control now walks outward to the compact launcher shell and is collapsed completely",
+    "Aggressively removed inherited purple Foundry panel styling in favor of black terminal surfaces",
+    "Added geometry hooks for large left/right Cyberdeck regions for later layout work"
   ]
 }
