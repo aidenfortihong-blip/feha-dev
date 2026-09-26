@@ -1,10 +1,16 @@
 {
-  "version": "0.6.5",
+  "version": "0.6.6",
   "updated": "2026-09-26",
-  "scope": "module-source-export-default-target",
+  "scope": "cyberdeck-real-module-mechanics",
   "notes": [
-    "Module source exporter now prefers the main flesh-enshrouded-heart-ablaze suite over the ADK Entry Gateway",
-    "Gateway remains selectable manually if ever needed",
-    "No changes to live-world handoff data or Cyberdeck behavior"
+    "Replaced guessed Cyberdeck V2 compatibility logic with mechanics recovered from the installed FEHA module source",
+    "Owned Quickhacks now use sourceCategory Quickhacks plus marketPurchased/ownedQuickhack flags",
+    "Loaded software now uses flags.fleshEnshrouded.loadedQuickhack exactly",
+    "Cyberdeck RAM uses deck ramMax plus installed support chrome RAM bonuses and actor ramCurrent",
+    "Software capacity now uses deck quickhackSlots with the legacy rating fallback",
+    "Quickhack DC now uses 8 + proficiency + INT modifier",
+    "RUN now spends RAM and creates the canonical Quickhack chat card instead of trying generic item.use/roll",
+    "Installed cyberware follows the module rule installed !== false",
+    "Roster still stays Ponyboy, Derke, Sasha, Zach and can resolve the canonical adkCharacter flag"
   ]
 }
