@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.4.11";
+  const BUILD = "0.4.12";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -456,7 +456,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.11 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.12 // preload failed", event, err);
         }
       }
     }
@@ -514,11 +514,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.11 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.12 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.11 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.12 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -541,7 +541,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.11 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.12 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -665,12 +665,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.11 // sound source: ${source}`
+      `FEHA DEV 0.4.12 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.11 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.12 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -701,32 +701,8 @@
     delete globalThis.__FEHA_SOUND_ENGINE_028;
   }
 
-  const DERKE_PORTRAIT_B64_URL =
-    "https://raw.githubusercontent.com/aidenfortihong-blip/feha-dev/main/assets/portraits/derke.webp.b64";
-  let derkePortraitPromise = null;
-  let derkePortraitDataUrl = null;
-
-  function loadDerkePortrait() {
-    if (derkePortraitDataUrl) return Promise.resolve(derkePortraitDataUrl);
-    if (derkePortraitPromise) return derkePortraitPromise;
-
-    derkePortraitPromise = fetch(DERKE_PORTRAIT_B64_URL, { cache: "force-cache" })
-      .then(response => {
-        if (!response.ok) throw new Error("Derke portrait fetch failed: " + response.status);
-        return response.text();
-      })
-      .then(payload => {
-        derkePortraitDataUrl = "data:image/webp;base64," + payload.trim();
-        return derkePortraitDataUrl;
-      })
-      .catch(error => {
-        derkePortraitPromise = null;
-        console.error("FEHA DEV 0.4.11 // Derke portrait load failed", error);
-        throw error;
-      });
-
-    return derkePortraitPromise;
-  }
+  const DERKE_PORTRAIT_URL =
+    "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/f1713d76-d630-47f1-93af-c9bbab712a9a.png";
 
   function applyDerkePortrait(root = document.getElementById("adk-chrome-manager-34")) {
     const actor = globalThis.ADKChromeBackend?.getActor?.();
@@ -742,19 +718,12 @@
 
     root.dataset.fehaPortraitOverride = "derke";
 
-    void loadDerkePortrait().then(url => {
-      const liveRoot = document.getElementById("adk-chrome-manager-34");
-      const liveActor = globalThis.ADKChromeBackend?.getActor?.();
-      if (!liveRoot || norm(liveActor?.name) !== "derke") return;
+    if (portrait.src !== DERKE_PORTRAIT_URL) {
+      portrait.src = DERKE_PORTRAIT_URL;
+    }
 
-      const livePortrait = liveRoot.querySelector(".subject-art img");
-      if (!livePortrait) return;
-
-      if (livePortrait.src !== url) livePortrait.src = url;
-      livePortrait.alt = "Derke";
-      livePortrait.dataset.fehaPortrait = "derke";
-    });
-
+    portrait.alt = "Derke";
+    portrait.dataset.fehaPortrait = "derke";
     return true;
   }
 
@@ -974,7 +943,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // Derke portrait + roster cleanup loaded"
+    "FEHA DEV " + BUILD + " // Derke Forge portrait loaded"
   );
 
   state.reopenChrome();
