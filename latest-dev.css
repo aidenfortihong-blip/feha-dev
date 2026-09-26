@@ -4230,3 +4230,122 @@
   background: rgba(255,76,132,.028) !important;
   border-color: rgba(255,76,132,.44) !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.5.2
+   CYBERDECK // HARD RESET OF LEGACY PURPLE + SLOT/WALLET FIX
+   ========================================================================== */
+
+/* Remove inherited purple wash aggressively from the Cyberdeck app. */
+[data-feha-cyberdeck="1"],
+[data-feha-cyberdeck="1"] > *,
+[data-feha-cyberdeck="1"] .window-content,
+[data-feha-cyberdeck="1"] .application-content,
+[data-feha-cyberdeck="1"] form,
+[data-feha-cyberdeck="1"] .feha-cd-main-left,
+[data-feha-cyberdeck="1"] .feha-cd-main-right {
+  --color-border-light-1: rgba(95,239,255,.18) !important;
+  --color-border-light-2: rgba(95,239,255,.14) !important;
+  --color-border-dark-1: rgba(95,239,255,.08) !important;
+  --color-text-light-1: #e7fbfd !important;
+  background-color: #020507 !important;
+  box-shadow: none !important;
+}
+
+/* Any large panel that still carries the old purple tint gets flattened. */
+[data-feha-cyberdeck="1"] :is(
+  section, article, aside, main, fieldset,
+  .sheet-body, .tab, .tabs, .panel, .card, .content
+) {
+  background-color: #03070a !important;
+  background-image: none !important;
+  border-color: rgba(95,239,255,.10) !important;
+  box-shadow: none !important;
+}
+
+/* Absolutely remove the leftover currency launcher. */
+[data-feha-cyberdeck="1"] .feha-cd-wallet,
+[data-feha-cyberdeck="1"] [data-feha-wallet-launcher="legacy"] {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+/* '+' rack: these are the actual loaded quickhack slots. */
+[data-feha-cyberdeck="1"] .feha-cd-quickhack-slot {
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+  height: 86px !important;
+  min-height: 86px !important;
+  max-height: 86px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  color: rgba(95,239,255,.58) !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+  background:
+    linear-gradient(135deg, rgba(95,239,255,.030), transparent 58%),
+    #03080b !important;
+  border: 1px dashed rgba(95,239,255,.20) !important;
+  box-shadow: none !important;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%) !important;
+}
+
+/* If the parent rack is flex/grid, make it pack tightly rather than stretch. */
+[data-feha-cyberdeck="1"] .feha-cd-loaded-section {
+  min-height: 0 !important;
+  padding: 8px 10px 12px !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-loaded-section :has(> .feha-cd-quickhack-slot) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Header should read like one terminal strip, not four disconnected purple cards. */
+[data-feha-cyberdeck="1"] .feha-cd-select,
+[data-feha-cyberdeck="1"] .feha-cd-check,
+[data-feha-cyberdeck="1"] .feha-cd-close {
+  height: 38px !important;
+  background: #02080b !important;
+  border-color: rgba(95,239,255,.24) !important;
+}
+
+[data-feha-cyberdeck="1"] .feha-cd-close {
+  color: rgb(255,76,132) !important;
+  border-color: rgba(255,76,132,.34) !important;
+}
+
+/* Stronger deck/RAM styling. */
+[data-feha-cyberdeck="1"] .feha-cd-deck-panel {
+  border-color: rgba(95,239,255,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(95,239,255,.018), transparent 40%),
+    #03080b !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.008) !important;
+}
+
+/* Right-side panels should be visibly denser than before. */
+[data-feha-cyberdeck="1"] .feha-cd-library,
+[data-feha-cyberdeck="1"] .feha-cd-support {
+  background: #020609 !important;
+  padding: 11px 12px 13px !important;
+}
