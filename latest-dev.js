@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.6.5";
+  const BUILD = "0.6.6";
   let observer = null;
   let walletGuard = null;
 
@@ -496,7 +496,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.6.5 // preload failed", event, err);
+          console.warn("FEHA DEV 0.6.6 // preload failed", event, err);
         }
       }
     }
@@ -554,11 +554,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.6.5 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.6.6 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.6.5 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.6.6 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -581,7 +581,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.6.5 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.6.6 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -705,12 +705,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.6.5 // sound source: ${source}`
+      `FEHA DEV 0.6.6 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.6.5 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.6.6 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1437,34 +1437,30 @@
   }
 
   function installedChrome(item) {
+    if (!item) return false;
     const f = fehaFlags(item);
-    return (
-      f.installed === true ||
-      f.isInstalled === true ||
-      item?.system?.equipped === true ||
-      item?.system?.equipped?.value === true
-    );
+    const isCyberware =
+      String(f.sourceCategory ?? "") === "Cyberware" ||
+      Boolean(f.cyberwareSlot);
+
+    // This is the canonical legacy-module rule: cyberware is installed unless
+    // the explicit installed flag is false.
+    return isCyberware && f.installed !== false;
   }
 
   function isQuickhack(item) {
     if (!item) return false;
     const f = fehaFlags(item);
-    const folder = String(item.folder?.name ?? "");
-    const blob = [
-      item.name,
-      item.type,
-      folder,
-      f.itemType,
-      f.kind,
-      f.category,
-      f.quickhack,
-      f.isQuickhack,
-      item.system?.type?.value,
-      item.system?.identifier
-    ].join(" ").toLowerCase();
+    return (
+      String(f.sourceCategory ?? "") === "Quickhacks" ||
+      f.quickhack === true
+    );
+  }
 
-    // In the ADK build, quickhacks are represented by spell documents.
-    return item.type === "spell" || /quick\s*hack|quickhack/.test(blob);
+  function isOwnedQuickhack(item) {
+    if (!isQuickhack(item)) return false;
+    const f = fehaFlags(item);
+    return f.marketPurchased === true || f.ownedQuickhack === true;
   }
 
   function isCyberdeck(item) {
@@ -1502,75 +1498,121 @@
 
   function isSupportChrome(item, deck) {
     if (!item || item === deck || !installedChrome(item) || isQuickhack(item)) return false;
-    const f = fehaFlags(item);
-    const blob = [
-      item.name,
-      item.folder?.name,
-      f.kind,
-      f.category,
-      f.netrunnerSupport,
-      f.netSupport,
-      f.cyberwareSlot,
-      itemDescription(item)
-    ].join(" ").toLowerCase();
 
-    return (
-      f.netrunnerSupport === true ||
-      f.netSupport === true ||
-      /netrunner|quickhack|neural intrusion|self ice|black ice|ram\b|network/.test(blob)
+    const text = norm(
+      [
+        item.name,
+        itemDescription(item),
+        fehaFlags(item).cyberwareSlot
+      ].filter(Boolean).join(" ")
     );
+
+    return [
+      "ram",
+      "quickhack",
+      "cyberdeck",
+      "neural",
+      "self ice",
+      "memory",
+      "cortex",
+      "netrunner",
+      "intrusion"
+    ].some(term => text.includes(term));
   }
 
-  function quickhackPrepared(item) {
-    const prep = item?.system?.preparation;
-    if (prep && typeof prep === "object" && "prepared" in prep) return prep.prepared === true;
+  function supportRamBonus(item) {
     const f = fehaFlags(item);
-    return f.loaded === true || f.quickhackLoaded === true || f.installed === true;
+    const explicit = Number(f.ramBonus);
+    if (Number.isFinite(explicit) && explicit) return explicit;
+
+    const n = norm(item?.name);
+    if (n.includes("ex disk")) return 2;
+    if (n.includes("ram upgrade")) return 2;
+    if (n.includes("neuro matrix")) return 1;
+    return 0;
+  }
+
+  function quickhackLoaded(item) {
+    return fehaFlags(item).loadedQuickhack === true;
+  }
+
+  function quickhackRamCost(item) {
+    const f = fehaFlags(item);
+    const explicit = Number(f.ramCost);
+    if (Number.isFinite(explicit) && explicit > 0) return explicit;
+
+    const match = itemDescription(item).match(/\bRAM\s+(\d+)/i);
+    return match ? Number(match[1]) : 2;
+  }
+
+  function quickhackDcForActor(actor) {
+    const intMod = Number(actor?.system?.abilities?.int?.mod ?? 0);
+    const prof = Number(
+      actor?.system?.attributes?.prof ??
+      actor?.system?.details?.prof ??
+      2
+    );
+    return 8 + prof + intMod;
   }
 
   function getCyberdeckModel(actor) {
     if (!actor) return null;
+
     const items = [...(actor.items ?? [])];
     const deck = items.find(isCyberdeck) ?? null;
-    const quickhacks = items.filter(isQuickhack);
-    const loaded = quickhacks.filter(quickhackPrepared);
-    const library = quickhacks.filter(item => !quickhackPrepared(item));
+
+    // Canonical legacy Cyberdeck ownership model:
+    // purchased Quickhacks live permanently on the actor and loading is a flag.
+    const quickhacks = items
+      .filter(isOwnedQuickhack)
+      .sort((a,b) => String(a.name).localeCompare(String(b.name)));
+
+    const loaded = quickhacks.filter(quickhackLoaded);
+    const library = quickhacks.filter(item => !quickhackLoaded(item));
     const support = items.filter(item => isSupportChrome(item, deck));
 
-    const deckObj = itemData(deck);
-    const actorObj = (() => {
-      try { return actor.toObject?.() ?? actor; } catch { return actor; }
-    })();
+    const deckFlags = fehaFlags(deck);
+    const rating = Math.max(
+      1,
+      Math.min(5, Number(deckFlags.rating ?? deckFlags.tier ?? 2) || 2)
+    );
 
+    const explicitBase = Number(deckFlags.ramMax);
     const baseRam =
-      deepNumber(deckObj, ["baseRam","ramMax","maxRam","ramCapacity"]) ??
-      deepNumber(actorObj, ["ramMax","maxRam","ramCapacity"]) ??
-      0;
+      Number.isFinite(explicitBase) && explicitBase > 0
+        ? explicitBase
+        : deck
+          ? 4 + (2 * rating)
+          : 0;
 
+    const supportRam = support.reduce((sum,item) => sum + supportRamBonus(item),0);
+    const maxRam = deck ? baseRam + supportRam : 0;
+
+    const storedRam = actor?.flags?.fleshEnshrouded?.ramCurrent;
     const currentRam =
-      deepNumber(actorObj, ["currentRam","ramCurrent","activeRam"]) ??
-      deepNumber(deckObj, ["currentRam","ramCurrent","activeRam"]) ??
-      baseRam;
+      !deck
+        ? 0
+        : storedRam === undefined || storedRam === null
+          ? maxRam
+          : Math.max(0, Math.min(maxRam, Number(storedRam) || 0));
 
+    const explicitSlots = Number(deckFlags.quickhackSlots);
     const softwareSlots =
-      deepNumber(deckObj, ["softwareSlots","quickhackSlots","programSlots","deckSlots"]) ??
-      Math.max(loaded.length, 0);
+      deck
+        ? Number.isFinite(explicitSlots) && explicitSlots > 0
+          ? explicitSlots
+          : 2 + rating
+        : 0;
 
-    const quickhackDc =
-      deepNumber(deckObj, ["quickhackDc","hackDc","quickhackDifficulty"]) ??
-      deepNumber(actorObj, ["quickhackDc","hackDc"]) ??
-      null;
-
-    const f = fehaFlags(deck);
     const manufacturer =
-      f.manufacturer ??
-      deepString(deckObj, ["manufacturer","maker","brand"]) ??
-      deck?.folder?.name ??
+      deckFlags.manufacturer ??
+      deckFlags.company ??
       "UNKNOWN";
 
     const mk =
-      f.mk ??
-      deepString(deckObj, ["mk","mark","tier"]) ??
+      deckFlags.mk ??
+      deckFlags.rating ??
+      deckFlags.tier ??
       "";
 
     return {
@@ -1580,9 +1622,11 @@
       library,
       support,
       baseRam,
-      currentRam: Math.max(0, currentRam),
-      softwareSlots: Math.max(0, softwareSlots),
-      quickhackDc,
+      supportRam,
+      maxRam,
+      currentRam,
+      softwareSlots,
+      quickhackDc: quickhackDcForActor(actor),
       manufacturer: String(manufacturer ?? "UNKNOWN").replace(/^-+/, ""),
       mk: String(mk ?? "")
     };
@@ -1635,12 +1679,15 @@
       ["zach", 3]
     ]);
 
+    const actorKey = actor =>
+      norm(actor?.flags?.fleshEnshrouded?.adkCharacter ?? actor?.name);
+
     return [...(game?.actors ?? [])]
       .filter(actor => {
-        const key = norm(actor?.name);
+        const key = actorKey(actor);
         return allowed.has(key) && (game.user?.isGM || actor.isOwner);
       })
-      .sort((a,b) => (allowed.get(norm(a.name)) ?? 99) - (allowed.get(norm(b.name)) ?? 99));
+      .sort((a,b) => (allowed.get(actorKey(a)) ?? 99) - (allowed.get(actorKey(b)) ?? 99));
   }
 
   function cyberActorById(id) {
@@ -1671,10 +1718,7 @@
   function quickhackCard(item, loaded = false) {
     if (!item) return "";
     const f = fehaFlags(item);
-    const ram =
-      deepNumber(itemData(item), ["ramCost","ram","costRam","quickhackRam"]) ??
-      deepNumber(f, ["ramCost","ram","costRam"]) ??
-      null;
+    const ram = quickhackRamCost(item);
     const dc =
       deepNumber(itemData(item), ["dc","quickhackDc","hackDc"]) ??
       null;
@@ -1772,7 +1816,7 @@
       document.body.appendChild(root);
     }
 
-    const ramMax = Math.max(1, model.baseRam || model.currentRam || 1);
+    const ramMax = Math.max(1, model.maxRam || model.currentRam || 1);
     const ramText = model.deck ? `${model.currentRam} / ${ramMax}` : "OFFLINE";
 
     root.dataset.actorId = fallback.id;
@@ -1827,7 +1871,7 @@
               </div>
             </div>
             <div class="cd2-deck-specs">
-              <div><span>RAM</span><b>${esc(model.baseRam)}</b></div>
+              <div><span>RAM</span><b>${esc(model.maxRam)}</b></div>
               <div><span>SLOTS</span><b>${esc(model.softwareSlots)}</b></div>
               <div><span>QH DC</span><b>${model.quickhackDc ?? "—"}</b></div>
             </div>
@@ -1993,16 +2037,29 @@
 
   async function setQuickhackPrepared(actor, itemId, prepared) {
     const item = actor?.items?.get?.(itemId) ?? actor?.items?.find?.(x => x.id === itemId);
-    if (!item) return false;
+    if (!item || !isOwnedQuickhack(item)) return false;
 
-    if (item.system?.preparation && typeof item.system.preparation === "object") {
-      await item.update({"system.preparation.prepared": prepared});
-      return true;
+    if (prepared) {
+      const model = getCyberdeckModel(actor);
+      if (!model?.deck) {
+        ui?.notifications?.warn?.("Install a Cyberdeck first.");
+        return false;
+      }
+      if (
+        !quickhackLoaded(item) &&
+        model.loaded.length >= model.softwareSlots
+      ) {
+        ui?.notifications?.warn?.("Cyberdeck software slots are full.");
+        return false;
+      }
     }
 
-    await item.update({"flags.fleshEnshrouded.quickhackLoaded": prepared});
+    await item.update({
+      "flags.fleshEnshrouded.loadedQuickhack": Boolean(prepared)
+    });
     return true;
   }
+
 
   async function exportFehaHandoff() {
 if (!game.user?.isGM) {
@@ -2525,16 +2582,44 @@ if (!game.user?.isGM) {
 
       if (action === "run") {
         const item = actor?.items?.get?.(button.dataset.itemId) ?? actor?.items?.find?.(x => x.id === button.dataset.itemId);
-        if (!item) return;
+        if (!item || !quickhackLoaded(item)) return;
+
+        const live = getCyberdeckModel(actor);
+        if (!live?.deck) {
+          globalThis.FEHA_SOUNDS?.play?.("error", {cooldown:0});
+          ui?.notifications?.warn?.("Install a Cyberdeck first.");
+          return;
+        }
+
+        const cost = quickhackRamCost(item);
+        if (live.currentRam < cost) {
+          globalThis.FEHA_SOUNDS?.play?.("error", {cooldown:0});
+          ui?.notifications?.warn?.(`Not enough RAM. ${live.currentRam}/${cost}.`);
+          return;
+        }
+
         globalThis.FEHA_SOUNDS?.play?.("scan", {cooldown:0});
         setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm", {cooldown:0}), 115);
-        if (typeof item.use === "function") {
-          await item.use();
-        } else if (typeof item.roll === "function") {
-          await item.roll();
-        } else {
-          item.sheet?.render?.(true);
-        }
+
+        await actor.update({
+          "flags.fleshEnshrouded.ramCurrent": live.currentRam - cost
+        });
+
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({actor}),
+          content: `
+            <div style="display:flex;gap:10px;align-items:center">
+              <img src="${esc(item.img)}" style="width:54px;height:54px;object-fit:contain">
+              <div>
+                <h3>${esc(item.name)}</h3>
+                <p><strong>RAM ${cost}</strong> • DC ${live.quickhackDc}</p>
+                <p>${esc(itemDescription(item))}</p>
+              </div>
+            </div>
+          `
+        });
+
+        renderCyberdeckV2(actor.id, root.dataset.tab || "quickhacks");
         return;
       }
 
