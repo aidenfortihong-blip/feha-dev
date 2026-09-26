@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.8.6";
+  const VERSION = "0.8.7";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -491,7 +491,16 @@
 
   function sceneModel(actor) {
     const scene = canvas?.scene ?? null;
-    if (!scene) return {scene:null,nodes:[],selected:null};
+    if (!scene) {
+      return {
+        scene:null,
+        nodes:[],
+        relays:[],
+        links:[],
+        selected:null,
+        operator:{x:50,y:50}
+      };
+    }
 
     const targeted = new Set(
       [...(game.user?.targets ?? [])]
@@ -506,6 +515,7 @@
 
     const rw = Math.max(1,Number(rect.width)||1);
     const rh = Math.max(1,Number(rect.height)||1);
+
     const all = [...(scene.tokens?.contents ?? scene.tokens ?? [])]
       .filter(t => {
         if (!(game.user?.isGM || !t.hidden) || !(t.actor || t.actorId)) return false;
@@ -514,6 +524,8 @@
       });
 
     const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+    const sparse = all.length <= 2;
+    const operator = {x:50,y:sparse ? 53 : 50};
 
     const rawNodes = all.map((token,index) => {
       const a = token.actor ?? game.actors?.get?.(token.actorId) ?? null;
@@ -526,15 +538,14 @@
       const sceneX = clamp(10+rawX*.80,10,90);
       const sceneY = clamp(12+rawY*.62,12,74);
 
-      // Sparse scenes need composition, not literal empty-map coordinates.
-      // Blend token geography with a clean orbital layout. As density rises,
-      // preserve more of the original scene relationship.
       const orbitalAngle =
         (-Math.PI / 2) +
         ((Math.PI * 2 * index) / count) +
         ((index % 2) ? 0.18 : -0.12);
+
       const orbitalX = 50 + Math.cos(orbitalAngle) * (count <= 3 ? 25 : 31);
       const orbitalY = 45 + Math.sin(orbitalAngle) * (count <= 3 ? 22 : 27);
+
       const sceneWeight =
         count <= 2 ? 0.22 :
         count <= 4 ? 0.38 :
@@ -554,16 +565,11 @@
       };
     });
 
-    // The screen uses large readable node cards, so literal token coordinates
-    // can overlap. Pick the nearest collision-free candidate around each
-    // original position while preserving the scene's general spatial layout.
     const placed = [];
-    const operator = {x:50,y:50};
 
     const separationScore = (x,y) => {
       let min = Infinity;
 
-      // Reserve the large operator diamond in the center.
       const opDx = (x-operator.x)/13;
       const opDy = (y-operator.y)/17;
       min = Math.min(min,Math.hypot(opDx,opDy));
@@ -595,14 +601,11 @@
         }
       }
 
-      // Dense-scene fallback: stable screen lanes. These are appended after
-      // local candidates, so normal encounters still preserve scene geometry.
       const gridX = [8,20,32,44,56,68,80,92];
       const gridY = [12,28,44,60,72];
 
       for (const x of gridX) {
         for (const y of gridY) {
-          // Keep the operator's central identity area visually sacred.
           const opDx = (x-operator.x)/14;
           const opDy = (y-operator.y)/18;
           if (Math.hypot(opDx,opDy) < 1.05) continue;
@@ -617,15 +620,11 @@
 
     const nodes = rawNodes.map(node => {
       const candidates = candidatesFor(node);
-
       let best = candidates[0];
       let bestScore = -Infinity;
 
       for (const candidate of candidates) {
         const separation = separationScore(candidate.x,candidate.y);
-
-        // A separation score >= 1 is visually clear. Prefer the nearest clear
-        // candidate; if none are perfectly clear, maximize separation.
         const score =
           (separation >= 1 ? 1000 : separation * 100) -
           candidate.drift * 1.35;
@@ -636,20 +635,152 @@
         }
       }
 
-      const laidOut = {
-        ...node,
-        x:best.x,
-        y:best.y
-      };
-
+      const laidOut = {...node,x:best.x,y:best.y};
       placed.push(laidOut);
       return laidOut;
     });
 
+    // Synthetic infrastructure nodes make JACK IN read as a network topology,
+    // not just a line from operator -> token. They are non-interactive.
+    const relayBlueprints = [
+      {x:50,y:34,label:"GATE-01",kind:"gateway",parent:"operator"},
+      {x:34,y:43,label:"RLY-A3",kind:"relay",parent:"relay-0"},
+      {x:66,y:43,label:"RLY-B7",kind:"relay",parent:"relay-0"},
+      {x:22,y:60,label:"SUB-04",kind:"subnet",parent:"relay-1"},
+      {x:78,y:60,label:"SUB-09",kind:"subnet",parent:"relay-2"},
+      {x:36,y:71,label:"PORT-12",kind:"edge",parent:"relay-3"},
+      {x:64,y:71,label:"PORT-17",kind:"edge",parent:"relay-4"},
+      {x:17,y:34,label:"EDGE-03",kind:"edge",parent:"relay-1"},
+      {x:83,y:34,label:"EDGE-08",kind:"edge",parent:"relay-2"}
+    ];
+
+    const desiredRelayCount =
+      nodes.length <= 2 ? 9 :
+      nodes.length <= 5 ? 7 :
+      nodes.length <= 9 ? 6 :
+      5;
+
+    const relays = relayBlueprints
+      .slice(0,desiredRelayCount)
+      .map((relay,index) => ({
+        ...relay,
+        id:"relay-"+index,
+        index,
+        pulse:(index % 5) * 0.28
+      }));
+
+    const points = new Map([
+      ["operator",{id:"operator",x:operator.x,y:operator.y,kind:"operator"}],
+      ...relays.map(relay => [relay.id,relay]),
+      ...nodes.map(node => [node.id,node])
+    ]);
+
+    const links = [];
+    const linkKeys = new Set();
+
+    const canonicalKey = (a,b) =>
+      [String(a),String(b)].sort().join("::");
+
+    const addLink = (from,to,kind="ambient",meta={}) => {
+      const a = points.get(from);
+      const b = points.get(to);
+      if (!a || !b) return;
+
+      const key = canonicalKey(from,to);
+      if (linkKeys.has(key)) return;
+      linkKeys.add(key);
+
+      links.push({
+        id:"link-"+links.length,
+        from,
+        to,
+        x1:a.x,
+        y1:a.y,
+        x2:b.x,
+        y2:b.y,
+        kind,
+        selected:false,
+        relation:meta.relation ?? null,
+        targetId:meta.targetId ?? null
+      });
+    };
+
+    // Backbone / branching mesh.
+    for (const relay of relays) {
+      addLink(relay.parent,relay.id,relay.kind === "gateway" ? "backbone" : "branch");
+    }
+
+    const crossLinks = [
+      ["relay-1","relay-2"],
+      ["relay-3","relay-4"],
+      ["relay-1","relay-7"],
+      ["relay-2","relay-8"],
+      ["relay-3","relay-5"],
+      ["relay-4","relay-6"]
+    ];
+
+    for (const [a,b] of crossLinks) addLink(a,b,"mesh");
+
+    const relayDistance = (node,relay) =>
+      Math.hypot((node.x-relay.x)*1.0,(node.y-relay.y)*1.18);
+
+    const assignments = new Map();
+
+    for (const node of nodes) {
+      const ranked = [...relays]
+        .sort((a,b) => relayDistance(node,a)-relayDistance(node,b));
+
+      const primary = ranked[0] ?? null;
+      const secondary = ranked[1] ?? null;
+
+      if (primary) {
+        assignments.set(node.id,primary.id);
+        addLink(primary.id,node.id,"endpoint",{
+          relation:node.relation,
+          targetId:node.id
+        });
+      }
+
+      if (secondary && nodes.length <= 6) {
+        addLink(secondary.id,node.id,"shadow",{
+          relation:node.relation,
+          targetId:node.id
+        });
+      }
+    }
+
+    const selected = nodes.find(n => n.targeted) ?? null;
+
+    if (selected) {
+      const primaryId = assignments.get(selected.id);
+      const selectedKeys = new Set();
+
+      let cursor = primaryId;
+      while (cursor && cursor !== "operator") {
+        const relay = relays.find(r => r.id === cursor);
+        if (!relay) break;
+        selectedKeys.add(canonicalKey(relay.parent,cursor));
+        cursor = relay.parent;
+      }
+
+      if (primaryId) {
+        selectedKeys.add(canonicalKey(primaryId,selected.id));
+      }
+
+      for (const link of links) {
+        if (selectedKeys.has(canonicalKey(link.from,link.to))) {
+          link.selected = true;
+        }
+      }
+    }
+
     return {
       scene,
       nodes,
-      selected:nodes.find(n => n.targeted) ?? null
+      relays,
+      links,
+      selected,
+      operator
     };
   }
 
@@ -666,23 +797,85 @@
     const m = model(actor);
     const selected = net.selected;
 
-    const lines = net.nodes.map(n =>
-      '<line class="jack-net-line is-'+n.relation+(n.targeted?' is-targeted':'')+'" x1="500" y1="390" x2="'+(n.x*10).toFixed(1)+'" y2="'+(n.y*7.2).toFixed(1)+'" />'
+    const toSvgX = value => Number(value) * 10;
+    const toSvgY = value => Number(value) * 7.2;
+
+    const linkSvg = net.links.map((link,index) => {
+      const x1 = toSvgX(link.x1).toFixed(1);
+      const y1 = toSvgY(link.y1).toFixed(1);
+      const x2 = toSvgX(link.x2).toFixed(1);
+      const y2 = toSvgY(link.y2).toFixed(1);
+
+      const relation =
+        link.relation ? " is-"+link.relation : "";
+
+      const selectedClass =
+        link.selected ? " is-selected-route" : "";
+
+      const base =
+        '<line class="jack-net-line is-'+link.kind+relation+selectedClass+
+        '" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" />';
+
+      const packetCount = link.selected ? 2 : 1;
+      const duration =
+        link.selected ? 1.65 :
+        link.kind === "backbone" ? 2.5 :
+        link.kind === "endpoint" ? 2.9 :
+        3.7;
+
+      const packets = Array.from({length:packetCount},(_,packetIndex) => {
+        const delay = -((index * .23) + (packetIndex * duration/packetCount)).toFixed(2);
+        return (
+          '<circle class="jack-packet is-'+link.kind+selectedClass+'" r="'+
+          (link.selected ? "3.2" : "2.0")+'">'+
+            '<animate attributeName="cx" values="'+x1+';'+x2+'" dur="'+duration+
+            's" begin="'+delay+'s" repeatCount="indefinite" />'+
+            '<animate attributeName="cy" values="'+y1+';'+y2+'" dur="'+duration+
+            's" begin="'+delay+'s" repeatCount="indefinite" />'+
+            '<animate attributeName="opacity" values="0;.9;.9;0" dur="'+duration+
+            's" begin="'+delay+'s" repeatCount="indefinite" />'+
+          '</circle>'
+        );
+      }).join("");
+
+      return base + packets;
+    }).join("");
+
+    const relays = net.relays.map(relay =>
+      '<div class="jack-relay is-'+relay.kind+'" style="--jack-x:'+relay.x+
+      '%;--jack-y:'+relay.y+'%;--relay-delay:'+relay.pulse+'s">'+
+        '<span class="jack-relay-core"><i></i></span>'+
+        '<small>'+esc(relay.label)+'</small>'+
+        '<em>'+(
+          relay.kind === "gateway" ? "UPLINK" :
+          relay.kind === "subnet" ? "SUBNET" :
+          relay.kind === "edge" ? "EDGE" :
+          "RELAY"
+        )+'</em>'+
+      '</div>'
     ).join("");
 
     const nodes = net.nodes.map((n,i) =>
-      '<button class="jack-node is-'+n.relation+(n.targeted?' is-targeted':'')+(n.self?' is-self':'')+'" style="--jack-x:'+n.x.toFixed(2)+'%;--jack-y:'+n.y.toFixed(2)+'%" data-jack-action="target" data-token-id="'+esc(n.id)+'">'+
+      '<button class="jack-node is-'+n.relation+(n.targeted?' is-targeted':'')+
+      '" style="--jack-x:'+n.x.toFixed(2)+'%;--jack-y:'+n.y.toFixed(2)+
+      '%" data-jack-action="target" data-token-id="'+esc(n.id)+'">'+
         '<span class="jack-node-num">'+String(i+1).padStart(2,"0")+'</span>'+
         '<img src="'+esc(n.img)+'" alt="">'+
-        '<span class="jack-node-copy"><b>'+esc(n.name)+'</b><small>'+(n.self?'SELF':n.relation.toUpperCase())+'</small></span>'+
+        '<span class="jack-node-copy"><b>'+esc(n.name)+'</b><small>'+
+        n.relation.toUpperCase()+'</small></span>'+
         '<em>'+(n.targeted?'LOCKED':'ACQUIRE')+'</em>'+
       '</button>'
+    ).join("");
+
+    const operatorPorts = Array.from({length:8},(_,i) =>
+      '<i style="--port:'+i+'"></i>'
     ).join("");
 
     const hacks = m.loaded.length
       ? m.loaded.map(item => {
           const cost = hackCost(item);
-          return '<button class="jack-hack" data-jack-action="run" data-item-id="'+esc(item.id)+'" '+(!selected || m.currentRam < cost?'disabled':'')+'>'+
+          return '<button class="jack-hack" data-jack-action="run" data-item-id="'+
+            esc(item.id)+'" '+(!selected || m.currentRam < cost?'disabled':'')+'>'+
             '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
             '<span><b>'+esc(item.name)+'</b><small>RAM '+cost+' // DC '+m.dc+'</small></span>'+
             '<em><span>EXECUTE</span><b>RUN</b></em>'+
@@ -697,14 +890,41 @@
         <div class="jack-head-stat"><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
         <button data-jack-action="close" class="jack-close">×</button>
       </header>
+
       <main class="jack-space ${net.nodes.length <= 2 ? "is-sparse" : ""}" data-node-count="${net.nodes.length}">
-        <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
-        <div class="jack-operator"><div></div><img src="${esc(portrait(actor))}" alt=""><span><small>OPERATOR</small><b>${esc(actor.name)}</b></span></div>
+        <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">
+          ${linkSvg}
+        </svg>
+
+        <div class="jack-net-caption">
+          <small>TOPOLOGY</small>
+          <b>${net.relays.length} RELAYS // ${net.nodes.length} ENDPOINT${net.nodes.length===1?"":"S"}</b>
+        </div>
+
+        ${relays}
+
+        <div class="jack-operator">
+          <div></div>
+          <div class="jack-operator-hub">${operatorPorts}</div>
+          <img src="${esc(portrait(actor))}" alt="">
+          <span><small>OPERATOR CORE</small><b>${esc(actor.name)}</b></span>
+        </div>
+
         ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
-        <div class="jack-lock-readout"><small>TARGET LOCK</small><b>${selected?esc(selected.name):"NO TARGET"}</b><span>${net.nodes.length + 1} SCENE SIGNATURES DETECTED // OPERATOR INCLUDED</span></div>
+
+        <div class="jack-lock-readout">
+          <small>TARGET LOCK</small>
+          <b>${selected?esc(selected.name):"NO TARGET"}</b>
+          <span>${net.relays.length} RELAYS // ${net.nodes.length + 1} SIGNATURES // OPERATOR INCLUDED</span>
+        </div>
       </main>
+
       <footer class="jack-actions">
-        <div class="jack-actions-title"><small>LOADED SOFTWARE</small><b>QUICKHACK EXECUTION</b><span>${selected?"TARGET // "+esc(selected.name):"SELECT A TARGET NODE"}</span></div>
+        <div class="jack-actions-title">
+          <small>LOADED SOFTWARE</small>
+          <b>QUICKHACK EXECUTION</b>
+          <span>${selected?"TARGET // "+esc(selected.name):"SELECT A TARGET NODE"}</span>
+        </div>
         <div class="jack-hacks">${hacks}</div>
       </footer>
     `;
