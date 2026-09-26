@@ -1,14 +1,12 @@
 {
-  "version": "0.6.0",
+  "version": "0.6.1",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-v2-full-replacement",
+  "scope": "cyberdeck-readability-roster",
   "notes": [
-    "Replaced game.adk.openCyberdeck() with a completely new FEHA-owned Cyberdeck interface",
-    "The legacy purple Cyberdeck template is no longer used for presentation",
-    "New UI includes operator portrait, installed deck detection, segmented RAM/Heat/Humanity telemetry, terminal tabs, loaded quickhacks, software library, support chrome, network target grid, and JACK IN",
-    "Quickhack spell documents can be loaded/unloaded through preparation state and run directly from the Cyberdeck",
-    "Short Rest action remains the RAM recovery path",
-    "No wallet/eurodollar UI exists in Cyberdeck V2",
-    "Underlying actor/item data remains the source of truth"
+    "Scaled Cyberdeck V2 up across typography, telemetry, actor portrait, quickhack cards, controls, footer, and right rail",
+    "Cyberdeck actor selector is now restricted to Ponyboy, Derke, Sasha, and Zach only",
+    "Roster order is fixed as Ponyboy, Derke, Sasha, Zach",
+    "Saved/fallback actor selection is constrained to the allowed Cyberdeck roster",
+    "Cyberdeck V2 mechanics and data model remain unchanged"
   ]
 }
