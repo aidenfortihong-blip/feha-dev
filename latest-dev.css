@@ -1433,3 +1433,16 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.3.3
+   PONYBOY PORTRAIT CENTERING
+   ========================================================================== */
+
+/* Ponyboy's portrait composition sits a little right-heavy in the source art.
+   Shift the crop point left so his face lands closer to the visual center,
+   without affecting Sasha/Zach/Nina/Cael/Florence. */
+#adk-chrome-manager-34[data-feha-subject="ponyboy"] .subject-art img {
+  object-position: 46% 50% !important;
+}
