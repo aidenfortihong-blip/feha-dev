@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.4.14";
+  const BUILD = "0.4.15";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -223,6 +223,44 @@
       });
   }
 
+  function normalizeChromeManagerTerminology(root = document.getElementById("adk-chrome-manager-34")) {
+    if (!root) return false;
+
+    const replaceName = value => String(value ?? "")
+      .replace(/augmentation\s+theatre/gi, "Chrome Manager")
+      .replace(/augmentation\s+theater/gi, "Chrome Manager");
+
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          const value = node.nodeValue ?? "";
+          return /augmentation\s+theat(?:re|er)/i.test(value)
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT;
+        }
+      }
+    );
+
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      node.nodeValue = replaceName(node.nodeValue);
+    }
+
+    root.querySelectorAll("[title],[aria-label],[data-tooltip],[placeholder]").forEach(el => {
+      for (const attr of ["title", "aria-label", "data-tooltip", "placeholder"]) {
+        if (!el.hasAttribute(attr)) continue;
+        const before = el.getAttribute(attr);
+        const after = replaceName(before);
+        if (after !== before) el.setAttribute(attr, after);
+      }
+    });
+
+    return true;
+  }
+
   function markRoot() {
     const root = document.getElementById("adk-chrome-manager-34");
     if (!root) return false;
@@ -237,6 +275,7 @@
     applyPrivateAssets(root);
     filterActorRoster(root);
     applyActorPortraitOverride(root);
+    normalizeChromeManagerTerminology(root);
     return true;
   }
 
@@ -456,7 +495,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.14 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.15 // preload failed", event, err);
         }
       }
     }
@@ -514,11 +553,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.14 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.15 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.14 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.15 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -541,7 +580,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.14 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.15 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -665,12 +704,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.14 // sound source: ${source}`
+      `FEHA DEV 0.4.15 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.14 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.15 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -948,7 +987,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // Derke + Ponyboy portraits updated"
+    "FEHA DEV " + BUILD + " // Chrome Manager naming pass loaded"
   );
 
   state.reopenChrome();
