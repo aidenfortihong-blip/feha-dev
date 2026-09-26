@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.2.7";
+  const BUILD = "0.2.8";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -177,6 +177,265 @@
     delete globalThis.__FEHA_CACHE_SELECTION_UX_025;
   }
 
+  function installSoundEngine() {
+    if (globalThis.__FEHA_SOUND_ENGINE_028) return;
+
+    const OriginalPlay = HTMLMediaElement.prototype.play;
+    let ctx = null;
+
+    const MASTER = {
+      volume: 0.72,
+      hover: 0.34,
+      select: 0.62,
+      drawer: 0.72,
+      scan: 0.66,
+      install: 0.82,
+      remove: 0.72,
+      error: 0.76,
+      confirm: 0.68
+    };
+
+    function audioCtx() {
+      if (!ctx || ctx.state === "closed") {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (ctx.state === "suspended") ctx.resume().catch(() => {});
+      return ctx;
+    }
+
+    function outGain(kind) {
+      const c = audioCtx();
+      const g = c.createGain();
+      g.gain.value = Math.max(
+        0,
+        Math.min(1, MASTER.volume * (MASTER[kind] ?? 0.6))
+      );
+      g.connect(c.destination);
+      return g;
+    }
+
+    function osc(kind, {
+      type = "sine",
+      freq = 440,
+      endFreq = null,
+      delay = 0,
+      dur = 0.08,
+      gain = 0.12,
+      attack = 0.004,
+      pan = 0
+    } = {}) {
+      const c = audioCtx();
+      const start = c.currentTime + delay;
+      const end = start + dur;
+
+      const o = c.createOscillator();
+      const g = c.createGain();
+      const p = c.createStereoPanner ? c.createStereoPanner() : null;
+
+      o.type = type;
+      o.frequency.setValueAtTime(Math.max(20, freq), start);
+      if (endFreq != null) {
+        o.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq), end);
+      }
+
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), start + attack);
+      g.gain.exponentialRampToValueAtTime(0.0001, end);
+
+      if (p) {
+        p.pan.value = Math.max(-1, Math.min(1, pan));
+        o.connect(g);
+        g.connect(p);
+        p.connect(outGain(kind));
+      } else {
+        o.connect(g);
+        g.connect(outGain(kind));
+      }
+
+      o.start(start);
+      o.stop(end + 0.02);
+    }
+
+    function noise(kind, {
+      delay = 0,
+      dur = 0.06,
+      gain = 0.07,
+      low = 600,
+      high = 6000,
+      pan = 0
+    } = {}) {
+      const c = audioCtx();
+      const start = c.currentTime + delay;
+      const length = Math.max(1, Math.floor(c.sampleRate * dur));
+      const buffer = c.createBuffer(1, length, c.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      for (let i = 0; i < length; i++) {
+        const env = 1 - i / length;
+        data[i] = (Math.random() * 2 - 1) * env;
+      }
+
+      const src = c.createBufferSource();
+      const hp = c.createBiquadFilter();
+      const lp = c.createBiquadFilter();
+      const g = c.createGain();
+      const p = c.createStereoPanner ? c.createStereoPanner() : null;
+
+      src.buffer = buffer;
+
+      hp.type = "highpass";
+      hp.frequency.value = low;
+
+      lp.type = "lowpass";
+      lp.frequency.value = high;
+
+      g.gain.setValueAtTime(Math.max(0.0001, gain), start);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+      src.connect(hp);
+      hp.connect(lp);
+      lp.connect(g);
+
+      if (p) {
+        p.pan.value = Math.max(-1, Math.min(1, pan));
+        g.connect(p);
+        p.connect(outGain(kind));
+      } else {
+        g.connect(outGain(kind));
+      }
+
+      src.start(start);
+      src.stop(start + dur + 0.02);
+    }
+
+    function play(kind = "select") {
+      try {
+        audioCtx();
+
+        switch (kind) {
+          case "hover":
+            // Tiny glass/servo tick. Audible but never fatiguing.
+            noise(kind, { dur: 0.022, gain: 0.045, low: 2100, high: 9000 });
+            osc(kind, { type: "sine", freq: 1850, endFreq: 1320, dur: 0.032, gain: 0.045 });
+            break;
+
+          case "select":
+            // Mechanical click with a clean digital lock-on.
+            noise(kind, { dur: 0.026, gain: 0.075, low: 850, high: 5200, pan: -0.06 });
+            osc(kind, { type: "triangle", freq: 145, endFreq: 82, dur: 0.072, gain: 0.13 });
+            osc(kind, { type: "sine", freq: 920, endFreq: 1420, delay: 0.018, dur: 0.052, gain: 0.075, pan: 0.08 });
+            break;
+
+          case "drawer":
+            // Servo door / hardware tray.
+            osc(kind, { type: "sawtooth", freq: 112, endFreq: 58, dur: 0.15, gain: 0.095 });
+            noise(kind, { delay: 0.015, dur: 0.13, gain: 0.095, low: 420, high: 3200 });
+            osc(kind, { type: "triangle", freq: 430, endFreq: 265, delay: 0.085, dur: 0.075, gain: 0.055 });
+            break;
+
+          case "scan":
+            // Fast biometric scanner sweep.
+            noise(kind, { dur: 0.13, gain: 0.055, low: 1200, high: 7200 });
+            osc(kind, { type: "sine", freq: 520, endFreq: 760, dur: 0.055, gain: 0.075, pan: -0.18 });
+            osc(kind, { type: "sine", freq: 780, endFreq: 1120, delay: 0.055, dur: 0.055, gain: 0.08 });
+            osc(kind, { type: "sine", freq: 1160, endFreq: 1680, delay: 0.11, dur: 0.065, gain: 0.085, pan: 0.18 });
+            break;
+
+          case "install":
+            // Important event: clamp, handshake, then authorization confirmation.
+            osc(kind, { type: "sine", freq: 92, endFreq: 48, dur: 0.18, gain: 0.18 });
+            noise(kind, { delay: 0.015, dur: 0.075, gain: 0.11, low: 240, high: 2600 });
+            osc(kind, { type: "triangle", freq: 460, endFreq: 610, delay: 0.08, dur: 0.07, gain: 0.07, pan: -0.12 });
+            osc(kind, { type: "triangle", freq: 730, endFreq: 980, delay: 0.15, dur: 0.07, gain: 0.08 });
+            osc(kind, { type: "sine", freq: 1180, endFreq: 1740, delay: 0.225, dur: 0.105, gain: 0.115, pan: 0.12 });
+            break;
+
+          case "remove":
+            // Reverse disengage / pneumatic release.
+            osc(kind, { type: "triangle", freq: 1320, endFreq: 390, dur: 0.14, gain: 0.085 });
+            noise(kind, { delay: 0.025, dur: 0.12, gain: 0.105, low: 330, high: 3000 });
+            osc(kind, { type: "sine", freq: 105, endFreq: 62, delay: 0.09, dur: 0.11, gain: 0.14 });
+            break;
+
+          case "error":
+            // Short hostile digital rejection, not a generic Windows beep.
+            noise(kind, { dur: 0.12, gain: 0.095, low: 500, high: 4100 });
+            osc(kind, { type: "square", freq: 245, endFreq: 210, dur: 0.07, gain: 0.07, pan: -0.12 });
+            osc(kind, { type: "square", freq: 188, endFreq: 155, delay: 0.075, dur: 0.085, gain: 0.075, pan: 0.12 });
+            break;
+
+          case "confirm":
+            // Crisp positive two-stage handshake.
+            osc(kind, { type: "sine", freq: 880, endFreq: 1040, dur: 0.055, gain: 0.085, pan: -0.08 });
+            osc(kind, { type: "sine", freq: 1320, endFreq: 1580, delay: 0.065, dur: 0.075, gain: 0.105, pan: 0.08 });
+            noise(kind, { delay: 0.058, dur: 0.022, gain: 0.035, low: 2600, high: 8500 });
+            break;
+
+          default:
+            play("select");
+        }
+      } catch (err) {
+        console.warn("FEHA DEV 0.2.8 // synth sound failed", err);
+      }
+    }
+
+    HTMLMediaElement.prototype.play = function(...args) {
+      try {
+        const src = String(this.currentSrc || this.src || this.getAttribute?.("src") || "");
+        const match = src.match(
+          /\/assets\/audio\/chrome\/(hover|select|drawer|scan|install|remove|error|confirm)\.wav(?:[?#].*)?$/i
+        );
+
+        if (match) {
+          play(match[1].toLowerCase());
+          return Promise.resolve();
+        }
+      } catch (err) {
+        console.warn("FEHA DEV 0.2.8 // sound routing failed", err);
+      }
+
+      return OriginalPlay.apply(this, args);
+    };
+
+    globalThis.FEHA_SOUNDS = {
+      play,
+      profile: MASTER,
+      setVolume(value) {
+        MASTER.volume = Math.max(0, Math.min(1, Number(value) || 0));
+        return MASTER.volume;
+      },
+      demo() {
+        const order = ["hover", "select", "drawer", "scan", "install", "remove", "error", "confirm"];
+        order.forEach((kind, i) => setTimeout(() => play(kind), i * 520));
+      }
+    };
+
+    globalThis.__FEHA_SOUND_ENGINE_028 = {
+      originalPlay: OriginalPlay,
+      get context() { return ctx; }
+    };
+
+    console.info(
+      "FEHA DEV 0.2.8 // cyber sound engine armed. Test with FEHA_SOUNDS.demo()"
+    );
+  }
+
+  function removeSoundEngine() {
+    const engine = globalThis.__FEHA_SOUND_ENGINE_028;
+    if (!engine) return;
+
+    if (HTMLMediaElement.prototype.play !== engine.originalPlay) {
+      HTMLMediaElement.prototype.play = engine.originalPlay;
+    }
+
+    try {
+      engine.context?.close?.();
+    } catch {}
+
+    delete globalThis.FEHA_SOUNDS;
+    delete globalThis.__FEHA_SOUND_ENGINE_028;
+  }
+
   function installActorSwitchFix() {
     if (globalThis.__FEHA_ACTOR_SWITCH_FIX_026) return;
 
@@ -327,6 +586,7 @@
 
       removeCacheSelectionUX();
       removeActorSwitchFix();
+      removeSoundEngine();
       document
         .getElementById("adk-chrome-manager-34")
         ?.classList.remove("feha-cache-selection-focus");
@@ -355,6 +615,7 @@
   globalThis.ADKDevPatch = state;
   globalThis.FEHA_DEV_DIAGNOSTICS = globalThis.FEHA_DEV_DIAGNOSTICS ?? false;
 
+  installSoundEngine();
   installCacheSelectionUX();
   installActorSwitchFix();
   startObserver();
@@ -368,7 +629,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // center title collision fix loaded"
+    "FEHA DEV " + BUILD + " // cyber sound redesign loaded"
   );
 
   state.reopenChrome();
