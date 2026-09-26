@@ -77,6 +77,25 @@
     return String(value ?? "").trim().replace(/[?#].*$/, "");
   }
 
+  function normalizeModuleEntry(moduleId, entry) {
+    let raw =
+      typeof entry === "string"
+        ? entry
+        : entry?.src ?? entry?.path ?? entry?.url ?? "";
+
+    raw = stripQuery(raw);
+    if (!raw) return "";
+
+    const prefix = `/modules/${moduleId}/`;
+    const prefixNoSlash = `modules/${moduleId}/`;
+
+    if (raw.startsWith(prefix)) raw = raw.slice(prefix.length);
+    else if (raw.startsWith(prefixNoSlash)) raw = raw.slice(prefixNoSlash.length);
+
+    try { raw = decodeURIComponent(raw); } catch {}
+    return raw.replace(/^\/+/, "");
+  }
+
   function resolvePath(moduleId, currentPath, ref) {
     ref = stripQuery(ref);
     if (!ref) return null;
@@ -172,11 +191,11 @@
   };
 
   enqueue("module.json");
-  for (const p of mod.scripts ?? []) enqueue(String(p));
-  for (const p of mod.esmodules ?? []) enqueue(String(p));
-  for (const p of mod.styles ?? []) enqueue(String(p));
+  for (const p of mod.scripts ?? []) enqueue(normalizeModuleEntry(moduleId, p));
+  for (const p of mod.esmodules ?? []) enqueue(normalizeModuleEntry(moduleId, p));
+  for (const p of mod.styles ?? []) enqueue(normalizeModuleEntry(moduleId, p));
   for (const lang of mod.languages ?? []) {
-    if (lang?.path) enqueue(String(lang.path));
+    enqueue(normalizeModuleEntry(moduleId, lang));
   }
 
   ui.notifications.info(
@@ -189,6 +208,25 @@
     try {
       const text = await fetchText(base + path);
       files[path] = text;
+
+      // module.json is authoritative and often contains cleaner relative paths
+      // than Foundry's runtime Module object (which may expose full module paths
+      // or style descriptors as objects).
+      if (path === "module.json") {
+        try {
+          const manifest = JSON.parse(text);
+          for (const p of manifest.scripts ?? []) enqueue(normalizeModuleEntry(moduleId, p));
+          for (const p of manifest.esmodules ?? []) enqueue(normalizeModuleEntry(moduleId, p));
+          for (const p of manifest.styles ?? []) enqueue(normalizeModuleEntry(moduleId, p));
+          for (const lang of manifest.languages ?? []) enqueue(normalizeModuleEntry(moduleId, lang));
+        } catch (manifestErr) {
+          failures.push({
+            path: "module.json#parse",
+            url: base + "module.json",
+            error: String(manifestErr?.message ?? manifestErr)
+          });
+        }
+      }
 
       const refs = scanReferences(moduleId, path, text);
       for (const next of refs.source) enqueue(next);
@@ -210,7 +248,7 @@
 
   const payload = {
     exportType: "FEHA_ADK_MODULE_SOURCE",
-    exporterVersion: "1.0",
+    exporterVersion: "1.1",
     generatedAt: new Date().toISOString(),
     environment: {
       foundryVersion: game.version,
