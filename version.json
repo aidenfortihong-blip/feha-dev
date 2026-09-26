@@ -1,12 +1,13 @@
 {
-  "version": "0.4.5",
+  "version": "0.4.6",
   "updated": "2026-09-25",
-  "scope": "hero-title-and-mini-signal-cleanup",
+  "scope": "center-dock-and-port-cleanup",
   "notes": [
-    "Removed the upper portrait-side signal profile entirely as requested",
-    "Kept only the full right-side signal profile",
-    "Moved the LINK/LATENCY/INTEGRITY/AUGMENTS strip above the subsystem title instead of allowing it to sit behind the title block",
-    "Raised and isolated the subsystem title paint layer so DERMAL SHELL and other active-system titles cannot be covered by center overlays",
-    "Removed all inherited title/status pseudo overlays that could bleed across the title"
+    "Removed the redundant center LINK/LATENCY/INTEGRITY/AUGMENTS strip that was visually fighting the active-system title",
+    "Rebuilt the center active-system title as one opaque isolated bottom dock above all portrait overlays",
+    "Kept only the subsystem kicker, large subsystem name and right-side subsystem descriptor in the center dock",
+    "Removed P01/P02/P03 labels and decorative HUD patch noise from hardware ports",
+    "Rebuilt hardware ports around socket plus readable hardware name/description with dedicated action row for installed items",
+    "Kept three empty ports in a clean three-column row at normal Theatre widths"
   ]
 }
