@@ -1,12 +1,11 @@
 {
-  "version": "0.5.2",
+  "version": "0.5.3",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-hard-reset-layout",
+  "scope": "cyberdeck-dom-diagnostics",
   "notes": [
-    "Hardened Cyberdeck DOM tagging based on actual visible controls instead of guessed wrappers",
-    "Quickhack '+' controls are now tagged globally inside the Cyberdeck and forced to compact fixed-size slots",
-    "Legacy €$ control now walks outward to the compact launcher shell and is collapsed completely",
-    "Aggressively removed inherited purple Foundry panel styling in favor of black terminal surfaces",
-    "Added geometry hooks for large left/right Cyberdeck regions for later layout work"
+    "Removed speculative geometry-based Cyberdeck wrapper tagging from 0.5.2",
+    "Added ADKDevPatch.inspectCyberdeckDOM() to capture exact live Cyberdeck tags/classes/actions and dimensions",
+    "Kept only safe text-anchored Cyberdeck styling until the installed-deck DOM is captured",
+    "No Chrome Manager mechanics or actor data changed"
   ]
 }
