@@ -366,6 +366,27 @@ The next chat should work from:
    - GitHub tokens
    - OAuth secrets
 
+
+## Export helpers now in the repo
+Run these as GM Script Macros in Foundry before starting the next chat:
+
+1. `foundry/FEHA_MODULE_SOURCE_EXPORTER.js`
+   - captures the installed ADK/FEHA module manifest
+   - captures manifest-listed JS / ES modules / CSS / language files
+   - recursively follows referenced text source such as imported JS, CSS, HBS, HTML, JSON, TXT, and Markdown
+   - records referenced binary asset paths without copying the binaries
+   - downloads `FEHA_ADK_MODULE_SOURCE_*.json`
+
+2. `foundry/FEHA_HANDOFF_EXPORTER.js`
+   - exports Ponyboy / Derke / Sasha / Zach Actor JSON
+   - exports all world Item JSON and folder metadata
+   - exports the two known FEHA CP2077 private asset maps from browser storage
+   - exports current runtime asset map
+   - records runtime API names for ADKWallet / ADKCore / Chrome backend
+   - downloads `FEHA_ADK_HANDOFF_*.json`
+
+Upload both JSON files into the next chat/project. Those two files are the bridge from the live Foundry world into a source-grounded rebuild.
+
 ## Next-chat first actions
 1. Read this handoff.
 2. Inspect current repo.
