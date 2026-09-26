@@ -3774,3 +3774,31 @@
   border: 0 !important;
   box-shadow: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.21
+   PORTRAIT STAGE // REMOVE REMAINING DECORATIVE BARS
+   ========================================================================== */
+
+/* These stage pseudo-elements were the actual source of the leftover cyan/red
+   floating bars around the portrait. Remove them completely. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-subject::before,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-subject::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Remove the legacy decorative frame/background layer as well; the portrait
+   stage already has its own authored dark background. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-background,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-corners {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
