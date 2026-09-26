@@ -2678,3 +2678,88 @@
   display: none !important;
   background: none !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.4.2
+   LEFT RAIL POLISH
+   ========================================================================== */
+
+/* The Owned Chrome trigger was letting its CP2077 mask paint over the count
+   and launch glyph. Keep the source geometry, but reserve a clean action zone. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 38px 26px !important;
+  align-items: center !important;
+  column-gap: 4px !important;
+  padding: 0 8px 0 14px !important;
+  overflow: hidden !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger::before {
+  inset: 4px 72px 4px 4px !important;
+  -webkit-mask-size: 100% 100% !important;
+  mask-size: 100% 100% !important;
+  opacity: .075 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > span,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > b,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > i {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > span {
+  min-width: 0 !important;
+  justify-self: center !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > b {
+  width: 38px !important;
+  height: 28px !important;
+  display: grid !important;
+  place-items: center !important;
+  justify-self: stretch !important;
+  color: rgb(var(--cp-red)) !important;
+  background: rgba(var(--cp-red), .025) !important;
+  border-left: 1px solid rgba(var(--cp-cyan), .10) !important;
+  border-right: 1px solid rgba(var(--cp-cyan), .08) !important;
+  font: 900 10px/1 Consolas, monospace !important;
+  text-shadow: 0 0 8px rgba(var(--cp-red), .22) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger > i {
+  width: 24px !important;
+  height: 28px !important;
+  display: grid !important;
+  place-items: center !important;
+  justify-self: end !important;
+  color: rgb(var(--cp-cyan)) !important;
+  font-style: normal !important;
+  font-size: 13px !important;
+  border-left: 1px solid rgba(var(--cp-cyan), .09) !important;
+}
+
+/* Keep per-system counters crisp and prevent their decorative state bar from
+   visually merging with the counter box at narrow rail widths. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system {
+  grid-template-columns: 25px 38px minmax(0,1fr) 32px 5px !important;
+  column-gap: 7px !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .system-count {
+  justify-self: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  font-size: 7px !important;
+  clip-path: polygon(0 0, 78% 0, 100% 22%, 100% 100%, 22% 100%, 0 78%) !important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .system-state {
+  justify-self: end !important;
+  margin-left: 1px !important;
+}
