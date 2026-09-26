@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.3.5";
+  const BUILD = "0.4.0";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -29,13 +29,30 @@
     }
     const ui = assets.ui ?? {};
     const names = {
+      "--feha-cp-armor-barbg": "5a1f20d7c3_armor_barbg",
+      "--feha-cp-bar": "a2ad0aec28_bar",
       "--feha-cp-bar-long": "38888b05f0_bar_long2",
+      "--feha-cp-counter": "3ec9bd29f0_counterLabel",
+      "--feha-cp-counter-stroke": "83986e3d27_counterLabel_stroke",
+      "--feha-cp-cw-barbg": "4113949e24_cw_barbg",
+      "--feha-cp-cw-mask": "aa246e3117_cw_mask",
       "--feha-cp-buffer-empty": "697dae4bde_buffer_empty",
       "--feha-cp-buffer-active": "4416a73d89_buffer_activated",
       "--feha-cp-frame-glow": "59feb7cd32_frame_glow",
+      "--feha-cp-frame-glow-small": "8cd8de72f8_frame_glow_small",
       "--feha-cp-barcode1": "7c16fcece5_fluff_barcode1",
+      "--feha-cp-barcode3": "2bead2d3f6_fluff_barcode3",
+      "--feha-cp-barcode4": "88ab2fcdee_fluff_barcode4",
       "--feha-cp-code1": "1a0c3eb3ee_fluff_code1",
-      "--feha-cp-arrow-right": "41df0fe86a_arrow_right"
+      "--feha-cp-highlight": "2ae8c588ae_fluff_highlight",
+      "--feha-cp-lines": "ef56f53fa5_fluff_lines",
+      "--feha-cp-crossline": "d4e7518fde_crossLine",
+      "--feha-cp-outerline": "9674e9d0b8_outerLine",
+      "--feha-cp-button-holder": "5c8f822dbf_gog_button_holder",
+      "--feha-cp-button-holder-2": "ac81a43116_gog_button_holder_02",
+      "--feha-cp-reward-frame": "a13706adc6_gog_frame_reward",
+      "--feha-cp-hud-patch": "6691702ad7_hud_patch_frame",
+      "--feha-cp-frame-bg": "ffe5273fdf_frame_bg"
     };
     for (const [cssName,key] of Object.entries(names)) {
       const url = ui[key];
@@ -43,6 +60,7 @@
       else root.style.removeProperty(cssName);
     }
     root.dataset.fehaCp2077Assets = "1";
+    root.dataset.fehaRerun = "040";
     globalThis.FEHA_CP2077_ASSETS = assets;
     return true;
   }
@@ -262,8 +280,89 @@
     delete globalThis.__FEHA_CACHE_SELECTION_UX_025;
   }
 
+  function installTelemetryMotion() {
+    if (globalThis.__FEHA_TELEMETRY_040) return;
+
+    let raf = 0;
+    let lastFrame = 0;
+    const reduceMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+    const hash = value => {
+      const text = String(value ?? "");
+      let h = 2166136261 >>> 0;
+      for (let i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    };
+
+    const pointsFor = (seed, time, count = 42) => {
+      const h = hash(seed);
+      const phaseA = ((h % 19) + 5) * 0.061;
+      const phaseB = ((h % 11) + 3) * 0.043;
+      const ampA = 6 + ((h >>> 4) % 8);
+      const ampB = 2 + ((h >>> 9) % 5);
+      const pts = [];
+
+      for (let i = 0; i < count; i++) {
+        const x = (i / (count - 1)) * 100;
+        const y =
+          50 +
+          Math.sin(i * phaseA + time * 1.55) * ampA +
+          Math.sin(i * .83 - time * 2.10) * 4.25 +
+          Math.sin(i * phaseB + time * 3.05) * ampB;
+        pts.push(`${x.toFixed(1)},${Math.max(9, Math.min(91, y)).toFixed(1)}`);
+      }
+
+      return pts.join(" ");
+    };
+
+    const tick = now => {
+      raf = requestAnimationFrame(tick);
+      if (reduceMotion || now - lastFrame < 33) return;
+      lastFrame = now;
+
+      const root = document.getElementById("adk-chrome-manager-34");
+      if (!root) return;
+
+      const actor = globalThis.ADKChromeBackend?.getActor?.();
+      const actorSeed = actor?.id ?? actor?.name ?? "subject";
+      const time = now / 1000;
+
+      root.querySelectorAll(".adk-v6-tech-readout").forEach((readout, index) => {
+        const wave = readout.querySelector(".tech-wave polyline");
+        if (wave) {
+          const head = readout.querySelector(".tech-head span")?.textContent ?? "signal";
+          wave.setAttribute("points", pointsFor(`${actorSeed}:${head}:${index}`, time + index * .33));
+        }
+
+        readout.querySelectorAll(".tech-barcode i").forEach((bar, barIndex) => {
+          const a = (Math.sin(time * 4.6 + barIndex * .57 + index) + 1) * .5;
+          const b = (Math.sin(time * 2.2 + barIndex * .83 + index * .7) + 1) * .5;
+          bar.style.opacity = String((.26 + a * .56).toFixed(3));
+          bar.style.transform = `scaleY(${(.68 + b * .62).toFixed(3)})`;
+        });
+      });
+    };
+
+    raf = requestAnimationFrame(tick);
+
+    globalThis.__FEHA_TELEMETRY_040 = {
+      stop() {
+        cancelAnimationFrame(raf);
+        delete globalThis.__FEHA_TELEMETRY_040;
+      }
+    };
+  }
+
+  function removeTelemetryMotion() {
+    globalThis.__FEHA_TELEMETRY_040?.stop?.();
+    delete globalThis.__FEHA_TELEMETRY_040;
+  }
+
   function installSoundEngine() {
-    if (globalThis.__FEHA_SOUND_ENGINE_035) return;
+    if (globalThis.__FEHA_SOUND_ENGINE_040) return;
 
     const OriginalPlay = HTMLMediaElement.prototype.play;
     const LOCAL_KEY = "fehaCP2077LocalSfxV1";
@@ -355,7 +454,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.3.5 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.0 // preload failed", event, err);
         }
       }
     }
@@ -413,11 +512,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.3.5 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.0 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.3.5 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.0 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -440,7 +539,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.3.5 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.0 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -554,29 +653,29 @@
         }
 
         if (globalThis.FEHA_SOUNDS === api) delete globalThis.FEHA_SOUNDS;
-        if (globalThis.__FEHA_SOUND_ENGINE_035 === engine) {
-          delete globalThis.__FEHA_SOUND_ENGINE_035;
+        if (globalThis.__FEHA_SOUND_ENGINE_040 === engine) {
+          delete globalThis.__FEHA_SOUND_ENGINE_040;
         }
       }
     };
 
     globalThis.FEHA_SOUNDS = api;
-    globalThis.__FEHA_SOUND_ENGINE_035 = engine;
+    globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.3.5 // sound source: ${source}`
+      `FEHA DEV 0.4.0 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.3.5 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.0 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
 
   function removeSoundEngine() {
     const engine =
-      globalThis.__FEHA_SOUND_ENGINE_035 ??
+      globalThis.__FEHA_SOUND_ENGINE_040 ??
       globalThis.__FEHA_SOUND_ENGINE_034 ??
       globalThis.__FEHA_SOUND_ENGINE_033 ??
       globalThis.__FEHA_SOUND_ENGINE_032 ??
@@ -592,7 +691,7 @@
     }
 
     delete globalThis.FEHA_SOUNDS;
-    delete globalThis.__FEHA_SOUND_ENGINE_035;
+    delete globalThis.__FEHA_SOUND_ENGINE_040;
     delete globalThis.__FEHA_SOUND_ENGINE_034;
     delete globalThis.__FEHA_SOUND_ENGINE_033;
     delete globalThis.__FEHA_SOUND_ENGINE_032;
@@ -740,7 +839,11 @@
       observer = null;
       const root = document.getElementById("adk-chrome-manager-34");
       root?.classList?.remove("adk-live-dev");
-      if (root?.dataset) { delete root.dataset.fehaDevBuild; delete root.dataset.fehaCp2077Assets; }
+      if (root?.dataset) {
+        delete root.dataset.fehaDevBuild;
+        delete root.dataset.fehaCp2077Assets;
+        delete root.dataset.fehaRerun;
+      }
       delete globalThis.FEHA_CP2077_ASSETS;
 
       const api = globalThis.ADKChromeBackend;
@@ -752,6 +855,7 @@
 
       removeCacheSelectionUX();
       removeActorSwitchFix();
+      removeTelemetryMotion();
       removeSoundEngine();
       document
         .getElementById("adk-chrome-manager-34")
@@ -782,6 +886,7 @@
   globalThis.FEHA_DEV_DIAGNOSTICS = globalThis.FEHA_DEV_DIAGNOSTICS ?? false;
 
   installSoundEngine();
+  installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
   startObserver();
@@ -795,7 +900,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // private CP2077 UI + Forge SFX bridge loaded"
+    "FEHA DEV " + BUILD + " // CP2077 Theatre full rerun loaded"
   );
 
   state.reopenChrome();
