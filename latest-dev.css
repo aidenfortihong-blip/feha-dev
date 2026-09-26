@@ -6511,3 +6511,127 @@
 #feha-cyberdeck-v2 .cd2-right > section::before {
   opacity: .055 !important;
 }
+
+
+/* ==========================================================================
+   FEHA LIVE DEV // 0.6.8
+   CYBERDECK V2 // QUICKHACK MEMORY RACK CLEANUP
+   ========================================================================== */
+
+/* Empty software slots should feel like deck memory bays, not raw CP2077
+   texture previews. Keep the extracted assets as low-opacity instrumentation. */
+#feha-cyberdeck-v2 .cd2-loaded-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot {
+  position: relative;
+  min-height: 154px !important;
+  overflow: hidden;
+  isolation: isolate;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    0 100%
+  ) !important;
+  color: #668087 !important;
+  background:
+    linear-gradient(180deg, rgba(var(--cd2-cyan), .025), transparent 32%),
+    linear-gradient(90deg, rgba(var(--cd2-cyan), .018), transparent 30%, transparent 70%, rgba(var(--cd2-cyan), .012)),
+    #020709 !important;
+  border: 1px solid rgba(var(--cd2-cyan), .14) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    inset 0 -18px 30px rgba(0,0,0,.20) !important;
+}
+
+/* Remove the giant raw white button-holder image completely. */
+#feha-cyberdeck-v2 .cd2-empty-slot::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 12px !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    var(--cd2-cp-crossline) center / 76% 76% no-repeat,
+    var(--cd2-cp-outerline) center / 100% 100% no-repeat !important;
+  opacity: .035 !important;
+}
+
+/* Small memory-bay instrumentation marks. */
+#feha-cyberdeck-v2 .cd2-empty-slot::before {
+  content: "MEM // EMPTY" !important;
+  position: absolute !important;
+  left: 9px !important;
+  top: 8px !important;
+  color: rgba(var(--cd2-cyan), .28) !important;
+  font-size: 5px !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+  pointer-events: none !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot > span {
+  color: rgba(var(--cd2-cyan), .62) !important;
+  font-size: 26px !important;
+  line-height: 1 !important;
+  text-shadow: 0 0 16px rgba(var(--cd2-cyan), .12);
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot > b {
+  color: #8ba0a6 !important;
+  font-size: 8px !important;
+  letter-spacing: .9px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot > small {
+  color: #4f686f !important;
+  font-size: 6px !important;
+  letter-spacing: .7px !important;
+}
+
+#feha-cyberdeck-v2 .cd2-empty-slot:hover {
+  color: rgb(var(--cd2-cyan)) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--cd2-cyan), .055), transparent 35%),
+    #03090c !important;
+  border-color: rgba(var(--cd2-cyan), .38) !important;
+}
+
+/* Active quickhack cards stay asset-rich, but don't let the HUD frame overpower
+   the actual icon/name. */
+#feha-cyberdeck-v2 .cd2-hack-card::before {
+  opacity: .035 !important;
+}
+
+#feha-cyberdeck-v2 .cd2-hack-card > img {
+  box-shadow:
+    0 0 0 1px rgba(var(--cd2-cyan), .10),
+    0 0 18px rgba(var(--cd2-cyan), .045) !important;
+}
+
+/* The extracted tab holder texture is also a white-mask source. Use it as a
+   whisper, not visible geometry. */
+#feha-cyberdeck-v2 .cd2-tabs button::before {
+  opacity: .018 !important;
+}
+
+#feha-cyberdeck-v2 .cd2-tabs button.is-active::before {
+  opacity: .045 !important;
+}
+
+/* Keep the five-slot rack usable on narrower desktop windows. */
+@media (max-width: 1400px) {
+  #feha-cyberdeck-v2 .cd2-loaded-grid {
+    grid-template-columns: repeat(5, minmax(145px, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  #feha-cyberdeck-v2 .cd2-empty-slot {
+    min-height: 138px !important;
+  }
+}
