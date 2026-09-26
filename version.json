@@ -1,18 +1,14 @@
 {
-  "version": "0.8.7",
+  "version": "0.8.8",
   "updated": "2026-09-26",
-  "scope": "jack-in-live-network-topology",
+  "scope": "jack-in-viewport-guard",
   "notes": [
-    "Rebuilt JACK IN from endpoint lines into a branching network topology",
-    "Added synthetic non-interactive gateway, relay, subnet, edge, and port nodes so sparse scenes still read as a live network",
-    "Added backbone, branch, mesh, endpoint, shadow, and selected-route link classes",
-    "Added animated packet traffic across the network and stronger yellow traffic on the selected target route",
-    "Selected targets now highlight the full operator-to-relay-to-endpoint route instead of only the final connection",
-    "Operator is now a network hub with rotating rings, radial uplink spokes, and pulsing port markers",
-    "Selected target nodes use a scanning TRACE LOCK reticle",
-    "Sparse one- and two-target layouts remain readable while synthetic infrastructure fills dead space",
-    "Quickhack execution dock remains intentionally clean so the network field carries the visual complexity",
-    "Retained all 0.8.4 hardening, 0.8.5 mask cleanup, and 0.8.6 execution controls"
+    "Hard-pinned the JACK IN root to the browser viewport with explicit fixed inset/100vw/100vh resets",
+    "Removed any inherited margin/transform/size constraints from the fullscreen overlay",
+    "Added protected 24px inner gutters to header, network field, and execution dock",
+    "Moved edge-mounted TARGET LOCK and topology readouts safely inside the clipped network surface",
+    "Hardened the Quickhack dock against horizontal overflow and collapsed title/card content",
+    "Retained the complete 0.8.7 branching network topology"
   ],
   "knownManualRules": [
     "Cyberdeck passive effects such as conditional RAM discounts are displayed but not automatically adjudicated because the installed FEHA module also treats them as descriptive/manual rules",
