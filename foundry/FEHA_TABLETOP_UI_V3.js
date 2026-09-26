@@ -206,7 +206,7 @@
 
   function roster() {
     const order = new Map([["ponyboy",0],["derke",1],["sasha",2],["zach",3]]);
-    const key = actor => norm(actor?.flags?.[FLAG]?.adkCharacter ?? actor?.name);
+    const key = actor => norm(actor?.flags?.[FLAG]?.adkCharacter || actor?.name);
     return [...(game.actors ?? [])]
       .filter(actor => order.has(key(actor)) && (game.user?.isGM || actor.isOwner))
       .sort((a,b) => (order.get(key(a)) ?? 99) - (order.get(key(b)) ?? 99));
@@ -217,7 +217,7 @@
   }
 
   function portrait(actor) {
-    const k = norm(actor?.flags?.[FLAG]?.adkCharacter ?? actor?.name);
+    const k = norm(actor?.flags?.[FLAG]?.adkCharacter || actor?.name);
     const fixed = {
       derke:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
       ponyboy:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/40e1fb5d-6265-4dfd-93d3-d6344dc14180.png"
@@ -345,9 +345,14 @@
   function render(actorId=null) {
     const actors = roster();
     const saved = localStorage.getItem("fehaCyberdeckActorV3");
-    const chosen = actorById(actorId) ?? actorById(saved) ?? actors[0] ?? null;
-    if (!chosen || !actors.some(a => a.id === chosen.id)) {
-      ui?.notifications?.warn?.("FEHA // No Cyberdeck roster actor available.");
+    const chosen =
+      actors.find(actor => actor.id === actorId) ??
+      actors.find(actor => actor.id === saved) ??
+      actors[0] ??
+      null;
+
+    if (!chosen) {
+      ui?.notifications?.warn?.("FEHA // No accessible Cyberdeck roster actor available.");
       return null;
     }
 
@@ -917,8 +922,17 @@
 
   function open(actorId=null) {
     const actors = roster();
-    const actor = actorById(actorId) ?? actorById(localStorage.getItem("fehaCyberdeckActorV3")) ?? actors[0] ?? null;
-    if (!actor) return ui?.notifications?.warn?.("No Cyberdeck roster actor available.");
+    const saved = localStorage.getItem("fehaCyberdeckActorV3");
+    const actor =
+      actors.find(candidate => candidate.id === actorId) ??
+      actors.find(candidate => candidate.id === saved) ??
+      actors[0] ??
+      null;
+
+    if (!actor) {
+      return ui?.notifications?.warn?.("No accessible Cyberdeck roster actor available.");
+    }
+
     document.getElementById(JACK_ID)?.remove();
     return render(actor.id);
   }
