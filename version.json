@@ -1,11 +1,12 @@
 {
-  "version": "0.4.16",
+  "version": "0.4.17",
   "updated": "2026-09-26",
-  "scope": "subsystem-rail-cleanup",
+  "scope": "legacy-wallet-removal",
   "notes": [
-    "Removed the decorative system-state strip beside subsystem counters",
-    "Collapsed subsystem rows from five columns to four so the counter is the clean rightmost element",
-    "Added a little right-side breathing room so the counter no longer crowds the rail edge",
-    "This specifically removes the double-bar look visible beside the Cortex row"
+    "Removed the old embedded ADK // WALLET blocks from character sheets without touching ADKWallet backend data",
+    "Runtime now tags legacy wallet shells and their balance nodes with dedicated FEHA hooks for the future standalone wallet redesign",
+    "Wallet suppression automatically reapplies after Foundry sheet rerenders",
+    "Updated Derke to the latest Forge portrait 74981913-bd87-4289-a524-7d987e699cfd.png",
+    "The existing signal-profile hotfix remains unrelated and does not need to own wallet logic"
   ]
 }
