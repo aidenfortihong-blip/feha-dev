@@ -1,13 +1,12 @@
 {
-  "version": "0.4.6",
+  "version": "0.4.7",
   "updated": "2026-09-25",
-  "scope": "center-dock-and-port-cleanup",
+  "scope": "installed-port-cleanup",
   "notes": [
-    "Removed the redundant center LINK/LATENCY/INTEGRITY/AUGMENTS strip that was visually fighting the active-system title",
-    "Rebuilt the center active-system title as one opaque isolated bottom dock above all portrait overlays",
-    "Kept only the subsystem kicker, large subsystem name and right-side subsystem descriptor in the center dock",
-    "Removed P01/P02/P03 labels and decorative HUD patch noise from hardware ports",
-    "Rebuilt hardware ports around socket plus readable hardware name/description with dedicated action row for installed items",
-    "Kept three empty ports in a clean three-column row at normal Theatre widths"
+    "Rebuilt filled hardware ports so installed chrome no longer looks crushed compared with vacant ports",
+    "Installed hardware now uses a dedicated thumbnail, title/meta column and aligned action column",
+    "EJECT no longer floats at the bottom of the card",
+    "Empty ports keep the simpler socket plus label layout",
+    "No behavior changes to install/eject actions"
   ]
 }
