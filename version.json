@@ -1,11 +1,10 @@
 {
-  "version": "0.6.4",
+  "version": "0.6.5",
   "updated": "2026-09-26",
-  "scope": "module-source-export-fix",
+  "scope": "module-source-export-default-target",
   "notes": [
-    "Fixed module source export path duplication for Foundry runtime esmodule paths",
-    "Handles Foundry style/module descriptors that are objects instead of string paths",
-    "Parses module.json as the authoritative manifest and recursively queues its scripts, ES modules, styles, and language files",
-    "Live-world handoff export from 0.6.3 remains valid and does not need to be rerun"
+    "Module source exporter now prefers the main flesh-enshrouded-heart-ablaze suite over the ADK Entry Gateway",
+    "Gateway remains selectable manually if ever needed",
+    "No changes to live-world handoff data or Cyberdeck behavior"
   ]
 }
