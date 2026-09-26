@@ -1945,3 +1945,66 @@
     font-size:7px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.4 HARDENING
+   Overflow visibility + deck-conflict diagnostics.
+   ========================================================================== */
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-conflict {
+  margin-top:10px;
+  padding:8px 9px;
+  color:#ffd65a;
+  background:rgba(255,214,90,.045);
+  border-left:2px solid rgba(255,214,90,.72);
+  font-size:7px;
+  line-height:1.45;
+  letter-spacing:.8px;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary.has-conflict {
+  border-color:rgba(255,214,90,.34) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-overflow {
+  margin:0 0 14px;
+  padding:10px;
+  background:
+    linear-gradient(110deg,rgba(255,73,119,.045),transparent 58%),
+    #04080a;
+  border:1px solid rgba(255,73,119,.20);
+  border-left:2px solid rgba(255,73,119,.64);
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-overflow-head {
+  margin:0 0 9px;
+  color:rgb(var(--cd2-mag));
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-overflow-list {
+  margin:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-overflow-list .v3-hack-card {
+  border-color:rgba(255,73,119,.20) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-overflow-list .v3-hack-card > button {
+  color:rgb(var(--cd2-mag)) !important;
+  border-color:rgba(255,73,119,.34) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 [data-busy="1"],
+#feha-jackin-overlay [data-busy="1"],
+#feha-jackin-overlay[data-executing="1"] .jack-hack {
+  cursor:wait !important;
+}
+
+#feha-jackin-overlay[data-executing="1"] .jack-hack {
+  pointer-events:none;
+  opacity:.54;
+}
