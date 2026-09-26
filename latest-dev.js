@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.4.9";
+  const BUILD = "0.4.10";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -235,6 +235,7 @@
     patchBackend();
     normalizeDossierSchematics();
     applyPrivateAssets(root);
+    filterActorRoster(root);
     return true;
   }
 
@@ -454,7 +455,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.4.9 // preload failed", event, err);
+          console.warn("FEHA DEV 0.4.10 // preload failed", event, err);
         }
       }
     }
@@ -512,11 +513,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.4.9 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.4.10 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.4.9 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.4.10 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -539,7 +540,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.4.9 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.4.10 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -663,12 +664,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.4.9 // sound source: ${source}`
+      `FEHA DEV 0.4.10 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.4.9 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.4.10 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -697,6 +698,20 @@
     delete globalThis.__FEHA_SOUND_ENGINE_032;
     delete globalThis.__FEHA_SOUND_ENGINE_029;
     delete globalThis.__FEHA_SOUND_ENGINE_028;
+  }
+
+  function filterActorRoster(root = document.getElementById("adk-chrome-manager-34")) {
+    const select = root?.querySelector?.("#actor-select");
+    if (!select) return false;
+
+    const blocked = new Set(["nina", "florence", "cael"]);
+
+    for (const option of [...select.options]) {
+      const label = norm(option.textContent || option.label || "");
+      if (blocked.has(label)) option.remove();
+    }
+
+    return true;
   }
 
   function installActorSwitchFix() {
@@ -762,6 +777,7 @@
 
         requestAnimationFrame(() => {
           const liveRoot = document.getElementById("adk-chrome-manager-34");
+          filterActorRoster(liveRoot);
           const liveSelect = liveRoot?.querySelector("#actor-select");
           if (liveSelect && liveSelect.value !== actorId) liveSelect.value = actorId;
 
@@ -900,7 +916,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // installed-port layout polish loaded"
+    "FEHA DEV " + BUILD + " // actor roster cleanup loaded"
   );
 
   state.reopenChrome();
