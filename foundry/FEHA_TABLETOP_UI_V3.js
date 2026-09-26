@@ -148,6 +148,40 @@
     return fixed[k] || actor?.flags?.[FLAG]?.characterChooserPortrait || actor?.img || "icons/svg/mystery-man.svg";
   }
 
+  function applyV3Assets(root) {
+    if (!root) return;
+    const ui = globalThis.FEHA_CP2077_ASSETS?.ui ?? {};
+    const map = {
+      "--v3-frame":"ffe5273fdf_frame_bg",
+      "--v3-hud":"6691702ad7_hud_patch_frame",
+      "--v3-highlight":"2ae8c588ae_fluff_highlight",
+      "--v3-lines":"ef56f53fa5_fluff_lines",
+      "--v3-crossline":"d4e7518fde_crossLine",
+      "--v3-outerline":"9674e9d0b8_outerLine",
+      "--v3-button":"5c8f822dbf_gog_button_holder",
+      "--v3-button2":"ac81a43116_gog_button_holder_02",
+      "--v3-reward":"a13706adc6_gog_frame_reward",
+      "--v3-buffer-empty":"697dae4bde_buffer_empty",
+      "--v3-buffer-active":"4416a73d89_buffer_activated",
+      "--v3-barcode1":"7c16fcece5_fluff_barcode1",
+      "--v3-barcode3":"2bead2d3f6_fluff_barcode3",
+      "--v3-code1":"1a0c3eb3ee_fluff_code1",
+      "--v3-glow":"59feb7cd32_frame_glow",
+      "--v3-glow-small":"8cd8de72f8_frame_glow_small"
+    };
+    let count = 0;
+    for (const [cssName,key] of Object.entries(map)) {
+      const url = ui[key];
+      if (url) {
+        root.style.setProperty(cssName,'url("'+url+'")');
+        count++;
+      } else {
+        root.style.removeProperty(cssName);
+      }
+    }
+    root.dataset.v3Assets = count ? "1" : "0";
+  }
+
   function segments(value,max,count=24) {
     const filled = max > 0 ? Math.round(Math.max(0,Math.min(1,value/max))*count) : 0;
     return '<div class="cd2-segments is-ram">' +
@@ -218,6 +252,7 @@
     root.dataset.fehaV3 = "1";
     root.dataset.actor = norm(chosen?.flags?.[FLAG]?.adkCharacter ?? chosen.name);
     root.dataset.actorId = chosen.id;
+    applyV3Assets(root);
 
     root.innerHTML = `
       <header class="cd2-header">
@@ -438,6 +473,7 @@
     root.id = JACK_ID;
     root.dataset.actorId = actor.id;
     root.dataset.phase = "boot";
+    applyV3Assets(root);
     root.innerHTML = '<div class="jack-boot"><div class="jack-code-rain">'+codeRain()+'</div><div class="jack-boot-core"><small>NEURAL HANDSHAKE // ACTIVE SCENE SWEEP</small><h1>JACKING IN</h1><b>SCANNING ACTOR SIGNATURES...</b><span>BUILDING TABLETOP SCENE MATRIX</span></div><div class="jack-boot-scan"></div></div>';
     document.body.appendChild(root);
     globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
