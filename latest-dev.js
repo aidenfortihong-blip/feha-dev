@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.3.3";
+  const BUILD = "0.3.4";
   let observer = null;
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -219,65 +219,165 @@
   }
 
   function installSoundEngine() {
-    if (globalThis.__FEHA_SOUND_ENGINE_033) return;
+    if (globalThis.__FEHA_SOUND_ENGINE_034) return;
 
     const OriginalPlay = HTMLMediaElement.prototype.play;
-    const BASE = "https://raw.githubusercontent.com/aidenfortihong-blip/feha-dev/main/audio/kenney";
+    const LOCAL_KEY = "fehaCP2077LocalSfxV1";
+    const FALLBACK_BASE = "https://raw.githubusercontent.com/aidenfortihong-blip/feha-dev/main/audio/kenney";
 
-    const MAP = {
-      hover:   [{ file: "tick_002.wav", volume: 0.18, rate: 1.08 }],
-      select:  [{ file: "select_005.wav", volume: 0.42, rate: 0.96 }],
-      drawer:  [{ file: "doorOpen_000.ogg", volume: 0.48, rate: 1.00 }],
-      scan:    [{ file: "laserSmall_002.ogg", volume: 0.34, rate: 0.78 }],
-      install: [
-        { file: "impactMetal_001.ogg", volume: 0.50, rate: 0.92 },
-        { file: "confirmation_003.wav", volume: 0.27, rate: 0.82, delay: 95 }
-      ],
-      remove:  [{ file: "doorClose_000.ogg", volume: 0.47, rate: 0.96 }],
-      error:   [{ file: "error_003.wav", volume: 0.42, rate: 0.88 }],
-      confirm: [{ file: "confirmation_003.wav", volume: 0.38, rate: 0.92 }]
+    const REQUIRED = [
+      "hover","select","subsystem_select","actor_switch",
+      "drawer_open","drawer_close","cyberware_select","scan",
+      "install","remove","error","confirm"
+    ];
+
+    const OPTIONAL = [
+      "cache_open","cache_close","compatibility_ok","compatibility_fail"
+    ];
+
+    const FALLBACK_MAP = {
+      hover: `${FALLBACK_BASE}/tick_002.wav`,
+      select: `${FALLBACK_BASE}/select_005.wav`,
+      subsystem_select: `${FALLBACK_BASE}/select_005.wav`,
+      actor_switch: `${FALLBACK_BASE}/select_005.wav`,
+      drawer_open: `${FALLBACK_BASE}/doorOpen_000.ogg`,
+      drawer_close: `${FALLBACK_BASE}/doorClose_000.ogg`,
+      cyberware_select: `${FALLBACK_BASE}/select_005.wav`,
+      scan: `${FALLBACK_BASE}/laserSmall_002.ogg`,
+      install: `${FALLBACK_BASE}/impactMetal_001.ogg`,
+      remove: `${FALLBACK_BASE}/doorClose_000.ogg`,
+      error: `${FALLBACK_BASE}/error_003.wav`,
+      confirm: `${FALLBACK_BASE}/confirmation_003.wav`,
+      cache_open: `${FALLBACK_BASE}/doorOpen_000.ogg`,
+      cache_close: `${FALLBACK_BASE}/doorClose_000.ogg`,
+      compatibility_ok: `${FALLBACK_BASE}/confirmation_003.wav`,
+      compatibility_fail: `${FALLBACK_BASE}/error_003.wav`
+    };
+
+    function readLocalPack() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(LOCAL_KEY) || "null");
+        if (!parsed || typeof parsed !== "object") return null;
+
+        const sounds = parsed.sounds ?? parsed;
+        const complete = REQUIRED.every(key =>
+          typeof sounds?.[key] === "string" &&
+          sounds[key].startsWith("data:audio/")
+        );
+
+        return complete ? sounds : null;
+      } catch {
+        return null;
+      }
+    }
+
+    const localPack = readLocalPack();
+    const paths = localPack ?? FALLBACK_MAP;
+    const source = localPack ? "CYBERPUNK 2077 // LOCAL" : "KENNEY // FALLBACK";
+
+    const LEVELS = {
+      hover: 0.34,
+      select: 0.72,
+      subsystem_select: 0.68,
+      actor_switch: 0.76,
+      drawer_open: 0.74,
+      drawer_close: 0.72,
+      cyberware_select: 0.74,
+      scan: 0.72,
+      install: 0.86,
+      remove: 0.82,
+      error: 0.76,
+      confirm: 0.78,
+      cache_open: 0.74,
+      cache_close: 0.72,
+      compatibility_ok: 0.78,
+      compatibility_fail: 0.76
     };
 
     let master = Number(localStorage.getItem("fehaRealSfxVolume") ?? 0.82);
     if (!Number.isFinite(master)) master = 0.82;
     master = Math.max(0, Math.min(1, master));
 
-    const cache = new Map();
+    const templates = new Map();
+    const active = new Set();
+    const lastPlay = new Map();
+    let disposed = false;
 
     function prime() {
-      const files = [...new Set(
-        Object.values(MAP).flat().map(x => x.file)
-      )];
-
-      files.forEach(file => {
-        const a = new Audio(`${BASE}/${file}`);
-        a.preload = "auto";
-        cache.set(file, a);
-      });
+      for (const [event, path] of Object.entries(paths)) {
+        try {
+          const audio = new Audio(path);
+          audio.preload = "auto";
+          templates.set(event, audio);
+        } catch (err) {
+          console.warn("FEHA DEV 0.3.4 // preload failed", event, err);
+        }
+      }
     }
 
-    function playLayer(layer) {
-      const base = cache.get(layer.file) ?? new Audio(`${BASE}/${layer.file}`);
-      const audio = base.cloneNode(true);
-      audio.volume = Math.max(0, Math.min(1, (layer.volume ?? 0.4) * master));
-      audio.playbackRate = Math.max(0.5, Math.min(1.6, layer.rate ?? 1));
-
-      const go = () => {
-        OriginalPlay.call(audio).catch(err => {
-          console.warn("FEHA DEV 0.3.3 // real SFX playback failed", layer.file, err);
-        });
+    function normalize(kind) {
+      const aliases = {
+        drawer: "drawer_open",
+        subsystemSelect: "subsystem_select",
+        actorSwitch: "actor_switch",
+        drawerOpen: "drawer_open",
+        drawerClose: "drawer_close",
+        cyberwareSelect: "cyberware_select",
+        cacheOpen: "cache_open",
+        cacheClose: "cache_close",
+        compatibilityOk: "compatibility_ok",
+        compatibilityFail: "compatibility_fail"
       };
 
-      if (layer.delay) setTimeout(go, layer.delay);
-      else go();
+      return aliases[kind] ?? kind;
     }
 
-    function play(kind = "select") {
-      const layers = MAP[kind] ?? MAP.select;
-      layers.forEach(playLayer);
+    function play(kind = "select", {cooldown = 32} = {}) {
+      const event = normalize(kind);
+      if (disposed || !paths[event] || master <= 0) return Promise.resolve(false);
+
+      const now = performance.now();
+      const last = lastPlay.get(event) ?? -Infinity;
+      if (now - last < cooldown) return Promise.resolve(false);
+      lastPlay.set(event, now);
+
+      const template = templates.get(event);
+      if (!template) return Promise.resolve(false);
+
+      try {
+        while (active.size >= 10) {
+          const oldest = active.values().next().value;
+          oldest.pause();
+          active.delete(oldest);
+        }
+
+        const audio = template.cloneNode(true);
+        audio.volume = Math.max(
+          0,
+          Math.min(1, master * (LEVELS[event] ?? 0.75))
+        );
+        audio.playbackRate = 1;
+
+        const release = () => active.delete(audio);
+        audio.addEventListener("ended", release, {once:true});
+        audio.addEventListener("error", release, {once:true});
+
+        active.add(audio);
+
+        return Promise.resolve(OriginalPlay.call(audio))
+          .then(() => true)
+          .catch(err => {
+            release();
+            console.warn("FEHA DEV 0.3.4 // sound playback failed", event, err);
+            return false;
+          });
+      } catch (err) {
+        console.warn("FEHA DEV 0.3.4 // sound clone failed", event, err);
+        return Promise.resolve(false);
+      }
     }
 
-    HTMLMediaElement.prototype.play = function(...args) {
+    const routedPlay = function(...args) {
       try {
         const src = String(
           this.currentSrc ||
@@ -291,44 +391,147 @@
         );
 
         if (match) {
-          play(match[1].toLowerCase());
+          void play(match[1].toLowerCase());
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.3.3 // sound routing failed", err);
+        console.warn("FEHA DEV 0.3.4 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
     };
 
+    HTMLMediaElement.prototype.play = routedPlay;
+
+    const clickHandler = event => {
+      const root = event.target?.closest?.("#adk-chrome-manager-34");
+      if (!root) return;
+
+      if (event.target.closest?.(".adk-v6-system")) {
+        void play("subsystem_select", {cooldown:70});
+        return;
+      }
+
+      if (event.target.closest?.("[data-open-cache]")) {
+        void play("cache_open", {cooldown:90});
+        return;
+      }
+
+      if (event.target.closest?.("[data-close-cache]")) {
+        void play("cache_close", {cooldown:90});
+        return;
+      }
+
+      if (event.target.closest?.("[data-cache-item]")) {
+        void play("cyberware_select", {cooldown:70});
+        return;
+      }
+
+      const button = event.target.closest?.("button,[role='button']");
+      if (!button) return;
+
+      const words = String(
+        button.dataset?.action ??
+        button.dataset?.mode ??
+        button.textContent ??
+        ""
+      ).trim().toLowerCase();
+
+      if (/\b(install|implant|authorize)\b/.test(words)) {
+        void play("install", {cooldown:120});
+      } else if (/\b(remove|eject|uninstall|detach)\b/.test(words)) {
+        void play("remove", {cooldown:120});
+      }
+    };
+
+    const changeHandler = event => {
+      if (event.target?.matches?.("#adk-chrome-manager-34 #actor-select")) {
+        void play("actor_switch", {cooldown:110});
+      }
+    };
+
+    document.addEventListener("click", clickHandler, true);
+    document.addEventListener("change", changeHandler, true);
+
     prime();
 
-    globalThis.FEHA_SOUNDS = {
+    const api = {
       play,
-      map: MAP,
+      source,
+      paths,
       get volume() { return master; },
       setVolume(value) {
         master = Math.max(0, Math.min(1, Number(value) || 0));
         localStorage.setItem("fehaRealSfxVolume", String(master));
+        for (const audio of active) {
+          audio.volume = Math.max(0, Math.min(1, master));
+        }
         return master;
       },
       demo() {
-        const order = ["hover","select","drawer","scan","install","remove","error","confirm"];
-        order.forEach((kind, i) => setTimeout(() => play(kind), i * 850));
+        const order = [
+          "hover","select","subsystem_select","actor_switch",
+          "drawer_open","drawer_close","cyberware_select","scan",
+          "install","remove","error","confirm",
+          "cache_open","cache_close","compatibility_ok","compatibility_fail"
+        ];
+
+        order.forEach(
+          (event, i) => setTimeout(() => void play(event, {cooldown:0}), i * 1150)
+        );
+      },
+      hasCyberpunkPack() {
+        return Boolean(readLocalPack());
       }
     };
 
-    globalThis.__FEHA_SOUND_ENGINE_033 = {
-      originalPlay: OriginalPlay
+    const engine = {
+      originalPlay: OriginalPlay,
+      dispose() {
+        if (disposed) return;
+        disposed = true;
+
+        document.removeEventListener("click", clickHandler, true);
+        document.removeEventListener("change", changeHandler, true);
+
+        for (const audio of active) audio.pause();
+        active.clear();
+
+        for (const template of templates.values()) {
+          template.pause();
+          template.removeAttribute("src");
+          template.load();
+        }
+        templates.clear();
+
+        if (HTMLMediaElement.prototype.play === routedPlay) {
+          HTMLMediaElement.prototype.play = OriginalPlay;
+        }
+
+        if (globalThis.FEHA_SOUNDS === api) delete globalThis.FEHA_SOUNDS;
+        if (globalThis.__FEHA_SOUND_ENGINE_034 === engine) {
+          delete globalThis.__FEHA_SOUND_ENGINE_034;
+        }
+      }
     };
 
+    globalThis.FEHA_SOUNDS = api;
+    globalThis.__FEHA_SOUND_ENGINE_034 = engine;
+
     console.info(
-      "FEHA DEV 0.3.3 // real CC0 game SFX armed. Test FEHA_SOUNDS.demo()"
+      `FEHA DEV 0.3.4 // sound source: ${source}`
     );
+
+    if (!localPack) {
+      console.info(
+        "FEHA DEV 0.3.4 // Cyberpunk local pack not installed; using CC0 fallback."
+      );
+    }
   }
 
   function removeSoundEngine() {
     const engine =
+      globalThis.__FEHA_SOUND_ENGINE_034 ??
       globalThis.__FEHA_SOUND_ENGINE_033 ??
       globalThis.__FEHA_SOUND_ENGINE_032 ??
       globalThis.__FEHA_SOUND_ENGINE_029 ??
@@ -336,11 +539,14 @@
 
     if (!engine) return;
 
+    engine.dispose?.();
+
     if (HTMLMediaElement.prototype.play !== engine.originalPlay) {
       HTMLMediaElement.prototype.play = engine.originalPlay;
     }
 
     delete globalThis.FEHA_SOUNDS;
+    delete globalThis.__FEHA_SOUND_ENGINE_034;
     delete globalThis.__FEHA_SOUND_ENGINE_033;
     delete globalThis.__FEHA_SOUND_ENGINE_032;
     delete globalThis.__FEHA_SOUND_ENGINE_029;
@@ -541,7 +747,7 @@
   );
 
   ui?.notifications?.info?.(
-    "FEHA DEV " + BUILD + " // real game SFX + Ponyboy centering loaded"
+    "FEHA DEV " + BUILD + " // Cyberpunk local SFX support loaded"
   );
 
   state.reopenChrome();
