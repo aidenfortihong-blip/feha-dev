@@ -1,14 +1,12 @@
 {
-  "version": "0.4.0",
+  "version": "0.4.1",
   "updated": "2026-09-25",
-  "scope": "full-cp2077-theatre-rerun",
+  "scope": "cp2077-mask-cleanup",
   "notes": [
-    "Rebuilt the Augmentation Theatre presentation around the private Cyberpunk 2077 extraction instead of layering a few decorative assets",
-    "Expanded runtime asset mapping to the curated Ripperdoc capacity, counter, cyberware-mask, frame, barcode, code, line, button-holder and HUD crops",
-    "Redesigned the cyberware capacity rail using the extracted Ripperdoc bar geometry as a tintable mask",
-    "Reworked the left subsystem rail, portrait stage, hardware ports, dossier, technical telemetry, action buttons and owned-chrome drawer around extracted CP2077 UI grammar",
-    "Added continuous 30fps deterministic waveform motion and living barcode motion to every signal-profile readout",
-    "Retained actual CP2077 Forge-hosted private SFX and private runtime asset loading with no proprietary media or URLs committed to the public repository",
-    "Removed the unwanted active-system arrow and preserved the cache close-button alignment fix"
+    "Corrected the 0.4.0 pass after the extracted white-source atlas crops rendered literally over the Theatre",
+    "Converted CP2077 white UI crops from raw backgrounds into low-opacity tintable CSS masks",
+    "Removed the opaque counter boxes, capacity/header overlays, portrait bars, inspector noise and button-holder artifacts visible in 0.4.0",
+    "Kept the full 0.4.0 continuous signal-profile animation and CP2077 private sound integration",
+    "Preserved the stronger CP2077 geometry while restoring FEHA text and character art readability"
   ]
 }
