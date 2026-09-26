@@ -1,16 +1,12 @@
 {
-  "version": "0.6.6",
+  "version": "0.6.7",
   "updated": "2026-09-26",
-  "scope": "cyberdeck-real-module-mechanics",
+  "scope": "cyberdeck-offline-production-cleanup",
   "notes": [
-    "Replaced guessed Cyberdeck V2 compatibility logic with mechanics recovered from the installed FEHA module source",
-    "Owned Quickhacks now use sourceCategory Quickhacks plus marketPurchased/ownedQuickhack flags",
-    "Loaded software now uses flags.fleshEnshrouded.loadedQuickhack exactly",
-    "Cyberdeck RAM uses deck ramMax plus installed support chrome RAM bonuses and actor ramCurrent",
-    "Software capacity now uses deck quickhackSlots with the legacy rating fallback",
-    "Quickhack DC now uses 8 + proficiency + INT modifier",
-    "RUN now spends RAM and creates the canonical Quickhack chat card instead of trying generic item.use/roll",
-    "Installed cyberware follows the module rule installed !== false",
-    "Roster still stays Ponyboy, Derke, Sasha, Zach and can resolve the canonical adkCharacter flag"
+    "Removed the temporary GM export controls from the production Cyberdeck interface now that the handoff exports are complete",
+    "QH DC now displays as unavailable while no Cyberdeck is installed",
+    "Rebuilt the no-deck Quickhacks state into a compact intentional hardware-lock screen",
+    "Suppressed raw CP2077 frame imagery on offline deck/software panels to prevent white-mask artifacts",
+    "Exporter APIs remain available through game.adk if another export is needed later"
   ]
 }
