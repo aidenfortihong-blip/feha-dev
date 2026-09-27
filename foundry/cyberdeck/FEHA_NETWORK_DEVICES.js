@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_NETWORK_DEVICES requires FEHA_CYBER_CORE.");
 
-  const VERSION = "0.10.0";
+  const VERSION = "0.10.2";
   const FLAG_SCOPE = "fleshEnshrouded";
   const DEVICE_FLAG = "networkDevice";
   const SCENE_DEVICE_FLAG = "networkDevices";
@@ -69,13 +69,6 @@
   });
 
   const TYPES = Object.freeze({
-    camera:{
-      label:"CAMERA",
-      icon:"fa-solid fa-video",
-      baseDC:11,
-      defaultScope:"endpoint",
-      capabilities:[]
-    },
     door:{
       label:"DOOR",
       icon:"fa-solid fa-door-open",
@@ -470,6 +463,10 @@
     }
 
     for (const record of customRecords(scene)) {
+      // Camera was fully removed in 0.10.2. Ignore any legacy Scene records
+      // left behind by earlier development builds.
+      if (record?.type === "camera") continue;
+
       if (visibleToCurrentUser(record)) {
         records.set(record.id,record);
       }
