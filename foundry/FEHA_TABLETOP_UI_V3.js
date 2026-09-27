@@ -1871,6 +1871,28 @@
       '</button>'
     ).join("");
 
+    const deviceActionService = cyberModule("deviceActions");
+
+    const deviceNodes = (net.devices ?? []).map(device => {
+      const access = deviceActionService?.hasAccess?.(actor,device) ?? false;
+      const state = access ? "ACCESS" : "DC "+device.securityDC;
+
+      return (
+        '<button class="jack-device-node is-'+esc(device.type)+
+        (access?' has-access':'')+
+        '" style="--jack-x:'+Number(device.x).toFixed(2)+
+        '%;--jack-y:'+Number(device.y).toFixed(2)+
+        '%" data-jack-action="device" data-device-id="'+esc(device.id)+
+        '" data-jack-anchor-x="'+Number(device.x).toFixed(4)+
+        '" data-jack-anchor-y="'+Number(device.y).toFixed(4)+'">'+
+          '<i class="'+esc(device.icon || "fa-solid fa-microchip")+'"></i>'+
+          '<span><b>'+esc(device.name)+'</b><small>'+
+            esc(device.typeLabel)+' // '+esc(state)+
+          '</small></span>'+
+        '</button>'
+      );
+    }).join("");
+
     const operatorPorts = Array.from({length:8},(_,i) =>
       '<i style="--port:'+i+'"></i>'
     ).join("");
@@ -1938,6 +1960,7 @@
           </div>
 
           ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
+          ${deviceNodes}
         </div>
 
         <div class="jack-viewport-controls">
@@ -1946,11 +1969,12 @@
           <button type="button" data-jack-action="zoom-in" title="Zoom in">+</button>
           <button type="button" data-jack-action="fit-view">FIT</button>
           <button type="button" data-jack-action="reset-view">RESET</button>
+          <button type="button" data-jack-action="probe-device">PROBE</button>
         </div>
 
         <div class="jack-net-caption">
           <small>TOPOLOGY // WHEEL TO ZOOM // DRAG TO PAN</small>
-          <b>${net.relays.length} RELAYS // ${net.nodes.length} TOKEN ENDPOINT${net.nodes.length===1?"":"S"}</b>
+          <b>${net.relays.length} RELAYS // ${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
         </div>
 
         <div class="jack-lock-readout">
@@ -1969,6 +1993,78 @@
         <div class="jack-hacks">${hacks}</div>
       </footer>
     `;
+  }
+
+  function liveNetworkDevice(id) {
+    const scene = canvas?.scene;
+    if (!scene) return null;
+
+    return sceneNetworkDevices(scene)
+      .find(device => device.id === id) ??
+      null;
+  }
+
+  function devicePanelMarkup(actor,device,status=null) {
+    const deviceService = cyberModule("devices");
+    const actionService = cyberModule("deviceActions");
+    const hasAccess = actionService?.hasAccess?.(actor,device) ?? false;
+
+    const capabilityButtons = (device.capabilities ?? [])
+      .map(capability => {
+        const def = deviceService?.capabilities?.[capability] ?? {
+          label:capability
+        };
+
+        return (
+          '<button type="button" data-device-action="capability" '+
+          'data-capability="'+esc(capability)+'" '+
+          (hasAccess ? "" : "disabled")+
+          '>'+esc(def.label)+'</button>'
+        );
+      })
+      .join("");
+
+    const result = status
+      ? (
+          '<div class="jack-device-result '+esc(status.kind ?? "")+'">'+
+            '<b>'+esc(status.title ?? "NETWORK RESULT")+'</b>'+
+            '<span>'+esc(status.body ?? "")+'</span>'+
+          '</div>'
+        )
+      : "";
+
+    return (
+      '<section class="jack-device-panel" data-device-id="'+esc(device.id)+'">'+
+        '<header>'+
+          '<div><small>NETWORK DEVICE</small><h3>'+esc(device.name)+'</h3>'+
+          '<span>'+esc(device.typeLabel)+' // '+esc(device.origin.toUpperCase())+'</span></div>'+
+          '<button type="button" data-device-action="close">×</button>'+
+        '</header>'+
+        '<div class="jack-device-security">'+
+          '<div><small>SECURITY</small><b>DC '+device.securityDC+'</b><span>'+esc(device.securityLabel)+'</span></div>'+
+          '<div><small>ACCESS</small><b>'+(hasAccess?"GRANTED":"LOCKED")+'</b><span>'+
+            (hasAccess?"SESSION AUTHORIZED":"BREACH REQUIRED")+
+          '</span></div>'+
+        '</div>'+
+        (!hasAccess
+          ? '<button type="button" class="jack-device-breach" data-device-action="breach">BREACH // DC '+device.securityDC+'</button>'
+          : ''
+        )+
+        '<div class="jack-device-capabilities">'+
+          '<small>CAPABILITIES</small>'+
+          '<div>'+capabilityButtons+'</div>'+
+        '</div>'+
+        result+
+      '</section>'
+    );
+  }
+
+  function showDevicePanel(root,actor,device,status=null) {
+    root.querySelector(".jack-device-panel")?.remove();
+    root.insertAdjacentHTML(
+      "beforeend",
+      devicePanelMarkup(actor,device,status)
+    );
   }
 
   function renderJack(actorId) {
