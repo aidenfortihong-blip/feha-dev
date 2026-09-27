@@ -10,13 +10,156 @@
     throw new Error("FEHA_NETWORK_APPROVALS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.9.2";
+  const VERSION = "0.9.3";
   const CHANNEL = "module.flesh-enshrouded-heart-ablaze";
   const MARKER = "fehaNetworkDevicesV1";
   const ROOT_ID = "feha-network-approval-queue";
   const queue = new Map();
   const pending = new Map();
   let socketHandler = null;
+  const COMMAND_TIMEOUT_MS = 15000;
+
+  function activeOnlineGM() {
+    return [...(game.users?.contents ?? game.users ?? [])]
+      .find(user => user?.isGM && user?.active) ?? null;
+  }
+
+  function requireOnlineGM() {
+    if (game.user?.isGM) return game.user;
+
+    const gm = activeOnlineGM();
+    if (!gm) {
+      throw new Error("No online GM authority is available.");
+    }
+
+    return gm;
+  }
+
+  function createPendingResolution(
+    requestId,
+    {
+      timeoutMs=0,
+      timeoutMessage="Network authority request timed out."
+    }={}
+  ) {
+    let timer = null;
+
+    return new Promise((resolve,reject) => {
+      const resolver = payload => {
+        if (timer) clearTimeout(timer);
+        pending.delete(requestId);
+        resolve(payload);
+      };
+
+      pending.set(requestId,resolver);
+
+      if (timeoutMs > 0) {
+        timer = setTimeout(() => {
+          if (pending.get(requestId) !== resolver) return;
+          pending.delete(requestId);
+          reject(new Error(timeoutMessage));
+        },timeoutMs);
+      }
+    });
+  }
+
+  function userOwnsActor(user,actor) {
+    if (!user || !actor) return false;
+    if (user.isGM) return true;
+
+    try {
+      if (typeof actor.testUserPermission === "function") {
+        return actor.testUserPermission(user,"OWNER");
+      }
+    } catch {}
+
+    const ownerLevel = Number(
+      globalThis.CONST?.DOCUMENT_OWNERSHIP_LEVELS?.OWNER ??
+      3
+    );
+
+    const ownership =
+      actor?.ownership ??
+      actor?.permission ??
+      {};
+
+    const level = Number(
+      ownership?.[user.id] ??
+      ownership?.default ??
+      0
+    );
+
+    return Number.isFinite(level) && level >= ownerLevel;
+  }
+
+  async function validateRemoteDeviceCommand({
+    payload,
+    actor,
+    device,
+    actions
+  }) {
+    const user = game.users?.get?.(payload.userId) ?? null;
+
+    if (!user?.active) {
+      throw new Error("Requesting player is no longer online.");
+    }
+
+    if (!userOwnsActor(user,actor)) {
+      throw new Error("Requesting player does not own the operator Actor.");
+    }
+
+    if (String(device?.sceneId ?? "") !== String(payload.sceneId ?? "")) {
+      throw new Error("Network Device Scene mismatch.");
+    }
+
+    const capability = String(payload.capability ?? "").trim().toUpperCase();
+
+    if (!device?.capabilities?.includes?.(capability)) {
+      throw new Error("Network Device does not expose that capability.");
+    }
+
+    const discoveredBy = Array.isArray(device?.discoveredBy)
+      ? device.discoveredBy.map(String)
+      : [];
+
+    if (
+      discoveredBy.length &&
+      !discoveredBy.includes(String(user.id))
+    ) {
+      throw new Error("Network Device has not been discovered by that player.");
+    }
+
+    // GM scans can see Secret Doors that a player cannot. Re-check the real
+    // Wall here so a forged socket command cannot reveal/control a secret door.
+    const source = await actions?.resolveSource?.(device);
+    const sourceType = String(
+      source?.documentName ??
+      device?.sourceType ??
+      ""
+    );
+
+    if (/Wall/i.test(sourceType)) {
+      const doorType = Number(
+        source?.door ??
+        source?._source?.door ??
+        0
+      );
+
+      const secretType = Number(
+        globalThis.CONST?.WALL_DOOR_TYPES?.SECRET ??
+        2
+      );
+
+      if (
+        doorType === secretType &&
+        !discoveredBy.includes(String(user.id))
+      ) {
+        throw new Error("Secret Door has not been discovered by that player.");
+      }
+    }
+
+    return {user,capability};
+  }
 
   function randomID() {
     const foundryId =
@@ -416,14 +559,21 @@
           throw new Error("Device command context is no longer available.");
         }
 
+        const validated = await validateRemoteDeviceCommand({
+          payload,
+          actor,
+          device,
+          actions
+        });
+
         const result = await actions.executeCapability(
           actor,
           device,
-          payload.capability,
+          validated.capability,
           {
             skipBreach:true,
             remote:true,
-            requestingUserId:payload.userId
+            requestingUserId:validated.user.id
           }
         );
 
@@ -538,9 +688,11 @@
       throw new Error("Network Probe requires valid map coordinates.");
     }
 
-    const resolution = new Promise(resolve => {
-      pending.set(request.id,resolve);
-    });
+    if (!game.user?.isGM) {
+      requireOnlineGM();
+    }
+
+    const resolution = createPendingResolution(request.id);
 
     if (game.user?.isGM) {
       queue.set(request.id,request);
@@ -566,11 +718,17 @@
       throw new Error("Device command request is incomplete.");
     }
 
+    requireOnlineGM();
+
     const requestId = randomID();
 
-    const resolution = new Promise(resolve => {
-      pending.set(requestId,resolve);
-    });
+    const resolution = createPendingResolution(
+      requestId,
+      {
+        timeoutMs:COMMAND_TIMEOUT_MS,
+        timeoutMessage:"Network Device command timed out waiting for GM authority."
+      }
+    );
 
     emit("deviceCommandRequest",{
       requestId,
@@ -605,11 +763,17 @@
       };
     }
 
+    requireOnlineGM();
+
     const requestId = randomID();
 
-    const resolution = new Promise(resolve => {
-      pending.set(requestId,resolve);
-    });
+    const resolution = createPendingResolution(
+      requestId,
+      {
+        timeoutMs:COMMAND_TIMEOUT_MS,
+        timeoutMessage:"Network reveal timed out waiting for GM authority."
+      }
+    );
 
     emit("revealRequest",{
       requestId,
