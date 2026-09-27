@@ -8028,3 +8028,199 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-net-caption b {
   font-size:11px !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.20 RESOLUTION READABILITY + PRECISION ZOOM
+   Larger muted resolution copy; larger footer actions; zoom-in shrinks semantic UI.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   QUICKHACK RESOLUTION // MUTED TEXT READABILITY
+   -------------------------------------------------------------------------- */
+
+/* Header target line */
+#feha-jackin-overlay .qh-resolution-head span {
+  color:#a7bbc0 !important;
+  font-size:12px !important;
+  line-height:1.45 !important;
+  letter-spacing:.9px !important;
+}
+
+/* Target profile labels / defense text */
+#feha-jackin-overlay .qh-resolution-target small {
+  margin-top:9px !important;
+  color:#92a8ae !important;
+  font-size:11px !important;
+  line-height:1.3 !important;
+  letter-spacing:1.15px !important;
+}
+
+#feha-jackin-overlay .qh-resolution-target span {
+  color:#a7bbc0 !important;
+  font-size:12px !important;
+  line-height:1.5 !important;
+}
+
+/* Save-state labels and math detail */
+#feha-jackin-overlay .qh-resolve-state small {
+  color:#92a8ae !important;
+  font-size:11px !important;
+  line-height:1.3 !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-jackin-overlay .qh-resolve-state > span {
+  color:#a7bbc0 !important;
+  font-size:12.5px !important;
+  line-height:1.5 !important;
+}
+
+/* Effect-state label + descriptive rule text */
+#feha-jackin-overlay .qh-effect-state small {
+  color:#92a8ae !important;
+  font-size:11px !important;
+  line-height:1.3 !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-jackin-overlay .qh-effect-state > span {
+  color:#b3c4c8 !important;
+  font-size:13px !important;
+  line-height:1.65 !important;
+}
+
+/* Damage / application labels */
+#feha-jackin-overlay .qh-damage-roll small,
+#feha-jackin-overlay .qh-damage-apply small {
+  color:#92a8ae !important;
+  font-size:11px !important;
+  line-height:1.3 !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-jackin-overlay .qh-damage-roll span,
+#feha-jackin-overlay .qh-damage-apply > span {
+  color:#a7bbc0 !important;
+  font-size:12px !important;
+  line-height:1.5 !important;
+}
+
+/* Bottom RAM-spent line */
+#feha-jackin-overlay .qh-resolution-foot > span {
+  color:#9fb4b9 !important;
+  font-size:11px !important;
+  line-height:1.4 !important;
+  letter-spacing:1.05px !important;
+}
+
+/* Warnings, if present */
+#feha-jackin-overlay .qh-resolution-warnings span {
+  font-size:11px !important;
+  line-height:1.6 !important;
+}
+
+/* Give the profile name and main save number a little more presence too. */
+#feha-jackin-overlay .qh-resolution-target b {
+  font-size:17px !important;
+}
+
+#feha-jackin-overlay .qh-resolve-state > b {
+  font-size:29px !important;
+}
+
+/* --------------------------------------------------------------------------
+   QUICKHACK RESOLUTION // LARGE FOOTER ACTIONS
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .qh-resolution-foot {
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:18px !important;
+}
+
+#feha-jackin-overlay .qh-resolution-actions {
+  display:grid !important;
+  grid-template-columns:240px 260px !important;
+  gap:12px !important;
+}
+
+#feha-jackin-overlay .qh-resolution-actions button {
+  height:64px !important;
+  min-height:64px !important;
+  padding:0 22px !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  letter-spacing:1.15px !important;
+  line-height:1 !important;
+}
+
+#feha-jackin-overlay .qh-resolution-actions button.is-danger {
+  font-size:12px !important;
+}
+
+/* --------------------------------------------------------------------------
+   JACK IN // ZOOM-IN = SMALLER SEMANTIC UI
+   Combined with world zoom, the stronger inverse scale makes cards shrink
+   slightly as the user zooms deeper into the map.
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node.is-targeted {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-device-node {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay,
+#feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-operator {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-token-anchor {
+  transform:
+    translate(-50%,-50%)
+    rotate(45deg)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+@media(max-width:1200px) {
+  #feha-jackin-overlay .qh-resolution-actions {
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  #feha-jackin-overlay .qh-resolution-actions button {
+    min-width:180px !important;
+    height:58px !important;
+    min-height:58px !important;
+    font-size:11px !important;
+  }
+}
