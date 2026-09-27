@@ -1,7 +1,7 @@
 {
-  "version": "0.9.3",
+  "version": "0.9.4",
   "updated": "2026-09-27",
-  "scope": "network-device-authority-hardening",
+  "scope": "jack-in-screenshot-polish",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -33,7 +33,11 @@
     "Security remains fully GM-overridable, including DC 0 for unsecured devices and 20+ for exceptional hardened infrastructure",
     "Fixed session Network Device access cache keys so colon-bearing IDs such as door:..., probe:..., and doc:... can be invalidated reliably",
     "Player device command and reveal requests now fail fast when no online GM authority exists and time out cleanly if the authority path stops responding",
-    "GM-authoritative device command relay now revalidates the active requesting user, operator Actor ownership, device capability, discovery gating, and Secret Door visibility before mutating Foundry documents"
+    "GM-authoritative device command relay now revalidates the active requesting user, operator Actor ownership, device capability, discovery gating, and Secret Door visibility before mutating Foundry documents",
+    "Fixed JACK IN header grid mismatch that wrapped RETURN TO DECK / CLOSE CYBERDECK into an unintended second row",
+    "Reduced Quickhack execution dock height to recover more vertical space for the live network map",
+    "Increased real Scene underlay legibility while preserving the cyber treatment",
+    "Sparse one-endpoint scenes now use larger endpoint/operator decision surfaces without changing true token anchors"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
