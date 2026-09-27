@@ -319,5 +319,5 @@
     }
   };
 
-  core.register("cameraPlacement",api);
+  core.registerModule("cameraPlacement",api);
 })();
