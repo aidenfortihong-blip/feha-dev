@@ -1,7 +1,7 @@
 {
-  "version": "0.9.1",
+  "version": "0.9.2",
   "updated": "2026-09-27",
-  "scope": "modular-network-devices-and-camera-feeds",
+  "scope": "network-device-security-scopes",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -16,14 +16,21 @@
     "Player world mutations are delegated through online GM authority instead of relying on player Scene/Wall write permission",
     "Terminals/System nodes can reveal hidden custom network devices to the requesting player",
     "Network Device cards participate in JACK IN's existing collision fan-out and tether layout",
-    "Default suggested DCs: Lights 10, Camera 11, Door 12, Alarm 13, Turret 15, Terminal 16, System/Core 18",
     "Added isolated FEHA_CAMERA_FEEDS.js adapter instead of embedding camera behavior in JACK IN",
     "Camera PLACE FEED enters a deliberately vague cyber-map placement mode",
     "Camera feeds create client-local Foundry PointVisionSource POVs and temporarily suppress normal vision sources until RETURN TO NET",
     "Multiple camera feeds persist for the current client session and can be cycled with PREV/NEXT",
     "Camera POV has its own compromised-surveillance HUD and restores normal vision on return",
     "Added HANDOFF/CYBERDECK_ARCHITECTURE_0.9.md as the authoritative anti-spaghetti module contract",
-    "Canonical loader now loads Cyber Core, Network Devices, Device Actions, Network Approvals, Camera Feeds, then V3 UI"
+    "Canonical loader now loads Cyber Core, Network Devices, Device Actions, Network Approvals, Camera Feeds, then V3 UI",
+    "Network Device Security DC now scales with access scope as well as device category",
+    "Added explicit access scopes: ENDPOINT (+0), LOCAL (+1), SUBSYSTEM (+2), BUILDING (+3), CORE (+5)",
+    "Typical defaults now resolve to: Lights 10, Camera 11, Door 12, Alarm 13, Turret 15, Terminal 17 (subsystem), System 19 (building)",
+    "GM approval queue now includes an ACCESS SCOPE selector and automatically recalculates the suggested DC",
+    "Changing device type resets to that type's normal scope, while the GM may freely override both scope and final DC",
+    "Persisted Network Device records now store accessScope/accessScopeLabel so JACK IN can show how broad the node's control is",
+    "JACK IN device nodes and device detail panels now display access scope alongside Security DC",
+    "Security remains fully GM-overridable, including DC 0 for unsecured devices and 20+ for exceptional hardened infrastructure"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
