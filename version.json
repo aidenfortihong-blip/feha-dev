@@ -1,7 +1,7 @@
 {
-  "version": "0.10.18",
+  "version": "0.10.19",
   "updated": "2026-09-27",
-  "scope": "zoom-independent-jack-in-readability",
+  "scope": "native-readability-natural-zoom",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -76,7 +76,11 @@
     "JACK IN semantic UI now uses inverse zoom compensation so cards, relays, operator UI, and token anchors stay readable at any map zoom",
     "Selected hostile cards now render on a dedicated top layer so red outline/glow is not obscured by route geometry",
     "Relay markers now stay fully opaque, larger, and higher priority with stronger card-avoidance weighting",
-    "Increased JACK IN typography across header, actor cards, operator labels, target lock, topology caption, viewport controls, Quickhack execution cards, RAM/DC text, and RUN actions"
+    "Increased JACK IN typography across header, actor cards, operator labels, target lock, topology caption, viewport controls, Quickhack execution cards, RAM/DC text, and RUN actions",
+    "Restored natural JACK IN scaling so cards, relays, operator UI, devices, and anchors shrink with the map when zooming out",
+    "Increased native 100% actor-card, portrait, relay, operator, and semantic label sizing for better readability before zooming",
+    "Preserved the higher target-card and relay stacking layers so selection outlines and relay markers stay visually above route geometry",
+    "Kept stronger relay avoidance from 0.10.18 so endpoint cards are less likely to cover relay markers"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
