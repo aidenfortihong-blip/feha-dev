@@ -1,18 +1,26 @@
 {
-  "version": "0.8.8",
+  "version": "0.8.9",
   "updated": "2026-09-26",
-  "scope": "jack-in-viewport-guard",
+  "scope": "quickhack-resolution-and-network-spacing",
   "notes": [
-    "Hard-pinned the JACK IN root to the browser viewport with explicit fixed inset/100vw/100vh resets",
-    "Removed any inherited margin/transform/size constraints from the fullscreen overlay",
-    "Added protected 24px inner gutters to header, network field, and execution dock",
-    "Moved edge-mounted TARGET LOCK and topology readouts safely inside the clipped network surface",
-    "Hardened the Quickhack dock against horizontal overflow and collapsed title/card content",
-    "Retained the complete 0.8.7 branching network topology"
+    "Spread JACK IN infrastructure farther from the operator and reduced relay footprint for more negative space",
+    "Added Quickhack rule parsing for save ability, damage formula/type, half-on-success, lingering/timed damage, conditional requirements, and secondary-target warnings",
+    "Target saving throws now use the target actor's real D&D5e ability score, save proficiency, proficiency bonus, and numeric save bonuses",
+    "RUN now spends RAM then opens an in-JACK-IN Quickhack Resolution screen instead of only posting chat",
+    "Resolution screen shows actual d20 save roll, modifier, total, DC, pass/fail margin, effect state, and source effect text",
+    "Damage Quickhacks roll their actual damage formula and prefill a suggested application amount based on save outcome",
+    "Half-on-success damage is automatically suggested at half; successful negating saves suggest zero damage",
+    "Lingering-save patterns such as Overheat keep primary damage separate from the save and visibly flag lingering adjudication",
+    "Conditional and splash/secondary-target Quickhacks are visibly flagged instead of being falsely auto-resolved",
+    "Damage application consumes temporary HP first, then HP, and updates the target actor directly when the user has permission",
+    "Damage resolution stays bound to the originally Quickhacked token even if Foundry target selection changes while the panel is open",
+    "Resolved HP is updated live in the resolution panel and duplicate application is prevented",
+    "Static gate passed: V3 JS parses cleanly and Cyberdeck V3 CSS is structurally balanced"
   ],
   "knownManualRules": [
-    "Cyberdeck passive effects such as conditional RAM discounts are displayed but not automatically adjudicated because the installed FEHA module also treats them as descriptive/manual rules",
-    "Quickhack damage, saves, conditions, and chained effects are announced in chat but are not automatically applied; this matches the current installed FEHA Cyberdeck behavior",
-    "The exported world catalog contains legacy Quickhack description text whose written RAM values can disagree with flags.ramCost; V3 uses flags.ramCost as canonical and corrects its own display text without mutating source items"
+    "Status conditions and non-damage secondary effects are resolved and displayed but not yet converted into Foundry Active Effects",
+    "Conditional requirements such as explosive possession, cybernetic/electronic eligibility, or nearby secondary targets still require GM confirmation",
+    "Timed damage such as Overheat is rolled and surfaced but the timing of later-round application remains manual",
+    "Quickhack rules are currently parsed from canonical effectText; a future catalog migration should move save/damage/effect metadata into explicit flags"
   ]
 }
