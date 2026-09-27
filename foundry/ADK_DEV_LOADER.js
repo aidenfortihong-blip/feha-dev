@@ -77,6 +77,9 @@
     document.getElementById("feha-jackin-overlay")?.remove();
     document.getElementById("feha-cyberdeck-v2")?.remove();
     document.getElementById("feha-network-approval-queue")?.remove();
+    document.getElementById("feha-camera-feed-hud")?.remove();
+    document.getElementById("feha-camera-placement")?.remove();
+    document.getElementById("feha-camera-placement-style")?.remove();
 
     const entries = Object.entries(files);
 
