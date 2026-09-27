@@ -857,6 +857,17 @@
       bind("[data-item-tier],.mk-filter","cyberware_select");
     };
 
+    const marketControlObserver = new MutationObserver(() => {
+      bindMarketControlSounds(document.getElementById("adk-market-15"));
+    });
+
+    marketControlObserver.observe(document.body,{
+      childList:true,
+      subtree:true
+    });
+
+    bindMarketControlSounds(document.getElementById("adk-market-15"));
+
     const changeHandler = event => {
       if (event.target?.matches?.("#adk-market-15 #adk-market-actor")) {
         void play("actor_switch", {cooldown:0});
@@ -919,6 +930,7 @@
         if (disposed) return;
         disposed = true;
 
+        marketControlObserver.disconnect();
         document.removeEventListener("pointerdown", marketPointerHandler, true);
         document.removeEventListener("pointerover", marketHoverHandler, true);
         document.removeEventListener("click", clickHandler, true);
@@ -4049,7 +4061,6 @@ if (!game.user?.isGM) {
         markRoot();
         normalizeDossierSchematics();
         normalizePlayableRoster(document.body);
-        bindMarketControlSounds(document.getElementById("adk-market-15"));
 
         for (const scope of addedScopes) {
           if (scope.isConnected) tagLegacyWallets(scope);
@@ -4161,7 +4172,6 @@ if (!game.user?.isGM) {
   patchBackend();
   markRoot();
   normalizePlayableRoster(document.body);
-  bindMarketControlSounds(document.getElementById("adk-market-15"));
   tagLegacyWallets();
   suppressLegacyWalletChrome();
   installCyberdeckV2();
