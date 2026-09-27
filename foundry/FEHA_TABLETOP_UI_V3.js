@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.11";
+  const VERSION = "0.10.12";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1852,6 +1852,7 @@
 
       const base =
         '<line class="jack-net-line is-'+link.kind+relation+selectedClass+
+        '" data-link-target="'+esc(link.targetId ?? "")+
         '" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" />';
 
       const packetCount = link.selected ? 2 : 1;
@@ -1864,8 +1865,9 @@
       const packets = Array.from({length:packetCount},(_,packetIndex) => {
         const delay = -((index * .23) + (packetIndex * duration/packetCount)).toFixed(2);
         return (
-          '<circle class="jack-packet is-'+link.kind+selectedClass+'" r="'+
-          (link.selected ? "3.2" : "2.0")+'">'+
+          '<circle class="jack-packet is-'+link.kind+selectedClass+
+          '" data-link-target="'+esc(link.targetId ?? "")+
+          '" r="'+(link.selected ? "3.2" : "2.0")+'">'+
             '<animate attributeName="cx" values="'+x1+';'+x2+'" dur="'+duration+
             's" begin="'+delay+'s" repeatCount="indefinite" />'+
             '<animate attributeName="cy" values="'+y1+';'+y2+'" dur="'+duration+
@@ -2116,6 +2118,66 @@
       "beforeend",
       devicePanelMarkup(actor,device,status)
     );
+  }
+
+  function updateJackTargetUI(root,actor) {
+    if (!root?.isConnected || !actor) return;
+
+    const net = sceneModel(actor);
+    const m = model(actor);
+    const selected = net.selected ?? null;
+    const selectedId = selected?.id ?? "";
+
+    for (const node of root.querySelectorAll(".jack-node[data-token-id]")) {
+      const active = node.dataset.tokenId === selectedId;
+      node.classList.toggle("is-targeted",active);
+
+      const state = node.querySelector(":scope > em");
+      if (state) state.textContent = active ? "LOCKED" : "ACQUIRE";
+    }
+
+    for (const anchor of root.querySelectorAll(".jack-token-anchor[data-token-id]")) {
+      anchor.classList.toggle(
+        "is-targeted",
+        anchor.dataset.tokenId === selectedId
+      );
+    }
+
+    for (const leader of root.querySelectorAll("[data-card-leader]")) {
+      const leaderId = String(leader.dataset.cardLeader ?? "");
+      leader.classList.toggle(
+        "is-targeted",
+        Boolean(selectedId) && leaderId === selectedId
+      );
+    }
+
+    for (const route of root.querySelectorAll("[data-link-target]")) {
+      const routeId = String(route.dataset.linkTarget ?? "");
+      route.classList.toggle(
+        "is-selected-route",
+        Boolean(selectedId) && routeId === selectedId
+      );
+    }
+
+    const lockName = root.querySelector(".jack-lock-readout > b");
+    if (lockName) {
+      lockName.textContent = selected?.displayName ?? "NO TARGET";
+    }
+
+    const actionTarget = root.querySelector(".jack-actions-title > span");
+    if (actionTarget) {
+      actionTarget.textContent = selected
+        ? "TARGET // "+selected.displayName
+        : "SELECT A TARGET NODE";
+    }
+
+    for (const button of root.querySelectorAll('.jack-hack[data-jack-action="run"]')) {
+      const item = actor.items?.get?.(button.dataset.itemId);
+      const cost = item ? hackCost(item) : Infinity;
+      button.disabled = !selected || m.currentRam < cost;
+    }
+
+    layoutJackEndpointCards(root);
   }
 
   function renderJack(actorId) {
@@ -2629,7 +2691,7 @@
           ui?.notifications?.warn?.("Could not acquire that scene target.");
           return;
         }
-        renderJack(actor.id);
+        updateJackTargetUI(root,actor);
         return;
       }
 
@@ -2852,12 +2914,23 @@
       ]);
     }
 
+    v3Hooks.push([
+      "targetToken",
+      Hooks.on("targetToken", () => {
+        const jack = document.getElementById(JACK_ID);
+        if (jack?.dataset?.phase !== "live") return;
+
+        const actor = actorById(jack.dataset.actorId);
+        if (actor) updateJackTargetUI(jack,actor);
+      })
+    ]);
+
     for (const event of [
       "createToken","updateToken","deleteToken",
       "createWall","updateWall","deleteWall",
       "createAmbientLight","updateAmbientLight","deleteAmbientLight",
       "createTile","updateTile","deleteTile",
-      "targetToken","canvasReady"
+      "canvasReady"
     ]) {
       v3Hooks.push([
         event,
