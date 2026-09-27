@@ -1,8 +1,12 @@
 {
-  "version": "0.10.62",
+  "version": "0.10.63",
   "updated": "2026-09-27",
-  "scope": "entry-gateway-boot-phase-timing",
+  "scope": "derke-biometric-identity-sync",
   "notes": [
+    "Fixed Derke reverting to JING during Entry Gateway authentication.",
+    "Added a bounded Derke-only 90ms sync during the biometric phase for input display, IDENTITY LOCKED / PROFILE ACCEPTED text, profile ID, profile portrait, and visible auth console lines.",
+    "The sync stops automatically at ACCESS GRANTED, after 8 seconds, on gateway removal, or during dev-patch cleanup.",
+    "No MutationObserver or whole-gateway polling was added; only a handful of Derke identity fields are touched during authentication.",
     "Fixed Entry Gateway first-half timing: the dev patch now runs while the native async boot sequence is still in progress instead of waiting for open()/reopen() to resolve.",
     "Gateway receives bounded rewrite passes at 0, 50, 150, 350, 700, 1200, and 1800ms during BOOTING, then a final pass after native boot completes.",
     "No MutationObserver or continuous polling was added; the anti-freeze one-shot architecture remains intact.",
