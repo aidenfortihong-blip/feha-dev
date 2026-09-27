@@ -468,7 +468,7 @@
     ].filter(Boolean);
 
     return (
-      '<section class="qh-resolution" data-qh-item="'+esc(item.id)+'">'+
+      '<section class="qh-resolution" data-qh-item="'+esc(item.id)+'" data-qh-target="'+esc(targetToken?.id ?? targetToken?.document?.id ?? "")+'">'+
         '<div class="qh-resolution-shell">'+
           '<header class="qh-resolution-head">'+
             '<div>'+
@@ -1454,12 +1454,14 @@
 
   function bindJack(root,actor) {
     root.onclick = async event => {
-      const button = event.target?.closest?.("[data-jack-action]");
-      if (!button || !root.contains(button)) return;
-      const action = button.dataset.jackAction;
+      const jackButton = event.target?.closest?.("[data-jack-action]") ?? null;
+      const qhButton = event.target?.closest?.("[data-qh-action]") ?? null;
 
-      const qhButton = event.target?.closest?.("[data-qh-action]");
-      if (qhButton && root.contains(qhButton)) {
+      if (!jackButton && !qhButton) return;
+      if (jackButton && !root.contains(jackButton)) return;
+      if (qhButton && !root.contains(qhButton)) return;
+
+      if (qhButton) {
         const qhAction = qhButton.dataset.qhAction;
 
         if (qhAction === "close-resolution") {
@@ -1480,11 +1482,16 @@
         if (qhAction === "apply-damage") {
           if (!input || qhButton.dataset.busy === "1") return;
 
-          const token = [...(game.user?.targets ?? [])][0] ?? null;
+          const resolution = qhButton.closest(".qh-resolution");
+          const tokenId = resolution?.dataset?.qhTarget ?? "";
+          const token =
+            canvas?.tokens?.get?.(tokenId) ??
+            canvas?.tokens?.placeables?.find?.(candidate => candidate.id === tokenId) ??
+            null;
           const targetActor = token?.actor ?? token?.document?.actor ?? null;
 
           if (!targetActor) {
-            return ui?.notifications?.warn?.("Target actor is no longer available.");
+            return ui?.notifications?.warn?.("Resolved target is no longer available.");
           }
 
           if (!(game.user?.isGM || targetActor.isOwner)) {
@@ -1525,6 +1532,11 @@
 
         return;
       }
+
+      const button = jackButton;
+      const action = button?.dataset?.jackAction;
+
+      if (!button || !action) return;
 
       if (action === "close") {
         root.remove();
