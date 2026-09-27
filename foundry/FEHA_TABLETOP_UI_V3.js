@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.15";
+  const VERSION = "0.10.16";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -847,15 +847,15 @@
               <circle class="cd2-net-node is-scene" cx="230" cy="136" r="8" />
 
               <circle class="cd2-net-packet is-p1" r="3">
-                <animateMotion dur="2.6s" repeatCount="indefinite"
+                <animateMotion dur="5.2s" calcMode="linear" repeatCount="indefinite"
                   path="M38 88 C82 88 86 42 138 42" />
               </circle>
               <circle class="cd2-net-packet is-p2" r="3">
-                <animateMotion dur="3.0s" begin="-1.1s" repeatCount="indefinite"
+                <animateMotion dur="6.0s" begin="-2.4s" calcMode="linear" repeatCount="indefinite"
                   path="M138 42 C190 42 190 88 230 88" />
               </circle>
               <circle class="cd2-net-packet is-p3" r="3">
-                <animateMotion dur="3.4s" begin="-1.8s" repeatCount="indefinite"
+                <animateMotion dur="6.8s" begin="-3.7s" calcMode="linear" repeatCount="indefinite"
                   path="M138 42 C182 42 170 136 230 136" />
               </circle>
             </svg>
