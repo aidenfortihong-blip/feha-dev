@@ -1607,11 +1607,6 @@
           </section>
 
           <footer class="credits-footer">
-            <div>
-              <span>CANONICAL CURRENCY</span>
-              <b>CREDITS</b>
-            </div>
-
             <button
               type="button"
               class="credits-save"
