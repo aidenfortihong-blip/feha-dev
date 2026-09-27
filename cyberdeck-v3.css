@@ -9187,3 +9187,122 @@ body > #feha-jackin-overlay {
     height:var(--jack-operator-size,96px) !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.33 TARGET LOCK PORTRAIT PANEL
+   Bottom-left selected-target portrait without rerendering JACK IN.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-lock-readout {
+  left:18px !important;
+  bottom:18px !important;
+  width:auto !important;
+  min-width:250px !important;
+  min-height:72px !important;
+  max-width:430px !important;
+  padding:10px 12px !important;
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  align-items:center !important;
+  gap:0 !important;
+  background:rgba(2,7,9,.95) !important;
+  border:1px solid rgba(var(--jack-cyan),.18) !important;
+  border-left:3px solid rgba(var(--jack-cyan),.42) !important;
+  box-shadow:0 12px 28px rgba(0,0,0,.34) !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout.has-target {
+  grid-template-columns:118px minmax(150px,1fr) !important;
+  gap:13px !important;
+  min-width:330px !important;
+  min-height:138px !important;
+  padding:10px !important;
+}
+
+#feha-jackin-overlay .jack-lock-portrait {
+  width:118px !important;
+  height:118px !important;
+  min-width:118px !important;
+  min-height:118px !important;
+  display:block !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  background:#020405 !important;
+  border:1px solid rgba(var(--jack-cyan),.42) !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+#feha-jackin-overlay .jack-lock-portrait[hidden] {
+  display:none !important;
+}
+
+#feha-jackin-overlay .jack-lock-copy {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+}
+
+#feha-jackin-overlay .jack-lock-copy small,
+#feha-jackin-overlay .jack-lock-copy b,
+#feha-jackin-overlay .jack-lock-copy span {
+  display:block !important;
+  margin:0 !important;
+}
+
+#feha-jackin-overlay .jack-lock-copy small {
+  color:#779198 !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  letter-spacing:1.25px !important;
+}
+
+#feha-jackin-overlay .jack-lock-copy b {
+  margin-top:8px !important;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#eefbff !important;
+  font-size:20px !important;
+  line-height:1 !important;
+}
+
+#feha-jackin-overlay .jack-lock-copy span {
+  margin-top:10px !important;
+  color:#91aab0 !important;
+  font-size:9px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+  letter-spacing:1.1px !important;
+}
+
+/* Relation color carries into the target portrait panel. */
+#feha-jackin-overlay .jack-lock-readout.is-hostile {
+  border-color:rgba(var(--jack-yellow),.34) !important;
+  border-left-color:rgb(var(--jack-yellow)) !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout.is-hostile .jack-lock-portrait {
+  border-color:rgb(var(--jack-yellow)) !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout.is-friendly {
+  border-color:rgba(var(--jack-cyan),.34) !important;
+  border-left-color:rgb(var(--jack-cyan)) !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout.is-friendly .jack-lock-portrait {
+  border-color:rgb(var(--jack-cyan)) !important;
+}
+
+/* LOCKED state uses the same magenta/red target language as the selected node. */
+#feha-jackin-overlay .jack-lock-readout.has-target .jack-lock-copy span {
+  width:max-content !important;
+  padding:5px 8px !important;
+  color:#fff !important;
+  background:rgb(var(--jack-mag)) !important;
+}
