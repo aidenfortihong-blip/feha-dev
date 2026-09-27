@@ -1,7 +1,7 @@
 {
-  "version": "0.10.17",
+  "version": "0.10.18",
   "updated": "2026-09-27",
-  "scope": "apply-damage-button-scale",
+  "scope": "zoom-independent-jack-in-readability",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -72,7 +72,11 @@
     "Selected hostile target anchor, tether, route, badge, and lock accents now use red",
     "Expanded the Quickhack resolution APPLY DAMAGE action into a larger rectangular primary button",
     "Kept the button right-aligned so the added width extends leftward as requested",
-    "Increased APPLY DAMAGE button height, typography, padding, and hover emphasis while preserving the yellow action language"
+    "Increased APPLY DAMAGE button height, typography, padding, and hover emphasis while preserving the yellow action language",
+    "JACK IN semantic UI now uses inverse zoom compensation so cards, relays, operator UI, and token anchors stay readable at any map zoom",
+    "Selected hostile cards now render on a dedicated top layer so red outline/glow is not obscured by route geometry",
+    "Relay markers now stay fully opaque, larger, and higher priority with stronger card-avoidance weighting",
+    "Increased JACK IN typography across header, actor cards, operator labels, target lock, topology caption, viewport controls, Quickhack execution cards, RAM/DC text, and RUN actions"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
