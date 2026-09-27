@@ -9560,3 +9560,23 @@ body > #feha-jackin-overlay {
     min-width:96px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.40 PARKED CAMERA HUD CLEANUP
+   Restore the pre-camera viewport control footprint with no reserved dead slot.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-viewport-controls {
+  grid-template-columns:48px 72px 48px 72px 84px !important;
+  width:max-content !important;
+  min-width:0 !important;
+}
+
+@media(max-width:1200px) {
+  #feha-jackin-overlay .jack-viewport-controls {
+    grid-template-columns:44px 64px 44px 64px 72px !important;
+    width:max-content !important;
+    min-width:0 !important;
+  }
+}
