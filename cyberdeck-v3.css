@@ -5342,3 +5342,157 @@ body > #feha-jackin-overlay {
     grid-template-columns:1fr !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.9.4 SCREENSHOT POLISH
+   Fix header wrap, recover map space, brighten spatial underlay, compact QH dock.
+   ========================================================================== */
+
+/* The live header has four children: brand, Scene, RAM, navigation.
+   Keep all four on one row instead of allowing the nav to wrap below. */
+#feha-jackin-overlay .jack-header {
+  grid-template-columns:
+    minmax(340px,1fr)
+    minmax(210px,auto)
+    92px
+    auto !important;
+  column-gap:12px !important;
+  row-gap:0 !important;
+}
+
+#feha-jackin-overlay .jack-head-actions {
+  grid-column:auto !important;
+  grid-row:auto !important;
+  justify-self:end;
+  width:auto !important;
+}
+
+#feha-jackin-overlay .jack-head-actions button {
+  min-width:142px !important;
+}
+
+/* Give JACK IN more of the screen. One row of loaded software does not need
+   a 184px footer, especially on spatial/network-heavy scenes. */
+#feha-jackin-overlay .jack-space {
+  bottom:166px !important;
+}
+
+#feha-jackin-overlay .jack-actions {
+  height:136px !important;
+  bottom:12px !important;
+  grid-template-columns:220px minmax(0,1fr) !important;
+  gap:9px !important;
+  padding:8px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title {
+  padding:12px 13px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title b {
+  margin-top:6px !important;
+  font-size:16px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title span {
+  margin-top:7px !important;
+}
+
+#feha-jackin-overlay .jack-hacks {
+  align-content:stretch !important;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr)) !important;
+  gap:8px !important;
+}
+
+#feha-jackin-overlay .jack-hack {
+  min-height:0 !important;
+  height:100% !important;
+  max-height:118px !important;
+  grid-template-columns:50px minmax(0,1fr) 68px !important;
+  padding:8px 10px !important;
+}
+
+#feha-jackin-overlay .jack-hack img {
+  width:48px !important;
+  height:48px !important;
+}
+
+/* The real Scene should read as geography, not disappear into black. */
+#feha-jackin-overlay .jack-scene-map img {
+  opacity:.48 !important;
+  filter:
+    saturate(.46)
+    brightness(.64)
+    contrast(1.28)
+    hue-rotate(145deg) !important;
+}
+
+#feha-jackin-overlay .jack-scene-map::after {
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 0 42%,
+      rgba(0,5,7,.16) 76%,
+      rgba(0,3,5,.38) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--jack-cyan),.045),
+      transparent 16% 84%,
+      rgba(var(--jack-mag),.018)
+    ) !important;
+}
+
+/* Sparse networks should feel intentional without falsifying token anchors.
+   Increase the decision surfaces, not their actual positions. */
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node {
+  width:202px !important;
+  min-height:82px !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node.is-targeted {
+  width:220px !important;
+  min-height:88px !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-operator {
+  width:194px !important;
+  height:194px !important;
+}
+
+@media(max-width:1350px) {
+  #feha-jackin-overlay .jack-header {
+    grid-template-columns:minmax(260px,1fr) minmax(170px,auto) 82px auto !important;
+  }
+
+  #feha-jackin-overlay .jack-head-actions button {
+    min-width:112px !important;
+    padding:0 10px !important;
+  }
+
+  #feha-jackin-overlay .jack-actions {
+    grid-template-columns:190px minmax(0,1fr) !important;
+  }
+}
+
+@media(max-width:1000px) {
+  #feha-jackin-overlay .jack-header {
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+  }
+
+  #feha-jackin-overlay .jack-head-actions {
+    position:absolute;
+    right:14px;
+    top:64px;
+  }
+}
