@@ -141,25 +141,17 @@ Unknown object flow:
 
 Do not create a separate approval/socket implementation for each future device.
 
-### `foundry/cyberdeck/FEHA_CAMERA_FEEDS.js`
+### `foundry/cyberdeck/FEHA_CAMERA_PLACEMENT.js`
 
 Responsibilities:
-- camera feed placement
-- feed session memory
-- client-local camera POV
-- camera feed switching
-- restoring normal player vision
+- GM-only camera placement
+- dedicated placement overlay using the active Scene image
+- conversion of one click into normalized Scene percentages
+- persistence of one minimal `camera` Network Device record
 
-Camera feed implementation is isolated from JACK IN.
+0.10.0 is intentionally a camera reset baseline. The placement module does **not** own camera feeds, POV, rotation, feed switching, or camera-specific breach mechanics. Those features are deferred until the placement primitive is proven stable in the live Foundry client.
 
-Current implementation uses Foundry's public PointVisionSource lifecycle:
-- create source with unique source ID
-- initialize at selected Scene coordinate
-- add source to vision collection
-- temporarily suppress normal vision sources
-- restore normal sources on RETURN TO NET
-
-Camera feeds are session-local in 0.9.1. Persistence across reconnects can be added later without changing JACK IN.
+JACK IN only launches this module; it does not contain camera placement mechanics.
 
 ## UI runtime
 
@@ -323,7 +315,7 @@ FEHA_CYBER_CORE.js
 FEHA_NETWORK_DEVICES.js
 FEHA_DEVICE_ACTIONS.js
 FEHA_NETWORK_APPROVALS.js
-FEHA_CAMERA_FEEDS.js
+FEHA_CAMERA_PLACEMENT.js
 FEHA_CYBER_CORE.init()
 FEHA_TABLETOP_UI_V3.js
 ```
