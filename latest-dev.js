@@ -565,7 +565,7 @@
       return aliases[kind] ?? kind;
     }
 
-    function play(kind = "select", {cooldown = 32} = {}) {
+    function play(kind = "select", {cooldown = 32, gain = 1} = {}) {
       const event = normalize(kind);
       if (disposed || !paths[event] || master <= 0) return Promise.resolve(false);
 
@@ -588,7 +588,12 @@
         audio.__fehaLevel = LEVELS[event] ?? 0.75;
         audio.volume = Math.max(
           0,
-          Math.min(1, master * audio.__fehaLevel)
+          Math.min(
+            1,
+            master *
+            audio.__fehaLevel *
+            Math.max(0,Math.min(1,Number(gain) || 0))
+          )
         );
         audio.playbackRate = 1;
 
@@ -731,56 +736,56 @@
       }
 
       if (target.matches(".close-market,#top-directory,#back-directory")) {
-        void play("drawer_close",{cooldown:0});
+        void play("drawer_close",{cooldown:0,gain:.44});
         return;
       }
 
       if (target.matches("#adk-market-wallet")) {
-        void play("drawer_open",{cooldown:0});
+        void play("drawer_open",{cooldown:0,gain:.44});
         return;
       }
 
       if (target.matches("#reroll-stock")) {
-        void play("scan",{cooldown:0});
+        void play("scan",{cooldown:0,gain:.42});
         return;
       }
 
       if (target.matches(".detail-btn[data-open-item]")) {
-        void play("scan",{cooldown:0});
+        void play("scan",{cooldown:0,gain:.42});
         return;
       }
 
       if (target.matches(".item-art-wrap[data-open-item]")) {
-        void play("cyberware_select",{cooldown:0});
+        void play("cyberware_select",{cooldown:0,gain:.40});
         return;
       }
 
       if (target.matches(".item-name[data-open-item]")) {
-        void play("drawer_open",{cooldown:0});
+        void play("drawer_open",{cooldown:0,gain:.44});
         return;
       }
 
       if (target.matches("[data-buy-item]")) {
-        void play("install",{cooldown:0});
+        void play("install",{cooldown:0,gain:.42});
         return;
       }
 
       if (target.matches("[data-category]")) {
-        void play("select",{cooldown:0});
+        void play("select",{cooldown:0,gain:.38});
         return;
       }
 
       if (target.matches("#reset-filters")) {
-        void play("remove",{cooldown:0});
+        void play("remove",{cooldown:0,gain:.40});
         return;
       }
 
       if (target.matches("[data-page]")) {
-        void play("select",{cooldown:0});
+        void play("select",{cooldown:0,gain:.38});
         return;
       }
 
-      void play("select",{cooldown:0});
+      void play("select",{cooldown:0,gain:.38});
     };
 
     const marketHoverHandler = event => {
@@ -810,17 +815,17 @@
       // tier hover       = select
       // Mk hover         = confirmation
       if (shop) {
-        void play("hover",{cooldown:55});
+        void play("hover",{cooldown:55,gain:.42});
         return;
       }
 
       if (tier) {
-        void play("select",{cooldown:55});
+        void play("select",{cooldown:55,gain:.38});
         return;
       }
 
       if (mk) {
-        void play("confirm",{cooldown:55});
+        void play("confirm",{cooldown:55,gain:.34});
       }
     };
 
@@ -854,34 +859,59 @@
       if (now - last < 90) return;
       marketPressTimes.set(target,now);
 
-      // Click cues intentionally differ from each group's hover cue and from
-      // each other in the fallback pack:
-      // storefront click = doorOpen
-      // tier click       = laserSmall
-      // Mk click         = impactMetal
+      // Click cues intentionally differ from hover cues.
+      // Storefront gets TWO stages:
+      //   1) immediate tactile click
+      //   2) softer store-enter cue once the Market has changed views
       if (shop) {
-        void play("drawer_open",{cooldown:0});
+        void play("select",{cooldown:0,gain:.46});
+
+        const marketRoot = market;
+        const beforeStore =
+          marketRoot.querySelector(".store-layout")?.dataset?.shop ??
+          marketRoot.querySelector(".store-main")?.dataset?.shop ??
+          "";
+
+        setTimeout(() => {
+          if (!marketRoot?.isConnected) return;
+
+          const storeVisible =
+            Boolean(marketRoot.querySelector(".store-layout")) &&
+            Boolean(marketRoot.querySelector(".store-main"));
+
+          const directoryVisible =
+            Boolean(marketRoot.querySelector(".directory-view")) &&
+            !storeVisible;
+
+          if (storeVisible && !directoryVisible) {
+            void play("drawer_open",{cooldown:0,gain:.40});
+          } else if (!beforeStore) {
+            // Fallback for Market versions that reuse the same root classes.
+            void play("drawer_open",{cooldown:0,gain:.34});
+          }
+        },110);
+
         return;
       }
 
       if (tier) {
-        void play("scan",{cooldown:0});
+        void play("scan",{cooldown:0,gain:.40});
         return;
       }
 
       if (mk) {
-        void play("install",{cooldown:0});
+        void play("install",{cooldown:0,gain:.36});
       }
     };
 
     const changeHandler = event => {
       if (event.target?.matches?.("#adk-market-15 #adk-market-actor")) {
-        void play("actor_switch", {cooldown:0});
+        void play("actor_switch", {cooldown:0,gain:.42});
         return;
       }
 
       if (event.target?.matches?.("#adk-market-15 #market-maker,#adk-market-15 #market-slot")) {
-        void play("subsystem_select", {cooldown:0});
+        void play("subsystem_select", {cooldown:0,gain:.40});
         return;
       }
 
@@ -4412,7 +4442,7 @@ if (!game.user?.isGM) {
 
   installSoundEngine();
   installCreditsSystem();
-  installEntryGatewayNormalization();
+  removeEntryGatewayNormalization(); // disabled: custom gateway DOM observer caused Foundry freezes
   installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
