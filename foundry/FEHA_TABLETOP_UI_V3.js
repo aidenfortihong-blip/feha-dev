@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.3";
+  const VERSION = "0.10.4";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1566,12 +1566,12 @@
       const anchorY =
         (Number(card.dataset.jackAnchorY)||50)/100*height;
 
-      const cardWidth = Math.max(120,card.offsetWidth);
-      const cardHeight = Math.max(58,card.offsetHeight);
+      const cardWidth = Math.max(180,card.offsetWidth);
+      const cardHeight = Math.max(90,card.offsetHeight);
 
       const halfW = cardWidth/2;
       const halfH = cardHeight/2;
-      const margin = 12;
+      const margin = 20;
 
       const outwardAngle = Math.atan2(
         anchorY-operatorAnchor.y,
@@ -1587,7 +1587,7 @@
         distance:0
       }];
 
-      const rings = [74,118,164,214];
+      const rings = [96,152,220,300,380];
 
       for (const radius of rings) {
         const samples = 16;
