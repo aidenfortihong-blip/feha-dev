@@ -5614,3 +5614,45 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-space.is-camera-authoring {
   cursor:crosshair !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.9.12 REAL CAMERA PLACEMENT BUTTON
+   The map itself becomes one reliable HTML button only while CAMERA is armed.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-camera-place-layer {
+  position:absolute !important;
+  inset:0 !important;
+  z-index:20 !important;
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  opacity:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  clip-path:none !important;
+  box-shadow:none !important;
+  pointer-events:none !important;
+  cursor:crosshair !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.is-camera-authoring
+  .jack-camera-place-layer {
+  pointer-events:auto !important;
+}
+
+/* Fixed controls stay above the placement button. */
+#feha-jackin-overlay .jack-viewport-controls {
+  z-index:40 !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.is-camera-authoring
+  > .jack-world::after {
+  content:"PLACE CAMERA // BUILD 0.9.12 // CLICK MAP // RMB DRAG TO PAN" !important;
+}
