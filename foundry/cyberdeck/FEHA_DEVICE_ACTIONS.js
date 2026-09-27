@@ -366,7 +366,21 @@
     }
 
     if (!result && cap === "REVEAL_NETWORK") {
-      result = await genericState(device,source,{networkRevealed:true});
+      const revealed = await devices.revealCustomDevices?.(
+        device.sceneId,
+        game.user?.id
+      );
+
+      await genericState(
+        device,
+        source,
+        {networkRevealed:true}
+      );
+
+      result = {
+        networkRevealed:true,
+        revealed:Number(revealed ?? 0)
+      };
     }
 
     if (!result && cap === "DOWNLOAD_DATA") {
