@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.9";
+  const VERSION = "0.9.10";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1327,8 +1327,8 @@
     // Always leave real overscan around the transformed world so RMB pan works
     // even at 100% or when zoomed out. This intentionally permits some empty
     // margin at the edges; the map should feel like a movable tabletop.
-    const padX = Math.max(180,width*.14);
-    const padY = Math.max(120,height*.16);
+    const padX = Math.max(260,width*.22);
+    const padY = Math.max(180,height*.24);
 
     const scaledWidth = width*zoom;
     const scaledHeight = height*zoom;
@@ -1776,12 +1776,51 @@
       }
     });
 
-    const cameraPlaceLayer =
-      root.querySelector(".jack-camera-place-layer");
+    // Foundry and some UI layers can intercept map pointer events before they
+    // reach JACK IN descendants. Camera authoring therefore listens at WINDOW
+    // capture phase and uses screen coordinates against the live map rectangle.
+    // This is deliberately independent of the transformed map DOM.
+    if (root.__cameraPlacementCapture) {
+      window.removeEventListener(
+        "mousedown",
+        root.__cameraPlacementCapture,
+        true
+      );
+    }
 
-    cameraPlaceLayer?.addEventListener("pointerdown",async event => {
+    root.__cameraPlacementCapture = async event => {
+      if (!root.isConnected) {
+        window.removeEventListener(
+          "mousedown",
+          root.__cameraPlacementCapture,
+          true
+        );
+        delete root.__cameraPlacementCapture;
+        return;
+      }
+
       if (event.button !== 0) return;
       if (root.dataset.cameraAuthorMode !== "1") return;
+
+      const liveSpace = root.querySelector(".jack-space");
+      if (!liveSpace) return;
+
+      const rect = liveSpace.getBoundingClientRect();
+
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (!inside) return;
+
+      // Keep fixed JACK IN HUD controls usable even while authoring.
+      const control = event.target?.closest?.(
+        ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.qh-resolution,.jack-header,.jack-actions,input,select,textarea,button"
+      );
+
+      if (control) return;
 
       event.preventDefault();
       event.stopPropagation();
@@ -1806,7 +1845,7 @@
       }
 
       ui?.notifications?.info?.(
-        "CAMERA POSITION CAPTURED // "+
+        "CAMERA INPUT CAPTURED // "+
         point.xPct.toFixed(1)+"%, "+
         point.yPct.toFixed(1)+"%"
       );
@@ -1825,7 +1864,13 @@
           String(err?.message ?? err)
         );
       }
-    });
+    };
+
+    window.addEventListener(
+      "mousedown",
+      root.__cameraPlacementCapture,
+      true
+    );
 
     root.onwheel = event => {
       if (!space.contains(event.target)) return;
@@ -2171,7 +2216,7 @@
           ${deviceNodes}
         </div>
 
-        <div class="jack-camera-place-layer" aria-hidden="true"></div>
+        <div class="jack-camera-place-layer" aria-hidden="true" data-camera-visual-layer></div>
 
         <div class="jack-viewport-controls">
           <button type="button" data-jack-action="zoom-out" title="Zoom out">−</button>
