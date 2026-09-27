@@ -7597,3 +7597,303 @@ body > #feha-jackin-overlay {
     font-size:13px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.18 ZOOM-INDEPENDENT UI + READABILITY
+   Final high-specificity layer for JACK IN semantic objects.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-world {
+  --jack-ui-scale:1;
+}
+
+/* Cards remain constant readable screen size at every map zoom. */
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node.is-targeted {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node {
+  z-index:30 !important;
+  overflow:visible !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-targeted {
+  z-index:60 !important;
+}
+
+/* Devices follow the same constant-screen-size rule. */
+#feha-jackin-overlay .jack-world .jack-device-node {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+  z-index:30 !important;
+}
+
+/* Relays never shrink into unreadability or disappear behind cards. */
+#feha-jackin-overlay .jack-world .jack-relay,
+#feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay {
+  left:var(--jack-x) !important;
+  top:var(--jack-y) !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+  z-index:45 !important;
+  width:88px !important;
+  min-height:48px !important;
+  padding:7px 8px !important;
+  grid-template-columns:20px minmax(0,1fr) !important;
+  column-gap:7px !important;
+  opacity:1 !important;
+  background:rgba(2,8,10,.94) !important;
+  border:1px solid rgba(var(--jack-cyan),.30) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-cyan),.06),
+    0 8px 22px rgba(0,0,0,.42) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay.is-gateway,
+#feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay.is-gateway {
+  width:108px !important;
+  opacity:1 !important;
+  border-color:rgba(var(--jack-yellow),.58) !important;
+  background:rgba(9,10,7,.96) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay-core {
+  width:19px !important;
+  height:19px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay small {
+  color:#e2f7fa !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  letter-spacing:.9px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay em {
+  color:#819ca2 !important;
+  font-size:8px !important;
+  line-height:1 !important;
+  letter-spacing:.9px !important;
+}
+
+/* Operator and exact token anchors also stay constant-size. */
+#feha-jackin-overlay .jack-world .jack-operator {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+  z-index:26 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-token-anchor {
+  transform:
+    translate(-50%,-50%)
+    rotate(45deg)
+    scale(var(--jack-ui-scale,1)) !important;
+  transform-origin:center center !important;
+  z-index:38 !important;
+}
+
+/* Keep route geometry behind semantic UI. */
+#feha-jackin-overlay .jack-world .jack-links {
+  z-index:2 !important;
+}
+
+/* -----------------------------
+   WHOLE JACK IN READABILITY PASS
+   ----------------------------- */
+
+/* Header */
+#feha-jackin-overlay .jack-header > div:first-child > small {
+  font-size:10px !important;
+  letter-spacing:1.5px !important;
+}
+
+#feha-jackin-overlay .jack-header h1 {
+  font-size:34px !important;
+  line-height:1 !important;
+}
+
+#feha-jackin-overlay .jack-head-stat span {
+  font-size:9px !important;
+  letter-spacing:1.05px !important;
+}
+
+#feha-jackin-overlay .jack-head-stat b {
+  font-size:14px !important;
+  line-height:1.2 !important;
+}
+
+#feha-jackin-overlay .jack-head-actions button {
+  font-size:10px !important;
+  letter-spacing:1.05px !important;
+}
+
+/* Actor cards */
+#feha-jackin-overlay .jack-node-copy b {
+  font-size:20px !important;
+  line-height:1.05 !important;
+}
+
+#feha-jackin-overlay .jack-node-copy small {
+  color:#a7bec4 !important;
+  font-size:11px !important;
+  line-height:1.4 !important;
+  letter-spacing:.95px !important;
+}
+
+#feha-jackin-overlay .jack-node > em {
+  font-size:11px !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-jackin-overlay .jack-node-num {
+  font-size:9px !important;
+}
+
+/* Operator */
+#feha-jackin-overlay .jack-operator > span small {
+  color:#8da8ae !important;
+  font-size:11px !important;
+  letter-spacing:1.3px !important;
+}
+
+#feha-jackin-overlay .jack-operator > span b {
+  font-size:21px !important;
+  line-height:1.05 !important;
+}
+
+/* Target readout */
+#feha-jackin-overlay .jack-lock-readout small {
+  font-size:10px !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout b {
+  font-size:21px !important;
+  line-height:1 !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout span {
+  color:#8fa6ac !important;
+  font-size:11px !important;
+  line-height:1.4 !important;
+}
+
+/* Topology caption */
+#feha-jackin-overlay .jack-net-caption small {
+  color:#718a90 !important;
+  font-size:9px !important;
+  letter-spacing:1px !important;
+}
+
+#feha-jackin-overlay .jack-net-caption b {
+  color:#d5eef2 !important;
+  font-size:11px !important;
+  letter-spacing:.9px !important;
+}
+
+/* View controls */
+#feha-jackin-overlay .jack-viewport-controls button,
+#feha-jackin-overlay .jack-viewport-controls b {
+  font-size:12px !important;
+  letter-spacing:.8px !important;
+}
+
+/* Quickhack execution panel */
+#feha-jackin-overlay .jack-actions-title small {
+  font-size:10px !important;
+  letter-spacing:1.2px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title b {
+  font-size:23px !important;
+  line-height:1.05 !important;
+}
+
+#feha-jackin-overlay .jack-actions-title span {
+  font-size:10px !important;
+  line-height:1.4 !important;
+}
+
+#feha-jackin-overlay .jack-hack > span > b {
+  font-size:18px !important;
+  line-height:1.08 !important;
+}
+
+#feha-jackin-overlay .jack-hack > span > small {
+  color:#91a9ae !important;
+  font-size:11px !important;
+  line-height:1.4 !important;
+}
+
+#feha-jackin-overlay .jack-hack em span {
+  font-size:9px !important;
+  letter-spacing:1px !important;
+}
+
+#feha-jackin-overlay .jack-hack em b {
+  font-size:24px !important;
+  line-height:1 !important;
+}
+
+/* Selected hostile remains red and fully visible at every zoom. */
+#feha-jackin-overlay
+  .jack-world
+  .jack-node.is-hostile.is-targeted {
+  border-color:rgb(var(--jack-mag)) !important;
+  outline:3px solid rgb(var(--jack-mag)) !important;
+  outline-offset:3px !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-mag),.24),
+    0 0 28px rgba(var(--jack-mag),.28),
+    0 18px 38px rgba(0,0,0,.48) !important;
+}
+
+/* Keep outline/glow visually inside the usable world bounds. */
+#feha-jackin-overlay .jack-world .jack-node::before,
+#feha-jackin-overlay .jack-world .jack-node::after {
+  pointer-events:none !important;
+}
+
+/* On smaller displays, keep typography readable rather than shrinking it back down. */
+@media(max-width:1350px) {
+  #feha-jackin-overlay .jack-world .jack-relay,
+  #feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay {
+    width:82px !important;
+    min-height:44px !important;
+  }
+
+  #feha-jackin-overlay .jack-world .jack-relay.is-gateway,
+  #feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay.is-gateway {
+    width:100px !important;
+  }
+
+  #feha-jackin-overlay .jack-node-copy b {
+    font-size:18px !important;
+  }
+
+  #feha-jackin-overlay .jack-node-copy small,
+  #feha-jackin-overlay .jack-hack > span > small {
+    font-size:10px !important;
+  }
+}
