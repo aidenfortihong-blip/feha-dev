@@ -718,8 +718,8 @@
 
       if (!target || !market.contains(target) || target.disabled) return;
 
-      // These three groups are bound directly by bindMarketControlSounds()
-      // so their click cue starts before the native Market rerender.
+      // Storefront / vendor-tier / Mk controls have their own
+      // dedicated press router with unique sound pairs.
       if (
         target.matches(
           "[data-shop],.shop-card," +
@@ -805,7 +805,10 @@
       const related = event.relatedTarget;
       if (related && target.contains?.(related)) return;
 
-      // Every group intentionally has a different hover sound.
+      // Distinct fallback files:
+      // storefront hover = tick
+      // tier hover       = select
+      // Mk hover         = confirmation
       if (shop) {
         void play("hover",{cooldown:55});
         return;
@@ -817,56 +820,59 @@
       }
 
       if (mk) {
-        void play("actor_switch",{cooldown:55});
+        void play("confirm",{cooldown:55});
       }
     };
 
-    const bindMarketControlSounds = root => {
-      if (!root) return;
+    const marketPressTimes = new WeakMap();
 
-      const bind = (selector,kind) => {
-        root.querySelectorAll(selector).forEach(control => {
-          if (!(control instanceof HTMLElement)) return;
+    const marketPressHandler = event => {
+      if (event.button != null && event.button !== 0) return;
 
-          const key = "fehaMarketDirectSound";
-          if (control.dataset[key] === kind) return;
+      const market = event.target?.closest?.("#adk-market-15");
+      if (!market) return;
 
-          const old = control.__fehaMarketDirectSoundHandler;
-          if (old) {
-            control.removeEventListener("pointerdown",old,true);
-          }
+      const shop =
+        event.target?.closest?.("[data-shop],.shop-card") ??
+        null;
 
-          const handler = event => {
-            if (event.button != null && event.button !== 0) return;
-            if (control.disabled) return;
+      const tier =
+        event.target?.closest?.("[data-shop-tier],.tier-choice") ??
+        null;
 
-            // Fire immediately on the actual control, before native Market
-            // handlers rerender/replace it.
-            void play(kind,{cooldown:0});
-          };
+      const mk =
+        event.target?.closest?.("[data-item-tier],.mk-filter") ??
+        null;
 
-          control.__fehaMarketDirectSoundHandler = handler;
-          control.dataset[key] = kind;
-          control.addEventListener("pointerdown",handler,true);
-        });
-      };
+      const target = shop ?? tier ?? mk;
+      if (!target || !market.contains(target) || target.disabled) return;
 
-      // Click sound is always different from that group's hover sound.
-      bind("[data-shop],.shop-card","drawer_open");
-      bind("[data-shop-tier],.tier-choice","subsystem_select");
-      bind("[data-item-tier],.mk-filter","cyberware_select");
+      // pointerdown and mousedown both route here. Suppress the second event
+      // from the same physical press while still allowing rapid real clicks.
+      const now = performance.now();
+      const last = marketPressTimes.get(target) ?? -Infinity;
+      if (now - last < 90) return;
+      marketPressTimes.set(target,now);
+
+      // Click cues intentionally differ from each group's hover cue and from
+      // each other in the fallback pack:
+      // storefront click = doorOpen
+      // tier click       = laserSmall
+      // Mk click         = impactMetal
+      if (shop) {
+        void play("drawer_open",{cooldown:0});
+        return;
+      }
+
+      if (tier) {
+        void play("scan",{cooldown:0});
+        return;
+      }
+
+      if (mk) {
+        void play("install",{cooldown:0});
+      }
     };
-
-    const marketControlObserver = new MutationObserver(() => {
-      bindMarketControlSounds(document.getElementById("adk-market-15"));
-    });
-
-    marketControlObserver.observe(document.body,{
-      childList:true,
-      subtree:true
-    });
-
-    bindMarketControlSounds(document.getElementById("adk-market-15"));
 
     const changeHandler = event => {
       if (event.target?.matches?.("#adk-market-15 #adk-market-actor")) {
@@ -884,6 +890,8 @@
       }
     };
 
+    document.addEventListener("pointerdown", marketPressHandler, true);
+    document.addEventListener("mousedown", marketPressHandler, true);
     document.addEventListener("pointerdown", marketPointerHandler, true);
     document.addEventListener("pointerover", marketHoverHandler, true);
     document.addEventListener("click", clickHandler, true);
@@ -930,7 +938,8 @@
         if (disposed) return;
         disposed = true;
 
-        marketControlObserver.disconnect();
+        document.removeEventListener("pointerdown", marketPressHandler, true);
+        document.removeEventListener("mousedown", marketPressHandler, true);
         document.removeEventListener("pointerdown", marketPointerHandler, true);
         document.removeEventListener("pointerover", marketHoverHandler, true);
         document.removeEventListener("click", clickHandler, true);
@@ -1333,6 +1342,244 @@
     portrait.alt = actor?.name ?? actorName;
     portrait.dataset.fehaPortrait = actorName;
     return true;
+  }
+
+  function installEntryGatewayNormalization() {
+    removeEntryGatewayNormalization();
+
+    const ROOT_ID = "adk-entry-gateway";
+    const DERKE_ART =
+      "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png";
+
+    const ORDER = ["Ponyboy","Derke","Sasha","Zach"];
+
+    let rootObserver = null;
+    let activeRoot = null;
+    let derkeProxy = false;
+    let restoring = false;
+
+    const displayFor = name => {
+      const key = norm(name);
+      if (key === "ponyboy") return "Ponyboy";
+      if (key === "jing" || key === "derke") return "Derke";
+      if (key === "sasha" || key.startsWith("sasha ")) return "Sasha";
+      if (key === "zach" || key === "raiden") return "Zach";
+      return null;
+    };
+
+    const rewriteText = root => {
+      if (!root) return;
+
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT
+      );
+
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+
+      for (const node of nodes) {
+        const before = node.nodeValue ?? "";
+        const after = before
+          .replace(
+            /FLESH\s+ENSHROUDED\s*\/\/\s*HEART\s+ABLAZE/gi,
+            "CYBERPUNK"
+          )
+          .replace(/\bJING\b/g,"DERKE")
+          .replace(/\bJing\b/g,"Derke")
+          .replace(/\bSASHA\s+BOGDANOV\b/gi,"SASHA");
+
+        if (after !== before) node.nodeValue = after;
+      }
+    };
+
+    const assigned = () => {
+      const key = norm(game.user?.character?.name);
+      if (key === "ponyboy") return "Ponyboy";
+      if (key === "derke") return "Derke";
+      if (key === "sasha" || key.startsWith("sasha ")) return "Sasha";
+      if (key === "zach" || key === "raiden") return "Zach";
+      return null;
+    };
+
+    const normalize = root => {
+      if (!root) return;
+
+      const title = root.querySelector(".adk-eg-header h1");
+      if (title) title.textContent = "CYBERPUNK";
+
+      const panel = root.querySelector(".adk-eg-candidates");
+      const buttons = panel
+        ? [...panel.querySelectorAll("[data-candidate]")]
+        : [];
+
+      const keep = new Map();
+
+      for (const button of buttons) {
+        const underlying = String(button.dataset.candidate ?? "");
+        const display = displayFor(underlying);
+
+        if (!display) {
+          button.remove();
+          continue;
+        }
+
+        button.dataset.fehaDisplayCandidate = display;
+
+        const nameEl = button.querySelector(".adk-eg-candidate-name");
+        if (nameEl) nameEl.textContent = display.toUpperCase();
+
+        keep.set(display,button);
+      }
+
+      if (panel) {
+        for (const display of ORDER) {
+          const button = keep.get(display);
+          if (button) panel.appendChild(button);
+        }
+      }
+
+      const assignedName = assigned();
+
+      [...root.querySelectorAll("[data-candidate]")].forEach((button,index) => {
+        const display =
+          button.dataset.fehaDisplayCandidate ??
+          displayFor(button.dataset.candidate);
+
+        const indexEl = button.querySelector(".adk-eg-candidate-index");
+        const stateEl = button.querySelector(".adk-eg-candidate-state");
+
+        if (indexEl) {
+          indexEl.textContent = String(index + 1).padStart(2,"0");
+        }
+
+        if (stateEl) {
+          stateEl.textContent =
+            display === assignedName
+              ? "ASSIGNED"
+              : "STANDBY";
+        }
+      });
+
+      const heading = root.querySelector(".adk-eg-panel-heading");
+      const headingParts = heading ? [...heading.querySelectorAll("span")] : [];
+      if (headingParts[1]) headingParts[1].textContent = "04 RECORDS";
+
+      rewriteText(root);
+
+      if (derkeProxy) {
+        const art = root.querySelector("[data-profile-art]");
+        if (art) {
+          art.src = DERKE_ART;
+          art.alt = "Derke";
+        }
+
+        const profileId = root.querySelector("[data-profile-id]");
+        if (profileId && /jing|derke/i.test(profileId.textContent ?? "")) {
+          profileId.textContent = "DERKE";
+        }
+      }
+    };
+
+    const installRoot = root => {
+      if (!root) return;
+
+      if (activeRoot !== root) {
+        rootObserver?.disconnect?.();
+        activeRoot = root;
+        derkeProxy = false;
+
+        const input = root.querySelector("#adk-eg-id-input");
+
+        // Capture input before the installed gateway's own listener. For Derke,
+        // feed the legacy closure "Jing" so native matching/authentication works,
+        // then restore the visible typed value after the event dispatch.
+        root.addEventListener(
+          "input",
+          event => {
+            if (restoring || event.target !== input) return;
+
+            const typed = String(input.value ?? "");
+            const key = norm(typed);
+
+            if (!key || !"derke".startsWith(key)) {
+              derkeProxy = false;
+              return;
+            }
+
+            const proxy = "jing".slice(0,Math.min(key.length,4));
+            derkeProxy = key === "derke";
+            input.value = proxy;
+
+            queueMicrotask(() => {
+              restoring = true;
+              input.value = typed;
+              restoring = false;
+              normalize(root);
+            });
+          },
+          true
+        );
+
+        root.addEventListener(
+          "click",
+          event => {
+            const button = event.target?.closest?.("[data-candidate]");
+            if (!button || !root.contains(button)) return;
+
+            derkeProxy =
+              norm(button.dataset.candidate) === "jing";
+
+            queueMicrotask(() => {
+              if (derkeProxy && input) input.value = "Derke";
+              normalize(root);
+            });
+          },
+          true
+        );
+
+        rootObserver = new MutationObserver(() => normalize(root));
+        rootObserver.observe(root,{
+          childList:true,
+          subtree:true,
+          characterData:true,
+          attributes:true,
+          attributeFilter:["src","alt","hidden","class"]
+        });
+      }
+
+      normalize(root);
+    };
+
+    const documentObserver = new MutationObserver(() => {
+      installRoot(document.getElementById(ROOT_ID));
+    });
+
+    documentObserver.observe(document.body,{
+      childList:true,
+      subtree:true
+    });
+
+    installRoot(document.getElementById(ROOT_ID));
+
+    globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER = {
+      refresh() {
+        installRoot(document.getElementById(ROOT_ID));
+      },
+      destroy() {
+        rootObserver?.disconnect?.();
+        documentObserver.disconnect();
+        activeRoot = null;
+      }
+    };
+  }
+
+  function removeEntryGatewayNormalization() {
+    try {
+      globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER?.destroy?.();
+    } catch {}
+
+    delete globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER;
   }
 
   function filterActorRoster(root = document.getElementById("adk-chrome-manager-34")) {
@@ -4122,6 +4369,7 @@ if (!game.user?.isGM) {
 
       removeCacheSelectionUX();
       removeActorSwitchFix();
+      removeEntryGatewayNormalization();
       removeTelemetryMotion();
       removeMarketSoundUX();
       removeCreditsSystem();
@@ -4164,6 +4412,7 @@ if (!game.user?.isGM) {
 
   installSoundEngine();
   installCreditsSystem();
+  installEntryGatewayNormalization();
   installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
