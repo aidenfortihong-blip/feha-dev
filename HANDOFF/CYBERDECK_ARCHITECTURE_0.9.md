@@ -8,7 +8,7 @@ Current architecture generation: **0.9.x**
 
 **JACK IN renders entities. Adapters own mechanics.**
 
-Do not add device-specific mechanics, world-document writes, socket authority, or camera/turret behavior directly to `FEHA_TABLETOP_UI_V3.js`.
+Do not add device-specific mechanics, world-document writes, socket authority, or turret behavior directly to `FEHA_TABLETOP_UI_V3.js`.
 
 The UI may:
 - request models from services
@@ -19,7 +19,6 @@ The UI may:
 
 The UI must not:
 - know how a Foundry Door changes state
-- know how a camera vision source works
 - decide a device Security DC
 - persist custom devices
 - authorize player world mutations
@@ -56,7 +55,6 @@ Responsibilities:
 - per-user discovery state
 
 Current device types / effective suggested DC at their default access scope:
-- Camera: 11 (endpoint)
 - Door: 12 (endpoint)
 - Alarm: 13 (endpoint)
 - Turret: 15 (endpoint)
@@ -141,17 +139,11 @@ Unknown object flow:
 
 Do not create a separate approval/socket implementation for each future device.
 
-### `foundry/cyberdeck/FEHA_CAMERA_PLACEMENT.js`
+### Camera status // 0.10.2
 
-Responsibilities:
-- GM-only camera placement
-- dedicated placement overlay using the active Scene image
-- conversion of one click into normalized Scene percentages
-- persistence of one minimal `camera` Network Device record
+Camera functionality is not part of the active runtime. There is no Camera Network Device type, placement module, JACK IN camera control, feed/POV adapter, or camera-specific action path.
 
-0.10.0 is intentionally a camera reset baseline. The placement module does **not** own camera feeds, POV, rotation, feed switching, or camera-specific breach mechanics. Those features are deferred until the placement primitive is proven stable in the live Foundry client.
-
-JACK IN only launches this module; it does not contain camera placement mechanics.
+Any future camera implementation should be treated as a new feature and must not revive the deleted 0.9.x/0.10.0 placement experiments.
 
 ## UI runtime
 
@@ -315,7 +307,6 @@ FEHA_CYBER_CORE.js
 FEHA_NETWORK_DEVICES.js
 FEHA_DEVICE_ACTIONS.js
 FEHA_NETWORK_APPROVALS.js
-FEHA_CAMERA_PLACEMENT.js
 FEHA_CYBER_CORE.init()
 FEHA_TABLETOP_UI_V3.js
 ```
