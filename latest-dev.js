@@ -1628,32 +1628,45 @@
     const patchCurrent = () =>
       bindRoot(document.getElementById(ROOT_ID));
 
+    const patchDuringBoot = () => {
+      patchCurrent();
+
+      for (const delay of [50,150,350,700,1200,1800]) {
+        schedule(patchCurrent,delay);
+      }
+    };
+
     gateway.open = async (...args) => {
-      const result = await original.open?.(...args);
+      // Start native gateway boot, but DO NOT wait for it before patching.
+      const pending = original.open?.(...args);
+
+      patchDuringBoot();
+
+      const result = await pending;
 
       patchCurrent();
-      schedule(patchCurrent,50);
-      schedule(patchCurrent,250);
+      schedule(patchCurrent,80);
 
       return result;
     };
 
     gateway.reopen = async (...args) => {
-      const result = await original.reopen?.(...args);
+      const pending = original.reopen?.(...args);
+
+      patchDuringBoot();
+
+      const result = await pending;
 
       patchCurrent();
-      schedule(patchCurrent,50);
-      schedule(patchCurrent,250);
+      schedule(patchCurrent,80);
 
       return result;
     };
 
     gateway.candidates = [...ORDER];
 
-    // Patch the gateway already on screen right now.
-    patchCurrent();
-    schedule(patchCurrent,50);
-    schedule(patchCurrent,250);
+    // Patch a gateway already on screen, including one currently mid-boot.
+    patchDuringBoot();
 
     globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER = {
       refresh:patchCurrent,
