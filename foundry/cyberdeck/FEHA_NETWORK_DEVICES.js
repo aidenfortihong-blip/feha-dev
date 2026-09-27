@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_NETWORK_DEVICES requires FEHA_CYBER_CORE.");
 
-  const VERSION = "0.9.0";
+  const VERSION = "0.9.2";
   const FLAG_SCOPE = "fleshEnshrouded";
   const DEVICE_FLAG = "networkDevice";
   const SCENE_DEVICE_FLAG = "networkDevices";
@@ -42,47 +42,82 @@
     CONTROL_SUBSYSTEM:{label:"CONTROL SUBSYSTEM",group:"system"}
   });
 
+  const ACCESS_SCOPES = Object.freeze({
+    endpoint:{
+      label:"ENDPOINT",
+      dcMod:0,
+      description:"One physical device."
+    },
+    local:{
+      label:"LOCAL",
+      dcMod:1,
+      description:"A small cluster or one local controller."
+    },
+    subsystem:{
+      label:"SUBSYSTEM",
+      dcMod:2,
+      description:"One meaningful security/building subsystem."
+    },
+    building:{
+      label:"BUILDING",
+      dcMod:3,
+      description:"Broad control across the current site."
+    },
+    core:{
+      label:"CORE",
+      dcMod:5,
+      description:"High-value central infrastructure."
+    }
+  });
+
   const TYPES = Object.freeze({
     camera:{
       label:"CAMERA",
       icon:"fa-solid fa-video",
-      defaultDC:11,
+      baseDC:11,
+      defaultScope:"endpoint",
       capabilities:["PLACE_FEED","VIEW_FEED","ROTATE","DISABLE"]
     },
     door:{
       label:"DOOR",
       icon:"fa-solid fa-door-open",
-      defaultDC:12,
+      baseDC:12,
+      defaultScope:"endpoint",
       capabilities:["OPEN","CLOSE","LOCK","UNLOCK"]
     },
     turret:{
       label:"TURRET",
       icon:"fa-solid fa-crosshairs",
-      defaultDC:15,
+      baseDC:15,
+      defaultScope:"endpoint",
       capabilities:["DISABLE","ENABLE","ROTATE","TAKEOVER"]
     },
     terminal:{
       label:"TERMINAL",
       icon:"fa-solid fa-terminal",
-      defaultDC:16,
+      baseDC:15,
+      defaultScope:"subsystem",
       capabilities:["REVEAL_NETWORK","DOWNLOAD_DATA"]
     },
     alarm:{
       label:"ALARM",
       icon:"fa-solid fa-bell",
-      defaultDC:13,
+      baseDC:13,
+      defaultScope:"endpoint",
       capabilities:["DISABLE","ENABLE","TRIGGER"]
     },
     lights:{
       label:"LIGHTING",
       icon:"fa-solid fa-lightbulb",
-      defaultDC:10,
+      baseDC:10,
+      defaultScope:"endpoint",
       capabilities:["POWER_OFF","POWER_ON","OVERLOAD"]
     },
     system:{
       label:"SYSTEM",
       icon:"fa-solid fa-network-wired",
-      defaultDC:18,
+      baseDC:16,
+      defaultScope:"building",
       capabilities:["REVEAL_NETWORK","CONTROL_SUBSYSTEM"]
     }
   });
@@ -162,8 +197,20 @@
     return TYPES[norm(type)] ?? TYPES.system;
   }
 
-  function suggestedDC(type) {
-    return Number(typeDef(type).defaultDC)||12;
+  function normalizeScope(scope,type=null) {
+    const requested = norm(scope);
+    if (ACCESS_SCOPES[requested]) return requested;
+
+    const fallback = typeDef(type)?.defaultScope ?? "endpoint";
+    return ACCESS_SCOPES[fallback] ? fallback : "endpoint";
+  }
+
+  function suggestedDC(type,scope=null) {
+    const def = typeDef(type);
+    const accessScope = normalizeScope(scope,type);
+    const base = Number(def.baseDC ?? def.defaultDC ?? 12) || 12;
+    const modifier = Number(ACCESS_SCOPES[accessScope]?.dcMod ?? 0) || 0;
+    return Math.max(0,Math.floor(base + modifier));
   }
 
   function securityLabel(dc) {
@@ -210,13 +257,15 @@
     discoveredBy=[],
     state={},
     origin="scene",
-    metadata={}
+    metadata={},
+    accessScope=null
   }) {
     const key = norm(type) || "system";
     const def = typeDef(key);
+    const scope = normalizeScope(accessScope ?? metadata?.accessScope,key);
     const dc = Number.isFinite(Number(securityDC))
       ? Math.max(0,Math.floor(Number(securityDC)))
-      : suggestedDC(key);
+      : suggestedDC(key,scope);
 
     return {
       id:String(id),
@@ -229,6 +278,8 @@
       yPct:clamp(Number(yPct)||0,0,100),
       securityDC:dc,
       securityLabel:securityLabel(dc),
+      accessScope:scope,
+      accessScopeLabel:ACCESS_SCOPES[scope]?.label ?? "ENDPOINT",
       capabilities:sanitizeCapabilities(key,capabilities),
       sourceUuid:sourceUuid ? String(sourceUuid) : null,
       sourceType:sourceType ? String(sourceType) : null,
@@ -269,6 +320,7 @@
       xPct:config?.xPct ?? pos.xPct,
       yPct:config?.yPct ?? pos.yPct,
       securityDC:config?.securityDC ?? config?.dc,
+      accessScope:config?.accessScope ?? config?.scope,
       capabilities:config?.capabilities,
       sourceUuid:doc.uuid ?? null,
       sourceType:doc.documentName ?? null,
@@ -325,7 +377,8 @@
       name:config?.name ?? wall.name ?? ("DOOR "+String(wall.id).slice(0,4).toUpperCase()),
       xPct:pos.xPct,
       yPct:pos.yPct,
-      securityDC:config?.securityDC ?? config?.dc ?? suggestedDC("door"),
+      securityDC:config?.securityDC ?? config?.dc ?? suggestedDC("door","endpoint"),
+      accessScope:config?.accessScope ?? config?.scope ?? "endpoint",
       capabilities:config?.capabilities ?? defaultCapabilities("door"),
       sourceUuid:wall.uuid ?? null,
       sourceType:wall.documentName ?? "Wall",
@@ -522,9 +575,11 @@
   const api = {
     version:VERSION,
     security:SECURITY,
+    accessScopes:ACCESS_SCOPES,
     capabilities:CAPABILITIES,
     types:TYPES,
     typeDef,
+    normalizeScope,
     suggestedDC,
     securityLabel,
     defaultCapabilities,
