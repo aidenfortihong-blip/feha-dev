@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.7";
+  const VERSION = "0.9.8";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1737,10 +1737,6 @@
       const liveSpace = root.querySelector(".jack-space");
       liveSpace?.classList.remove("is-probing","is-camera-placement");
 
-      root
-        .querySelector('[data-jack-action="probe-device"]')
-        ?.classList.remove("is-active");
-
       if (enabled) {
         root.dataset.cameraAuthorMode = "1";
         liveSpace?.classList.add("is-camera-authoring");
@@ -1755,33 +1751,66 @@
       }
     });
 
-    const probeButton =
-      root.querySelector('[data-jack-action="probe-device"]');
-
-    probeButton?.addEventListener("click",event => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const enabled =
-        root.dataset.probeMode !== "1";
-
-      clearCameraAuthorMode(root);
-      delete root.dataset.devicePlacementMode;
-      delete root.dataset.devicePlacementId;
+    // CAMERA AUTHORING: capture LEFT pointerdown at the overlay before Foundry,
+    // JACK IN child controls, or transformed world elements can swallow a click.
+    // If the pointer is inside the map rectangle and camera mode is armed, this
+    // event itself is the placement action.
+    root.addEventListener("pointerdown",async event => {
+      if (event.button !== 0) return;
+      if (root.dataset.cameraAuthorMode !== "1") return;
 
       const liveSpace = root.querySelector(".jack-space");
-      liveSpace?.classList.remove("is-camera-placement");
-      liveSpace?.classList.toggle("is-probing",enabled);
+      if (!liveSpace) return;
 
-      root.dataset.probeMode = enabled ? "1" : "0";
-      probeButton.classList.toggle("is-active",enabled);
+      const rect = liveSpace.getBoundingClientRect();
 
-      ui?.notifications?.info?.(
-        enabled
-          ? "NETWORK PROBE // LEFT-CLICK AN UNKNOWN DEVICE LOCATION"
-          : "NETWORK PROBE CANCELLED"
-      );
-    });
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (!inside) return;
+
+      if (
+        event.target?.closest?.(
+          ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.qh-resolution,input,select,textarea"
+        )
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+
+      const actor = actorById(root.dataset.actorId);
+      if (!actor) {
+        ui?.notifications?.error?.("Camera placement failed: operator Actor unavailable.");
+        return;
+      }
+
+      const point = pointerToJackPercent(root,event);
+      if (!point) {
+        ui?.notifications?.error?.("Camera placement failed: map coordinates unavailable.");
+        return;
+      }
+
+      try {
+        await authorCameraAtPoint(
+          root,
+          actor,
+          point.xPct,
+          point.yPct
+        );
+      } catch (err) {
+        console.error("FEHA V3 Camera placement failed",err);
+        ui?.notifications?.error?.(
+          "Camera could not be placed: "+
+          String(err?.message ?? err)
+        );
+      }
+    },true);
 
     root.onwheel = event => {
       if (!space.contains(event.target)) return;
@@ -1861,31 +1890,6 @@
       const actor = actorById(root.dataset.actorId);
       if (!actor) return;
 
-      if (root.dataset.cameraAuthorMode === "1") {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const point = pointerToJackPercent(root,event);
-        if (!point) return;
-
-        try {
-          await authorCameraAtPoint(
-            root,
-            actor,
-            point.xPct,
-            point.yPct
-          );
-        } catch (err) {
-          console.error("FEHA V3 Camera placement failed",err);
-          ui?.notifications?.error?.(
-            "Camera could not be placed: "+
-            String(err?.message ?? err)
-          );
-        }
-
-        return;
-      }
-
       if (root.dataset.devicePlacementMode === "camera") {
         event.preventDefault();
         event.stopPropagation();
@@ -1932,59 +1936,6 @@
         return;
       }
 
-      if (root.dataset.probeMode === "1") {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const approvals = cyberModule("deviceApprovals");
-
-        if (!approvals?.requestProbe) {
-          ui?.notifications?.warn?.("Network Probe service is unavailable.");
-          return;
-        }
-
-        const point = pointerToJackPercent(root,event);
-        if (!point) return;
-
-        root.dataset.probeMode = "0";
-        space.classList.remove("is-probing");
-
-        root
-          .querySelector('[data-jack-action="probe-device"]')
-          ?.classList.remove("is-active");
-
-        try {
-          const pending = await approvals.requestProbe({
-            sceneId:canvas?.scene?.id,
-            xPct:point.xPct,
-            yPct:point.yPct,
-            suggestedType:"door"
-          });
-
-          ui?.notifications?.info?.(
-            game.user?.isGM
-              ? "NETWORK PROBE // APPROVAL QUEUE OPENED"
-              : "NETWORK PROBE // SENT TO GM"
-          );
-
-          pending?.resolution?.then?.(result => {
-            if (
-              result?.decision === "approved" &&
-              root.isConnected
-            ) {
-              renderJack(root.dataset.actorId);
-            }
-          });
-        } catch (err) {
-          console.error("FEHA V3 Network Probe failed",err);
-          ui?.notifications?.error?.(
-            "Network Probe failed: "+
-            String(err?.message ?? err)
-          );
-        }
-
-        return;
-      }
     },true);
 
     root.onpointermove = event => {
@@ -2215,11 +2166,10 @@
             ? '<button type="button" data-jack-action="place-camera">CAMERA</button>'
             : ''
           }
-          <button type="button" data-jack-action="probe-device">PROBE</button>
         </div>
 
         <div class="jack-net-caption">
-          <small>TOPOLOGY // WHEEL TO ZOOM // HOLD RMB + DRAG TO PAN</small>
+          <small>TOPOLOGY // CAMERA = PLACE // WHEEL = ZOOM // RMB DRAG = PAN</small>
           <b>${net.relays.length} RELAYS // ${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
         </div>
 
