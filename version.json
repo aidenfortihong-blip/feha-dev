@@ -1,7 +1,7 @@
 {
-  "version": "0.10.37",
+  "version": "0.10.38",
   "updated": "2026-09-27",
-  "scope": "toggle-actor-target",
+  "scope": "camera-placement-foundation",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -155,10 +155,16 @@
     "No RAM, damage, effect, targeting, or topology behavior changed in this pass",
     "Clicking an already-selected JACK IN actor now deselects that same actor",
     "Deselecting clears the target panel, selected actor styling, selected trace state, and disables Quickhack RUN buttons until another actor is selected",
-    "Selecting a different actor still releases the previous target and locks the new one"
+    "Selecting a different actor still releases the previous target and locks the new one",
+    "Added a dedicated FEHA Camera subsystem with GM-authoritative Camera actor creation and token placement",
+    "The Camera subsystem bootstraps an Actor folder named Camera and creates a per-operator/per-user Camera actor with OWNER permission for the requesting operator user",
+    "Added JACK IN CAMERA placement mode: the ghost marker follows the JACK IN map and clicking deploys a real Camera token at the matching active Scene coordinate",
+    "Existing Camera tokens render back into JACK IN at their real Scene positions and are excluded from normal actor targeting",
+    "Camera markers remain constant screen-size during JACK IN zoom and the placement tool can be cancelled by right-click or pressing CAMERA again",
+    "Camera tokens store default FOV metadata for the next pass, but FOV angle/range/rotation editing is intentionally not exposed yet"
   ],
   "knownLimitations": [
-    "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
+    "Camera placement is implemented in 0.10.38; FOV preset selection, rotation, range visualization, and post-placement camera editing are the next camera pass.",
     "Turret ROTATE/FIRE still require a future turret adapter",
     "Status effects and non-damage Quickhack secondary effects are still not yet Active Effects",
     "Quickhack rules still use effectText parsing as a legacy bridge pending explicit schema migration",
