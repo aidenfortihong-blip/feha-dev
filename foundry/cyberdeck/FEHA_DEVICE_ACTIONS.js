@@ -366,10 +366,20 @@
     }
 
     if (!result && cap === "REVEAL_NETWORK") {
-      const revealed = await devices.revealCustomDevices?.(
-        device.sceneId,
-        game.user?.id
-      );
+      const approvals = core.module("deviceApprovals");
+
+      const revealResult =
+        game.user?.isGM
+          ? {
+              count:await devices.revealCustomDevices?.(
+                device.sceneId,
+                game.user?.id
+              )
+            }
+          : await approvals?.requestReveal?.(
+              device.sceneId,
+              game.user?.id
+            );
 
       await genericState(
         device,
@@ -379,7 +389,11 @@
 
       result = {
         networkRevealed:true,
-        revealed:Number(revealed ?? 0)
+        revealed:Number(
+          revealResult?.count ??
+          revealResult?.revealed ??
+          0
+        )
       };
     }
 
