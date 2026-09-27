@@ -6574,3 +6574,109 @@ body > #feha-jackin-overlay {
     font-size:11px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.10 SIDE TYPOGRAPHY CLEANUP
+   Bigger support/passive copy, larger deck text, no magenta accent bars.
+   ========================================================================== */
+
+/* RIGHT RAIL HEADINGS: larger, cleaner, no decorative line above. */
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section::after,
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section::before {
+  display:none !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-subhead {
+  margin-bottom:18px !important;
+  color:rgb(var(--cd2-mag)) !important;
+  font-size:13px !important;
+  line-height:1.1 !important;
+  letter-spacing:1.6px !important;
+}
+
+/* Right-side supporting copy. */
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-empty-message {
+  color:#9aadb2 !important;
+  font-size:11px !important;
+  line-height:1.6 !important;
+  letter-spacing:.6px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card span {
+  font-size:10px !important;
+  line-height:1.45 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
+  color:#a5b8bd !important;
+  font-size:10px !important;
+  line-height:1.6 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+  color:#d0dcdf !important;
+  font-size:12px !important;
+  line-height:1.85 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p::first-line {
+  color:#ffffff !important;
+  font-weight:800 !important;
+}
+
+/* Installed Cyberdeck text: make the descriptive copy readable. */
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
+  font-size:9px !important;
+  letter-spacing:1.25px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head h2 {
+  font-size:21px !important;
+  line-height:1.05 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
+  margin-top:6px !important;
+  color:rgb(var(--cd2-yellow)) !important;
+  font-size:11px !important;
+  line-height:1.55 !important;
+  letter-spacing:.35px !important;
+}
+
+/* Cyberdeck stat row should read like actual stats, not fine print. */
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs > div {
+  min-height:64px !important;
+  padding:10px 7px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
+  color:#85999e !important;
+  font-size:9px !important;
+  letter-spacing:1px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
+  color:#ffffff !important;
+  font-size:16px !important;
+  line-height:1 !important;
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 .cd2-subhead {
+    font-size:12px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p,
+  #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-empty-message {
+    font-size:10px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
+    font-size:10px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
+    font-size:15px !important;
+  }
+}
