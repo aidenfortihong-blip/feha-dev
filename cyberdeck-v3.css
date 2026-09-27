@@ -6334,3 +6334,243 @@ body > #feha-jackin-overlay {
     font-size:10px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.9 SIDE PANEL FILL PASS
+   Fill out left/right rails, improve cyberdeck readability, keep center intact.
+   ========================================================================== */
+
+#feha-cyberdeck-v2.feha-v3 {
+  grid-template-columns:300px minmax(760px,1fr) 370px !important;
+}
+
+/* -----------------------------
+   LEFT RAIL
+   ----------------------------- */
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator {
+  display:grid !important;
+  grid-template-rows:300px auto 1fr !important;
+  gap:10px !important;
+  padding:12px !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-portrait {
+  height:300px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta {
+  margin-top:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta > div {
+  padding:10px 10px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span {
+  font-size:7px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta b {
+  font-size:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary {
+  display:grid !important;
+  grid-template-rows:auto auto 1fr auto !important;
+  align-content:start !important;
+  min-height:0 !important;
+  height:100% !important;
+  margin-top:0 !important;
+  padding:14px !important;
+  background:
+    linear-gradient(135deg,rgba(var(--v3-accent),.04),transparent 58%),
+    #03090b !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
+  font-size:8px !important;
+  letter-spacing:1.2px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head {
+  gap:12px !important;
+  align-items:start !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head img {
+  width:72px !important;
+  height:72px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head h2 {
+  font-size:20px !important;
+  line-height:1.05 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
+  margin-top:5px !important;
+  font-size:9px !important;
+  line-height:1.45 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs {
+  margin-top:auto !important;
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs > div {
+  min-height:58px !important;
+  padding:9px 6px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
+  font-size:7px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
+  font-size:13px !important;
+}
+
+/* -----------------------------
+   RIGHT RAIL
+   ----------------------------- */
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right {
+  display:grid !important;
+  grid-template-rows:auto auto 1fr !important;
+  gap:22px !important;
+  padding:20px 22px !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg,rgba(var(--v3-accent),.03),transparent 42%),
+    #03090b !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section {
+  display:grid !important;
+  align-content:start !important;
+  margin:0 !important;
+  padding:0 0 18px !important;
+  background:transparent !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(var(--cd2-mag),.22) !important;
+  box-shadow:none !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section:last-child {
+  border-bottom:0 !important;
+  padding-bottom:0 !important;
+  height:100% !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-subhead {
+  margin-bottom:16px !important;
+  font-size:11px !important;
+  letter-spacing:1.5px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat {
+  min-height:48px !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  padding:11px 2px !important;
+  border-bottom:1px solid rgba(var(--v3-accent),.08) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat:last-child {
+  border-bottom:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
+  color:#83989d !important;
+  font-size:9px !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat b {
+  color:#d2fbff !important;
+  font-size:18px !important;
+  line-height:1 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-empty-message {
+  min-height:88px !important;
+  padding:10px 2px !important;
+  place-items:center start !important;
+  text-align:left !important;
+  font-size:10px !important;
+  line-height:1.5 !important;
+  color:#8a9ea3 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card {
+  grid-template-columns:52px minmax(0,1fr) !important;
+  gap:12px !important;
+  padding:10px 2px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card img {
+  width:52px !important;
+  height:52px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card b {
+  font-size:13px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
+  font-size:9px !important;
+  line-height:1.5 !important;
+}
+
+/* Make the passive section actually fill the remaining rail */
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive {
+  display:grid !important;
+  grid-template-rows:auto 1fr !important;
+  min-height:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+  max-width:none !important;
+  margin:0 !important;
+  color:#c8d4d7 !important;
+  font-size:12px !important;
+  line-height:1.8 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p::first-line {
+  color:#ffffff !important;
+  font-weight:800 !important;
+}
+
+/* -----------------------------
+   RESPONSIVE SAFETY
+   ----------------------------- */
+
+@media (max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 {
+    grid-template-columns:270px minmax(620px,1fr) 330px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .cd2-portrait {
+    height:270px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .cd2-deck-head img {
+    width:62px !important;
+    height:62px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+    font-size:11px !important;
+  }
+}
