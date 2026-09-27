@@ -9901,3 +9901,13 @@ body #adk-market-15#adk-market-15 .reset-btn {
     animation:none;
   }
 }
+
+
+/* ==========================================================================
+   FEHA MARKET // 0.10.51 REMOVE LEGACY CAP PILL
+   Market header capacity readout is obsolete. Chrome Manager owns capacity.
+   ========================================================================== */
+
+body #adk-market-15#adk-market-15 .cap-pill {
+  display:none!important;
+}
