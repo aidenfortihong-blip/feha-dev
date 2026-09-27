@@ -8640,3 +8640,182 @@ body > #feha-jackin-overlay {
     height:70px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.27 TOKEN-FLOOR SQUARE ACTOR NODES
+   Portrait-first actor squares with clean outlines and a token-size zoom floor.
+   ========================================================================== */
+
+/* Actor square uses the per-node scale floor computed from the real scene token. */
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node.is-targeted,
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node {
+  width:154px !important;
+  height:154px !important;
+  min-width:154px !important;
+  min-height:154px !important;
+  max-width:154px !important;
+  max-height:154px !important;
+  padding:8px !important;
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:minmax(0,1fr) 24px !important;
+  gap:6px !important;
+  place-items:center !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-node-scale,var(--jack-card-scale,1))) !important;
+  transform-origin:center center !important;
+  overflow:visible !important;
+  border-radius:0 !important;
+  background:rgba(2,7,9,.97) !important;
+}
+
+/* Remove all old decorative corner/caption layers. */
+#feha-jackin-overlay .jack-world .jack-node::before,
+#feha-jackin-overlay .jack-world .jack-node::after,
+#feha-jackin-overlay .jack-world .jack-node-num,
+#feha-jackin-overlay .jack-world .jack-node-copy {
+  display:none !important;
+  content:none !important;
+}
+
+/* Portrait is the whole visual focus. */
+#feha-jackin-overlay .jack-world .jack-node img {
+  width:100% !important;
+  height:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:none !important;
+  max-height:none !important;
+  margin:0 !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  align-self:stretch !important;
+  justify-self:stretch !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+}
+
+/* Only the status remains at the bottom. */
+#feha-jackin-overlay .jack-world .jack-node > em {
+  position:static !important;
+  align-self:center !important;
+  justify-self:center !important;
+  width:auto !important;
+  min-width:72px !important;
+  height:22px !important;
+  min-height:22px !important;
+  margin:0 !important;
+  padding:0 9px !important;
+  display:grid !important;
+  place-items:center !important;
+  font-size:8.5px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:1.05px !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+/* One clean outline only. */
+#feha-jackin-overlay .jack-world .jack-node {
+  outline:none !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.34) !important;
+}
+
+/* Hostile: yellow until selected. */
+#feha-jackin-overlay .jack-world .jack-node.is-hostile {
+  border:2px solid rgb(var(--jack-yellow)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-hostile > em {
+  color:rgb(var(--jack-yellow)) !important;
+  background:rgba(var(--jack-yellow),.06) !important;
+  border:1px solid rgba(var(--jack-yellow),.38) !important;
+}
+
+/* Friendly: cyan. */
+#feha-jackin-overlay .jack-world .jack-node.is-friendly {
+  border:2px solid rgba(var(--jack-cyan),.90) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-friendly > em {
+  color:rgb(var(--jack-cyan)) !important;
+  background:rgba(var(--jack-cyan),.055) !important;
+  border:1px solid rgba(var(--jack-cyan),.34) !important;
+}
+
+/* Neutral: subdued yellow-cyan mix. */
+#feha-jackin-overlay .jack-world .jack-node.is-neutral {
+  border:2px solid rgba(var(--jack-yellow),.72) !important;
+}
+
+/* Selected: single red border, no second outline/glow ring. */
+#feha-jackin-overlay .jack-world .jack-node.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-friendly.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-neutral.is-targeted {
+  width:154px !important;
+  height:154px !important;
+  min-width:154px !important;
+  min-height:154px !important;
+  max-width:154px !important;
+  max-height:154px !important;
+  border:2px solid rgb(var(--jack-mag)) !important;
+  outline:none !important;
+  box-shadow:
+    0 0 18px rgba(var(--jack-mag),.18),
+    0 10px 24px rgba(0,0,0,.38) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-targeted > em {
+  color:#fff !important;
+  background:rgb(var(--jack-mag)) !important;
+  border:1px solid rgb(var(--jack-mag)) !important;
+}
+
+/* Hover never changes geometry or kills the border. */
+#feha-jackin-overlay .jack-world .jack-node:hover {
+  filter:brightness(1.06) !important;
+}
+
+/* Hot-reload safety: old square rules must not reintroduce inner text. */
+#feha-jackin-overlay .jack-world .jack-node > span:not(.jack-node-num) {
+  display:none !important;
+}
+
+@media(max-width:1350px) {
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node,
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node.is-targeted {
+    width:144px !important;
+    height:144px !important;
+    min-width:144px !important;
+    min-height:144px !important;
+    max-width:144px !important;
+    max-height:144px !important;
+  }
+}
