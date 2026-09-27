@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.8";
+  const VERSION = "0.9.9";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1324,16 +1324,41 @@
     let panX = Number(state.panX)||0;
     let panY = Number(state.panY)||0;
 
-    if (zoom <= 1) {
-      panX = (width - width*zoom)/2;
-      panY = (height - height*zoom)/2;
-    } else {
-      const minX = width - width*zoom;
-      const minY = height - height*zoom;
+    // Always leave real overscan around the transformed world so RMB pan works
+    // even at 100% or when zoomed out. This intentionally permits some empty
+    // margin at the edges; the map should feel like a movable tabletop.
+    const padX = Math.max(180,width*.14);
+    const padY = Math.max(120,height*.16);
 
-      panX = Math.max(minX,Math.min(0,panX));
-      panY = Math.max(minY,Math.min(0,panY));
+    const scaledWidth = width*zoom;
+    const scaledHeight = height*zoom;
+
+    const centeredX = (width-scaledWidth)/2;
+    const centeredY = (height-scaledHeight)/2;
+
+    let minX;
+    let maxX;
+    let minY;
+    let maxY;
+
+    if (scaledWidth <= width) {
+      minX = centeredX-padX;
+      maxX = centeredX+padX;
+    } else {
+      minX = width-scaledWidth-padX;
+      maxX = padX;
     }
+
+    if (scaledHeight <= height) {
+      minY = centeredY-padY;
+      maxY = centeredY+padY;
+    } else {
+      minY = height-scaledHeight-padY;
+      maxY = padY;
+    }
+
+    panX = Math.max(minX,Math.min(maxX,panX));
+    panY = Math.max(minY,Math.min(maxY,panY));
 
     return {zoom,panX,panY};
   }
@@ -1751,50 +1776,40 @@
       }
     });
 
-    // CAMERA AUTHORING: capture LEFT pointerdown at the overlay before Foundry,
-    // JACK IN child controls, or transformed world elements can swallow a click.
-    // If the pointer is inside the map rectangle and camera mode is armed, this
-    // event itself is the placement action.
-    root.addEventListener("pointerdown",async event => {
+    const cameraPlaceLayer =
+      root.querySelector(".jack-camera-place-layer");
+
+    cameraPlaceLayer?.addEventListener("pointerdown",async event => {
       if (event.button !== 0) return;
       if (root.dataset.cameraAuthorMode !== "1") return;
-
-      const liveSpace = root.querySelector(".jack-space");
-      if (!liveSpace) return;
-
-      const rect = liveSpace.getBoundingClientRect();
-
-      const inside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-
-      if (!inside) return;
-
-      if (
-        event.target?.closest?.(
-          ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.qh-resolution,input,select,textarea"
-        )
-      ) {
-        return;
-      }
 
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
 
       const actor = actorById(root.dataset.actorId);
+
       if (!actor) {
-        ui?.notifications?.error?.("Camera placement failed: operator Actor unavailable.");
+        ui?.notifications?.error?.(
+          "Camera placement failed: operator Actor unavailable."
+        );
         return;
       }
 
       const point = pointerToJackPercent(root,event);
+
       if (!point) {
-        ui?.notifications?.error?.("Camera placement failed: map coordinates unavailable.");
+        ui?.notifications?.error?.(
+          "Camera placement failed: map coordinates unavailable."
+        );
         return;
       }
+
+      ui?.notifications?.info?.(
+        "CAMERA POSITION CAPTURED // "+
+        point.xPct.toFixed(1)+"%, "+
+        point.yPct.toFixed(1)+"%"
+      );
 
       try {
         await authorCameraAtPoint(
@@ -1810,7 +1825,7 @@
           String(err?.message ?? err)
         );
       }
-    },true);
+    });
 
     root.onwheel = event => {
       if (!space.contains(event.target)) return;
@@ -2155,6 +2170,8 @@
           ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
           ${deviceNodes}
         </div>
+
+        <div class="jack-camera-place-layer" aria-hidden="true"></div>
 
         <div class="jack-viewport-controls">
           <button type="button" data-jack-action="zoom-out" title="Zoom out">−</button>
