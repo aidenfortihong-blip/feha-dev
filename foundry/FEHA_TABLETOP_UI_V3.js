@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.19";
+  const VERSION = "0.10.20";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1424,7 +1424,10 @@
     const world = root.querySelector(".jack-world");
     if (world) {
       world.style.setProperty("--jack-zoom",String(state.zoom));
-      world.style.setProperty("--jack-ui-scale","1");
+      world.style.setProperty(
+        "--jack-ui-scale",
+        String(1/Math.max(.001,Math.pow(state.zoom,1.28)))
+      );
       world.style.setProperty("--jack-pan-x",state.panX+"px");
       world.style.setProperty("--jack-pan-y",state.panY+"px");
     }
