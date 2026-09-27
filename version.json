@@ -1,7 +1,7 @@
 {
-  "version": "0.10.13",
+  "version": "0.10.14",
   "updated": "2026-09-27",
-  "scope": "library-fill-target-lock-feedback",
+  "scope": "no-scroll-center-fit",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -56,7 +56,11 @@
     "Increased SOFTWARE LIBRARY eyebrow text and ALL OWNED QUICKHACKS ARE LOADED message size",
     "Target-state updates no longer rerun the endpoint collision solver",
     "Target cards freeze their geometry before selection classes change so clicking a target cannot resize or distort the card",
-    "Strengthened selected-target feedback with a yellow outline, lock glow, LOCKED badge, target-lock caption, and brighter anchor/tether"
+    "Strengthened selected-target feedback with a yellow outline, lock glow, LOCKED badge, target-lock caption, and brighter anchor/tether",
+    "Removed vertical scrolling from the main Cyberdeck center content",
+    "Software Library now consumes only the remaining center-column height instead of forcing a fixed minimum",
+    "Empty Software Library panel fills the available remainder while keeping both labels fully visible",
+    "Reduced loaded Quickhack card minimum height slightly so shorter windows still fit without scrolling"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
