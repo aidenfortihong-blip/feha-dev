@@ -7367,3 +7367,172 @@ body > #feha-jackin-overlay {
   stroke:rgb(var(--jack-cyan)) !important;
   filter:drop-shadow(0 0 5px rgba(var(--jack-cyan),.36)) !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.16 SMOOTH TELEMETRY + HOSTILE TARGET STATES
+   Ambient network motion. Hostiles stay yellow; selected hostiles turn red.
+   ========================================================================== */
+
+/* TELEMETRY: slower, calmer, less simultaneous motion. */
+#feha-cyberdeck-v2.feha-v3 .cd2-net-path {
+  stroke-dasharray:10 8 !important;
+  animation:cd2-net-flow 8s linear infinite !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-path.is-b {
+  animation-delay:-2.4s !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-path.is-c {
+  animation-delay:-4.7s !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-node {
+  animation:cd2-net-node-pulse 4.8s ease-in-out infinite !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-scanline {
+  opacity:.52;
+  animation:cd2-net-scan 8.5s linear infinite !important;
+  will-change:transform;
+  transform:translate3d(0,0,0);
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-svg {
+  shape-rendering:geometricPrecision;
+}
+
+@keyframes cd2-net-flow {
+  to { stroke-dashoffset:-36; }
+}
+
+@keyframes cd2-net-node-pulse {
+  0%,100% { opacity:.76; }
+  50% { opacity:1; }
+}
+
+@keyframes cd2-net-scan {
+  0% { transform:translate3d(0,0,0); }
+  100% { transform:translate3d(0,186px,0); }
+}
+
+/* TARGET CARDS: outlines always visible. No blackout hover. */
+#feha-jackin-overlay .jack-node {
+  border:1px solid rgba(var(--jack-cyan),.24) !important;
+  background:
+    linear-gradient(110deg,rgba(var(--jack-cyan),.025),transparent 62%),
+    rgba(2,8,10,.96) !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.32) !important;
+}
+
+/* Hostiles are yellow by default. */
+#feha-jackin-overlay .jack-node.is-hostile {
+  border-color:rgb(var(--jack-yellow)) !important;
+  outline:1px solid rgba(var(--jack-yellow),.18) !important;
+  outline-offset:1px !important;
+  background:
+    linear-gradient(110deg,rgba(var(--jack-yellow),.055),transparent 62%),
+    rgba(5,8,8,.97) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-yellow),.08),
+    0 10px 26px rgba(0,0,0,.36) !important;
+}
+
+#feha-jackin-overlay .jack-node.is-hostile > em {
+  color:rgb(var(--jack-yellow)) !important;
+  background:transparent !important;
+  border-color:rgba(var(--jack-yellow),.26) !important;
+}
+
+#feha-jackin-overlay .jack-node.is-hostile .jack-node-num {
+  color:rgba(var(--jack-yellow),.78) !important;
+}
+
+/* Hover keeps the same card identity; just brightens it slightly. */
+#feha-jackin-overlay .jack-node:hover {
+  background:
+    linear-gradient(110deg,rgba(var(--jack-cyan),.04),transparent 62%),
+    rgba(3,9,11,.985) !important;
+  border-color:rgba(var(--jack-cyan),.48) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-cyan),.08),
+    0 12px 28px rgba(0,0,0,.40) !important;
+}
+
+#feha-jackin-overlay .jack-node.is-hostile:hover {
+  border-color:rgb(var(--jack-yellow)) !important;
+  outline-color:rgba(var(--jack-yellow),.24) !important;
+  background:
+    linear-gradient(110deg,rgba(var(--jack-yellow),.075),transparent 62%),
+    rgba(6,9,8,.985) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-yellow),.12),
+    0 12px 28px rgba(0,0,0,.40) !important;
+}
+
+/* Selected hostile = red lock state, same geometry. */
+#feha-jackin-overlay .jack-node.is-hostile.is-targeted {
+  border-color:rgb(var(--jack-mag)) !important;
+  outline:2px solid rgb(var(--jack-mag)) !important;
+  outline-offset:2px !important;
+  background:
+    linear-gradient(110deg,rgba(var(--jack-mag),.11),transparent 62%),
+    rgba(10,5,8,.985) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-mag),.18),
+    0 0 22px rgba(var(--jack-mag),.20),
+    0 14px 32px rgba(0,0,0,.44) !important;
+  filter:none !important;
+}
+
+#feha-jackin-overlay .jack-node.is-hostile.is-targeted::before {
+  background:
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) left top/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) left top/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) right top/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) right top/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) left bottom/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) left bottom/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) right bottom/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-mag)),rgb(var(--jack-mag))) right bottom/2px 18px no-repeat !important;
+  opacity:.92 !important;
+}
+
+#feha-jackin-overlay .jack-node.is-hostile.is-targeted::after {
+  content:"TARGETED" !important;
+  color:rgb(var(--jack-mag)) !important;
+  opacity:.95 !important;
+}
+
+#feha-jackin-overlay .jack-node.is-hostile.is-targeted .jack-node-num {
+  color:rgb(var(--jack-mag)) !important;
+}
+
+#feha-jackin-overlay .jack-node.is-hostile.is-targeted > em {
+  color:#fff !important;
+  background:rgb(var(--jack-mag)) !important;
+  border-color:rgba(255,210,228,.50) !important;
+}
+
+/* Red target tether/anchor/route for selected hostile. */
+#feha-jackin-overlay .jack-token-anchor.is-hostile.is-targeted,
+#feha-jackin-overlay .jack-token-anchor.is-targeted {
+  border-color:rgb(var(--jack-mag)) !important;
+  box-shadow:
+    0 0 0 6px rgba(var(--jack-mag),.045),
+    0 0 20px rgba(var(--jack-mag),.42) !important;
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-targeted::before {
+  background:rgb(var(--jack-mag)) !important;
+  box-shadow:0 0 9px rgba(var(--jack-mag),.62) !important;
+}
+
+#feha-jackin-overlay .jack-card-leader.is-targeted,
+#feha-jackin-overlay .jack-card-leader.is-targeted.is-displaced,
+#feha-jackin-overlay .jack-net-line.is-selected-route {
+  stroke:rgb(var(--jack-mag)) !important;
+  filter:drop-shadow(0 0 5px rgba(var(--jack-mag),.38)) !important;
+}
