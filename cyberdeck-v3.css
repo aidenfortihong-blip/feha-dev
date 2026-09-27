@@ -6726,3 +6726,142 @@ body > #feha-jackin-overlay {
     font-size:12px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.12 JACK IN TEXT + TARGET STABILITY
+   Bigger network/action typography. Targeting no longer requires a full rerender.
+   ========================================================================== */
+
+/* Network actor cards */
+#feha-jackin-overlay .jack-node {
+  min-height:112px !important;
+  grid-template-columns:78px minmax(0,1fr) !important;
+  column-gap:14px !important;
+  padding:13px 15px !important;
+}
+
+#feha-jackin-overlay .jack-node img {
+  width:78px !important;
+  height:78px !important;
+}
+
+#feha-jackin-overlay .jack-node-copy b {
+  font-size:19px !important;
+  line-height:1.08 !important;
+}
+
+#feha-jackin-overlay .jack-node-copy small {
+  margin-top:7px !important;
+  font-size:10px !important;
+  line-height:1.35 !important;
+  letter-spacing:1px !important;
+}
+
+#feha-jackin-overlay .jack-node > em {
+  margin-top:8px !important;
+  font-size:11px !important;
+  letter-spacing:1.15px !important;
+}
+
+/* Operator identity */
+#feha-jackin-overlay .jack-operator > span small {
+  font-size:10px !important;
+  letter-spacing:1.3px !important;
+}
+
+#feha-jackin-overlay .jack-operator > span b {
+  font-size:19px !important;
+}
+
+/* Relay / scene labels */
+#feha-jackin-overlay .jack-relay small {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-relay em {
+  font-size:7px !important;
+}
+
+#feha-jackin-overlay .jack-net-caption small {
+  font-size:8px !important;
+  letter-spacing:1px !important;
+}
+
+#feha-jackin-overlay .jack-net-caption b {
+  font-size:10px !important;
+  letter-spacing:.9px !important;
+}
+
+/* Target lock */
+#feha-jackin-overlay .jack-lock-readout small {
+  font-size:9px !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout b {
+  font-size:19px !important;
+  line-height:1.05 !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout span {
+  font-size:10px !important;
+  line-height:1.35 !important;
+}
+
+/* Quickhack execution header */
+#feha-jackin-overlay .jack-actions-title small {
+  font-size:9px !important;
+  letter-spacing:1.2px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title b {
+  font-size:21px !important;
+  line-height:1.05 !important;
+}
+
+#feha-jackin-overlay .jack-actions-title span {
+  font-size:9px !important;
+  line-height:1.35 !important;
+}
+
+/* Quickhack action cards */
+#feha-jackin-overlay .jack-hack {
+  grid-template-columns:62px minmax(0,1fr) 110px !important;
+}
+
+#feha-jackin-overlay .jack-hack img {
+  width:60px !important;
+  height:60px !important;
+}
+
+#feha-jackin-overlay .jack-hack > span > b {
+  font-size:17px !important;
+  line-height:1.08 !important;
+}
+
+#feha-jackin-overlay .jack-hack > span > small {
+  font-size:10px !important;
+  line-height:1.35 !important;
+}
+
+#feha-jackin-overlay .jack-hack em {
+  min-width:104px !important;
+  min-height:62px !important;
+}
+
+#feha-jackin-overlay .jack-hack em span {
+  font-size:8px !important;
+  letter-spacing:1px !important;
+}
+
+#feha-jackin-overlay .jack-hack em b {
+  font-size:22px !important;
+  line-height:1 !important;
+}
+
+/* Zoom controls */
+#feha-jackin-overlay .jack-viewport-controls button,
+#feha-jackin-overlay .jack-viewport-controls b {
+  font-size:11px !important;
+}
