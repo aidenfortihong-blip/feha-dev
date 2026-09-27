@@ -1,8 +1,12 @@
 {
-  "version": "0.10.63",
+  "version": "0.10.64",
   "updated": "2026-09-27",
-  "scope": "derke-biometric-identity-sync",
+  "scope": "derke-no-visible-jing",
   "notes": [
+    "Hardened Derke Entry Gateway identity handling so the legacy Jing auth key cannot remain visible during authentication.",
+    "Added a tiny Derke-only MutationObserver on only match state, profile ID, profile art, and auth console fields; no whole-gateway observation is used.",
+    "Any native JING write to IDENTITY LOCKED / PROFILE ACCEPTED / profile ID / console is immediately rewritten to DERKE, and profile art is forced back to Derke.",
+    "The targeted observer stops at ACCESS GRANTED, timeout, non-Derke input, or dev-patch cleanup.",
     "Fixed Derke reverting to JING during Entry Gateway authentication.",
     "Added a bounded Derke-only 90ms sync during the biometric phase for input display, IDENTITY LOCKED / PROFILE ACCEPTED text, profile ID, profile portrait, and visible auth console lines.",
     "The sync stops automatically at ACCESS GRANTED, after 8 seconds, on gateway removal, or during dev-patch cleanup.",
