@@ -273,7 +273,9 @@
       sourceUuid:doc.uuid ?? null,
       sourceType:doc.documentName ?? null,
       sourceId:doc.id ?? null,
-      discoveredBy:discoveredBy,
+      discoveredBy:Array.isArray(config?.discoveredBy)
+        ? config.discoveredBy
+        : [],
       state:config?.state ?? {},
       origin,
       metadata:config?.metadata ?? {}
