@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.23";
+  const VERSION = "0.10.24";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1166,12 +1166,35 @@
       y:centroid.y-operator.y
     };
 
+    const gatewayLength = Math.max(
+      1,
+      Math.hypot(
+        gatewayVector.x,
+        gatewayVector.y
+      )
+    );
+
+    const gatewayTravel = Math.max(
+      11,
+      Math.min(18,gatewayLength*.44)
+    );
+
     const gateway = addRelay({
       id:"relay-gateway",
       kind:"gateway",
       label:"SCENE GATE",
-      x:clamp(operator.x + gatewayVector.x*.28,7,93),
-      y:clamp(operator.y + gatewayVector.y*.28,8,92),
+      x:clamp(
+        operator.x +
+        (gatewayVector.x/gatewayLength)*gatewayTravel,
+        7,
+        93
+      ),
+      y:clamp(
+        operator.y +
+        (gatewayVector.y/gatewayLength)*gatewayTravel,
+        8,
+        92
+      ),
       pulse:0
     });
 
@@ -1194,12 +1217,12 @@
         kind:"relay",
         label:"RLY-"+String(node.index+1).padStart(2,"0"),
         x:clamp(
-          operator.x + dx*.62 + perpendicular.x*offset,
+          operator.x + dx*.74 + perpendicular.x*offset,
           5,
           95
         ),
         y:clamp(
-          operator.y + dy*.62 + perpendicular.y*offset,
+          operator.y + dy*.74 + perpendicular.y*offset,
           6,
           94
         ),
@@ -1669,7 +1692,7 @@
         right:x+rw*.58,
         top:y-rh*.60,
         bottom:y+rh*.60,
-        weight:.22
+        weight:.08
       });
     }
 
@@ -1714,7 +1737,7 @@
         distance:0
       }];
 
-      const rings = [96,152,220,300,380];
+      const rings = [64,96,132,168];
 
       for (const radius of rings) {
         const samples = 16;
@@ -1754,11 +1777,11 @@
           bottom:y+halfH+6
         };
 
-        let score = candidate.distance*.13;
+        let score = candidate.distance*2.4;
 
         for (const other of placed) {
           const overlap = rectOverlapArea(rect,other.rect);
-          if (overlap) score += overlap*1.8+42000;
+          if (overlap) score += overlap*1.55+9000;
         }
 
         for (const protectedRect of protectedRects) {
@@ -1776,9 +1799,9 @@
           y-operatorAnchor.y
         );
 
-        if (opDistance < Math.max(130,operatorWidth*.72)) {
+        if (opDistance < Math.max(108,operatorWidth*.58)) {
           score +=
-            (Math.max(130,operatorWidth*.72)-opDistance)*140;
+            (Math.max(108,operatorWidth*.58)-opDistance)*90;
         }
 
         if (score < bestScore) {
