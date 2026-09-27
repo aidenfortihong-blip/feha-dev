@@ -1,7 +1,7 @@
 {
-  "version": "0.10.11",
+  "version": "0.10.12",
   "updated": "2026-09-27",
-  "scope": "software-library-empty-state",
+  "scope": "jack-in-target-stability-text",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -47,7 +47,11 @@
     "Increased Cyberdeck RAM, Slots, and QH DC label/value sizing to match the surrounding status treatment",
     "Expanded the empty Software Library panel to fill the available library width",
     "Increased the ALL OWNED QUICKHACKS ARE LOADED message size, contrast, spacing, and empty-state height",
-    "Added a subtle SOFTWARE LIBRARY eyebrow label so the empty state reads as an intentional finished panel"
+    "Added a subtle SOFTWARE LIBRARY eyebrow label so the empty state reads as an intentional finished panel",
+    "Target selection in JACK IN now updates the existing DOM in place instead of calling renderJack(), preventing animated Scene backgrounds from restarting when a target is clicked",
+    "The targetToken hook now patches target state in place rather than queueing a full JACK IN rebuild",
+    "Added stable target IDs to network route elements so selected-route styling can update without replacing the Scene background element",
+    "Increased JACK IN actor-card, operator, relay, target-lock, Quickhack Execution, Quickhack card, RUN, and viewport-control typography"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
