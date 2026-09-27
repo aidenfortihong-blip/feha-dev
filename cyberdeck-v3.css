@@ -9343,3 +9343,62 @@ body > #feha-jackin-overlay {
     grid-column:1 / -1 !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.35 DIRECT ACTOR TRACE LINES
+   Operator -> actor lines only. No relays, branches, packets, or route nodes.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-traces {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:3;
+  overflow:visible;
+  pointer-events:none;
+}
+
+#feha-jackin-overlay .jack-trace-line {
+  fill:none;
+  stroke:rgba(var(--jack-cyan),.56);
+  stroke-width:2.2px;
+  stroke-linecap:round;
+  stroke-dasharray:10 8;
+  opacity:.80;
+  filter:drop-shadow(0 0 4px rgba(var(--jack-cyan),.18));
+  animation:jack-direct-trace-flow 3.6s linear infinite;
+}
+
+#feha-jackin-overlay .jack-trace-line.is-hostile {
+  stroke:rgb(var(--jack-yellow));
+  opacity:.88;
+  filter:drop-shadow(0 0 4px rgba(var(--jack-yellow),.22));
+}
+
+#feha-jackin-overlay .jack-trace-line.is-friendly {
+  stroke:rgb(var(--jack-cyan));
+}
+
+#feha-jackin-overlay .jack-trace-line.is-neutral {
+  stroke:rgba(210,230,225,.62);
+}
+
+#feha-jackin-overlay .jack-trace-line.is-selected-route {
+  stroke:rgb(var(--jack-mag)) !important;
+  stroke-width:3px !important;
+  stroke-dasharray:12 6 !important;
+  opacity:1 !important;
+  filter:drop-shadow(0 0 6px rgba(var(--jack-mag),.40)) !important;
+}
+
+@keyframes jack-direct-trace-flow {
+  to { stroke-dashoffset:-36; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #feha-jackin-overlay .jack-trace-line {
+    animation:none !important;
+  }
+}
