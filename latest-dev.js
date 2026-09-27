@@ -1377,28 +1377,133 @@
   function installEntryGatewayNormalization() {
     removeEntryGatewayNormalization();
 
+    const gateway = globalThis.ADKEntryGateway;
+    if (!gateway) {
+      console.warn("FEHA DEV // Entry Gateway API unavailable.");
+      return false;
+    }
+
     const ROOT_ID = "adk-entry-gateway";
     const DERKE_ART =
       "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png";
 
     const ORDER = ["Ponyboy","Derke","Sasha","Zach"];
+    const original = {
+      open:gateway.open,
+      reopen:gateway.reopen,
+      candidates:Array.isArray(gateway.candidates)
+        ? [...gateway.candidates]
+        : gateway.candidates
+    };
 
-    let rootObserver = null;
-    let activeRoot = null;
+    let boundRoot = null;
     let derkeProxy = false;
-    let restoring = false;
+    let restoringInput = false;
+    let timers = new Set();
 
-    const displayFor = name => {
-      const key = norm(name);
+    const schedule = (fn,delay = 0) => {
+      const id = setTimeout(() => {
+        timers.delete(id);
+        try { fn(); } catch (err) {
+          console.warn("FEHA DEV // gateway one-shot patch warning",err);
+        }
+      },delay);
+
+      timers.add(id);
+      return id;
+    };
+
+    const displayFor = value => {
+      const key = norm(value);
+
       if (key === "ponyboy") return "Ponyboy";
       if (key === "jing" || key === "derke") return "Derke";
       if (key === "sasha" || key.startsWith("sasha ")) return "Sasha";
       if (key === "zach" || key === "raiden") return "Zach";
+
       return null;
     };
 
-    const rewriteText = root => {
+    const assignedName = () => {
+      const key = norm(game.user?.character?.name);
+
+      if (key === "ponyboy") return "Ponyboy";
+      if (key === "derke") return "Derke";
+      if (key === "sasha" || key.startsWith("sasha ")) return "Sasha";
+      if (key === "zach" || key === "raiden") return "Zach";
+
+      return null;
+    };
+
+    const rewriteVisible = root => {
       if (!root) return;
+
+      const title = root.querySelector(".adk-eg-header h1");
+      if (title) title.textContent = "CYBERPUNK";
+
+      const panel = root.querySelector(".adk-eg-candidates");
+      if (panel) {
+        const kept = new Map();
+
+        for (const button of [...panel.querySelectorAll("[data-candidate]")]) {
+          const underlying = String(button.dataset.candidate ?? "");
+          const display = displayFor(underlying);
+
+          if (!display) {
+            button.remove();
+            continue;
+          }
+
+          button.dataset.fehaDisplayCandidate = display;
+
+          const name = button.querySelector(".adk-eg-candidate-name");
+          if (name) name.textContent = display.toUpperCase();
+
+          kept.set(display,button);
+        }
+
+        for (const display of ORDER) {
+          const button = kept.get(display);
+          if (button) panel.appendChild(button);
+        }
+
+        const assigned = assignedName();
+
+        [...panel.querySelectorAll("[data-candidate]")]
+          .forEach((button,index) => {
+            const display =
+              button.dataset.fehaDisplayCandidate ??
+              displayFor(button.dataset.candidate);
+
+            const indexEl =
+              button.querySelector(".adk-eg-candidate-index");
+
+            const stateEl =
+              button.querySelector(".adk-eg-candidate-state");
+
+            if (indexEl) {
+              indexEl.textContent =
+                String(index + 1).padStart(2,"0");
+            }
+
+            if (stateEl) {
+              stateEl.textContent =
+                display === assigned
+                  ? "ASSIGNED"
+                  : "STANDBY";
+            }
+          });
+      }
+
+      const heading = root.querySelector(".adk-eg-panel-heading");
+      const headingParts =
+        heading
+          ? [...heading.querySelectorAll("span")]
+          : [];
+
+      if (headingParts[1]) {
+        headingParts[1].textContent = "04 RECORDS";
+      }
 
       const walker = document.createTreeWalker(
         root,
@@ -1421,81 +1526,6 @@
 
         if (after !== before) node.nodeValue = after;
       }
-    };
-
-    const assigned = () => {
-      const key = norm(game.user?.character?.name);
-      if (key === "ponyboy") return "Ponyboy";
-      if (key === "derke") return "Derke";
-      if (key === "sasha" || key.startsWith("sasha ")) return "Sasha";
-      if (key === "zach" || key === "raiden") return "Zach";
-      return null;
-    };
-
-    const normalize = root => {
-      if (!root) return;
-
-      const title = root.querySelector(".adk-eg-header h1");
-      if (title) title.textContent = "CYBERPUNK";
-
-      const panel = root.querySelector(".adk-eg-candidates");
-      const buttons = panel
-        ? [...panel.querySelectorAll("[data-candidate]")]
-        : [];
-
-      const keep = new Map();
-
-      for (const button of buttons) {
-        const underlying = String(button.dataset.candidate ?? "");
-        const display = displayFor(underlying);
-
-        if (!display) {
-          button.remove();
-          continue;
-        }
-
-        button.dataset.fehaDisplayCandidate = display;
-
-        const nameEl = button.querySelector(".adk-eg-candidate-name");
-        if (nameEl) nameEl.textContent = display.toUpperCase();
-
-        keep.set(display,button);
-      }
-
-      if (panel) {
-        for (const display of ORDER) {
-          const button = keep.get(display);
-          if (button) panel.appendChild(button);
-        }
-      }
-
-      const assignedName = assigned();
-
-      [...root.querySelectorAll("[data-candidate]")].forEach((button,index) => {
-        const display =
-          button.dataset.fehaDisplayCandidate ??
-          displayFor(button.dataset.candidate);
-
-        const indexEl = button.querySelector(".adk-eg-candidate-index");
-        const stateEl = button.querySelector(".adk-eg-candidate-state");
-
-        if (indexEl) {
-          indexEl.textContent = String(index + 1).padStart(2,"0");
-        }
-
-        if (stateEl) {
-          stateEl.textContent =
-            display === assignedName
-              ? "ASSIGNED"
-              : "STANDBY";
-        }
-      });
-
-      const heading = root.querySelector(".adk-eg-panel-heading");
-      const headingParts = heading ? [...heading.querySelectorAll("span")] : [];
-      if (headingParts[1]) headingParts[1].textContent = "04 RECORDS";
-
-      rewriteText(root);
 
       if (derkeProxy) {
         const art = root.querySelector("[data-profile-art]");
@@ -1511,103 +1541,148 @@
       }
     };
 
-    const installRoot = root => {
-      if (!root) return;
+    const bindRoot = root => {
+      if (!root) return false;
 
-      if (activeRoot !== root) {
-        rootObserver?.disconnect?.();
-        activeRoot = root;
-        derkeProxy = false;
+      rewriteVisible(root);
 
-        const input = root.querySelector("#adk-eg-id-input");
+      if (boundRoot === root) return true;
+      boundRoot = root;
 
-        // Capture input before the installed gateway's own listener. For Derke,
-        // feed the legacy closure "Jing" so native matching/authentication works,
-        // then restore the visible typed value after the event dispatch.
-        root.addEventListener(
-          "input",
-          event => {
-            if (restoring || event.target !== input) return;
+      const input = root.querySelector("#adk-eg-id-input");
 
-            const typed = String(input.value ?? "");
-            const key = norm(typed);
+      root.addEventListener(
+        "input",
+        event => {
+          if (restoringInput || event.target !== input) return;
 
-            if (!key || !"derke".startsWith(key)) {
-              derkeProxy = false;
-              return;
-            }
+          const typed = String(input.value ?? "");
+          const key = norm(typed);
 
-            const proxy = "jing".slice(0,Math.min(key.length,4));
-            derkeProxy = key === "derke";
-            input.value = proxy;
+          if (!key || !"derke".startsWith(key)) {
+            derkeProxy = false;
+            return;
+          }
 
-            queueMicrotask(() => {
-              restoring = true;
-              input.value = typed;
-              restoring = false;
-              normalize(root);
-            });
-          },
-          true
-        );
+          // Feed the legacy gateway's native matcher "Jing" during the same
+          // input event, then restore Derke visually afterward.
+          derkeProxy = key === "derke";
+          input.value =
+            "jing".slice(
+              0,
+              Math.min(key.length,4)
+            );
 
-        root.addEventListener(
-          "click",
-          event => {
-            const button = event.target?.closest?.("[data-candidate]");
-            if (!button || !root.contains(button)) return;
+          schedule(() => {
+            restoringInput = true;
+            input.value = typed;
+            restoringInput = false;
+            rewriteVisible(root);
+          },0);
+        },
+        true
+      );
 
-            derkeProxy =
-              norm(button.dataset.candidate) === "jing";
+      root.addEventListener(
+        "click",
+        event => {
+          const candidate =
+            event.target?.closest?.("[data-candidate]") ??
+            null;
 
-            queueMicrotask(() => {
-              if (derkeProxy && input) input.value = "Derke";
-              normalize(root);
-            });
-          },
-          true
-        );
+          if (
+            candidate &&
+            root.contains(candidate) &&
+            norm(candidate.dataset.candidate) === "jing"
+          ) {
+            derkeProxy = true;
 
-        rootObserver = new MutationObserver(() => normalize(root));
-        rootObserver.observe(root,{
-          childList:true,
-          subtree:true,
-          characterData:true,
-          attributes:true,
-          attributeFilter:["src","alt","hidden","class"]
-        });
-      }
+            schedule(() => {
+              if (input) input.value = "Derke";
+              rewriteVisible(root);
+            },0);
 
-      normalize(root);
+            schedule(() => rewriteVisible(root),250);
+            schedule(() => rewriteVisible(root),700);
+            schedule(() => rewriteVisible(root),1500);
+          }
+
+          const auth =
+            event.target?.closest?.("[data-auth]") ??
+            null;
+
+          if (auth && derkeProxy) {
+            schedule(() => rewriteVisible(root),0);
+            schedule(() => rewriteVisible(root),350);
+            schedule(() => rewriteVisible(root),900);
+            schedule(() => rewriteVisible(root),1800);
+            schedule(() => rewriteVisible(root),3000);
+          }
+        },
+        true
+      );
+
+      return true;
     };
 
-    const documentObserver = new MutationObserver(() => {
-      installRoot(document.getElementById(ROOT_ID));
-    });
+    const patchCurrent = () =>
+      bindRoot(document.getElementById(ROOT_ID));
 
-    documentObserver.observe(document.body,{
-      childList:true,
-      subtree:true
-    });
+    gateway.open = async (...args) => {
+      const result = await original.open?.(...args);
 
-    installRoot(document.getElementById(ROOT_ID));
+      patchCurrent();
+      schedule(patchCurrent,50);
+      schedule(patchCurrent,250);
+
+      return result;
+    };
+
+    gateway.reopen = async (...args) => {
+      const result = await original.reopen?.(...args);
+
+      patchCurrent();
+      schedule(patchCurrent,50);
+      schedule(patchCurrent,250);
+
+      return result;
+    };
+
+    gateway.candidates = [...ORDER];
+
+    // Patch the gateway already on screen right now.
+    patchCurrent();
+    schedule(patchCurrent,50);
+    schedule(patchCurrent,250);
 
     globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER = {
-      refresh() {
-        installRoot(document.getElementById(ROOT_ID));
-      },
+      refresh:patchCurrent,
       destroy() {
-        rootObserver?.disconnect?.();
-        documentObserver.disconnect();
-        activeRoot = null;
+        for (const timer of timers) clearTimeout(timer);
+        timers.clear();
+
+        gateway.open = original.open;
+        gateway.reopen = original.reopen;
+        gateway.candidates = original.candidates;
+
+        boundRoot = null;
       }
     };
+
+    console.info(
+      "FEHA DEV // safe Entry Gateway patch active:",
+      ORDER.join(", ")
+    );
+
+    return true;
   }
 
   function removeEntryGatewayNormalization() {
     try {
       globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER?.destroy?.();
-    } catch {}
+    } catch (err) {
+      console.warn("FEHA DEV // gateway cleanup warning",err);
+    }
 
     delete globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER;
   }
@@ -4442,7 +4517,7 @@ if (!game.user?.isGM) {
 
   installSoundEngine();
   installCreditsSystem();
-  removeEntryGatewayNormalization(); // disabled: custom gateway DOM observer caused Foundry freezes
+  installEntryGatewayNormalization();
   installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
