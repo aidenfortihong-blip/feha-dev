@@ -1,7 +1,7 @@
 {
-  "version": "0.10.29",
+  "version": "0.10.30",
   "updated": "2026-09-27",
-  "scope": "token-matched-constant-actor-size",
+  "scope": "static-wielder-clean-actor-outlines",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -121,7 +121,12 @@
     "Preserved single-color actor outlines: hostile yellow, friendly cyan, selected red",
     "Replaced the hard-coded 154px JACK IN actor square with a constant size derived from the real Foundry scene token footprint",
     "Actor squares remain constant screen-size at every zoom level while matching the token footprint at 100%",
-    "Selected and responsive actor-node rules now preserve the computed token-matched dimensions"
+    "Selected and responsive actor-node rules now preserve the computed token-matched dimensions",
+    "Made the JACK IN operator/wielder 1.5x baseline size while keeping it constant screen-size at every zoom level",
+    "Removed ACQUIRE from target-state updates; unselected actor nodes now have no status badge",
+    "Selected actor nodes show only LOCKED",
+    "Collapsed actor node styling to one clean border state: hostile yellow, friendly cyan, selected red",
+    "Disabled legacy outline rings, pulse animations, and duplicate actor-node chrome"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
