@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.26";
+  const VERSION = "0.10.27";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1105,6 +1105,31 @@
 
       const pos = percentOf(token);
 
+      const placeable =
+        canvas?.tokens?.get?.(token.id) ??
+        canvas?.tokens?.placeables?.find?.(
+          candidate => candidate.id === token.id
+        ) ??
+        null;
+
+      const tokenPixelWidth = Math.max(
+        1,
+        Number(placeable?.w) ||
+        Number(token.width ?? 1)*gridSize
+      );
+
+      const tokenPixelHeight = Math.max(
+        1,
+        Number(placeable?.h) ||
+        Number(token.height ?? 1)*gridSize
+      );
+
+      const tokenWidthPct =
+        (tokenPixelWidth/rw)*100;
+
+      const tokenHeightPct =
+        (tokenPixelHeight/rh)*100;
+
       return {
         id:token.id,
         actorId:tokenActor?.id ?? token.actorId ?? null,
@@ -1127,6 +1152,8 @@
         targeted:targeted.has(token.id),
         x:pos.x,
         y:pos.y,
+        tokenWidthPct,
+        tokenHeightPct,
         index
       };
     });
@@ -1429,6 +1456,74 @@
     return {zoom,panX,panY};
   }
 
+  function syncJackActorScaleFloor(root,state) {
+    const world = root?.querySelector?.(".jack-world");
+    if (!world) return;
+
+    const zoom = Math.max(
+      1,
+      Number(state?.zoom) || 1
+    );
+
+    const precision = Math.max(
+      .90,
+      1-(zoom-1)*.05
+    );
+
+    const desiredScale = precision/zoom;
+    const worldWidth = Math.max(1,world.clientWidth);
+    const worldHeight = Math.max(1,world.clientHeight);
+
+    for (
+      const node of
+      world.querySelectorAll(".jack-node[data-token-id]")
+    ) {
+      const tokenWidthPct =
+        Math.max(
+          0,
+          Number(node.dataset.tokenWidthPct) || 0
+        );
+
+      const tokenHeightPct =
+        Math.max(
+          0,
+          Number(node.dataset.tokenHeightPct) || 0
+        );
+
+      const tokenWorldWidth =
+        worldWidth*(tokenWidthPct/100);
+
+      const tokenWorldHeight =
+        worldHeight*(tokenHeightPct/100);
+
+      const tokenWorldSize = Math.max(
+        tokenWorldWidth,
+        tokenWorldHeight
+      );
+
+      const nodeBaseSize = Math.max(
+        1,
+        node.offsetWidth,
+        node.offsetHeight
+      );
+
+      // The whole world is scaled by zoom. This inner floor guarantees the
+      // portrait square can never become smaller than the actual scene token.
+      const tokenFloor =
+        tokenWorldSize/nodeBaseSize;
+
+      node.style.setProperty(
+        "--jack-node-scale",
+        String(
+          Math.max(
+            desiredScale,
+            tokenFloor
+          )
+        )
+      );
+    }
+  }
+
   function syncJackRouteScale(root,state) {
     const zoom = Math.max(
       1,
@@ -1546,6 +1641,7 @@
       readout.textContent = Math.round(state.zoom*100)+"%";
     }
 
+    syncJackActorScaleFloor(root,state);
     syncJackRouteScale(root,state);
 
     return state;
@@ -2042,12 +2138,11 @@
       '" style="--jack-x:'+n.x.toFixed(2)+'%;--jack-y:'+n.y.toFixed(2)+
       '%" data-jack-action="target" data-token-id="'+esc(n.id)+
       '" data-node-index="'+i+
+      '" data-token-width-pct="'+Number(n.tokenWidthPct||0).toFixed(6)+
+      '" data-token-height-pct="'+Number(n.tokenHeightPct||0).toFixed(6)+
       '" data-jack-anchor-x="'+n.x.toFixed(4)+
       '" data-jack-anchor-y="'+n.y.toFixed(4)+'">'+
-        '<span class="jack-node-num">'+String(i+1).padStart(2,"0")+'</span>'+
-        '<img src="'+esc(n.img)+'" alt="">'+
-        '<span class="jack-node-copy"><b>'+esc(n.displayName)+'</b><small>'+
-        n.relation.toUpperCase()+' // '+esc(n.signature)+'</small></span>'+
+        '<img src="'+esc(n.img)+'" alt="'+esc(n.displayName)+'">'+
         '<em>'+(n.targeted?'LOCKED':'ACQUIRE')+'</em>'+
       '</button>'
     ).join("");
