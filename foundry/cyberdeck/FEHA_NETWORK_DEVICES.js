@@ -366,10 +366,62 @@
     }
 
     for (const record of customRecords(scene)) {
-      records.set(record.id,record);
+      const visible =
+        game.user?.isGM ||
+        !record.discoveredBy?.length ||
+        record.discoveredBy.includes(game.user?.id);
+
+      if (visible) {
+        records.set(record.id,record);
+      }
     }
 
     return [...records.values()];
+  }
+
+  async function revealCustomDevices(sceneId,userId=game.user?.id) {
+    if (!game.user?.isGM && userId !== game.user?.id) {
+      throw new Error("Cannot reveal Network Devices for another user.");
+    }
+
+    const scene = game.scenes?.get?.(sceneId);
+    if (!scene) throw new Error("Network Device scene not found.");
+
+    const current = customRecords(scene);
+    let changed = 0;
+
+    const next = current.map(record => {
+      const discoveredBy = new Set(record.discoveredBy ?? []);
+
+      if (!discoveredBy.has(userId)) {
+        discoveredBy.add(userId);
+        changed++;
+      }
+
+      return {
+        ...record,
+        discoveredBy:[...discoveredBy]
+      };
+    });
+
+    if (changed) {
+      await scene.setFlag(
+        FLAG_SCOPE,
+        SCENE_DEVICE_FLAG,
+        next
+      );
+
+      await core.emit(
+        "devices:changed",
+        {
+          sceneId,
+          revealedFor:userId,
+          count:changed
+        }
+      );
+    }
+
+    return changed;
   }
 
   async function upsertCustomDevice(sceneId,input) {
@@ -430,6 +482,7 @@
     defaultCapabilities,
     makeRecord,
     scanScene,
+    revealCustomDevices,
     upsertCustomDevice,
     removeCustomDevice,
 
