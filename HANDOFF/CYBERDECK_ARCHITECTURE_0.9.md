@@ -55,14 +55,16 @@ Responsibilities:
 - custom/probed device persistence
 - per-user discovery state
 
-Current device types / suggested DC:
-- Camera: 11
-- Door: 12
-- Alarm: 13
-- Turret: 15
-- Terminal: 16
-- System/Core: 18
-- Lights: 10
+Current device types / effective suggested DC at their default access scope:
+- Camera: 11 (endpoint)
+- Door: 12 (endpoint)
+- Alarm: 13 (endpoint)
+- Turret: 15 (endpoint)
+- Terminal: 17 (subsystem)
+- System/Core: 19 (building)
+- Lights: 10 (endpoint)
+
+Security DC is composed from the device base DC plus access-scope modifier. The GM may still override the final DC, including 0 or 20+ when fiction requires it.
 
 The GM can override any DC.
 
@@ -105,6 +107,12 @@ Device breach:
 - d20 + operator INT modifier + proficiency
 - versus device Security DC
 - successful access persists for that actor/device for the current client session
+- access cache keys are reversible and safe for colon-bearing device IDs
+
+Remote player commands:
+- require an active GM authority path
+- use bounded request timeouts rather than hanging forever
+- are revalidated on the GM for requester activity, operator Actor ownership, declared capability, discovery gating, and Secret Door visibility before world mutation
 
 A capability first emits:
 `device:execute:<CAPABILITY>`
