@@ -437,15 +437,37 @@
           "RAM SPENT // "+cost;
       }
 
+      const next = model(actor);
+
       const headerRam =
         document.querySelector(
-          "#"+JACK_ID+" .jack-head-stat:nth-of-type(2) b"
+          "#"+JACK_ID+" [data-jack-ram-readout]"
         );
 
       if (headerRam) {
-        const next = model(actor);
         headerRam.textContent =
           next.currentRam+" / "+next.maxRam;
+      }
+
+      const liveRoot =
+        document.getElementById(JACK_ID);
+
+      for (
+        const runButton of
+        liveRoot?.querySelectorAll?.(
+          '.jack-hack[data-jack-action="run"]'
+        ) ?? []
+      ) {
+        const runItem =
+          actor.items?.get?.(
+            runButton.dataset.itemId
+          );
+
+        const runCost =
+          runItem ? hackCost(runItem) : Infinity;
+
+        runButton.disabled =
+          next.currentRam < runCost;
       }
 
       return true;
@@ -2312,7 +2334,7 @@
       <header class="jack-header">
         <div><small>NOCTURNE // LIVE NEURAL SPACE</small><h1>JACKED <span>IN</span></h1></div>
         <div class="jack-head-stat"><span>SCENE</span><b>${esc(net.scene?.name ?? "NO SCENE")}</b></div>
-        <div class="jack-head-stat"><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
+        <div class="jack-head-stat" data-jack-ram-stat><span>RAM</span><b data-jack-ram-readout>${m.currentRam} / ${m.maxRam}</b></div>
         <div class="jack-head-actions">
           <button type="button" data-jack-action="return-deck">RETURN TO DECK</button>
           <button type="button" data-jack-action="close-cyberdeck" class="is-danger">CLOSE CYBERDECK</button>
