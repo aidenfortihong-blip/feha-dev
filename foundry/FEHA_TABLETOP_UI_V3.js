@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.34";
+  const VERSION = "0.10.35";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -2276,6 +2276,17 @@
     const linkSvg = "";
     const relays = "";
 
+    const traces = net.nodes.map(node =>
+      '<line class="jack-trace-line is-'+node.relation+
+      (node.targeted?' is-selected-route':'')+
+      '" data-link-target="'+esc(node.id)+
+      '" x1="'+(net.operator.x*10).toFixed(2)+
+      '" y1="'+(net.operator.y*7.2).toFixed(2)+
+      '" x2="'+(node.x*10).toFixed(2)+
+      '" y2="'+(node.y*7.2).toFixed(2)+
+      '" vector-effect="non-scaling-stroke" />'
+    ).join("");
+
     const nodes = net.nodes.map((n,i) =>
       '<button class="jack-node is-'+n.relation+(n.targeted?' is-targeted':'')+
       '" style="--jack-x:'+n.x.toFixed(2)+'%;--jack-y:'+n.y.toFixed(2)+
@@ -2351,6 +2362,13 @@
 
 
 
+          <svg class="jack-traces"
+            viewBox="0 0 1000 720"
+            preserveAspectRatio="none"
+            aria-hidden="true">
+            ${traces}
+          </svg>
+
           <div class="jack-operator"
             style="--jack-x:${net.operator.x.toFixed(2)}%;--jack-y:${net.operator.y.toFixed(2)}%"
             data-jack-anchor-x="${net.operator.x.toFixed(4)}"
@@ -2376,7 +2394,7 @@
         </div>
 
         <div class="jack-net-caption">
-          <small>TOPOLOGY // WHEEL = ZOOM // RMB DRAG = PAN</small>
+          <small>DIRECT TRACE // WHEEL = ZOOM // RMB DRAG = PAN</small>
           <b>${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
         </div>
 
