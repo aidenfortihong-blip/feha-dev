@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.5";
+  const VERSION = "0.9.6";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1735,8 +1735,7 @@
       );
     };
 
-    root.oncontextmenu = event => {
-      if (!space.contains(event.target)) return;
+    space.oncontextmenu = event => {
       if (
         event.target?.closest?.(
           "input,select,textarea,.jack-device-author-panel"
@@ -1744,47 +1743,47 @@
       ) {
         return;
       }
+
       event.preventDefault();
     };
 
-    root.onpointerdown = async event => {
-      if (!space.contains(event.target)) return;
+    // Navigation is RMB-only. Left click never starts a pan.
+    space.onpointerdown = event => {
+      if (event.button !== 2) return;
 
-      const isPrimary = event.button === 0;
-      const isPanButton = event.button === 2;
-
-      if (!isPrimary && !isPanButton) return;
-
-      if (isPanButton) {
-        if (
-          event.target?.closest?.(
-            "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.jack-device-author-panel"
-          )
-        ) {
-          return;
-        }
-
-        event.preventDefault();
-
-        const current = jackViewportState(root);
-
-        root.__jackDrag = {
-          pointerId:event.pointerId,
-          button:2,
-          startX:event.clientX,
-          startY:event.clientY,
-          panX:current.panX,
-          panY:current.panY
-        };
-
-        space.classList.add("is-panning");
-
-        try {
-          root.setPointerCapture?.(event.pointerId);
-        } catch {}
-
+      if (
+        event.target?.closest?.(
+          "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.jack-device-author-panel"
+        )
+      ) {
         return;
       }
+
+      event.preventDefault();
+
+      const current = jackViewportState(root);
+
+      root.__jackDrag = {
+        pointerId:event.pointerId,
+        button:2,
+        startX:event.clientX,
+        startY:event.clientY,
+        panX:current.panX,
+        panY:current.panY
+      };
+
+      space.classList.add("is-panning");
+
+      try {
+        space.setPointerCapture?.(event.pointerId);
+      } catch {}
+    };
+
+    // Authoring / probe / camera placement are explicit LEFT-CLICK map actions.
+    // Keeping this on the map itself avoids conflicts with the delegated UI
+    // click handler and with RMB navigation.
+    space.onclick = async event => {
+      if (event.button !== 0) return;
 
       if (
         event.target?.closest?.(
@@ -1794,8 +1793,12 @@
         return;
       }
 
+      const actor = actorById(root.dataset.actorId);
+      if (!actor) return;
+
       if (root.dataset.deviceAuthorMode === "1") {
         event.preventDefault();
+        event.stopPropagation();
 
         const point = pointerToJackPercent(root,event);
         if (!point) return;
@@ -1809,7 +1812,10 @@
           );
         } catch (err) {
           console.error("FEHA V3 Network Device placement failed",err);
-          ui?.notifications?.error?.("Network Device could not be placed.");
+          ui?.notifications?.error?.(
+            "Network Device could not be placed: "+
+            String(err?.message ?? err)
+          );
         }
 
         return;
@@ -1817,6 +1823,7 @@
 
       if (root.dataset.devicePlacementMode === "camera") {
         event.preventDefault();
+        event.stopPropagation();
 
         const cameraFeeds = cyberModule("cameraFeeds");
         const deviceId = root.dataset.devicePlacementId ?? "";
@@ -1846,11 +1853,15 @@
           });
 
           ui?.notifications?.info?.(
-            "CAMERA FEED ESTABLISHED // "+String(feed?.label ?? "ACTIVE")
+            "CAMERA FEED ESTABLISHED // "+
+            String(feed?.label ?? "ACTIVE")
           );
         } catch (err) {
           console.error("FEHA V3 camera placement failed",err);
-          ui?.notifications?.error?.("Camera Feed could not be established.");
+          ui?.notifications?.error?.(
+            "Camera Feed could not be established: "+
+            String(err?.message ?? err)
+          );
         }
 
         return;
@@ -1858,6 +1869,7 @@
 
       if (root.dataset.probeMode === "1") {
         event.preventDefault();
+        event.stopPropagation();
 
         const approvals = cyberModule("deviceApprovals");
 
@@ -1871,6 +1883,7 @@
 
         root.dataset.probeMode = "0";
         space.classList.remove("is-probing");
+
         root
           .querySelector('[data-jack-action="probe-device"]')
           ?.classList.remove("is-active");
@@ -1883,6 +1896,12 @@
             suggestedType:"door"
           });
 
+          ui?.notifications?.info?.(
+            game.user?.isGM
+              ? "NETWORK PROBE // APPROVAL QUEUE OPENED"
+              : "NETWORK PROBE // SENT TO GM"
+          );
+
           pending?.resolution?.then?.(result => {
             if (
               result?.decision === "approved" &&
@@ -1893,7 +1912,10 @@
           });
         } catch (err) {
           console.error("FEHA V3 Network Probe failed",err);
-          ui?.notifications?.error?.("Network Probe failed.");
+          ui?.notifications?.error?.(
+            "Network Probe failed: "+
+            String(err?.message ?? err)
+          );
         }
 
         return;
@@ -1925,7 +1947,7 @@
       space.classList.remove("is-panning");
 
       try {
-        root.releasePointerCapture?.(drag.pointerId);
+        space.releasePointerCapture?.(drag.pointerId);
       } catch {}
     };
 
@@ -3081,7 +3103,7 @@
 
         ui?.notifications?.info?.(
           enabled
-            ? "NETWORK PROBE // CLICK AN UNKNOWN DEVICE LOCATION"
+            ? "NETWORK PROBE // LEFT-CLICK AN UNKNOWN DEVICE LOCATION"
             : "NETWORK PROBE CANCELLED"
         );
 
