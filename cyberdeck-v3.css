@@ -4047,3 +4047,332 @@ body > #feha-jackin-overlay {
     grid-template-columns:1fr;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.11 VIEWPORT + DECLUTTER
+   Exact token anchors stay fixed; cards fan outward and remain tethered.
+   Whole map/net layer supports zoom + pan.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   WORLD VIEWPORT
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-space {
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+}
+
+#feha-jackin-overlay .jack-space.is-panning {
+  cursor:grabbing;
+}
+
+#feha-jackin-overlay .jack-world {
+  --jack-zoom:1;
+  --jack-pan-x:0px;
+  --jack-pan-y:0px;
+
+  position:absolute;
+  inset:0;
+  z-index:1;
+  width:100%;
+  height:100%;
+  transform-origin:0 0;
+  transform:
+    translate(
+      var(--jack-pan-x),
+      var(--jack-pan-y)
+    )
+    scale(var(--jack-zoom));
+  will-change:transform;
+}
+
+#feha-jackin-overlay .jack-world .jack-scene-map {
+  inset:0 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-links {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:2 !important;
+  pointer-events:none;
+}
+
+/* --------------------------------------------------------------------------
+   EXACT TOKEN ANCHORS
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-token-anchor {
+  position:absolute;
+  left:var(--jack-x);
+  top:var(--jack-y);
+  z-index:8;
+  width:12px;
+  height:12px;
+  transform:
+    translate(-50%,-50%)
+    rotate(45deg);
+  pointer-events:none;
+  background:#02090b;
+  border:1px solid rgba(var(--jack-cyan),.62);
+  box-shadow:
+    0 0 0 4px rgba(var(--jack-cyan),.025),
+    0 0 12px rgba(var(--jack-cyan),.16);
+}
+
+#feha-jackin-overlay .jack-token-anchor::before {
+  content:"";
+  position:absolute;
+  inset:3px;
+  background:rgba(var(--jack-cyan),.90);
+  box-shadow:0 0 7px rgba(var(--jack-cyan),.45);
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-hostile {
+  border-color:rgba(var(--jack-mag),.70);
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-hostile::before {
+  background:rgb(var(--jack-mag));
+  box-shadow:0 0 8px rgba(var(--jack-mag),.46);
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-neutral {
+  border-color:rgba(var(--jack-yellow),.58);
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-neutral::before {
+  background:rgb(var(--jack-yellow));
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-targeted {
+  width:15px;
+  height:15px;
+  border-color:rgb(var(--jack-yellow));
+  box-shadow:
+    0 0 0 5px rgba(var(--jack-yellow),.035),
+    0 0 17px rgba(var(--jack-yellow),.34);
+  animation:jack-anchor-lock 1.45s ease-in-out infinite;
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-targeted::before {
+  background:rgb(var(--jack-yellow));
+  box-shadow:0 0 9px rgba(var(--jack-yellow),.62);
+}
+
+/* --------------------------------------------------------------------------
+   CARD TETHERS
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-card-leader {
+  fill:none;
+  stroke:rgba(var(--jack-cyan),.12);
+  stroke-width:1;
+  stroke-dasharray:3 7;
+  vector-effect:non-scaling-stroke;
+  pointer-events:none;
+  opacity:.16;
+}
+
+#feha-jackin-overlay .jack-card-leader.is-displaced {
+  opacity:.52;
+  stroke:rgba(var(--jack-cyan),.38);
+}
+
+#feha-jackin-overlay .jack-card-leader.is-hostile.is-displaced {
+  stroke:rgba(var(--jack-mag),.46);
+}
+
+#feha-jackin-overlay .jack-card-leader.is-targeted,
+#feha-jackin-overlay .jack-card-leader.is-targeted.is-displaced {
+  opacity:.92;
+  stroke:rgb(var(--jack-yellow));
+  stroke-width:1.8;
+  stroke-dasharray:7 5;
+  filter:drop-shadow(0 0 4px rgba(var(--jack-yellow),.34));
+  animation:jack-card-tether 2s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+   COLLISION-RESOLVED CARDS
+   -------------------------------------------------------------------------- */
+
+/* Later/higher-specificity reset deliberately defeats the old sparse-scene
+   hard-coded 1/2-target positions. The anchor stays exact; the JS solver owns
+   the card location. */
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node {
+  left:var(--jack-card-x,var(--jack-x)) !important;
+  top:var(--jack-card-y,var(--jack-y)) !important;
+  transform:translate(-50%,-50%) !important;
+  transition:
+    border-color .14s ease,
+    box-shadow .14s ease,
+    background .14s ease,
+    filter .14s ease !important;
+}
+
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover {
+  transform:
+    translate(-50%,-50%)
+    scale(1.025) !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.has-scene-map
+  .jack-world
+  .jack-node {
+  width:170px !important;
+  min-height:70px !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.has-scene-map
+  .jack-world
+  .jack-node.is-targeted {
+  width:190px !important;
+  min-height:78px !important;
+}
+
+/* Operator itself stays at the true scene-token position. */
+#feha-jackin-overlay
+  .jack-space
+  .jack-world
+  .jack-operator,
+#feha-jackin-overlay
+  .jack-space.is-sparse
+  .jack-world
+  .jack-operator {
+  left:var(--jack-x,50%) !important;
+  top:var(--jack-y,50%) !important;
+  transform:translate(-50%,-50%) !important;
+}
+
+/* Relays continue to be route geometry and therefore remain true to their
+   generated network coordinates. */
+#feha-jackin-overlay .jack-world .jack-relay {
+  left:var(--jack-x) !important;
+  top:var(--jack-y) !important;
+}
+
+/* --------------------------------------------------------------------------
+   ZOOM / PAN HUD
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-viewport-controls {
+  position:absolute;
+  right:20px;
+  bottom:18px;
+  z-index:30;
+  display:grid;
+  grid-template-columns:40px 58px 40px 54px 70px;
+  gap:5px;
+  align-items:center;
+  padding:6px;
+  background:rgba(1,7,9,.90);
+  border:1px solid rgba(var(--jack-cyan),.18);
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.018);
+  backdrop-filter:blur(4px);
+  clip-path:polygon(
+    0 0,
+    calc(100% - 9px) 0,
+    100% 9px,
+    100% 100%,
+    0 100%
+  );
+}
+
+#feha-jackin-overlay .jack-viewport-controls button {
+  height:34px;
+  padding:0 7px;
+  color:rgb(var(--jack-cyan));
+  background:rgba(var(--jack-cyan),.018);
+  border:1px solid rgba(var(--jack-cyan),.18);
+  border-radius:0;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.7px;
+  cursor:pointer;
+}
+
+#feha-jackin-overlay .jack-viewport-controls button:first-child,
+#feha-jackin-overlay .jack-viewport-controls button:nth-child(3) {
+  font-size:18px;
+  font-weight:500;
+}
+
+#feha-jackin-overlay .jack-viewport-controls button:hover {
+  color:#fff;
+  background:rgba(var(--jack-cyan),.055);
+  border-color:rgba(var(--jack-cyan),.48);
+}
+
+#feha-jackin-overlay .jack-viewport-controls b {
+  display:grid;
+  place-items:center;
+  height:34px;
+  color:#d8f3f7;
+  background:#020709;
+  border-top:1px solid rgba(var(--jack-cyan),.20);
+  border-bottom:1px solid rgba(var(--jack-cyan),.08);
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.6px;
+}
+
+/* Fixed HUD readouts stay outside the transformed world. */
+#feha-jackin-overlay .jack-net-caption,
+#feha-jackin-overlay .jack-lock-readout,
+#feha-jackin-overlay .jack-viewport-controls {
+  pointer-events:auto;
+}
+
+/* Map art should never steal drag gestures. */
+#feha-jackin-overlay .jack-scene-map,
+#feha-jackin-overlay .jack-scene-map img {
+  pointer-events:none !important;
+  -webkit-user-drag:none;
+  user-drag:none;
+}
+
+/* --------------------------------------------------------------------------
+   MOTION
+   -------------------------------------------------------------------------- */
+
+@keyframes jack-anchor-lock {
+  0%,100% {
+    filter:brightness(.92);
+    box-shadow:
+      0 0 0 5px rgba(var(--jack-yellow),.025),
+      0 0 12px rgba(var(--jack-yellow),.20);
+  }
+  50% {
+    filter:brightness(1.14);
+    box-shadow:
+      0 0 0 8px rgba(var(--jack-yellow),.045),
+      0 0 20px rgba(var(--jack-yellow),.42);
+  }
+}
+
+@keyframes jack-card-tether {
+  to { stroke-dashoffset:-24; }
+}
+
+@media(max-width:1100px) {
+  #feha-jackin-overlay .jack-viewport-controls {
+    right:12px;
+    bottom:12px;
+    grid-template-columns:36px 52px 36px 48px 62px;
+  }
+}
