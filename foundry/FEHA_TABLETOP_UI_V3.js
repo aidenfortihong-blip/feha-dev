@@ -1731,9 +1731,70 @@
 
       if (
         event.target?.closest?.(
-          "button,input,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption"
+          "button,input,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel"
         )
       ) {
+        return;
+      }
+
+      if (root.dataset.probeMode === "1") {
+        event.preventDefault();
+
+        const approvals = cyberModule("deviceApprovals");
+
+        if (!approvals?.requestProbe) {
+          ui?.notifications?.warn?.("Network Probe service is unavailable.");
+          return;
+        }
+
+        const rect = space.getBoundingClientRect();
+        const current = jackViewportState(root);
+
+        const worldX =
+          (event.clientX - rect.left - current.panX) /
+          current.zoom;
+
+        const worldY =
+          (event.clientY - rect.top - current.panY) /
+          current.zoom;
+
+        const xPct = Math.max(
+          0,
+          Math.min(100,(worldX/space.clientWidth)*100)
+        );
+
+        const yPct = Math.max(
+          0,
+          Math.min(100,(worldY/space.clientHeight)*100)
+        );
+
+        root.dataset.probeMode = "0";
+        space.classList.remove("is-probing");
+        root
+          .querySelector('[data-jack-action="probe-device"]')
+          ?.classList.remove("is-active");
+
+        try {
+          const pending = await approvals.requestProbe({
+            sceneId:canvas?.scene?.id,
+            xPct,
+            yPct,
+            suggestedType:"door"
+          });
+
+          pending?.resolution?.then?.(result => {
+            if (
+              result?.decision === "approved" &&
+              root.isConnected
+            ) {
+              renderJack(root.dataset.actorId);
+            }
+          });
+        } catch (err) {
+          console.error("FEHA V3 Network Probe failed",err);
+          ui?.notifications?.error?.("Network Probe failed.");
+        }
+
         return;
       }
 
@@ -2703,7 +2764,27 @@
   }
 
   const v3Hooks = [];
+  const cyberUnsubscribers = [];
   let refreshQueued = false;
+
+  const deviceChangeOff =
+    globalThis.FEHA_CYBER_CORE?.on?.(
+      "devices:changed",
+      payload => {
+        const jack = document.getElementById(JACK_ID);
+
+        if (
+          jack?.dataset?.phase === "live" &&
+          (!payload?.sceneId || payload.sceneId === canvas?.scene?.id)
+        ) {
+          queueV3Refresh("jack");
+        }
+      }
+    );
+
+  if (typeof deviceChangeOff === "function") {
+    cyberUnsubscribers.push(deviceChangeOff);
+  }
 
   function queueV3Refresh(mode = "auto") {
     if (refreshQueued) return;
@@ -2785,7 +2866,13 @@
       ]);
     }
 
-    for (const event of ["createToken","updateToken","deleteToken","targetToken","canvasReady"]) {
+    for (const event of [
+      "createToken","updateToken","deleteToken",
+      "createWall","updateWall","deleteWall",
+      "createAmbientLight","updateAmbientLight","deleteAmbientLight",
+      "createTile","updateTile","deleteTile",
+      "targetToken","canvasReady"
+    ]) {
       v3Hooks.push([
         event,
         Hooks.on(event, () => {
@@ -2831,6 +2918,9 @@
       v3Observer?.disconnect?.();
       for (const [event,id] of v3Hooks) {
         try { Hooks.off(event,id); } catch {}
+      }
+      for (const unsubscribe of cyberUnsubscribers) {
+        try { unsubscribe(); } catch {}
       }
       document.getElementById(ROOT_ID)?.remove();
       const jackRoot = document.getElementById(JACK_ID);
