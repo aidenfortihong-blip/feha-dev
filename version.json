@@ -1,7 +1,7 @@
 {
-  "version": "0.10.26",
+  "version": "0.10.27",
   "updated": "2026-09-27",
-  "scope": "square-actor-topology-no-relays",
+  "scope": "token-floor-square-actor-nodes",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -108,7 +108,12 @@
     "Removed relay boxes, route lines, packet dots, and separate actor anchor diamonds from the JACK IN visual layer",
     "Kept relay/link data in sceneModel for a later topology rebuild without rendering it now",
     "Updated topology caption to show only actor and device counts",
-    "This pass does not change zoom logic, Quickhack behavior, or device behavior"
+    "This pass does not change zoom logic, Quickhack behavior, or device behavior",
+    "Actor nodes now carry the real Foundry token footprint as normalized scene width/height data",
+    "JACK IN actor zoom now has a per-node floor so an actor portrait square cannot render smaller than the actual token footprint on the scene",
+    "Actor endpoint boxes now render only the centered portrait plus the bottom LOCKED/ACQUIRE state",
+    "Removed actor name, relation, token signature, node number, decorative corner captions, and duplicate outline layers from actor squares",
+    "Hostile actor outlines are yellow, friendly outlines cyan, and selected actor outlines switch to a single red border"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
