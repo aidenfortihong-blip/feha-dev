@@ -208,9 +208,7 @@
   }
 
   async function executeDoor(source,capability) {
-    if (!source?.update) {
-      throw new Error("This door has no bound Foundry Wall.");
-    }
+    if (!source?.update) return null;
 
     const states = doorStates();
 
@@ -314,8 +312,37 @@
       result = await executeDoor(source,cap);
     }
 
+    if (!result && device.type === "door") {
+      const doorState =
+        cap === "OPEN" ? "open" :
+        cap === "LOCK" ? "locked" :
+        cap === "UNLOCK" ? "closed" :
+        cap === "CLOSE" ? "closed" :
+        null;
+
+      if (doorState) {
+        result = await genericState(
+          device,
+          source,
+          {doorState}
+        );
+      }
+    }
+
     if (!result && device.type === "lights") {
       result = await executeLight(source,cap);
+    }
+
+    if (
+      !result &&
+      device.type === "lights" &&
+      (cap === "POWER_OFF" || cap === "POWER_ON")
+    ) {
+      result = await genericState(
+        device,
+        source,
+        {powered:cap === "POWER_ON"}
+      );
     }
 
     if (!result && cap === "DISABLE") {
