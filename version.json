@@ -1,8 +1,13 @@
 {
-  "version": "0.10.54",
+  "version": "0.10.55",
   "updated": "2026-09-27",
-  "scope": "adk-playable-roster",
+  "scope": "market-pointer-hover-sounds",
   "notes": [
+    "Moved Market button audio from click to pointerdown so sound fires before Market rerenders/replaces controls.",
+    "Added Market-only hover audio for storefront cards, vendor Tier I-V tabs, and Item Mk filter tabs.",
+    "Storefront click uses drawer_open, vendor tier click uses subsystem_select, and Item Mk click uses cyberware_select so the major Market controls do not all sound the same.",
+    "Existing Market details/buy/reroll/reset/pagination/wallet/back/close sounds now route through the same pointerdown handler.",
+    "Hover audio remains limited to the requested Market control groups; no global hover audio was reintroduced.",
     "Locked ADK character selectors to Ponyboy, Derke, Sasha, and Zach only.",
     "Market, Chrome Manager, and Cyberdeck actor dropdowns now share the same roster sanitizer and reapply it after rerenders.",
     "Sasha Bogdanov is display-normalized to Sasha throughout ADK UI text, dropdowns, labels, tooltips, and alt text without renaming the underlying Foundry Actor document.",
