@@ -5228,3 +5228,20 @@ body > #feha-jackin-overlay {
 
 
 
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.3 NATIVE-RESOLUTION JACK IN
+   Do not pre-rasterize the topology; FIT no longer downscales below 100%.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-world {
+  will-change:auto !important;
+}
+
+#feha-jackin-overlay .jack-operator img,
+#feha-jackin-overlay .jack-node img,
+#feha-jackin-overlay .jack-device-node img {
+  image-rendering:auto !important;
+  backface-visibility:visible !important;
+}
