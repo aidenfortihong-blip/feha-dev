@@ -1,7 +1,7 @@
 {
-  "version": "0.10.2",
+  "version": "0.10.3",
   "updated": "2026-09-27",
-  "scope": "camera-feature-removed",
+  "scope": "native-resolution-jack-in",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -9,7 +9,12 @@
     "Removed Camera from the Network Device type registry",
     "Legacy camera Scene records are ignored by Network Device scanning so old development data does not reappear in JACK IN",
     "Removed camera-specific Cyberdeck CSS and restored the JACK IN viewport controls to the non-camera layout",
-    "Device runtime now consists of Cyber Core, Network Devices, Device Actions, Network Approvals, and V3 UI"
+    "Device runtime now consists of Cyber Core, Network Devices, Device Actions, Network Approvals, and V3 UI",
+    "JACK IN viewport no longer allows zoom below 100%, preventing whole-UI raster downscaling",
+    "FIT now recenters the topology at native 100% resolution instead of shrinking the world to 65–80%",
+    "Native-scale pan is rounded to whole pixels to reduce subpixel blur in text and portraits",
+    "Actor-backed endpoint cards now prefer the full Actor/character portrait over lower-resolution Token textures",
+    "Removed the JACK IN world will-change transform hint so Chromium does not unnecessarily pre-rasterize the entire topology layer"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
