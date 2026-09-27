@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.11";
+  const VERSION = "0.9.12";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1776,6 +1776,61 @@
       }
     });
 
+    const cameraSurface =
+      root.querySelector("[data-camera-place-surface]");
+
+    cameraSurface?.addEventListener("click",async event => {
+      if (root.dataset.cameraAuthorMode !== "1") return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (root.dataset.cameraPlacementBusy === "1") return;
+      root.dataset.cameraPlacementBusy = "1";
+
+      const actor = actorById(root.dataset.actorId);
+
+      if (!actor) {
+        delete root.dataset.cameraPlacementBusy;
+        ui?.notifications?.error?.(
+          "Camera placement failed: operator Actor unavailable."
+        );
+        return;
+      }
+
+      const point = pointerToJackPercent(root,event);
+
+      if (!point) {
+        delete root.dataset.cameraPlacementBusy;
+        ui?.notifications?.error?.(
+          "Camera placement failed: map coordinates unavailable."
+        );
+        return;
+      }
+
+      ui?.notifications?.info?.(
+        "CAMERA SURFACE HIT // "+
+        point.xPct.toFixed(1)+"%, "+
+        point.yPct.toFixed(1)+"%"
+      );
+
+      try {
+        await authorCameraAtPoint(
+          root,
+          actor,
+          point.xPct,
+          point.yPct
+        );
+      } catch (err) {
+        delete root.dataset.cameraPlacementBusy;
+        console.error("FEHA V3 Camera placement failed",err);
+        ui?.notifications?.error?.(
+          "Camera could not be placed: "+
+          String(err?.message ?? err)
+        );
+      }
+    });
+
     root.onwheel = event => {
       if (!space.contains(event.target)) return;
       if (event.target?.closest?.(".qh-resolution")) return;
@@ -1805,72 +1860,9 @@
       event.preventDefault();
     };
 
-    // JACK IN INPUT CONTRACT:
-    // - LEFT pointerdown places a Camera when CAMERA mode is armed.
-    // - RIGHT pointerdown starts map pan.
-    // This deliberately uses the same .jack-space pointer path that is already
-    // proven to work for RMB drag in the live Foundry client.
-    space.onpointerdown = async event => {
-      if (event.button === 0 && root.dataset.cameraAuthorMode === "1") {
-        if (
-          event.target?.closest?.(
-            ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.qh-resolution,.jack-header,.jack-actions,input,select,textarea,button"
-          )
-        ) {
-          return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (root.dataset.cameraPlacementBusy === "1") return;
-        root.dataset.cameraPlacementBusy = "1";
-
-        const actor = actorById(root.dataset.actorId);
-
-        if (!actor) {
-          delete root.dataset.cameraPlacementBusy;
-          ui?.notifications?.error?.(
-            "Camera placement failed: operator Actor unavailable."
-          );
-          return;
-        }
-
-        const point = pointerToJackPercent(root,event);
-
-        if (!point) {
-          delete root.dataset.cameraPlacementBusy;
-          ui?.notifications?.error?.(
-            "Camera placement failed: map coordinates unavailable."
-          );
-          return;
-        }
-
-        ui?.notifications?.info?.(
-          "CAMERA INPUT 0.9.11 // "+
-          point.xPct.toFixed(1)+"%, "+
-          point.yPct.toFixed(1)+"%"
-        );
-
-        try {
-          await authorCameraAtPoint(
-            root,
-            actor,
-            point.xPct,
-            point.yPct
-          );
-        } catch (err) {
-          delete root.dataset.cameraPlacementBusy;
-          console.error("FEHA V3 Camera placement failed",err);
-          ui?.notifications?.error?.(
-            "Camera could not be placed: "+
-            String(err?.message ?? err)
-          );
-        }
-
-        return;
-      }
-
+    // JACK IN NAVIGATION: RMB only.
+    // Camera placement is handled by its own full-map button surface.
+    space.onpointerdown = event => {
       if (event.button !== 2) return;
 
       if (
@@ -2119,7 +2111,7 @@
           ${deviceNodes}
         </div>
 
-        <div class="jack-camera-place-layer" aria-hidden="true" data-camera-visual-layer></div>
+        <button type="button" class="jack-camera-place-layer" data-camera-place-surface aria-label="Place camera"></button>
 
         <div class="jack-viewport-controls">
           <button type="button" data-jack-action="zoom-out" title="Zoom out">−</button>
