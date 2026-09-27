@@ -1,8 +1,12 @@
 {
-  "version": "0.10.47",
+  "version": "0.10.48",
   "updated": "2026-09-27",
-  "scope": "market-root-sound-binding",
+  "scope": "market-button-sounds-sidebar-readability",
   "notes": [
+    "Market sounds now bind directly to every rendered Market button instead of relying on root/document delegation; a MutationObserver rebinds newly-rendered controls after Market rerenders.",
+    "Different Market interactions use different existing sound families: storefront/open/back/directory, tier/category/Mk filters, reroll, DETAILS, item art/name, BUY, pagination, reset, wallet, actor and dropdown changes.",
+    "DETAILS uses scan, item art uses cyberware_select, item name uses drawer_open, BUY uses install, reroll uses scan, tier uses subsystem_select, pagination/category use select, Mk uses cyberware_select, reset uses remove, and back/close use drawer_close.",
+    "Storefront sidebar readability increased substantially: wider rail, larger section labels, larger search text, larger filter/Mk chips, larger dropdowns, and larger reset control.",
     "Replaced Market document-level click audio delegation with direct #adk-market-15 root binding.",
     "Market button sounds now trigger on left-button pointerdown, before Market rerenders its directory/store/filter DOM.",
     "A MutationObserver binds every newly opened Market root automatically; inner Market rerenders keep the same working root listener.",
