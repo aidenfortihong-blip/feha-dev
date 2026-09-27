@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.2";
+  const VERSION = "0.10.3";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1081,9 +1081,12 @@
               " / "+String(duplicateCount).padStart(2,"0")
             : "TOKEN "+String(index+1).padStart(2,"0"),
         img:
-          token.texture?.src ??
-          tokenActor?.img ??
-          "icons/svg/mystery-man.svg",
+          tokenActor
+            ? portrait(tokenActor)
+            : (
+                token.texture?.src ??
+                "icons/svg/mystery-man.svg"
+              ),
         relation,
         self:false,
         targeted:targeted.has(token.id),
@@ -1319,7 +1322,7 @@
 
     const width = Math.max(1,space.clientWidth);
     const height = Math.max(1,space.clientHeight);
-    const zoom = Math.max(.55,Math.min(3,Number(state.zoom)||1));
+    const zoom = Math.max(1,Math.min(3,Number(state.zoom)||1));
 
     let panX = Number(state.panX)||0;
     let panY = Number(state.panY)||0;
@@ -1360,6 +1363,11 @@
     panX = Math.max(minX,Math.min(maxX,panX));
     panY = Math.max(minY,Math.min(maxY,panY));
 
+    if (zoom === 1) {
+      panX = Math.round(panX);
+      panY = Math.round(panY);
+    }
+
     return {zoom,panX,panY};
   }
 
@@ -1399,7 +1407,7 @@
 
     const rect = space.getBoundingClientRect();
     const current = jackViewportState(root);
-    const zoom = Math.max(.55,Math.min(3,Number(nextZoom)||1));
+    const zoom = Math.max(1,Math.min(3,Number(nextZoom)||1));
 
     const focusX =
       clientX == null
@@ -1453,38 +1461,20 @@
       return;
     }
 
-    let minX = Math.min(...points.map(point => point.x));
-    let maxX = Math.max(...points.map(point => point.x));
-    let minY = Math.min(...points.map(point => point.y));
-    let maxY = Math.max(...points.map(point => point.y));
-
-    const paddingX = Math.max(150,width*.10);
-    const paddingY = Math.max(120,height*.12);
-
-    minX -= paddingX;
-    maxX += paddingX;
-    minY -= paddingY;
-    maxY += paddingY;
-
-    const boxWidth = Math.max(180,maxX-minX);
-    const boxHeight = Math.max(150,maxY-minY);
-
-    const zoom = Math.max(
-      .65,
-      Math.min(
-        2.2,
-        (width/boxWidth)*.94,
-        (height/boxHeight)*.94
-      )
-    );
+    const minX = Math.min(...points.map(point => point.x));
+    const maxX = Math.max(...points.map(point => point.x));
+    const minY = Math.min(...points.map(point => point.y));
+    const maxY = Math.max(...points.map(point => point.y));
 
     const centerX = (minX+maxX)/2;
     const centerY = (minY+maxY)/2;
 
+    // FIT is now a native-resolution framing operation. The old behavior
+    // downscaled the entire UI subtree, softening portraits and typography.
     setJackViewport(root,{
-      zoom,
-      panX:width/2-centerX*zoom,
-      panY:height/2-centerY*zoom
+      zoom:1,
+      panX:Math.round(width/2-centerX),
+      panY:Math.round(height/2-centerY)
     });
   }
 
