@@ -19,7 +19,6 @@
     devices:"foundry/cyberdeck/FEHA_NETWORK_DEVICES.js",
     actions:"foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js",
     approvals:"foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js",
-    cameraPlacement:"foundry/cyberdeck/FEHA_CAMERA_PLACEMENT.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js"
   };
 
@@ -77,9 +76,6 @@
     document.getElementById("feha-jackin-overlay")?.remove();
     document.getElementById("feha-cyberdeck-v2")?.remove();
     document.getElementById("feha-network-approval-queue")?.remove();
-    document.getElementById("feha-camera-feed-hud")?.remove();
-    document.getElementById("feha-camera-placement")?.remove();
-    document.getElementById("feha-camera-placement-style")?.remove();
 
     const entries = Object.entries(files);
 
@@ -124,15 +120,13 @@
     evaluate(source.devices,files.devices);
     evaluate(source.actions,files.actions);
     evaluate(source.approvals,files.approvals);
-    evaluate(source.cameraPlacement,files.cameraPlacement);
 
     await globalThis.FEHA_CYBER_CORE?.init?.();
 
     const requiredModules = [
       "devices",
       "deviceActions",
-      "deviceApprovals",
-      "cameraPlacement"
+      "deviceApprovals"
     ];
 
     const missingModules = requiredModules.filter(
