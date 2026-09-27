@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.17";
+  const VERSION = "0.10.18";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1424,6 +1424,10 @@
     const world = root.querySelector(".jack-world");
     if (world) {
       world.style.setProperty("--jack-zoom",String(state.zoom));
+      world.style.setProperty(
+        "--jack-ui-scale",
+        String(1/Math.max(.001,state.zoom))
+      );
       world.style.setProperty("--jack-pan-x",state.panX+"px");
       world.style.setProperty("--jack-pan-y",state.panY+"px");
     }
@@ -1577,7 +1581,7 @@
         right:x+rw*.58,
         top:y-rh*.60,
         bottom:y+rh*.60,
-        weight:.22
+        weight:1.35
       });
     }
 
@@ -2165,21 +2169,15 @@
 
     for (const node of root.querySelectorAll(".jack-node[data-token-id]")) {
       if (node.dataset.jackStableSize !== "1") {
-        const rect = node.getBoundingClientRect();
-        const zoom = Math.max(
-          1,
-          Number(root.dataset.jackZoom) || 1
-        );
-
         node.style.setProperty(
           "width",
-          Math.round(rect.width/zoom)+"px",
+          Math.round(node.offsetWidth)+"px",
           "important"
         );
 
         node.style.setProperty(
           "min-height",
-          Math.round(rect.height/zoom)+"px",
+          Math.round(node.offsetHeight)+"px",
           "important"
         );
 
