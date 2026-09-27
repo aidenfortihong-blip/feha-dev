@@ -468,7 +468,7 @@ Upload both JSON files into the next chat/project. Those two files are the bridg
 2. Inspect current repo, especially `latest-dev.js`, `latest-dev.css`, and `version.json`.
 3. Load and inspect the two Foundry export JSON files if provided.
 4. Treat exported installed-module source and live actor/item data as authoritative over guessed field names.
-5. Continue **Cyberdeck V3 from build 0.8.4**. V2 is recovery fallback only; do not revive it as the primary UI.
+5. Continue **modular Cyberdeck V3 from build 0.9.1**. Read `HANDOFF/CYBERDECK_ARCHITECTURE_0.9.md` first. V2 is recovery fallback only.
 6. Keep Cyberdeck roster to Ponyboy / Derke / Sasha / Zach.
 7. Continue character-sheet work: Spells -> Quickhacks presentation and RAM display, grounded in exported data.
 8. Start moving important systems from live patch code into the real module source once module source is available.
@@ -552,3 +552,154 @@ Only:
 
 ## Known data caveat
 The 2026-09-26 handoff export contains legacy Quickhack records whose prose RAM number can disagree with `flags.ramCost`. V3 treats the flag as canonical and corrects its own displayed text without silently rewriting world source items. A fresh live export should be used before any catalog-wide source-data migration.
+
+
+---
+
+# AUTHORITATIVE MODULAR CYBERDECK ADDENDUM — BUILD 0.9.1
+
+This section supersedes older continuation instructions where they conflict.
+
+Full architecture contract:
+`HANDOFF/CYBERDECK_ARCHITECTURE_0.9.md`
+
+## Prime rule
+
+**JACK IN renders entities. Adapters own mechanics.**
+
+Do not move device-specific mechanics back into `FEHA_TABLETOP_UI_V3.js`.
+
+## Active modular runtime
+
+Load order:
+1. `latest-dev.js`
+2. `foundry/cyberdeck/FEHA_CYBER_CORE.js`
+3. `foundry/cyberdeck/FEHA_NETWORK_DEVICES.js`
+4. `foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js`
+5. `foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js`
+6. `foundry/cyberdeck/FEHA_CAMERA_FEEDS.js`
+7. `FEHA_CYBER_CORE.init()`
+8. `foundry/FEHA_TABLETOP_UI_V3.js`
+
+V2 remains recovery fallback only.
+
+## JACK IN current state
+
+- active Scene background cyber-underlay
+- exact Token anchors
+- same-Actor duplicate Tokens remain distinct
+- collision-resolved endpoint cards with leader lines
+- wheel zoom / drag pan / FIT / RESET
+- Quickhack target/save/damage resolution
+- direct temp-HP/HP application
+- explicit RETURN TO NET / CLOSE CYBERDECK
+- Network Device endpoints and routes
+- player PROBE mode
+- GM device approval queue
+- device Security DC breach
+- real Foundry Door control
+- per-user discovered-device gating
+- hacked camera feed placement + client-local camera POV
+
+## Device suggested DCs
+
+- Lights 10
+- Camera 11
+- Door 12
+- Alarm 13
+- Turret 15
+- Terminal 16
+- System/Core 18
+
+GM can override any DC.
+
+General bands:
+- 8–10 basic/unsecured
+- 11–13 secured endpoint
+- 14–16 important controller
+- 17–19 central infrastructure
+- 20+ exceptional/core
+
+## Network Device discovery
+
+Automatic:
+- real Foundry Door Walls
+- explicitly tagged Tokens/Tiles/Walls/AmbientLights
+
+Player probe:
+- player marks a suspected network-device point on cyber map
+- online GM gets approval queue
+- GM chooses type, label, Security DC or denies
+- approval persists one custom Scene device
+- device is initially discovered for requesting player only
+
+Secret Foundry doors must not leak automatically to players.
+
+## Device authority
+
+Player device world mutations are not performed directly from the player client.
+
+After a successful local breach, persistent Door/Scene/etc. commands are sent to online GM authority and executed there.
+
+Do not bypass this architecture with ad-hoc player document writes.
+
+## Camera adapter
+
+`FEHA_CAMERA_FEEDS.js` owns camera behavior.
+
+- PLACE FEED enters vague-map placement mode
+- selected point becomes a session camera POV origin
+- adapter creates a client-local Foundry PointVisionSource
+- normal vision sources are temporarily suppressed while viewing the feed
+- RETURN TO NET removes the camera source and restores player vision
+- multiple feeds persist for current session and can be cycled
+- camera feed HUD is owned by camera adapter
+- no permanent fake Actor/Token is created
+
+Camera feeds are not yet persisted across reconnects.
+Camera limited-angle/rotation is not yet automated.
+
+## Device adapters still planned
+
+Turret:
+- rotate
+- IFF
+- takeover
+- optional FIRE using bound Actor/Token attack data
+
+Environment:
+- vents
+- shutters
+- sprinklers
+- machinery
+- environmental hazards
+
+Do not put these mechanics into JACK IN.
+
+## Other desired modular extraction
+
+Still wanted, excluding Trace/ICE:
+- explicit Quickhack schema module
+- resolver module
+- Foundry Active Effect/status module
+- Target Intel module
+- deck/manufacturer passive hooks
+- resistance/immunity-aware damage service
+- secondary-target/chain-hack state
+- compact network event log
+
+No Trace/ICE unless the user explicitly reverses that decision later.
+
+## Important testing note
+
+The current public dev loader is GM-only. The socket/device architecture is built for player/GM separation, but true player-client testing requires these modules to be loaded on the player client through the stable FEHA module or a separate player-safe bootstrap.
+
+## Next test order
+
+1. Load latest dev build.
+2. JACK IN on a Scene with at least one real Foundry Door.
+3. Click Door device -> BREACH -> OPEN/CLOSE/LOCK/UNLOCK.
+4. Enter PROBE mode -> click unmarked map point -> approve it in GM queue with chosen type/DC.
+5. Approve a Camera -> breach -> PLACE FEED -> click placement point -> verify camera POV -> RETURN TO NET.
+6. Establish a second camera feed -> verify PREV/NEXT.
+7. Test clustered actors + devices with zoom/pan and collision fan-out.
