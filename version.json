@@ -1,8 +1,9 @@
 {
-  "version": "0.10.39",
+  "version": "0.10.40",
   "updated": "2026-09-27",
-  "scope": "park-camera-ui",
+  "scope": "park-camera-hud-cleanup",
   "notes": [
+    "Removed the leftover sixth CAMERA grid slot from JACK IN viewport controls so zoom/FIT/RESET collapse back to their pre-camera footprint and position.",
     "Removed the visible JACK IN CAMERA placement button while camera work is parked; underlying camera code is left dormant for a later pass.",
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
