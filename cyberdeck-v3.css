@@ -6865,3 +6865,124 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-viewport-controls b {
   font-size:11px !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.13 LIBRARY FILL + TARGET LOCK FEEDBACK
+   Empty Software Library fills its section; target selection stays stable.
+   ========================================================================== */
+
+/* Make the scroll body allocate its leftover height to Software Library. */
+#feha-cyberdeck-v2.feha-v3 .v3-scroll {
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-scroll > .v3-section:first-child {
+  flex:0 0 auto;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library {
+  flex:1 1 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:260px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-section-head {
+  flex:0 0 auto;
+}
+
+/* Critical fix: the empty state used to occupy only column 1 of a 2-col grid. */
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-library-list {
+  flex:1 1 auto !important;
+  width:100% !important;
+  min-height:0 !important;
+  align-content:stretch !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message {
+  grid-column:1 / -1 !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:220px !important;
+  align-self:stretch !important;
+  justify-self:stretch !important;
+  place-items:center !important;
+  padding:30px !important;
+  font-size:15px !important;
+  letter-spacing:1.5px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message::before {
+  margin-bottom:12px !important;
+  font-size:11px !important;
+  letter-spacing:2px !important;
+}
+
+/* Selection feedback: stronger without changing card geometry. */
+#feha-jackin-overlay .jack-node.is-targeted {
+  outline:2px solid rgb(var(--jack-yellow)) !important;
+  outline-offset:2px !important;
+  border-color:rgb(var(--jack-yellow)) !important;
+  background:
+    linear-gradient(110deg,rgba(var(--jack-yellow),.13),transparent 62%),
+    rgba(8,10,7,.985) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-yellow),.22),
+    0 0 26px rgba(var(--jack-yellow),.24),
+    0 16px 36px rgba(0,0,0,.44) !important;
+  filter:none !important;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted .jack-node-num {
+  color:rgb(var(--jack-yellow)) !important;
+  opacity:1 !important;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted > em {
+  width:max-content;
+  padding:4px 7px !important;
+  color:#050708 !important;
+  background:rgb(var(--jack-yellow)) !important;
+  border:1px solid rgba(255,244,188,.62);
+  font-size:10px !important;
+  font-weight:900 !important;
+  letter-spacing:1.1px !important;
+  line-height:1 !important;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted::after {
+  content:"TARGET LOCK // ACTIVE" !important;
+  right:9px !important;
+  bottom:-21px !important;
+  color:rgb(var(--jack-yellow)) !important;
+  font-size:7px !important;
+  letter-spacing:1.25px !important;
+  opacity:.90 !important;
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-targeted {
+  border-width:2px !important;
+  box-shadow:
+    0 0 0 6px rgba(var(--jack-yellow),.05),
+    0 0 22px rgba(var(--jack-yellow),.52) !important;
+}
+
+#feha-jackin-overlay .jack-card-leader.is-targeted,
+#feha-jackin-overlay .jack-card-leader.is-targeted.is-displaced {
+  opacity:1 !important;
+  stroke-width:2.2 !important;
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message {
+    min-height:180px !important;
+    font-size:14px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message::before {
+    font-size:10px !important;
+  }
+}
