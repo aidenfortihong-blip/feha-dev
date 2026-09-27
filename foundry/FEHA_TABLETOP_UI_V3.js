@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.8.10";
+  const VERSION = "0.8.11";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1240,6 +1240,496 @@
     }).join("");
   }
 
+  function jackViewportState(root) {
+    const number = (key,fallback) => {
+      const value = Number(root?.dataset?.[key]);
+      return Number.isFinite(value) ? value : fallback;
+    };
+
+    return {
+      zoom:number("jackZoom",1),
+      panX:number("jackPanX",0),
+      panY:number("jackPanY",0)
+    };
+  }
+
+  function clampJackViewport(root,state) {
+    const space = root?.querySelector?.(".jack-space");
+    if (!space) return state;
+
+    const width = Math.max(1,space.clientWidth);
+    const height = Math.max(1,space.clientHeight);
+    const zoom = Math.max(.55,Math.min(3,Number(state.zoom)||1));
+
+    let panX = Number(state.panX)||0;
+    let panY = Number(state.panY)||0;
+
+    if (zoom <= 1) {
+      panX = (width - width*zoom)/2;
+      panY = (height - height*zoom)/2;
+    } else {
+      const minX = width - width*zoom;
+      const minY = height - height*zoom;
+
+      panX = Math.max(minX,Math.min(0,panX));
+      panY = Math.max(minY,Math.min(0,panY));
+    }
+
+    return {zoom,panX,panY};
+  }
+
+  function setJackViewport(root,next) {
+    if (!root?.isConnected) return;
+
+    const state = clampJackViewport(
+      root,
+      {
+        ...jackViewportState(root),
+        ...(next ?? {})
+      }
+    );
+
+    root.dataset.jackZoom = String(state.zoom);
+    root.dataset.jackPanX = String(state.panX);
+    root.dataset.jackPanY = String(state.panY);
+
+    const world = root.querySelector(".jack-world");
+    if (world) {
+      world.style.setProperty("--jack-zoom",String(state.zoom));
+      world.style.setProperty("--jack-pan-x",state.panX+"px");
+      world.style.setProperty("--jack-pan-y",state.panY+"px");
+    }
+
+    const readout = root.querySelector("[data-jack-zoom-readout]");
+    if (readout) {
+      readout.textContent = Math.round(state.zoom*100)+"%";
+    }
+
+    return state;
+  }
+
+  function zoomJackAt(root,nextZoom,clientX=null,clientY=null) {
+    const space = root?.querySelector?.(".jack-space");
+    if (!space) return;
+
+    const rect = space.getBoundingClientRect();
+    const current = jackViewportState(root);
+    const zoom = Math.max(.55,Math.min(3,Number(nextZoom)||1));
+
+    const focusX =
+      clientX == null
+        ? rect.width/2
+        : Number(clientX)-rect.left;
+
+    const focusY =
+      clientY == null
+        ? rect.height/2
+        : Number(clientY)-rect.top;
+
+    const worldX = (focusX-current.panX)/current.zoom;
+    const worldY = (focusY-current.panY)/current.zoom;
+
+    setJackViewport(root,{
+      zoom,
+      panX:focusX-worldX*zoom,
+      panY:focusY-worldY*zoom
+    });
+  }
+
+  function resetJackViewport(root) {
+    setJackViewport(root,{zoom:1,panX:0,panY:0});
+  }
+
+  function fitJackViewport(root) {
+    const space = root?.querySelector?.(".jack-space");
+    if (!space) return;
+
+    const width = Math.max(1,space.clientWidth);
+    const height = Math.max(1,space.clientHeight);
+
+    const points = [
+      ...space.querySelectorAll("[data-jack-anchor-x][data-jack-anchor-y]")
+    ]
+      .map(element => ({
+        x:Number(element.dataset.jackAnchorX),
+        y:Number(element.dataset.jackAnchorY)
+      }))
+      .filter(point =>
+        Number.isFinite(point.x) &&
+        Number.isFinite(point.y)
+      )
+      .map(point => ({
+        x:(point.x/100)*width,
+        y:(point.y/100)*height
+      }));
+
+    if (!points.length) {
+      resetJackViewport(root);
+      return;
+    }
+
+    let minX = Math.min(...points.map(point => point.x));
+    let maxX = Math.max(...points.map(point => point.x));
+    let minY = Math.min(...points.map(point => point.y));
+    let maxY = Math.max(...points.map(point => point.y));
+
+    const paddingX = Math.max(150,width*.10);
+    const paddingY = Math.max(120,height*.12);
+
+    minX -= paddingX;
+    maxX += paddingX;
+    minY -= paddingY;
+    maxY += paddingY;
+
+    const boxWidth = Math.max(180,maxX-minX);
+    const boxHeight = Math.max(150,maxY-minY);
+
+    const zoom = Math.max(
+      .65,
+      Math.min(
+        2.2,
+        (width/boxWidth)*.94,
+        (height/boxHeight)*.94
+      )
+    );
+
+    const centerX = (minX+maxX)/2;
+    const centerY = (minY+maxY)/2;
+
+    setJackViewport(root,{
+      zoom,
+      panX:width/2-centerX*zoom,
+      panY:height/2-centerY*zoom
+    });
+  }
+
+  function rectOverlapArea(a,b) {
+    const width = Math.max(
+      0,
+      Math.min(a.right,b.right)-Math.max(a.left,b.left)
+    );
+
+    const height = Math.max(
+      0,
+      Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)
+    );
+
+    return width*height;
+  }
+
+  function layoutJackEndpointCards(root) {
+    const space = root?.querySelector?.(".jack-space");
+    const world = root?.querySelector?.(".jack-world");
+    if (!space || !world) return;
+
+    const width = Math.max(1,world.clientWidth);
+    const height = Math.max(1,world.clientHeight);
+
+    const cards = [...world.querySelectorAll(".jack-node[data-token-id]")];
+
+    if (!cards.length) return;
+
+    const operator = world.querySelector(".jack-operator");
+
+    const operatorAnchor = operator
+      ? {
+          x:(Number(operator.dataset.jackAnchorX)||50)/100*width,
+          y:(Number(operator.dataset.jackAnchorY)||50)/100*height
+        }
+      : {x:width/2,y:height/2};
+
+    const operatorWidth = operator?.offsetWidth ?? 176;
+    const operatorHeight = operator?.offsetHeight ?? 176;
+
+    const protectedRects = [
+      {
+        left:operatorAnchor.x-operatorWidth*.62,
+        right:operatorAnchor.x+operatorWidth*.62,
+        top:operatorAnchor.y-operatorHeight*.62,
+        bottom:operatorAnchor.y+operatorHeight*.62,
+        weight:5
+      }
+    ];
+
+    // Small route boxes can be covered if necessary, but prefer not to.
+    for (const relay of world.querySelectorAll(".jack-relay")) {
+      const x=(Number(relay.dataset.jackAnchorX)||0)/100*width;
+      const y=(Number(relay.dataset.jackAnchorY)||0)/100*height;
+      const rw=Math.max(20,relay.offsetWidth);
+      const rh=Math.max(20,relay.offsetHeight);
+
+      protectedRects.push({
+        left:x-rw*.58,
+        right:x+rw*.58,
+        top:y-rh*.60,
+        bottom:y+rh*.60,
+        weight:.22
+      });
+    }
+
+    const placed = [];
+    const leaders = new Map(
+      [...world.querySelectorAll("[data-card-leader]")]
+        .map(line => [line.dataset.cardLeader,line])
+    );
+
+    const ordered = [...cards].sort((a,b) => {
+      const selectedA = a.classList.contains("is-targeted") ? 1 : 0;
+      const selectedB = b.classList.contains("is-targeted") ? 1 : 0;
+      if (selectedA !== selectedB) return selectedB-selectedA;
+      return Number(a.dataset.nodeIndex||0)-Number(b.dataset.nodeIndex||0);
+    });
+
+    for (const card of ordered) {
+      const anchorX =
+        (Number(card.dataset.jackAnchorX)||50)/100*width;
+
+      const anchorY =
+        (Number(card.dataset.jackAnchorY)||50)/100*height;
+
+      const cardWidth = Math.max(120,card.offsetWidth);
+      const cardHeight = Math.max(58,card.offsetHeight);
+
+      const halfW = cardWidth/2;
+      const halfH = cardHeight/2;
+      const margin = 12;
+
+      const outwardAngle = Math.atan2(
+        anchorY-operatorAnchor.y,
+        anchorX-operatorAnchor.x
+      );
+
+      const seed =
+        Number(card.dataset.nodeIndex||0)*0.83;
+
+      const candidates = [{
+        x:anchorX,
+        y:anchorY,
+        distance:0
+      }];
+
+      const rings = [74,118,164,214];
+
+      for (const radius of rings) {
+        const samples = 16;
+
+        for (let step=0;step<samples;step++) {
+          const angle =
+            outwardAngle +
+            seed +
+            (Math.PI*2*step/samples);
+
+          candidates.push({
+            x:anchorX+Math.cos(angle)*radius,
+            y:anchorY+Math.sin(angle)*radius,
+            distance:radius
+          });
+        }
+      }
+
+      let best = null;
+      let bestScore = Infinity;
+
+      for (const candidate of candidates) {
+        const x = Math.max(
+          margin+halfW,
+          Math.min(width-margin-halfW,candidate.x)
+        );
+
+        const y = Math.max(
+          margin+halfH,
+          Math.min(height-margin-halfH,candidate.y)
+        );
+
+        const rect = {
+          left:x-halfW-7,
+          right:x+halfW+7,
+          top:y-halfH-6,
+          bottom:y+halfH+6
+        };
+
+        let score = candidate.distance*.13;
+
+        for (const other of placed) {
+          const overlap = rectOverlapArea(rect,other.rect);
+          if (overlap) score += overlap*1.8+42000;
+        }
+
+        for (const protectedRect of protectedRects) {
+          const overlap = rectOverlapArea(rect,protectedRect);
+          if (overlap) {
+            score += overlap*(protectedRect.weight??1)+
+              8200*(protectedRect.weight??1);
+          }
+        }
+
+        // Prefer cards outside the operator's immediate core when their
+        // anchors are stacked directly onto the operator.
+        const opDistance = Math.hypot(
+          x-operatorAnchor.x,
+          y-operatorAnchor.y
+        );
+
+        if (opDistance < Math.max(130,operatorWidth*.72)) {
+          score +=
+            (Math.max(130,operatorWidth*.72)-opDistance)*140;
+        }
+
+        if (score < bestScore) {
+          bestScore = score;
+          best = {x,y,rect};
+        }
+      }
+
+      if (!best) continue;
+
+      card.style.setProperty("--jack-card-x",best.x+"px");
+      card.style.setProperty("--jack-card-y",best.y+"px");
+
+      placed.push({
+        id:card.dataset.tokenId,
+        rect:best.rect,
+        x:best.x,
+        y:best.y
+      });
+
+      const leader = leaders.get(card.dataset.tokenId);
+
+      if (leader) {
+        leader.setAttribute(
+          "x1",
+          ((anchorX/width)*1000).toFixed(2)
+        );
+
+        leader.setAttribute(
+          "y1",
+          ((anchorY/height)*720).toFixed(2)
+        );
+
+        leader.setAttribute(
+          "x2",
+          ((best.x/width)*1000).toFixed(2)
+        );
+
+        leader.setAttribute(
+          "y2",
+          ((best.y/height)*720).toFixed(2)
+        );
+
+        const moved = Math.hypot(
+          best.x-anchorX,
+          best.y-anchorY
+        );
+
+        leader.classList.toggle("is-displaced",moved>18);
+      }
+    }
+  }
+
+  function bindJackViewport(root) {
+    const space = root?.querySelector?.(".jack-space");
+    if (!space) return;
+
+    root.__jackResizeObserver?.disconnect?.();
+
+    const refresh = () => {
+      if (!root.isConnected) return;
+      layoutJackEndpointCards(root);
+      setJackViewport(root,jackViewportState(root));
+    };
+
+    const resizeObserver =
+      typeof ResizeObserver === "function"
+        ? new ResizeObserver(() => {
+            requestAnimationFrame(refresh);
+          })
+        : null;
+
+    resizeObserver?.observe?.(space);
+    root.__jackResizeObserver = resizeObserver;
+
+    root.onwheel = event => {
+      if (!space.contains(event.target)) return;
+      if (event.target?.closest?.(".qh-resolution")) return;
+
+      event.preventDefault();
+
+      const current = jackViewportState(root);
+      const factor = event.deltaY < 0 ? 1.12 : .89;
+
+      zoomJackAt(
+        root,
+        current.zoom*factor,
+        event.clientX,
+        event.clientY
+      );
+    };
+
+    root.onpointerdown = event => {
+      if (event.button !== 0) return;
+      if (!space.contains(event.target)) return;
+
+      if (
+        event.target?.closest?.(
+          "button,input,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption"
+        )
+      ) {
+        return;
+      }
+
+      const current = jackViewportState(root);
+
+      root.__jackDrag = {
+        pointerId:event.pointerId,
+        startX:event.clientX,
+        startY:event.clientY,
+        panX:current.panX,
+        panY:current.panY
+      };
+
+      space.classList.add("is-panning");
+
+      try {
+        root.setPointerCapture?.(event.pointerId);
+      } catch {}
+    };
+
+    root.onpointermove = event => {
+      const drag = root.__jackDrag;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+
+      setJackViewport(root,{
+        panX:drag.panX+(event.clientX-drag.startX),
+        panY:drag.panY+(event.clientY-drag.startY)
+      });
+    };
+
+    const endDrag = event => {
+      const drag = root.__jackDrag;
+      if (!drag) return;
+
+      if (
+        event?.pointerId != null &&
+        drag.pointerId !== event.pointerId
+      ) {
+        return;
+      }
+
+      delete root.__jackDrag;
+      space.classList.remove("is-panning");
+
+      try {
+        root.releasePointerCapture?.(drag.pointerId);
+      } catch {}
+    };
+
+    root.onpointerup = endDrag;
+    root.onpointercancel = endDrag;
+    root.onlostpointercapture = endDrag;
+
+    requestAnimationFrame(refresh);
+  }
+
   function jackMarkup(actor) {
     const net = sceneModel(actor);
     const m = model(actor);
@@ -1290,7 +1780,10 @@
     }).join("");
 
     const relays = net.relays.map(relay =>
-      '<div class="jack-relay is-'+relay.kind+'" style="--jack-x:'+relay.x+
+      '<div class="jack-relay is-'+relay.kind+
+      '" data-jack-anchor-x="'+Number(relay.x).toFixed(4)+
+      '" data-jack-anchor-y="'+Number(relay.y).toFixed(4)+
+      '" style="--jack-x:'+relay.x+
       '%;--jack-y:'+relay.y+'%;--relay-delay:'+relay.pulse+'s">'+
         '<span class="jack-relay-core"><i></i></span>'+
         '<small>'+esc(relay.label)+'</small>'+
@@ -1306,7 +1799,10 @@
     const nodes = net.nodes.map((n,i) =>
       '<button class="jack-node is-'+n.relation+(n.targeted?' is-targeted':'')+
       '" style="--jack-x:'+n.x.toFixed(2)+'%;--jack-y:'+n.y.toFixed(2)+
-      '%" data-jack-action="target" data-token-id="'+esc(n.id)+'">'+
+      '%" data-jack-action="target" data-token-id="'+esc(n.id)+
+      '" data-node-index="'+i+
+      '" data-jack-anchor-x="'+n.x.toFixed(4)+
+      '" data-jack-anchor-y="'+n.y.toFixed(4)+'">'+
         '<span class="jack-node-num">'+String(i+1).padStart(2,"0")+'</span>'+
         '<img src="'+esc(n.img)+'" alt="">'+
         '<span class="jack-node-copy"><b>'+esc(n.displayName)+'</b><small>'+
@@ -1343,30 +1839,59 @@
       </header>
 
       <main class="jack-space ${net.nodes.length <= 2 ? "is-sparse" : ""} ${net.backgroundSrc ? "has-scene-map" : ""}" data-node-count="${net.nodes.length}" data-map="${net.backgroundSrc ? "1" : "0"}">
-        ${net.backgroundSrc
-          ? '<div class="jack-scene-map"><img src="'+esc(net.backgroundSrc)+'" alt=""></div>'
-          : ''
-        }
+        <div class="jack-world">
+          ${net.backgroundSrc
+            ? '<div class="jack-scene-map"><img draggable="false" src="'+esc(net.backgroundSrc)+'" alt=""></div>'
+            : ''
+          }
 
-        <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">
-          ${linkSvg}
-        </svg>
+          <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">
+            ${net.nodes.map(node =>
+              '<line class="jack-card-leader is-'+node.relation+(node.targeted?' is-targeted':'')+
+              '" data-card-leader="'+esc(node.id)+
+              '" x1="'+(node.x*10).toFixed(2)+
+              '" y1="'+(node.y*7.2).toFixed(2)+
+              '" x2="'+(node.x*10).toFixed(2)+
+              '" y2="'+(node.y*7.2).toFixed(2)+'" />'
+            ).join("")}
+            ${linkSvg}
+          </svg>
+
+          ${net.nodes.map(node =>
+            '<span class="jack-token-anchor is-'+node.relation+(node.targeted?' is-targeted':'')+
+            '" style="--jack-x:'+node.x.toFixed(2)+'%;--jack-y:'+node.y.toFixed(2)+
+            '%" data-jack-anchor-x="'+node.x.toFixed(4)+
+            '" data-jack-anchor-y="'+node.y.toFixed(4)+
+            '" data-token-id="'+esc(node.id)+'"></span>'
+          ).join("")}
+
+          ${relays}
+
+          <div class="jack-operator"
+            style="--jack-x:${net.operator.x.toFixed(2)}%;--jack-y:${net.operator.y.toFixed(2)}%"
+            data-jack-anchor-x="${net.operator.x.toFixed(4)}"
+            data-jack-anchor-y="${net.operator.y.toFixed(4)}">
+            <div></div>
+            <div class="jack-operator-hub">${operatorPorts}</div>
+            <img src="${esc(portrait(actor))}" alt="">
+            <span><small>OPERATOR CORE</small><b>${esc(actor.name)}</b></span>
+          </div>
+
+          ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
+        </div>
+
+        <div class="jack-viewport-controls">
+          <button type="button" data-jack-action="zoom-out" title="Zoom out">−</button>
+          <b data-jack-zoom-readout>100%</b>
+          <button type="button" data-jack-action="zoom-in" title="Zoom in">+</button>
+          <button type="button" data-jack-action="fit-view">FIT</button>
+          <button type="button" data-jack-action="reset-view">RESET</button>
+        </div>
 
         <div class="jack-net-caption">
-          <small>TOPOLOGY</small>
+          <small>TOPOLOGY // WHEEL TO ZOOM // DRAG TO PAN</small>
           <b>${net.relays.length} RELAYS // ${net.nodes.length} TOKEN ENDPOINT${net.nodes.length===1?"":"S"}</b>
         </div>
-
-        ${relays}
-
-        <div class="jack-operator" style="--jack-x:${net.operator.x.toFixed(2)}%;--jack-y:${net.operator.y.toFixed(2)}%">
-          <div></div>
-          <div class="jack-operator-hub">${operatorPorts}</div>
-          <img src="${esc(portrait(actor))}" alt="">
-          <span><small>OPERATOR CORE</small><b>${esc(actor.name)}</b></span>
-        </div>
-
-        ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
 
         <div class="jack-lock-readout">
           <small>TARGET LOCK</small>
@@ -1402,6 +1927,7 @@
     root.dataset.actorId = actor.id;
     root.innerHTML = jackMarkup(actor);
     bindJack(root,actor);
+    bindJackViewport(root);
   }
 
   function openJack(actor) {
@@ -1642,6 +2168,32 @@
       const action = button?.dataset?.jackAction;
 
       if (!button || !action) return;
+
+      if (action === "zoom-in") {
+        const state = jackViewportState(root);
+        zoomJackAt(root,state.zoom*1.18);
+        globalThis.FEHA_SOUNDS?.play?.("hover",{cooldown:70});
+        return;
+      }
+
+      if (action === "zoom-out") {
+        const state = jackViewportState(root);
+        zoomJackAt(root,state.zoom*.84);
+        globalThis.FEHA_SOUNDS?.play?.("hover",{cooldown:70});
+        return;
+      }
+
+      if (action === "fit-view") {
+        fitJackViewport(root);
+        globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:70});
+        return;
+      }
+
+      if (action === "reset-view") {
+        resetJackViewport(root);
+        globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:70});
+        return;
+      }
 
       if (
         action === "close" ||
@@ -1927,7 +2479,9 @@
         try { Hooks.off(event,id); } catch {}
       }
       document.getElementById(ROOT_ID)?.remove();
-      document.getElementById(JACK_ID)?.remove();
+      const jackRoot = document.getElementById(JACK_ID);
+      jackRoot?.__jackResizeObserver?.disconnect?.();
+      jackRoot?.remove();
       if (game.adk) {
         const prior = game.adk.__fehaV3PreviousOpenCyberdeck;
         if (game.adk.openCyberdeck === open && typeof prior === "function") {
