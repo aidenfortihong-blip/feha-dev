@@ -273,7 +273,7 @@
       sourceUuid:doc.uuid ?? null,
       sourceType:doc.documentName ?? null,
       sourceId:doc.id ?? null,
-      discoveredBy:config?.discoveredBy ?? [],
+      discoveredBy:discoveredBy,
       state:config?.state ?? {},
       origin,
       metadata:config?.metadata ?? {}
@@ -292,6 +292,29 @@
     const pos = toPercent(scene,center.x,center.y);
     const flag = readDeviceFlag(wall);
     const config = flag && typeof flag === "object" ? flag : {};
+
+    const doorType = Number(
+      wall?.door ??
+      wall?._source?.door ??
+      0
+    );
+
+    const secretType = Number(
+      globalThis.CONST?.WALL_DOOR_TYPES?.SECRET ??
+      2
+    );
+
+    const discoveredBy = Array.isArray(config?.discoveredBy)
+      ? config.discoveredBy
+      : [];
+
+    if (
+      doorType === secretType &&
+      !game.user?.isGM &&
+      !discoveredBy.includes(game.user?.id)
+    ) {
+      return null;
+    }
 
     return makeRecord({
       id:config?.id ?? ("door:"+wall.id),
@@ -313,6 +336,20 @@
         doorState:Number(wall?.ds ?? wall?._source?.ds ?? 0)
       }
     });
+  }
+
+  function visibleToCurrentUser(record) {
+    if (!record) return false;
+    if (game.user?.isGM) return true;
+
+    const discoveredBy = Array.isArray(record.discoveredBy)
+      ? record.discoveredBy
+      : [];
+
+    return (
+      discoveredBy.length === 0 ||
+      discoveredBy.includes(game.user?.id)
+    );
   }
 
   function customRecords(scene) {
@@ -347,31 +384,34 @@
       if (door) records.set(door.id,door);
 
       const tagged = taggedRecord(scene,wall,"tagged-wall");
-      if (tagged) records.set(tagged.id,tagged);
+      if (tagged && visibleToCurrentUser(tagged)) {
+        records.set(tagged.id,tagged);
+      }
     }
 
     for (const token of collectionContents(scene.tokens)) {
       const tagged = taggedRecord(scene,token,"tagged-token");
-      if (tagged) records.set(tagged.id,tagged);
+      if (tagged && visibleToCurrentUser(tagged)) {
+        records.set(tagged.id,tagged);
+      }
     }
 
     for (const tile of collectionContents(scene.tiles)) {
       const tagged = taggedRecord(scene,tile,"tagged-tile");
-      if (tagged) records.set(tagged.id,tagged);
+      if (tagged && visibleToCurrentUser(tagged)) {
+        records.set(tagged.id,tagged);
+      }
     }
 
     for (const light of collectionContents(scene.lights)) {
       const tagged = taggedRecord(scene,light,"tagged-light");
-      if (tagged) records.set(tagged.id,tagged);
+      if (tagged && visibleToCurrentUser(tagged)) {
+        records.set(tagged.id,tagged);
+      }
     }
 
     for (const record of customRecords(scene)) {
-      const visible =
-        game.user?.isGM ||
-        !record.discoveredBy?.length ||
-        record.discoveredBy.includes(game.user?.id);
-
-      if (visible) {
+      if (visibleToCurrentUser(record)) {
         records.set(record.id,record);
       }
     }
@@ -482,6 +522,7 @@
     defaultCapabilities,
     makeRecord,
     scanScene,
+    visibleToCurrentUser,
     revealCustomDevices,
     upsertCustomDevice,
     removeCustomDevice,
