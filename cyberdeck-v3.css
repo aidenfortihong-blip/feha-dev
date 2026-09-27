@@ -4497,10 +4497,6 @@ body > #feha-jackin-overlay {
 }
 
 /* Device-type identity */
-#feha-jackin-overlay .jack-device-node.is-camera {
-  --device-accent:92,239,255;
-}
-
 #feha-jackin-overlay .jack-device-node.is-door {
   --device-accent:255,214,90;
 }
@@ -4754,7 +4750,7 @@ body > #feha-jackin-overlay {
    -------------------------------------------------------------------------- */
 
 #feha-jackin-overlay .jack-viewport-controls {
-  grid-template-columns:40px 58px 40px 54px 70px 70px !important;
+  grid-template-columns:40px 58px 40px 54px 70px !important;
 }
 
 #feha-jackin-overlay
@@ -5231,24 +5227,4 @@ body > #feha-jackin-overlay {
 
 
 
-
-/* ==========================================================================
-   FEHA CYBERDECK V3 // 0.10.0 CLEAN CAMERA BASELINE
-   V3 only launches the isolated placement module. No camera mechanics live here.
-   ========================================================================== */
-
-#feha-jackin-overlay
-  .jack-viewport-controls
-  [data-jack-action="place-camera"] {
-  color:rgb(var(--jack-yellow));
-  border-color:rgba(var(--jack-yellow),.30);
-}
-
-#feha-jackin-overlay
-  .jack-viewport-controls
-  [data-jack-action="place-camera"]:hover {
-  color:#050708;
-  background:rgb(var(--jack-yellow));
-  border-color:rgb(var(--jack-yellow));
-}
 
