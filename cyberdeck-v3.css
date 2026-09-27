@@ -5516,3 +5516,340 @@ body > #feha-jackin-overlay {
     height:64px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.6 LOADOUT READABILITY PASS
+   Same visual language, larger information surfaces and clearer hierarchy.
+   ========================================================================== */
+
+#feha-cyberdeck-v2.feha-v3 {
+  grid-template-columns:320px minmax(760px,1fr) 280px !important;
+  grid-template-rows:92px minmax(0,1fr) 132px !important;
+}
+
+/* HEADER */
+#feha-cyberdeck-v2.feha-v3 .cd2-header {
+  min-height:92px !important;
+  padding:15px 20px 14px 24px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-brand small {
+  font-size:9px !important;
+  letter-spacing:1.6px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-brand h1 {
+  font-size:31px !important;
+  letter-spacing:1px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-header-status {
+  gap:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-header-status > div {
+  min-width:104px !important;
+  padding:10px 12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-header-status span {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-header-status b {
+  margin-top:4px !important;
+  font-size:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 #v3-actor {
+  width:230px !important;
+  height:50px !important;
+  padding:0 14px !important;
+  font-size:12px !important;
+}
+
+/* LEFT OPERATOR RAIL */
+#feha-cyberdeck-v2.feha-v3 .cd2-operator {
+  padding:17px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-portrait {
+  height:375px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-tag {
+  padding:8px 11px !important;
+  font-size:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta {
+  margin-top:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta > div {
+  padding:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta b {
+  margin-top:4px !important;
+  font-size:13px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary {
+  margin-top:12px !important;
+  padding:15px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
+  font-size:8px !important;
+  letter-spacing:1.25px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head h2 {
+  font-size:19px !important;
+  line-height:1.05 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
+  margin-top:5px !important;
+  font-size:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
+  font-size:13px !important;
+}
+
+/* RAM HERO */
+#feha-cyberdeck-v2.feha-v3 .v3-ram {
+  grid-template-columns:minmax(0,1fr) 270px !important;
+  gap:18px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-ram > div {
+  padding:17px 20px 16px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-ram small {
+  font-size:9px !important;
+  letter-spacing:1.45px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-ram strong {
+  margin:9px 0 11px !important;
+  font-size:40px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-ram strong em {
+  font-size:16px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-segments {
+  gap:4px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-segments i {
+  min-height:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-ram .cd2-rest {
+  height:58px !important;
+  min-height:58px !important;
+  padding:0 20px !important;
+  font-size:10px !important;
+}
+
+/* SECTION HEADERS */
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head {
+  margin-bottom:16px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head small {
+  font-size:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head h3 {
+  margin-top:5px !important;
+  font-size:27px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head > span {
+  font-size:9px !important;
+}
+
+/* LOADED QUICKHACKS */
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid {
+  gap:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot {
+  min-height:198px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card {
+  grid-template-columns:68px minmax(0,1fr) !important;
+  grid-template-rows:auto 1fr 44px !important;
+  gap:10px 12px !important;
+  padding:14px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card > img {
+  width:66px !important;
+  height:66px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy b {
+  max-width:calc(100% - 30px) !important;
+  font-size:14px !important;
+  line-height:1.12 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy span {
+  margin-top:7px !important;
+  font-size:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card::before,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot::before,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot em {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card > button {
+  height:44px !important;
+  font-size:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot span {
+  font-size:34px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot b {
+  font-size:10px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot small {
+  max-width:128px !important;
+  font-size:7.5px !important;
+  line-height:1.5 !important;
+}
+
+/* SOFTWARE LIBRARY */
+#feha-cyberdeck-v2.feha-v3 .cd2-library-list .v3-hack-card {
+  min-height:124px !important;
+  grid-template-columns:66px minmax(0,1fr) 94px !important;
+  gap:11px 13px !important;
+  padding:13px 14px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-library-list .v3-hack-card > img {
+  width:64px !important;
+  height:64px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy b {
+  font-size:14px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy span {
+  font-size:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy small {
+  max-height:42px !important;
+  font-size:8px !important;
+  line-height:1.5 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-library-list .v3-hack-card > button {
+  width:94px !important;
+  height:46px !important;
+  font-size:9px !important;
+}
+
+/* RIGHT RAIL */
+#feha-cyberdeck-v2.feha-v3 .cd2-right {
+  padding:16px 14px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section {
+  padding:15px !important;
+  margin-bottom:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-subhead {
+  margin-bottom:12px !important;
+  font-size:10px !important;
+  letter-spacing:1.4px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat {
+  padding:11px 0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat b {
+  font-size:13px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-empty-message {
+  min-height:88px !important;
+  padding:12px !important;
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+  font-size:9px !important;
+  line-height:1.65 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card b {
+  font-size:11px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
+  font-size:8px !important;
+  line-height:1.45 !important;
+}
+
+/* JACK IN BAR */
+#feha-cyberdeck-v2.feha-v3 .v3-jackbar {
+  grid-template-columns:180px minmax(340px,1fr) 260px !important;
+  gap:20px !important;
+  padding:0 32px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jack-main small {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jack-main b {
+  font-size:44px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jack-state,
+#feha-cyberdeck-v2.feha-v3 .v3-jack-meta {
+  font-size:9px !important;
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 {
+    grid-template-columns:280px minmax(620px,1fr) 250px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+    font-size:9px !important;
+  }
+}
