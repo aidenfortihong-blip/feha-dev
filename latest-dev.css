@@ -9050,3 +9050,399 @@ body:has(#adk-market-15#adk-market-15) [data-adk-market-layer-lock="1"] > .windo
     transition:none!important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA MARKET // 0.10.46 FAMILY COHESION + MOTION
+   Keeps Market distinct, but brings it into the same FEHA application family:
+   hard black base, clipped geometry, cyan system language, yellow actions,
+   red currency/danger, diagnostic microtext and restrained ambient motion.
+   ========================================================================== */
+
+body #adk-market-15#adk-market-15 {
+  --mx-cyan:#63e7f5;
+  --mx-yellow:#f0c75e;
+  --mx-red:#ff5b70;
+  --mx-mag:#d778ff;
+  --mx-panel:#03080b;
+  --mx-panel-2:#061015;
+  --mx-panel-3:#09141a;
+  background:
+    radial-gradient(circle at 75% -14%,rgba(99,231,245,.055),transparent 32%),
+    linear-gradient(180deg,rgba(99,231,245,.018),transparent 25%),
+    #020607!important;
+  border-color:rgba(99,231,245,.26)!important;
+  border-top-color:rgba(99,231,245,.72)!important;
+  box-shadow:
+    0 28px 90px rgba(0,0,0,.78),
+    inset 0 0 0 1px rgba(255,255,255,.012),
+    0 0 34px rgba(99,231,245,.035)!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 13px) 0,
+    100% 13px,
+    100% 100%,
+    13px 100%,
+    0 calc(100% - 13px)
+  )!important;
+}
+
+body #adk-market-15#adk-market-15::after {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-10%;
+  height:18%;
+  z-index:60;
+  pointer-events:none;
+  opacity:.055;
+  background:linear-gradient(
+    to bottom,
+    transparent,
+    rgba(99,231,245,.75),
+    transparent
+  );
+  animation:feha-market-scan 9s linear infinite;
+}
+
+@keyframes feha-market-scan {
+  from { transform:translateY(-20vh); }
+  to { transform:translateY(120vh); }
+}
+
+body #adk-market-15#adk-market-15 .market-titlebar {
+  background:
+    linear-gradient(90deg,rgba(99,231,245,.028),transparent 26%),
+    #02080b!important;
+  border-bottom-color:rgba(99,231,245,.15)!important;
+}
+
+body #adk-market-15#adk-market-15 .market-titlebar::before {
+  content:"MARKET NODE // COMMERCE GRID // LIVE";
+  position:absolute;
+  left:22px;
+  bottom:5px;
+  color:rgba(99,231,245,.34);
+  font:800 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.5px;
+  pointer-events:none;
+}
+
+body #adk-market-15#adk-market-15 .brand-name {
+  font-size:23px!important;
+  letter-spacing:4.1px!important;
+}
+
+body #adk-market-15#adk-market-15 .brand-prefix,
+body #adk-market-15#adk-market-15 .eyebrow {
+  color:var(--mx-cyan)!important;
+}
+
+body #adk-market-15#adk-market-15 :is(
+  .top-select,
+  .wallet-pill,
+  .cap-pill,
+  .icon-btn,
+  .back-btn,
+  .page-btn,
+  .detail-btn,
+  .reset-btn,
+  #reroll-stock,
+  .filter-chip,
+  .tier-choice
+) {
+  clip-path:polygon(
+    0 0,
+    calc(100% - 7px) 0,
+    100% 7px,
+    100% 100%,
+    0 100%
+  )!important;
+}
+
+body #adk-market-15#adk-market-15 :is(
+  .tier-selector,
+  .shop-card,
+  .item-card,
+  .search-box,
+  .vendor-tier,
+  .directory-tier-display
+) {
+  clip-path:polygon(
+    0 0,
+    calc(100% - 9px) 0,
+    100% 9px,
+    100% 100%,
+    0 100%
+  )!important;
+}
+
+body #adk-market-15#adk-market-15 .directory-view,
+body #adk-market-15#adk-market-15 .results-scroll {
+  background:
+    linear-gradient(rgba(99,231,245,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,231,245,.014) 1px,transparent 1px),
+    #020608!important;
+  background-size:32px 32px!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-selector,
+body #adk-market-15#adk-market-15 .market-sidebar,
+body #adk-market-15#adk-market-15 .store-header,
+body #adk-market-15#adk-market-15 .pagination {
+  background:#03090d!important;
+  border-color:rgba(99,231,245,.13)!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-info {
+  background:
+    linear-gradient(135deg,rgba(99,231,245,.035),transparent 66%),
+    #040b0f!important;
+  border-color:rgba(99,231,245,.12)!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice {
+  background:#040b0f!important;
+  border-color:rgba(99,231,245,.09)!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice:hover {
+  background:rgba(99,231,245,.035)!important;
+  border-color:rgba(99,231,245,.22)!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice.active {
+  background:
+    linear-gradient(180deg,var(--vendor-glow),transparent),
+    #061015!important;
+  border-bottom-color:var(--vendor-accent)!important;
+  box-shadow:
+    inset 0 0 22px var(--vendor-glow),
+    0 0 12px rgba(0,0,0,.22)!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-card {
+  background:
+    linear-gradient(135deg,color-mix(in srgb,var(--shop-accent) 6%,transparent),transparent 42%),
+    #03090d!important;
+  border-color:rgba(99,231,245,.13)!important;
+  border-left-color:var(--shop-accent)!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-card:hover {
+  background:
+    linear-gradient(135deg,color-mix(in srgb,var(--shop-accent) 10%,transparent),transparent 48%),
+    #061015!important;
+  border-color:color-mix(in srgb,var(--shop-accent) 58%,rgba(99,231,245,.18))!important;
+  border-left-color:var(--shop-accent)!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-card::before {
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--shop-accent) 6%,transparent),transparent 30%),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 13px,
+      color-mix(in srgb,var(--shop-accent) 7%,transparent) 13px 14px
+    )!important;
+  opacity:.45!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-footer {
+  border-top-color:color-mix(in srgb,var(--shop-accent) 22%,rgba(99,231,245,.08))!important;
+}
+
+body #adk-market-15#adk-market-15 .market-sidebar {
+  background:
+    linear-gradient(180deg,rgba(99,231,245,.02),transparent 30%),
+    #02080b!important;
+}
+
+body #adk-market-15#adk-market-15 .sidebar-section {
+  position:relative!important;
+  padding-top:3px!important;
+}
+
+body #adk-market-15#adk-market-15 .sidebar-section::before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:24px;
+  height:1px;
+  background:rgba(99,231,245,.30);
+}
+
+body #adk-market-15#adk-market-15 .search-box,
+body #adk-market-15#adk-market-15 .side-select {
+  background:#010507!important;
+  border-color:rgba(99,231,245,.15)!important;
+}
+
+body #adk-market-15#adk-market-15 .filter-chip {
+  background:#03090d!important;
+  border-color:rgba(99,231,245,.13)!important;
+}
+
+body #adk-market-15#adk-market-15 .filter-chip:hover {
+  background:rgba(99,231,245,.035)!important;
+  border-color:rgba(99,231,245,.34)!important;
+}
+
+body #adk-market-15#adk-market-15 .filter-chip.active {
+  color:#fff!important;
+  background:rgba(99,231,245,.055)!important;
+  border-color:rgba(99,231,245,.56)!important;
+  box-shadow:inset 2px 0 var(--mx-cyan)!important;
+}
+
+body #adk-market-15#adk-market-15 .store-header {
+  position:relative!important;
+  background:
+    linear-gradient(90deg,rgba(99,231,245,.028),transparent 32%),
+    #03090d!important;
+}
+
+body #adk-market-15#adk-market-15 .store-header::after {
+  content:"STOCK FEED // VERIFIED";
+  position:absolute;
+  left:20px;
+  bottom:7px;
+  color:rgba(99,231,245,.29);
+  font:800 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.35px;
+  pointer-events:none;
+}
+
+body #adk-market-15#adk-market-15 #reroll-stock {
+  color:var(--mx-yellow)!important;
+  background:rgba(240,199,94,.025)!important;
+  border-color:rgba(240,199,94,.34)!important;
+}
+
+body #adk-market-15#adk-market-15 #reroll-stock:hover {
+  color:#fff4c9!important;
+  background:rgba(240,199,94,.065)!important;
+  border-color:rgba(240,199,94,.72)!important;
+  box-shadow:0 0 16px rgba(240,199,94,.055)!important;
+}
+
+body #adk-market-15#adk-market-15 .item-card {
+  position:relative!important;
+  background:#03090d!important;
+  border-color:rgba(99,231,245,.12)!important;
+  border-top-color:color-mix(in srgb,var(--item-accent) 72%,rgba(99,231,245,.16))!important;
+}
+
+body #adk-market-15#adk-market-15 .item-card::after {
+  content:"";
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:9px;
+  height:1px;
+  pointer-events:none;
+  opacity:.35;
+  background:linear-gradient(
+    90deg,
+    var(--item-accent),
+    transparent 52%
+  );
+}
+
+body #adk-market-15#adk-market-15 .item-art-wrap {
+  isolation:isolate!important;
+  background:
+    radial-gradient(circle at 50% 50%,var(--item-glow),transparent 58%),
+    linear-gradient(rgba(99,231,245,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,231,245,.015) 1px,transparent 1px),
+    #020709!important;
+  background-size:auto,27px 27px,27px 27px,auto!important;
+}
+
+body #adk-market-15#adk-market-15 .item-art-wrap::after {
+  content:"";
+  position:absolute;
+  z-index:3;
+  left:0;
+  right:0;
+  top:-18%;
+  height:22%;
+  pointer-events:none;
+  opacity:.075;
+  background:linear-gradient(
+    to bottom,
+    transparent,
+    var(--item-accent),
+    transparent
+  );
+  animation:feha-market-item-scan 7s linear infinite;
+}
+
+@keyframes feha-market-item-scan {
+  from { transform:translateY(-40px); }
+  to { transform:translateY(215px); }
+}
+
+body #adk-market-15#adk-market-15 .item-maker,
+body #adk-market-15#adk-market-15 .item-tags span {
+  background:#020709!important;
+  border-color:rgba(99,231,245,.12)!important;
+}
+
+body #adk-market-15#adk-market-15 .detail-btn {
+  color:var(--mx-cyan)!important;
+  background:rgba(99,231,245,.018)!important;
+  border-color:rgba(99,231,245,.22)!important;
+}
+
+body #adk-market-15#adk-market-15 .detail-btn:hover {
+  color:#fff!important;
+  background:rgba(99,231,245,.055)!important;
+  border-color:rgba(99,231,245,.55)!important;
+}
+
+body #adk-market-15#adk-market-15 .buy-btn {
+  color:#120f05!important;
+  background:var(--mx-yellow)!important;
+  border-color:var(--mx-yellow)!important;
+  box-shadow:0 0 13px rgba(240,199,94,.10)!important;
+}
+
+body #adk-market-15#adk-market-15 .buy-btn:hover:not(:disabled) {
+  color:#000!important;
+  background:#ffe08b!important;
+  border-color:#ffe08b!important;
+  box-shadow:0 0 20px rgba(240,199,94,.16)!important;
+}
+
+body #adk-market-15#adk-market-15 .wallet-pill {
+  color:var(--mx-red)!important;
+  background:rgba(255,91,112,.025)!important;
+  border-color:rgba(255,91,112,.32)!important;
+  border-left-color:var(--mx-red)!important;
+}
+
+body #adk-market-15#adk-market-15 .match-count strong {
+  color:var(--mx-red)!important;
+}
+
+body #adk-market-15#adk-market-15 .pagination {
+  background:#02080b!important;
+}
+
+body #adk-market-15#adk-market-15 .page-btn:hover:not(:disabled),
+body #adk-market-15#adk-market-15 .back-btn:hover,
+body #adk-market-15#adk-market-15 .icon-btn:hover {
+  color:#fff!important;
+  background:rgba(99,231,245,.045)!important;
+  border-color:rgba(99,231,245,.48)!important;
+}
+
+@media (prefers-reduced-motion:reduce) {
+  body #adk-market-15#adk-market-15::after,
+  body #adk-market-15#adk-market-15 .item-art-wrap::after {
+    animation:none!important;
+  }
+}
