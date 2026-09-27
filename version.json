@@ -1,7 +1,7 @@
 {
-  "version": "0.10.6",
+  "version": "0.10.7",
   "updated": "2026-09-27",
-  "scope": "loadout-readability-pass",
+  "scope": "loadout-declutter-right-rail",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -25,7 +25,13 @@
     "Increased Cyberdeck loadout typography across header, operator rail, RAM panel, loaded quickhacks, software library, and right-side status rail",
     "Enlarged quickhack icons, EJECT controls, empty-slot labels, RAM segments, and key status values",
     "Expanded left and right rails slightly to give readable text more room without changing the overall visual language",
-    "Increased JACK IN launcher text and metadata sizing while preserving its existing high-contrast treatment"
+    "Increased JACK IN launcher text and metadata sizing while preserving its existing high-contrast treatment",
+    "Rebalanced Cyberdeck columns by narrowing the portrait rail and widening the right-side status rail",
+    "Reduced visual weight of empty Quickhack slots while keeping loaded software prominent",
+    "Removed helper copy from empty memory bays to reduce center-panel clutter",
+    "Flattened nested right-rail boxes into clearer status, support, and passive sections",
+    "Increased right-rail value size, passive copy contrast, line-height, and reading width",
+    "Simplified empty Support Chrome and Software Library states so they no longer compete with active content"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
