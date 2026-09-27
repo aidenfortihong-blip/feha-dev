@@ -1485,7 +1485,11 @@
     const width = Math.max(1,world.clientWidth);
     const height = Math.max(1,world.clientHeight);
 
-    const cards = [...world.querySelectorAll(".jack-node[data-token-id]")];
+    const cards = [
+      ...world.querySelectorAll(
+        ".jack-node[data-token-id], .jack-device-node[data-device-id]"
+      )
+    ];
 
     if (!cards.length) return;
 
@@ -1646,14 +1650,20 @@
       card.style.setProperty("--jack-card-x",best.x+"px");
       card.style.setProperty("--jack-card-y",best.y+"px");
 
+      const cardId =
+        card.dataset.tokenId ??
+        (card.dataset.deviceId
+          ? "device:"+card.dataset.deviceId
+          : "");
+
       placed.push({
-        id:card.dataset.tokenId,
+        id:cardId,
         rect:best.rect,
         x:best.x,
         y:best.y
       });
 
-      const leader = leaders.get(card.dataset.tokenId);
+      const leader = leaders.get(cardId);
 
       if (leader) {
         leader.setAttribute(
@@ -1934,7 +1944,7 @@
 
     const deviceActionService = cyberModule("deviceActions");
 
-    const deviceNodes = (net.devices ?? []).map(device => {
+    const deviceNodes = (net.devices ?? []).map((device,deviceIndex) => {
       const access = deviceActionService?.hasAccess?.(actor,device) ?? false;
       const state = access ? "ACCESS" : "DC "+device.securityDC;
 
@@ -1996,6 +2006,13 @@
               '" y1="'+(node.y*7.2).toFixed(2)+
               '" x2="'+(node.x*10).toFixed(2)+
               '" y2="'+(node.y*7.2).toFixed(2)+'" />'
+            ).join("")}
+            ${net.devices.map(device =>
+              '<line class="jack-card-leader is-device" data-card-leader="device:'+esc(device.id)+
+              '" x1="'+(Number(device.x)*10).toFixed(2)+
+              '" y1="'+(Number(device.y)*7.2).toFixed(2)+
+              '" x2="'+(Number(device.x)*10).toFixed(2)+
+              '" y2="'+(Number(device.y)*7.2).toFixed(2)+'" />'
             ).join("")}
             ${linkSvg}
           </svg>
