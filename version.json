@@ -1,8 +1,13 @@
 {
-  "version": "0.10.64",
+  "version": "0.10.65",
   "updated": "2026-09-27",
-  "scope": "derke-no-visible-jing",
+  "scope": "entry-gateway-full-audio",
   "notes": [
+    "Added a full restrained Entry Gateway sound layer using the existing FEHA sound engine and per-call gain.",
+    "Boot subsystem lines tick softly; ID REQUIRED, AUTHENTICATING, ACCESS GRANTED, and LINK ESTABLISHED have distinct state cues.",
+    "Candidate hover/select, typing, exact registry match, AUTHENTICATE, ESTABLISH LINK, and GM BYPASS now have audio feedback.",
+    "Each biometric row plays a soft scan cue when created and a different verify cue when completed; profile activation and verification have their own cues.",
+    "Gateway audio uses only tiny targeted listeners/observers on boot log, node state, biometric list, and profile class; no whole-gateway observer is used.",
     "Hardened Derke Entry Gateway identity handling so the legacy Jing auth key cannot remain visible during authentication.",
     "Added a tiny Derke-only MutationObserver on only match state, profile ID, profile art, and auth console fields; no whole-gateway observation is used.",
     "Any native JING write to IDENTITY LOCKED / PROFILE ACCEPTED / profile ID / console is immediately rewritten to DERKE, and profile art is forced back to Derke.",
