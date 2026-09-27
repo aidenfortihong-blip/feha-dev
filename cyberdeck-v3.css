@@ -9054,3 +9054,68 @@ body > #feha-jackin-overlay {
     max-height:var(--jack-node-size,96px) !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.30 CLEAN ACTOR OUTLINES + STATIC WIELDER
+   One border state only. No ACQUIRE. Operator stays 1.5x fixed screen-size.
+   ========================================================================== */
+
+/* Wielder/operator follows the dedicated fixed 1.5x screen-space scale. */
+#feha-jackin-overlay .jack-world .jack-operator {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-operator-scale,1.5)) !important;
+  transform-origin:center center !important;
+}
+
+/* Actor node outline cleanup: one border, no secondary ring or pulsing chrome. */
+#feha-jackin-overlay .jack-world .jack-node,
+#feha-jackin-overlay .jack-world .jack-node:hover,
+#feha-jackin-overlay .jack-world .jack-node.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-friendly.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-neutral.is-targeted {
+  outline:none !important;
+  animation:none !important;
+  box-shadow:none !important;
+}
+
+/* Default relation borders. */
+#feha-jackin-overlay .jack-world .jack-node.is-hostile {
+  border:2px solid rgb(var(--jack-yellow)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-friendly {
+  border:2px solid rgb(var(--jack-cyan)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-neutral {
+  border:2px solid rgba(var(--jack-yellow),.72) !important;
+}
+
+/* Selected always becomes a single red border. */
+#feha-jackin-overlay .jack-world .jack-node.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-friendly.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-neutral.is-targeted {
+  border:2px solid rgb(var(--jack-mag)) !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+/* LOCKED only. Any stale ACQUIRE element from a hot reload is hidden. */
+#feha-jackin-overlay .jack-world .jack-node > em {
+  display:grid !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node > em:not(:empty) {
+  visibility:visible !important;
+}
+
+/* Old generated corner/chrome layers stay dead. */
+#feha-jackin-overlay .jack-world .jack-node::before,
+#feha-jackin-overlay .jack-world .jack-node::after {
+  display:none !important;
+  content:none !important;
+}
