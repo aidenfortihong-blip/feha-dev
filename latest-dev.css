@@ -9911,3 +9911,144 @@ body #adk-market-15#adk-market-15 .reset-btn {
 body #adk-market-15#adk-market-15 .cap-pill {
   display:none!important;
 }
+
+
+/* ==========================================================================
+   FEHA CREDITS WALLET // 0.10.52 READABILITY
+   Remove redundant canonical-currency footer copy and increase readability.
+   ========================================================================== */
+
+#feha-credits-wallet {
+  width:min(680px,94vw)!important;
+}
+
+#feha-credits-wallet .credits-command {
+  height:72px!important;
+  padding:0 22px!important;
+}
+
+#feha-credits-wallet .credits-command::after {
+  left:22px!important;
+  bottom:6px!important;
+  font-size:8px!important;
+  letter-spacing:1.5px!important;
+}
+
+#feha-credits-wallet .credits-brand {
+  gap:10px!important;
+}
+
+#feha-credits-wallet .credits-brand span {
+  font-size:12px!important;
+  letter-spacing:1.6px!important;
+}
+
+#feha-credits-wallet .credits-brand b {
+  font-size:29px!important;
+  letter-spacing:3.4px!important;
+}
+
+#feha-credits-wallet .credits-brand small {
+  font-size:9px!important;
+  letter-spacing:1.2px!important;
+}
+
+#feha-credits-wallet .credits-live {
+  font-size:10px!important;
+  letter-spacing:1.1px!important;
+}
+
+#feha-credits-wallet .credits-live i {
+  width:9px!important;
+  height:9px!important;
+}
+
+#feha-credits-wallet .credits-command-actions button {
+  width:42px!important;
+  height:42px!important;
+  font-size:16px!important;
+}
+
+#feha-credits-wallet .credits-shell {
+  grid-template-columns:230px minmax(0,1fr)!important;
+  grid-template-rows:minmax(250px,auto) 72px!important;
+  min-height:365px!important;
+}
+
+#feha-credits-wallet .credits-identity {
+  padding:34px 24px!important;
+}
+
+#feha-credits-wallet .credits-eyebrow,
+#feha-credits-wallet .credits-balance-top span,
+#feha-credits-wallet .credits-editor > span {
+  font-size:11px!important;
+  line-height:1.15!important;
+  letter-spacing:1.55px!important;
+}
+
+#feha-credits-wallet .credits-identity h1 {
+  margin-top:16px!important;
+  font-size:32px!important;
+  line-height:1!important;
+}
+
+#feha-credits-wallet .credits-idline {
+  margin-top:34px!important;
+  padding-top:14px!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+}
+
+#feha-credits-wallet .credits-idline b {
+  font-size:11px!important;
+}
+
+#feha-credits-wallet .credits-balance {
+  padding:30px 30px 25px!important;
+}
+
+#feha-credits-wallet .credits-balance-top small {
+  font-size:9px!important;
+  letter-spacing:1.1px!important;
+}
+
+#feha-credits-wallet .credits-balance-readout {
+  margin-top:18px!important;
+  padding:20px 0 22px!important;
+  font-size:46px!important;
+  line-height:1!important;
+  letter-spacing:-1.3px!important;
+}
+
+#feha-credits-wallet .credits-editor {
+  margin-top:22px!important;
+}
+
+#feha-credits-wallet .credits-input-wrap {
+  height:56px!important;
+  margin-top:10px!important;
+  grid-template-columns:62px minmax(0,1fr)!important;
+}
+
+#feha-credits-wallet .credits-input-wrap b {
+  font-size:14px!important;
+}
+
+#feha-credits-wallet .credits-input-wrap input {
+  padding:0 16px!important;
+  font-size:22px!important;
+}
+
+#feha-credits-wallet .credits-footer {
+  justify-content:flex-end!important;
+  padding:12px 20px!important;
+}
+
+#feha-credits-wallet .credits-save {
+  min-width:190px!important;
+  height:46px!important;
+  padding:0 20px!important;
+  font-size:12px!important;
+  letter-spacing:.9px!important;
+}
