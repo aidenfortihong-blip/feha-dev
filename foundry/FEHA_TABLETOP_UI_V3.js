@@ -2218,10 +2218,177 @@
     root.onclick = async event => {
       const jackButton = event.target?.closest?.("[data-jack-action]") ?? null;
       const qhButton = event.target?.closest?.("[data-qh-action]") ?? null;
+      const deviceButton = event.target?.closest?.("[data-device-action]") ?? null;
 
-      if (!jackButton && !qhButton) return;
+      if (!jackButton && !qhButton && !deviceButton) return;
       if (jackButton && !root.contains(jackButton)) return;
       if (qhButton && !root.contains(qhButton)) return;
+      if (deviceButton && !root.contains(deviceButton)) return;
+
+      if (deviceButton) {
+        const deviceAction = deviceButton.dataset.deviceAction;
+        const panel = deviceButton.closest(".jack-device-panel");
+        const deviceId = panel?.dataset?.deviceId ?? "";
+        const device = liveNetworkDevice(deviceId);
+        const actionService = cyberModule("deviceActions");
+        const deviceService = cyberModule("devices");
+
+        if (deviceAction === "close") {
+          panel?.remove();
+          globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
+          return;
+        }
+
+        if (!device || !actionService) {
+          ui?.notifications?.warn?.("Network Device is no longer available.");
+          panel?.remove();
+          return;
+        }
+
+        if (deviceAction === "breach") {
+          if (deviceButton.dataset.busy === "1") return;
+          deviceButton.dataset.busy = "1";
+          deviceButton.disabled = true;
+
+          try {
+            const result = await actionService.breach(actor,device);
+
+            const math = result.automatic
+              ? "UNSECURED DEVICE // ACCESS AUTOMATIC"
+              : result.cached
+                ? "SESSION ACCESS ALREADY ESTABLISHED"
+                : (
+                    result.die+" "+
+                    (result.modifier >= 0 ? "+ " : "− ")+
+                    Math.abs(result.modifier)+
+                    " = "+result.total+
+                    " // DC "+result.dc
+                  );
+
+            showDevicePanel(
+              root,
+              actor,
+              liveNetworkDevice(device.id) ?? device,
+              {
+                kind:result.passed ? "is-success" : "is-failure",
+                title:result.passed ? "BREACH ACCEPTED" : "BREACH REJECTED",
+                body:math
+              }
+            );
+
+            globalThis.FEHA_SOUNDS?.play?.(
+              result.passed ? "confirm" : "error",
+              {cooldown:0}
+            );
+
+            await ChatMessage.create({
+              speaker:ChatMessage.getSpeaker({actor}),
+              content:
+                "<p><strong>NETWORK BREACH // "+esc(device.name)+"</strong></p>"+
+                "<p>"+esc(math)+" — <strong>"+
+                (result.passed ? "SUCCESS" : "FAILURE")+
+                "</strong></p>"
+            });
+          } catch (err) {
+            console.error("FEHA V3 Network breach failed",err);
+            ui?.notifications?.error?.("Network breach failed.");
+            deviceButton.disabled = false;
+            delete deviceButton.dataset.busy;
+          }
+
+          return;
+        }
+
+        if (deviceAction === "capability") {
+          const capability = String(deviceButton.dataset.capability ?? "");
+          if (!capability) return;
+          if (deviceButton.dataset.busy === "1") return;
+
+          deviceButton.dataset.busy = "1";
+          deviceButton.disabled = true;
+
+          try {
+            const result = await actionService.executeCapability(
+              actor,
+              device,
+              capability,
+              {root}
+            );
+
+            const capabilityLabel =
+              deviceService?.capabilities?.[capability]?.label ??
+              capability;
+
+            if (result?.denied) {
+              const access = result.access ?? {};
+              showDevicePanel(
+                root,
+                actor,
+                device,
+                {
+                  kind:"is-failure",
+                  title:"ACCESS DENIED",
+                  body:
+                    (access.total == null
+                      ? "DEVICE REJECTED ACCESS"
+                      : access.total+" vs DC "+access.dc)
+                }
+              );
+              globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
+              return;
+            }
+
+            if (result?.requiresAdapter) {
+              showDevicePanel(
+                root,
+                actor,
+                device,
+                {
+                  kind:"is-pending",
+                  title:capabilityLabel+" // ADAPTER",
+                  body:
+                    result.requiresAdapter.toUpperCase()+
+                    " adapter is registered as a separate subsystem."
+                }
+              );
+              ui?.notifications?.warn?.(
+                capabilityLabel+" requires the "+
+                result.requiresAdapter+" adapter."
+              );
+              return;
+            }
+
+            showDevicePanel(
+              root,
+              actor,
+              liveNetworkDevice(device.id) ?? device,
+              {
+                kind:"is-success",
+                title:capabilityLabel+" // EXECUTED",
+                body:"NETWORK COMMAND ACCEPTED"
+              }
+            );
+
+            globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+
+            await ChatMessage.create({
+              speaker:ChatMessage.getSpeaker({actor}),
+              content:
+                "<p><strong>NETWORK DEVICE // "+esc(device.name)+"</strong></p>"+
+                "<p>"+esc(capabilityLabel)+" — <strong>EXECUTED</strong></p>"
+            });
+          } catch (err) {
+            console.error("FEHA V3 device capability failed",err);
+            ui?.notifications?.error?.("Network Device action failed.");
+            deviceButton.disabled = false;
+            delete deviceButton.dataset.busy;
+          }
+
+          return;
+        }
+
+        return;
+      }
 
       if (qhButton) {
         const qhAction = qhButton.dataset.qhAction;
@@ -2324,6 +2491,37 @@
       const action = button?.dataset?.jackAction;
 
       if (!button || !action) return;
+
+      if (action === "device") {
+        const device = liveNetworkDevice(button.dataset.deviceId);
+        if (!device) {
+          return ui?.notifications?.warn?.("Network Device is no longer available.");
+        }
+
+        showDevicePanel(root,actor,device);
+        globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
+        return;
+      }
+
+      if (action === "probe-device") {
+        const enabled = root.dataset.probeMode !== "1";
+
+        root.dataset.probeMode = enabled ? "1" : "0";
+        root.querySelector(".jack-space")?.classList.toggle(
+          "is-probing",
+          enabled
+        );
+
+        button.classList.toggle("is-active",enabled);
+
+        ui?.notifications?.info?.(
+          enabled
+            ? "NETWORK PROBE // CLICK AN UNKNOWN DEVICE LOCATION"
+            : "NETWORK PROBE CANCELLED"
+        );
+
+        return;
+      }
 
       if (action === "zoom-in") {
         const state = jackViewportState(root);
