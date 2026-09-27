@@ -5542,7 +5542,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay
   .jack-space.is-camera-authoring
   > .jack-world::after {
-  content:"PLACE CAMERA // LEFT-CLICK MAP // RMB DRAG TO PAN";
+  content:"PLACE CAMERA // BUILD 0.9.11 // LEFT-CLICK MAP // RMB DRAG TO PAN";
   position:absolute;
   left:50%;
   top:18px;
