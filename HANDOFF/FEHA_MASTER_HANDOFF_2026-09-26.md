@@ -577,9 +577,8 @@ Load order:
 3. `foundry/cyberdeck/FEHA_NETWORK_DEVICES.js`
 4. `foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js`
 5. `foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js`
-6. `foundry/cyberdeck/FEHA_CAMERA_PLACEMENT.js`
-7. `FEHA_CYBER_CORE.init()`
-8. `foundry/FEHA_TABLETOP_UI_V3.js`
+6. `FEHA_CYBER_CORE.init()`
+7. `foundry/FEHA_TABLETOP_UI_V3.js`
 
 V2 remains recovery fallback only.
 
@@ -599,12 +598,10 @@ V2 remains recovery fallback only.
 - device Security DC breach
 - real Foundry Door control
 - per-user discovered-device gating
-- clean 0.10.0 GM Camera placement launcher
 
 ## Device suggested DCs
 
 - Lights 10
-- Camera 11
 - Door 12
 - Alarm 13
 - Turret 15
@@ -643,21 +640,21 @@ After a successful local breach, persistent Door/Scene/etc. commands are sent to
 
 Do not bypass this architecture with ad-hoc player document writes.
 
-## Camera reset // 0.10.0
+## Camera status // removed in 0.10.2
 
-The previous `FEHA_CAMERA_FEEDS.js` implementation was removed completely after repeated input-layer failures in JACK IN.
+Camera functionality is fully absent from the active runtime.
 
-`FEHA_CAMERA_PLACEMENT.js` is the new ground-up baseline.
+Removed:
+- Camera Network Device type
+- JACK IN CAMERA control
+- camera placement module
+- feed/POV behavior
+- camera-specific action/capability paths
+- camera-specific CSS
 
-Current camera scope is intentionally tiny:
-- GM clicks CAMERA in JACK IN
-- a dedicated full-screen placement overlay opens outside JACK IN
-- overlay shows only the active Scene image
-- one click writes one normalized Camera Network Device record
-- overlay closes
-- JACK IN refreshes through the existing `devices:changed` event
+Legacy Scene records whose type is `camera` are ignored by Network Device scanning so old development data does not reappear.
 
-No camera feeds, POV, rotation, feed switching, camera-specific breach actions, or PointVisionSource behavior exist in the 0.10.0 baseline. Do not restore those until this primitive placement flow is proven stable in live Foundry.
+If cameras return later, build them as a new feature from a clean contract rather than restoring the deleted experimental implementations.
 
 ## Device adapters still planned
 
@@ -696,10 +693,9 @@ The current public dev loader is GM-only. The socket/device architecture is buil
 
 ## Next test order
 
-1. Load latest dev build and confirm 0.10.0.
-2. JACK IN -> click CAMERA.
-3. Confirm the dedicated Camera Placement overlay opens above JACK IN.
-4. Click one point on the Scene image.
-5. Confirm the overlay reports CAMERA CLICK and CAMERA CREATED, closes, and JACK IN shows one Camera device node.
-6. Place a second Camera and verify numbering/positioning.
-7. Only after placement is stable, resume Door/PROBE/multiplayer regression testing and decide the next camera mechanic.
+1. Load latest dev build and confirm 0.10.2.
+2. JACK IN and confirm there is no CAMERA control or Camera device type.
+3. Verify wheel zoom, RMB pan, FIT, and RESET still work.
+4. Test a real Foundry Door -> BREACH -> OPEN/CLOSE/LOCK/UNLOCK.
+5. Resume PROBE/approval testing separately when its UI is intentionally restored.
+6. Test clustered actors + devices with zoom/pan and collision fan-out.
