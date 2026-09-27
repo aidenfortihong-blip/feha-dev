@@ -1400,6 +1400,7 @@
     let derkeProxy = false;
     let restoringInput = false;
     let derkeAuthInterval = null;
+    let derkeIdentityObserver = null;
     let timers = new Set();
 
     const schedule = (fn,delay = 0) => {
@@ -1448,8 +1449,12 @@
 
       const matchState = root.querySelector("[data-match-state]");
       if (matchState) {
-        matchState.textContent = String(matchState.textContent ?? "")
-          .replace(/\bJING\b/gi,"DERKE");
+        const current = String(matchState.textContent ?? "");
+
+        if (/\bJING\b/i.test(current)) {
+          matchState.textContent =
+            current.replace(/\bJING\b/gi,"DERKE");
+        }
       }
 
       const profileId = root.querySelector("[data-profile-id]");
@@ -1471,6 +1476,13 @@
         art.alt = "Derke";
       }
 
+      const authButton = root.querySelector("[data-auth]");
+      if (authButton && /\bJING\b/i.test(authButton.textContent ?? "")) {
+        authButton.textContent =
+          String(authButton.textContent ?? "")
+            .replace(/\bJING\b/gi,"DERKE");
+      }
+
       // Keep any native auth console line from visibly leaking the legacy key.
       root.querySelectorAll("[data-console] b").forEach(line => {
         const before = line.textContent ?? "";
@@ -1487,11 +1499,43 @@
         clearInterval(derkeAuthInterval);
         derkeAuthInterval = null;
       }
+
+      derkeIdentityObserver?.disconnect?.();
+      derkeIdentityObserver = null;
     };
 
     const startDerkeAuthSync = root => {
       stopDerkeAuthSync();
       if (!root || !derkeProxy) return;
+
+      const matchState = root.querySelector("[data-match-state]");
+      const profileId = root.querySelector("[data-profile-id]");
+      const profileArt = root.querySelector("[data-profile-art]");
+      const consoleEl = root.querySelector("[data-console]");
+
+      const targets = [
+        matchState,
+        profileId,
+        profileArt,
+        consoleEl
+      ].filter(Boolean);
+
+      if (targets.length) {
+        derkeIdentityObserver = new MutationObserver(() => {
+          if (!derkeProxy || !root.isConnected) return;
+          syncDerkeIdentity(root);
+        });
+
+        for (const target of targets) {
+          derkeIdentityObserver.observe(target,{
+            childList:true,
+            subtree:true,
+            characterData:true,
+            attributes:target === profileArt,
+            attributeFilter:target === profileArt ? ["src","alt"] : undefined
+          });
+        }
+      }
 
       const started = performance.now();
 
@@ -1645,6 +1689,7 @@
 
           if (!key || !"derke".startsWith(key)) {
             derkeProxy = false;
+            stopDerkeAuthSync();
             return;
           }
 
