@@ -5231,3 +5231,52 @@ body > #feha-jackin-overlay {
     grid-template-columns:54px 54px 120px;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.9.1 CAMERA VAGUE MAP
+   Placement uses scene geography without exposing a clean tactical blueprint.
+   ========================================================================== */
+
+#feha-jackin-overlay
+  .jack-space.is-camera-placement
+  .jack-scene-map img {
+  opacity:.20 !important;
+  filter:
+    blur(8px)
+    saturate(.10)
+    brightness(.38)
+    contrast(1.75)
+    hue-rotate(145deg) !important;
+  transform:scale(1.025) !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.is-camera-placement
+  .jack-token-anchor,
+#feha-jackin-overlay
+  .jack-space.is-camera-placement
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space.is-camera-placement
+  .jack-device-node,
+#feha-jackin-overlay
+  .jack-space.is-camera-placement
+  .jack-relay {
+  opacity:.22 !important;
+  filter:blur(.35px);
+  pointer-events:none !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.is-camera-placement
+  .jack-links {
+  opacity:.18 !important;
+}
+
+#feha-jackin-overlay
+  .jack-space.is-camera-placement
+  .jack-operator {
+  opacity:.42 !important;
+  pointer-events:none !important;
+}
