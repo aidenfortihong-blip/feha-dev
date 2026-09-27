@@ -5853,3 +5853,263 @@ body > #feha-jackin-overlay {
     font-size:9px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.7 DECLUTTER + RIGHT RAIL READABILITY
+   Loaded information leads; empty states recede; support rail gets breathing room.
+   ========================================================================== */
+
+/* Rebalance the three-column frame: portrait rail quieter, status rail wider. */
+#feha-cyberdeck-v2.feha-v3 {
+  grid-template-columns:290px minmax(760px,1fr) 330px !important;
+}
+
+/* LEFT RAIL: keep the portrait important without letting it dominate the app. */
+#feha-cyberdeck-v2.feha-v3 .cd2-operator {
+  padding:15px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-portrait {
+  height:340px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta {
+  gap:0 !important;
+  border-top:1px solid rgba(var(--v3-accent),.12);
+  border-bottom:1px solid rgba(var(--v3-accent),.08);
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta > div {
+  padding:11px 10px !important;
+  background:transparent !important;
+  border-color:rgba(var(--v3-accent),.07) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary {
+  padding:13px !important;
+  border-color:rgba(var(--v3-accent),.16) !important;
+  background:
+    linear-gradient(120deg,rgba(var(--v3-accent),.025),transparent 62%),
+    #020708 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head img {
+  width:66px !important;
+  height:66px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head h2 {
+  font-size:18px !important;
+}
+
+/* CENTER: fewer equal-weight boxes. Loaded software is primary. */
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid {
+  gap:11px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card {
+  min-height:188px !important;
+  border-color:rgba(var(--v3-accent),.25) !important;
+  background:
+    linear-gradient(135deg,rgba(var(--v3-accent),.045),transparent 58%),
+    #03090b !important;
+  box-shadow:
+    inset 2px 0 0 rgba(var(--v3-accent),.30),
+    0 8px 20px rgba(0,0,0,.10) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card > img {
+  width:62px !important;
+  height:62px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy b {
+  color:#edf9fb !important;
+  font-size:14px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy span {
+  color:rgb(var(--cd2-yellow)) !important;
+  opacity:.92;
+}
+
+/* Empty bays intentionally fall into the background. */
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot {
+  min-height:188px !important;
+  opacity:.52;
+  background:
+    radial-gradient(circle at 50% 48%,rgba(var(--v3-accent),.018),transparent 35%),
+    #020607 !important;
+  border:1px dashed rgba(var(--v3-accent),.10) !important;
+  box-shadow:none !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot:hover {
+  opacity:.70;
+  border-color:rgba(var(--v3-accent),.22) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot::after {
+  opacity:.28 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot::before,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot em {
+  color:#476067 !important;
+  font-size:7px !important;
+  opacity:.70;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot span {
+  color:rgba(var(--v3-accent),.62) !important;
+  font-size:28px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot b {
+  color:#82979c !important;
+  font-size:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot small {
+  display:none !important;
+}
+
+/* Software library empty state should not look like another full card. */
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message {
+  min-height:72px !important;
+  width:min(560px,100%);
+  border:1px dashed rgba(var(--v3-accent),.10) !important;
+  background:rgba(2,7,9,.30) !important;
+  color:#61777c !important;
+}
+
+/* RIGHT RAIL: one readable information column, not boxes inside boxes. */
+#feha-cyberdeck-v2.feha-v3 .cd2-right {
+  padding:17px 18px !important;
+  background:
+    linear-gradient(180deg,rgba(var(--v3-accent),.018),transparent 36%),
+    #020708 !important;
+  border-left:1px solid rgba(var(--v3-accent),.13) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section {
+  margin:0 0 18px !important;
+  padding:0 2px 18px !important;
+  background:transparent !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(var(--cd2-mag),.18) !important;
+  box-shadow:none !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section:last-child {
+  margin-bottom:0 !important;
+  border-bottom:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section::after {
+  width:54px !important;
+  background:linear-gradient(90deg,rgb(var(--cd2-mag)),transparent) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-subhead {
+  margin-bottom:14px !important;
+  color:rgb(var(--cd2-mag)) !important;
+  font-size:10px !important;
+  letter-spacing:1.5px !important;
+}
+
+/* Status rows get obvious labels and obvious values. */
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat {
+  min-height:43px;
+  padding:10px 2px !important;
+  border-bottom:1px solid rgba(var(--v3-accent),.07);
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat:last-child {
+  border-bottom:0;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
+  color:#667d83 !important;
+  font-size:8px !important;
+  letter-spacing:1.15px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat b {
+  color:#bff8ff !important;
+  font-size:15px !important;
+  line-height:1 !important;
+}
+
+/* Empty support state: no nested framed rectangle. */
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-empty-message {
+  min-height:66px !important;
+  padding:12px 2px !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#66797e !important;
+  font-size:8px !important;
+  text-align:left !important;
+  place-items:center start !important;
+}
+
+/* Passive copy gets real reading width and contrast. */
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+  max-width:30ch;
+  margin:0 !important;
+  color:#a8babf !important;
+  font-size:10px !important;
+  line-height:1.72 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p::first-line {
+  color:#eef8fa !important;
+  font-weight:700;
+}
+
+/* Reduce decorative density in the center without flattening the hierarchy. */
+#feha-cyberdeck-v2.feha-v3 .v3-section {
+  padding-top:2px;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library {
+  border-top-color:rgba(var(--v3-accent),.10) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head {
+  margin-bottom:13px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-section-head h3 {
+  font-size:25px !important;
+}
+
+/* Header status stays informative but visually lighter than the content. */
+#feha-cyberdeck-v2.feha-v3 .cd2-header-status > div {
+  background:rgba(2,8,10,.48) !important;
+  border-color:rgba(var(--v3-accent),.14) !important;
+  box-shadow:none !important;
+}
+
+/* JACK IN bar remains the sole big visual punch. */
+#feha-cyberdeck-v2.feha-v3 .v3-jackbar {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    0 0 0 1px rgba(255,221,92,.18) !important;
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 {
+    grid-template-columns:260px minmax(620px,1fr) 290px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .cd2-portrait {
+    height:310px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+    max-width:none;
+    font-size:9px !important;
+  }
+}
