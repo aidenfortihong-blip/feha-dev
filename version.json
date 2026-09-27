@@ -1,8 +1,9 @@
 {
-  "version": "0.10.52",
+  "version": "0.10.53",
   "updated": "2026-09-27",
-  "scope": "credits-wallet-readability",
+  "scope": "remove-market-top-directory-icon",
   "notes": [
+    "Removed the redundant top-right Market store/directory icon while preserving the normal in-store DIRECTORY/back navigation.",
     "Removed the redundant CANONICAL CURRENCY / CREDITS footer block from the Credits Wallet.",
     "Increased readability across the entire wallet: larger command header, labels, holder name, account line, live-balance copy, balance amount, edit label/input, synced indicator, close control, and SAVE CREDITS button.",
     "Slightly enlarged the wallet frame and spacing so the larger typography remains clean rather than cramped.",
