@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.14";
+  const VERSION = "0.10.15";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -826,12 +826,47 @@
       </main>
 
       <aside class="cd2-right">
-        <section class="cd2-bus-panel">
-          <div class="cd2-subhead">DECK STATUS</div>
-          <div class="cd2-right-stat"><span>RAM</span><b>${m.currentRam}/${m.maxRam}</b></div>
-          <div class="cd2-right-stat"><span>LOADED</span><b>${m.loaded.length}</b></div>
-          <div class="cd2-right-stat"><span>CAPACITY</span><b>${m.slots||"—"}</b></div>
-          <div class="cd2-right-stat"><span>QH DC</span><b>${m.deck?m.dc:"—"}</b></div>
+        <section class="cd2-bus-panel cd2-net-telemetry ${m.deck ? "is-online" : "is-offline"}">
+          <div class="cd2-net-head">
+            <div>
+              <div class="cd2-subhead">NETWORK TELEMETRY</div>
+              <small>NEURAL BUS // LIVE ROUTING</small>
+            </div>
+            <b>${m.deck ? "LINK ONLINE" : "LINK OFFLINE"}</b>
+          </div>
+
+          <div class="cd2-net-stage" aria-label="Cyberdeck network telemetry">
+            <svg class="cd2-net-svg" viewBox="0 0 320 176" preserveAspectRatio="none" aria-hidden="true">
+              <path class="cd2-net-path is-a" d="M38 88 C82 88 86 42 138 42" />
+              <path class="cd2-net-path is-b" d="M138 42 C190 42 190 88 230 88" />
+              <path class="cd2-net-path is-c" d="M138 42 C182 42 170 136 230 136" />
+
+              <circle class="cd2-net-node is-operator" cx="38" cy="88" r="8" />
+              <circle class="cd2-net-node is-deck" cx="138" cy="42" r="9" />
+              <circle class="cd2-net-node is-software" cx="230" cy="88" r="8" />
+              <circle class="cd2-net-node is-scene" cx="230" cy="136" r="8" />
+
+              <circle class="cd2-net-packet is-p1" r="3">
+                <animateMotion dur="2.6s" repeatCount="indefinite"
+                  path="M38 88 C82 88 86 42 138 42" />
+              </circle>
+              <circle class="cd2-net-packet is-p2" r="3">
+                <animateMotion dur="3.0s" begin="-1.1s" repeatCount="indefinite"
+                  path="M138 42 C190 42 190 88 230 88" />
+              </circle>
+              <circle class="cd2-net-packet is-p3" r="3">
+                <animateMotion dur="3.4s" begin="-1.8s" repeatCount="indefinite"
+                  path="M138 42 C182 42 170 136 230 136" />
+              </circle>
+            </svg>
+
+            <span class="cd2-net-label is-operator">OPERATOR</span>
+            <span class="cd2-net-label is-deck">DECK</span>
+            <span class="cd2-net-label is-software">SOFTWARE</span>
+            <span class="cd2-net-label is-scene">SCENE LINK</span>
+
+            <i class="cd2-net-scanline"></i>
+          </div>
         </section>
         <section>
           <div class="cd2-subhead">SUPPORT CHROME</div>
