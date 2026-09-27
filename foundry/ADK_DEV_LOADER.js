@@ -19,6 +19,7 @@
     devices:"foundry/cyberdeck/FEHA_NETWORK_DEVICES.js",
     actions:"foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js",
     approvals:"foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js",
+    camera:"foundry/cyberdeck/FEHA_CAMERA_FEEDS.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js"
   };
 
@@ -120,6 +121,7 @@
     evaluate(source.devices,files.devices);
     evaluate(source.actions,files.actions);
     evaluate(source.approvals,files.approvals);
+    evaluate(source.camera,files.camera);
 
     await globalThis.FEHA_CYBER_CORE?.init?.();
 
