@@ -1,8 +1,12 @@
 {
-  "version": "0.10.53",
+  "version": "0.10.54",
   "updated": "2026-09-27",
-  "scope": "remove-market-top-directory-icon",
+  "scope": "adk-playable-roster",
   "notes": [
+    "Locked ADK character selectors to Ponyboy, Derke, Sasha, and Zach only.",
+    "Market, Chrome Manager, and Cyberdeck actor dropdowns now share the same roster sanitizer and reapply it after rerenders.",
+    "Sasha Bogdanov is display-normalized to Sasha throughout ADK UI text, dropdowns, labels, tooltips, and alt text without renaming the underlying Foundry Actor document.",
+    "Cyberdeck actor resolution treats any Sasha-prefixed actor name as the Sasha roster slot.",
     "Removed the redundant top-right Market store/directory icon while preserving the normal in-store DIRECTORY/back navigation.",
     "Removed the redundant CANONICAL CURRENCY / CREDITS footer block from the Credits Wallet.",
     "Increased readability across the entire wallet: larger command header, labels, holder name, account line, live-balance copy, balance amount, edit label/input, synced indicator, close control, and SAVE CREDITS button.",
