@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.25";
+  const VERSION = "0.10.26";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -2032,68 +2032,10 @@
     const m = model(actor);
     const selected = net.selected;
 
-    const toSvgX = value => Number(value) * 10;
-    const toSvgY = value => Number(value) * 7.2;
-
-    const linkSvg = net.links.map((link,index) => {
-      const x1 = toSvgX(link.x1).toFixed(1);
-      const y1 = toSvgY(link.y1).toFixed(1);
-      const x2 = toSvgX(link.x2).toFixed(1);
-      const y2 = toSvgY(link.y2).toFixed(1);
-
-      const relation =
-        link.relation ? " is-"+link.relation : "";
-
-      const selectedClass =
-        link.selected ? " is-selected-route" : "";
-
-      const base =
-        '<line class="jack-net-line is-'+link.kind+relation+selectedClass+
-        '" data-link-target="'+esc(link.targetId ?? "")+
-        '" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" />';
-
-      const packetCount = link.selected ? 2 : 1;
-      const duration =
-        link.selected ? 1.65 :
-        link.kind === "backbone" ? 2.5 :
-        link.kind === "endpoint" ? 2.9 :
-        3.7;
-
-      const packets = Array.from({length:packetCount},(_,packetIndex) => {
-        const delay = -((index * .23) + (packetIndex * duration/packetCount)).toFixed(2);
-        return (
-          '<circle class="jack-packet is-'+link.kind+selectedClass+
-          '" data-link-target="'+esc(link.targetId ?? "")+
-          '" r="'+(link.selected ? "3.2" : "2.0")+'">'+
-            '<animate attributeName="cx" values="'+x1+';'+x2+'" dur="'+duration+
-            's" begin="'+delay+'s" repeatCount="indefinite" />'+
-            '<animate attributeName="cy" values="'+y1+';'+y2+'" dur="'+duration+
-            's" begin="'+delay+'s" repeatCount="indefinite" />'+
-            '<animate attributeName="opacity" values="0;.9;.9;0" dur="'+duration+
-            's" begin="'+delay+'s" repeatCount="indefinite" />'+
-          '</circle>'
-        );
-      }).join("");
-
-      return base + packets;
-    }).join("");
-
-    const relays = net.relays.map(relay =>
-      '<div class="jack-relay is-'+relay.kind+
-      '" data-jack-anchor-x="'+Number(relay.x).toFixed(4)+
-      '" data-jack-anchor-y="'+Number(relay.y).toFixed(4)+
-      '" style="--jack-x:'+relay.x+
-      '%;--jack-y:'+relay.y+'%;--relay-delay:'+relay.pulse+'s">'+
-        '<span class="jack-relay-core"><i></i></span>'+
-        '<small>'+esc(relay.label)+'</small>'+
-        '<em>'+(
-          relay.kind === "gateway" ? "UPLINK" :
-          relay.kind === "subnet" ? "SUBNET" :
-          relay.kind === "edge" ? "EDGE" :
-          "RELAY"
-        )+'</em>'+
-      '</div>'
-    ).join("");
+    // 0.10.26 visual topology simplification:
+    // keep relay/link data in sceneModel for later, but render none of it now.
+    const linkSvg = "";
+    const relays = "";
 
     const nodes = net.nodes.map((n,i) =>
       '<button class="jack-node is-'+n.relation+(n.targeted?' is-targeted':'')+
@@ -2168,34 +2110,8 @@
             : ''
           }
 
-          <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">
-            ${net.nodes.map(node =>
-              '<line class="jack-card-leader is-'+node.relation+(node.targeted?' is-targeted':'')+
-              '" data-card-leader="'+esc(node.id)+
-              '" x1="'+(node.x*10).toFixed(2)+
-              '" y1="'+(node.y*7.2).toFixed(2)+
-              '" x2="'+(node.x*10).toFixed(2)+
-              '" y2="'+(node.y*7.2).toFixed(2)+'" />'
-            ).join("")}
-            ${net.devices.map(device =>
-              '<line class="jack-card-leader is-device" data-card-leader="device:'+esc(device.id)+
-              '" x1="'+(Number(device.x)*10).toFixed(2)+
-              '" y1="'+(Number(device.y)*7.2).toFixed(2)+
-              '" x2="'+(Number(device.x)*10).toFixed(2)+
-              '" y2="'+(Number(device.y)*7.2).toFixed(2)+'" />'
-            ).join("")}
-            ${linkSvg}
-          </svg>
 
-          ${net.nodes.map(node =>
-            '<span class="jack-token-anchor is-'+node.relation+(node.targeted?' is-targeted':'')+
-            '" style="--jack-x:'+node.x.toFixed(2)+'%;--jack-y:'+node.y.toFixed(2)+
-            '%" data-jack-anchor-x="'+node.x.toFixed(4)+
-            '" data-jack-anchor-y="'+node.y.toFixed(4)+
-            '" data-token-id="'+esc(node.id)+'"></span>'
-          ).join("")}
 
-          ${relays}
 
           <div class="jack-operator"
             style="--jack-x:${net.operator.x.toFixed(2)}%;--jack-y:${net.operator.y.toFixed(2)}%"
@@ -2221,7 +2137,7 @@
 
         <div class="jack-net-caption">
           <small>TOPOLOGY // WHEEL = ZOOM // RMB DRAG = PAN</small>
-          <b>${net.relays.length} RELAYS // ${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
+          <b>${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
         </div>
 
         <div class="jack-lock-readout">
