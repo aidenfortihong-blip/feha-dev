@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.21";
+  const VERSION = "0.10.22";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1166,39 +1166,12 @@
       y:centroid.y-operator.y
     };
 
-    const rawGatewayLength = Math.hypot(
-      gatewayVector.x,
-      gatewayVector.y
-    );
-
-    const gatewayDirection =
-      rawGatewayLength > 1
-        ? {
-            x:gatewayVector.x/rawGatewayLength,
-            y:gatewayVector.y/rawGatewayLength
-          }
-        : {x:1,y:-.25};
-
-    const gatewayDistance = clamp(
-      rawGatewayLength*.38,
-      14,
-      24
-    );
-
     const gateway = addRelay({
       id:"relay-gateway",
       kind:"gateway",
       label:"SCENE GATE",
-      x:clamp(
-        operator.x + gatewayDirection.x*gatewayDistance,
-        7,
-        93
-      ),
-      y:clamp(
-        operator.y + gatewayDirection.y*gatewayDistance,
-        8,
-        92
-      ),
+      x:clamp(operator.x + gatewayVector.x*.28,7,93),
+      y:clamp(operator.y + gatewayVector.y*.28,8,92),
       pulse:0
     });
 
@@ -1216,27 +1189,17 @@
       const side = node.index % 2 ? 1 : -1;
       const offset = Math.min(5.5,2.4 + length*.035) * side;
 
-      const relayDistance = clamp(
-        length*.62,
-        18,
-        44
-      );
-
       const relay = addRelay({
         id:"relay-endpoint-"+node.index,
         kind:"relay",
         label:"RLY-"+String(node.index+1).padStart(2,"0"),
         x:clamp(
-          operator.x +
-          (dx/length)*relayDistance +
-          perpendicular.x*offset,
+          operator.x + dx*.62 + perpendicular.x*offset,
           5,
           95
         ),
         y:clamp(
-          operator.y +
-          (dy/length)*relayDistance +
-          perpendicular.y*offset,
+          operator.y + dy*.62 + perpendicular.y*offset,
           6,
           94
         ),
@@ -1513,39 +1476,34 @@
       world.style.setProperty("--jack-zoom",String(state.zoom));
       const zoom = Math.max(1,state.zoom);
 
-      // Screen-space targets:
-      // - cards shrink only mildly at deep zoom for spatial precision
-      // - relays remain nearly constant so labels stay readable
-      // - operator shrinks modestly
-      // - anchors stay constant
-      const cardScreenScale = Math.max(
+      // Pure visual compensation only. These values MUST NOT alter topology
+      // coordinates or collision placement.
+      //
+      // Because the entire world already scales by zoom, a factor below 1/zoom
+      // makes semantic UI shrink slightly as the user zooms deeper.
+      const precision = Math.max(
+        .72,
+        1-(zoom-1)*.10
+      );
+
+      const relayReadability = Math.max(
         .88,
-        1-(zoom-1)*.06
-      );
-
-      const relayScreenScale = Math.max(
-        .96,
-        1-(zoom-1)*.02
-      );
-
-      const operatorScreenScale = Math.max(
-        .90,
-        1-(zoom-1)*.05
+        1-(zoom-1)*.035
       );
 
       world.style.setProperty(
         "--jack-card-scale",
-        String(cardScreenScale/zoom)
+        String(precision/zoom)
       );
 
       world.style.setProperty(
         "--jack-relay-scale",
-        String(relayScreenScale/zoom)
+        String(relayReadability/zoom)
       );
 
       world.style.setProperty(
         "--jack-operator-scale",
-        String(operatorScreenScale/zoom)
+        String(Math.max(.80,1-(zoom-1)*.07)/zoom)
       );
 
       world.style.setProperty(
@@ -1553,10 +1511,9 @@
         String(1/zoom)
       );
 
-      // Legacy alias for any older selector still referencing this variable.
       world.style.setProperty(
         "--jack-ui-scale",
-        String(cardScreenScale/zoom)
+        String(precision/zoom)
       );
       world.style.setProperty("--jack-pan-x",state.panX+"px");
       world.style.setProperty("--jack-pan-y",state.panY+"px");
@@ -1713,7 +1670,7 @@
         right:x+rw*.58,
         top:y-rh*.60,
         bottom:y+rh*.60,
-        weight:1.35
+        weight:.22
       });
     }
 
