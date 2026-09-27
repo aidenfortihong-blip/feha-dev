@@ -128,6 +128,24 @@
 
     await globalThis.FEHA_CYBER_CORE?.init?.();
 
+    const requiredModules = [
+      "devices",
+      "deviceActions",
+      "deviceApprovals",
+      "cameraPlacement"
+    ];
+
+    const missingModules = requiredModules.filter(
+      name => !globalThis.FEHA_CYBER_CORE?.module?.(name)
+    );
+
+    if (missingModules.length) {
+      throw new Error(
+        "Cyberdeck module registration failed: " +
+        missingModules.join(", ")
+      );
+    }
+
     evaluate(source.v3,files.v3);
 
     const version =
