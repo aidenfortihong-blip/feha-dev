@@ -9306,3 +9306,40 @@ body > #feha-jackin-overlay {
   color:#fff !important;
   background:rgb(var(--jack-mag)) !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.34 DEFERRED QUICKHACK RAM COMMIT
+   APPLY DAMAGE / APPLY EFFECT are the only RAM-spending actions.
+   ========================================================================== */
+
+#feha-jackin-overlay .qh-resolution-actions {
+  grid-template-columns:220px 220px 240px !important;
+  gap:12px !important;
+}
+
+#feha-jackin-overlay .qh-resolution-actions .qh-apply-effect {
+  color:#050708 !important;
+  background:rgb(var(--jack-yellow)) !important;
+  border:1px solid rgba(255,244,180,.72) !important;
+  font-weight:900 !important;
+}
+
+#feha-jackin-overlay .qh-resolution-actions .qh-apply-effect:hover:not(:disabled) {
+  filter:brightness(1.08) !important;
+  box-shadow:0 0 24px rgba(var(--jack-yellow),.16) !important;
+}
+
+#feha-jackin-overlay .qh-resolution-actions .qh-apply-effect:disabled {
+  opacity:.56 !important;
+}
+
+@media(max-width:1200px) {
+  #feha-jackin-overlay .qh-resolution-actions {
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  #feha-jackin-overlay .qh-resolution-actions .qh-apply-effect {
+    grid-column:1 / -1 !important;
+  }
+}
