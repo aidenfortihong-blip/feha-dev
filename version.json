@@ -1,8 +1,12 @@
 {
-  "version": "0.10.45",
+  "version": "0.10.46",
   "updated": "2026-09-27",
-  "scope": "market-ui-rebuild",
+  "scope": "market-family-cohesion-sounds",
   "notes": [
+    "Pulled Market closer to the FEHA application family without copying the Cyberdeck terminal skin: clipped geometry, harder black/cyan shell, yellow action language, red currency emphasis, diagnostic microtext, and restrained scan motion.",
+    "Market BUY actions are now consistently yellow while item Mk tier color remains on item framing/badges.",
+    "Added Market click sounds with no hover audio. Store entry/details/wallet use drawer cues; tier/category/manufacturer/slot controls use system cues; Mk/pagination/general controls use lighter UI cues; reroll uses scan; buy uses install; reset uses remove; close/back use drawer_close.",
+    "Market sound binding lives outside the Market render tree so it survives directory/store/filter rerenders.",
     "Rebuilt the ADK Market presentation layer while preserving the existing Market 1.6 data, stock, purchase, wallet, capacity, permission, reroll, filtering, pagination, and DETAILS behavior.",
     "Replaced the old pink/brown Market skin with a distinct dark Night Market application using cyan navigation, red currency emphasis, vendor-tier accents, and per-storefront identities.",
     "Reworked the directory hierarchy, vendor clearance selector, six storefront cards, header controls, storefront sidebar, store header, item cards, purchase states, empty state, and pagination.",
