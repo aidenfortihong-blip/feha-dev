@@ -1758,7 +1758,7 @@
       if (isPanButton) {
         if (
           event.target?.closest?.(
-            "button,input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.jack-device-author-panel"
+            "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.jack-device-author-panel"
           )
         ) {
           return;
