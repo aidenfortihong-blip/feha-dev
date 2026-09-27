@@ -7822,3 +7822,1231 @@
     min-width: 300px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA MARKET // 0.10.45 NIGHT MARKET REBUILD
+   Presentation-only rebuild for #adk-market-15.
+   Stock, filters, wallet, capacity, purchases, details, tiers, rerolls,
+   pagination and Trusted Player permissions remain owned by ADK Market 1.6.
+   ========================================================================== */
+
+body #adk-market-15#adk-market-15 {
+  --mx-bg:#07090f;
+  --mx-panel:#0b0e16;
+  --mx-panel-2:#10141f;
+  --mx-panel-3:#151927;
+  --mx-line:#273246;
+  --mx-line-soft:#1b2434;
+  --mx-text:#f3f6fb;
+  --mx-muted:#8a96aa;
+  --mx-dim:#566277;
+  --mx-cyan:#59d9ff;
+  --mx-red:#ff536a;
+  --mx-gold:#f3c86c;
+
+  width:min(1500px,97vw)!important;
+  height:min(920px,95vh)!important;
+  min-width:900px!important;
+  min-height:620px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  color:var(--mx-text)!important;
+  color-scheme:dark!important;
+  background:
+    radial-gradient(circle at 82% -8%,rgba(89,217,255,.08),transparent 30%),
+    radial-gradient(circle at 8% 105%,rgba(255,83,106,.07),transparent 34%),
+    linear-gradient(180deg,#080b12 0%,#05070c 100%)!important;
+  border:1px solid #31435c!important;
+  border-top:2px solid var(--mx-cyan)!important;
+  border-radius:0!important;
+  box-shadow:
+    0 34px 110px rgba(0,0,0,.82),
+    0 0 0 1px rgba(89,217,255,.06),
+    0 0 52px rgba(89,217,255,.055)!important;
+  font-family:Inter,"Segoe UI",Arial,sans-serif!important;
+  container-type:inline-size!important;
+  isolation:isolate;
+}
+
+body #adk-market-15#adk-market-15::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.27;
+  background:
+    linear-gradient(rgba(89,217,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(89,217,255,.024) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(to bottom,transparent 0,#000 15%,#000 88%,transparent 100%);
+}
+
+body #adk-market-15#adk-market-15 *,
+body #adk-market-15#adk-market-15 *::before,
+body #adk-market-15#adk-market-15 *::after {
+  box-sizing:border-box;
+}
+
+body #adk-market-15#adk-market-15 button,
+body #adk-market-15#adk-market-15 input,
+body #adk-market-15#adk-market-15 select {
+  font-family:inherit!important;
+}
+
+body #adk-market-15#adk-market-15 button {
+  text-shadow:none!important;
+  border-radius:0!important;
+  transition:
+    border-color .16s ease,
+    background .16s ease,
+    color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease!important;
+}
+
+body #adk-market-15#adk-market-15 button:hover:not(:disabled) {
+  filter:none!important;
+}
+
+body #adk-market-15#adk-market-15 :is(button,input,select):focus-visible {
+  outline:2px solid var(--mx-cyan)!important;
+  outline-offset:2px!important;
+}
+
+body #adk-market-15#adk-market-15 option {
+  color:#edf4ff!important;
+  background:#101522!important;
+}
+
+/* ---------- HEADER ---------- */
+
+body #adk-market-15#adk-market-15 .market-titlebar {
+  min-height:66px!important;
+  height:66px!important;
+  flex:0 0 66px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  padding:0 20px!important;
+  background:
+    linear-gradient(90deg,rgba(89,217,255,.035),transparent 28%),
+    #090c14f5!important;
+  border:0!important;
+  border-bottom:1px solid #26364c!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.22)!important;
+}
+
+body #adk-market-15#adk-market-15 .market-titlebar::after {
+  content:"";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:-1px;
+  height:1px;
+  pointer-events:none;
+  background:linear-gradient(90deg,var(--mx-cyan),rgba(89,217,255,.08) 34%,transparent 72%);
+}
+
+body #adk-market-15#adk-market-15 .market-brand {
+  display:flex!important;
+  align-items:baseline!important;
+  gap:9px!important;
+  min-width:max-content;
+}
+
+body #adk-market-15#adk-market-15 .brand-prefix {
+  color:var(--mx-cyan)!important;
+  font:800 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:1.5px!important;
+}
+
+body #adk-market-15#adk-market-15 .brand-name {
+  color:#fff!important;
+  font-size:24px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  letter-spacing:3.8px!important;
+}
+
+body #adk-market-15#adk-market-15 .brand-version {
+  color:#607086!important;
+  font:800 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+
+body #adk-market-15#adk-market-15 .top-actions {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  min-width:0!important;
+}
+
+body #adk-market-15#adk-market-15 :is(.top-select,.wallet-pill,.cap-pill,.icon-btn) {
+  height:38px!important;
+  border:1px solid #334159!important;
+  background:#0d111b!important;
+  color:#dbe4f1!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.018)!important;
+}
+
+body #adk-market-15#adk-market-15 .top-select {
+  width:190px!important;
+  min-width:150px!important;
+  padding:0 32px 0 12px!important;
+  color:#f1f4fa!important;
+  border-color:#3a455c!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+
+body #adk-market-15#adk-market-15 .wallet-pill {
+  min-width:130px!important;
+  padding:0 18px!important;
+  color:#ff6b7d!important;
+  border-color:rgba(255,83,106,.48)!important;
+  border-left:3px solid var(--mx-red)!important;
+  background:
+    linear-gradient(90deg,rgba(255,83,106,.11),transparent 72%),
+    #100e16!important;
+  font:900 13px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:.5px!important;
+}
+
+body #adk-market-15#adk-market-15 .wallet-pill:hover {
+  color:#fff!important;
+  border-color:var(--mx-red)!important;
+  box-shadow:0 0 20px rgba(255,83,106,.10)!important;
+}
+
+body #adk-market-15#adk-market-15 .cap-pill {
+  min-width:102px!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#d5dce8!important;
+  font:900 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:.3px!important;
+}
+
+body #adk-market-15#adk-market-15 .icon-btn {
+  width:40px!important;
+  min-width:40px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#9aa8bc!important;
+}
+
+body #adk-market-15#adk-market-15 .icon-btn:hover {
+  color:#fff!important;
+  border-color:var(--mx-cyan)!important;
+  background:rgba(89,217,255,.07)!important;
+}
+
+body #adk-market-15#adk-market-15 .close-market:hover {
+  color:#fff!important;
+  border-color:var(--mx-red)!important;
+  background:rgba(255,83,106,.10)!important;
+}
+
+body #adk-market-15#adk-market-15 .market-content {
+  height:auto!important;
+  min-height:0!important;
+  flex:1 1 auto!important;
+  overflow:hidden!important;
+}
+
+/* ---------- DIRECTORY ---------- */
+
+body #adk-market-15#adk-market-15 .directory-view {
+  height:100%!important;
+  overflow:auto!important;
+  padding:26px 28px 30px!important;
+  background:transparent!important;
+}
+
+body #adk-market-15#adk-market-15 .directory-shell {
+  width:min(1280px,100%)!important;
+  margin:0 auto!important;
+}
+
+body #adk-market-15#adk-market-15 .directory-heading {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:end!important;
+  gap:28px!important;
+  margin:0 0 22px!important;
+  padding:0 0 20px!important;
+  border-bottom:1px solid #263247!important;
+}
+
+body #adk-market-15#adk-market-15 .eyebrow {
+  color:var(--mx-cyan)!important;
+  font:900 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:2.1px!important;
+  text-transform:uppercase!important;
+}
+
+body #adk-market-15#adk-market-15 .directory-heading h1 {
+  margin:8px 0 0!important;
+  color:#fff!important;
+  font-size:36px!important;
+  font-weight:950!important;
+  line-height:.96!important;
+  letter-spacing:-1px!important;
+}
+
+body #adk-market-15#adk-market-15 .directory-heading p {
+  max-width:780px!important;
+  margin:11px 0 0!important;
+  color:#8793a6!important;
+  font-size:12px!important;
+  line-height:1.55!important;
+}
+
+body #adk-market-15#adk-market-15 .directory-tier-display {
+  min-width:170px!important;
+  padding:13px 16px!important;
+  text-align:right!important;
+  color:#f8fbff!important;
+  background:
+    linear-gradient(90deg,transparent,rgba(155,133,239,.10)),
+    #0b0e16!important;
+  border:1px solid #283349!important;
+  border-right:3px solid var(--vendor-accent)!important;
+  border-left:0!important;
+  font:900 14px/1.1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+
+body #adk-market-15#adk-market-15 .directory-tier-display span {
+  display:block!important;
+  margin-top:5px!important;
+  color:var(--vendor-accent)!important;
+  font-size:9px!important;
+  letter-spacing:1.2px!important;
+}
+
+/* ---------- CLEARANCE SELECTOR ---------- */
+
+body #adk-market-15#adk-market-15 .tier-selector {
+  display:grid!important;
+  grid-template-columns:230px minmax(0,1fr)!important;
+  gap:16px!important;
+  align-items:stretch!important;
+  padding:0!important;
+  border:1px solid #28354a!important;
+  background:#0a0d15!important;
+  box-shadow:none!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-info {
+  padding:17px 18px!important;
+  border-right:1px solid #28354a!important;
+  background:
+    linear-gradient(130deg,rgba(89,217,255,.055),transparent 62%),
+    #0d111b!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-current {
+  margin-top:7px!important;
+  color:#fff!important;
+  font-size:15px!important;
+  font-weight:900!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-current span {
+  margin-left:6px!important;
+  color:var(--vendor-accent)!important;
+  font-size:9px!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-help {
+  margin-top:7px!important;
+  color:#718096!important;
+  font-size:10px!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-buttons {
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:0!important;
+  padding:8px!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice {
+  position:relative!important;
+  min-width:0!important;
+  height:58px!important;
+  padding:8px 6px!important;
+  color:#8f9aab!important;
+  background:#0e121c!important;
+  border:0!important;
+  border-right:1px solid #263145!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice:last-child {
+  border-right:0!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice strong {
+  display:block!important;
+  color:inherit!important;
+  font:900 14px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice span {
+  display:block!important;
+  margin-top:6px!important;
+  color:#657186!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.7px!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice:hover {
+  color:#e9eff8!important;
+  background:#141a26!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice.active {
+  color:#fff!important;
+  background:
+    linear-gradient(180deg,var(--vendor-glow),transparent),
+    #131826!important;
+  border-bottom:3px solid var(--vendor-accent)!important;
+  box-shadow:inset 0 0 20px var(--vendor-glow)!important;
+}
+
+body #adk-market-15#adk-market-15 .tier-choice.active span {
+  color:var(--vendor-accent)!important;
+}
+
+/* ---------- STOREFRONT DIRECTORY CARDS ---------- */
+
+body #adk-market-15#adk-market-15 .shop-grid {
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin-top:16px!important;
+  counter-reset:vendor!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-card {
+  --shop-accent:#59d9ff;
+  position:relative!important;
+  counter-increment:vendor!important;
+  min-height:180px!important;
+  display:grid!important;
+  grid-template-columns:54px minmax(0,1fr)!important;
+  grid-template-rows:1fr auto!important;
+  gap:0 16px!important;
+  align-items:start!important;
+  padding:20px 20px 15px!important;
+  overflow:hidden!important;
+  text-align:left!important;
+  color:#eef3fa!important;
+  background:
+    linear-gradient(135deg,color-mix(in srgb,var(--shop-accent) 8%,transparent),transparent 46%),
+    #0d1019!important;
+  border:1px solid #2b3447!important;
+  border-left:3px solid var(--shop-accent)!important;
+  box-shadow:none!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-card[data-shop="street"] {--shop-accent:#59d9ff}
+body #adk-market-15#adk-market-15 .shop-card[data-shop="arms"] {--shop-accent:#ff586d}
+body #adk-market-15#adk-market-15 .shop-card[data-shop="chrome"] {--shop-accent:#4fa8ff}
+body #adk-market-15#adk-market-15 .shop-card[data-shop="net"] {--shop-accent:#a788ff}
+body #adk-market-15#adk-market-15 .shop-card[data-shop="black"] {--shop-accent:#ff9c58}
+body #adk-market-15#adk-market-15 .shop-card[data-shop="corporate"] {--shop-accent:#e9c45f}
+
+body #adk-market-15#adk-market-15 .shop-card::before {
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  width:auto!important;
+  opacity:.42!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--shop-accent) 7%,transparent),transparent 28%)!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-card::after {
+  content:"0" counter(vendor)!important;
+  position:absolute!important;
+  right:12px!important;
+  top:8px!important;
+  color:color-mix(in srgb,var(--shop-accent) 17%,transparent)!important;
+  font:900 45px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  pointer-events:none!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-card:hover {
+  transform:translateY(-2px)!important;
+  border-color:color-mix(in srgb,var(--shop-accent) 70%,#33415a)!important;
+  border-left-color:var(--shop-accent)!important;
+  background:
+    linear-gradient(135deg,color-mix(in srgb,var(--shop-accent) 12%,transparent),transparent 48%),
+    #111520!important;
+  box-shadow:
+    0 12px 26px rgba(0,0,0,.34),
+    inset 0 0 28px color-mix(in srgb,var(--shop-accent) 5%,transparent)!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-icon {
+  width:54px!important;
+  height:54px!important;
+  display:grid!important;
+  place-items:center!important;
+  color:var(--shop-accent)!important;
+  background:color-mix(in srgb,var(--shop-accent) 7%,#0b0e16)!important;
+  border:1px solid color-mix(in srgb,var(--shop-accent) 52%,#29354a)!important;
+  box-shadow:inset 0 0 20px color-mix(in srgb,var(--shop-accent) 5%,transparent)!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-icon i {
+  font-size:21px!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-copy {
+  min-width:0!important;
+  position:relative!important;
+  z-index:1!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-kicker {
+  color:var(--shop-accent)!important;
+  font:900 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:1.1px!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-title {
+  margin-top:7px!important;
+  color:#fff!important;
+  font-size:20px!important;
+  font-weight:950!important;
+  line-height:1.05!important;
+  letter-spacing:.1px!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-desc {
+  margin-top:8px!important;
+  max-width:90%!important;
+  color:#8d98aa!important;
+  font-size:11px!important;
+  line-height:1.45!important;
+}
+
+body #adk-market-15#adk-market-15 .shop-footer {
+  grid-column:1 / -1!important;
+  align-self:end!important;
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  margin-top:15px!important;
+  padding-top:11px!important;
+  color:#677489!important;
+  border:0!important;
+  border-top:1px solid #263247!important;
+  font:800 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+
+body #adk-market-15#adk-market-15 .enter {
+  color:var(--shop-accent)!important;
+  font-weight:900!important;
+  letter-spacing:.7px!important;
+}
+
+/* ---------- STOREFRONT LAYOUT ---------- */
+
+body #adk-market-15#adk-market-15 .store-layout {
+  height:100%!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:244px minmax(0,1fr)!important;
+  overflow:hidden!important;
+  background:#070910!important;
+}
+
+body #adk-market-15#adk-market-15 .market-sidebar {
+  height:100%!important;
+  min-height:0!important;
+  overflow:auto!important;
+  padding:18px 15px!important;
+  background:
+    linear-gradient(180deg,rgba(89,217,255,.025),transparent 22%),
+    #090c13!important;
+  border:0!important;
+  border-right:1px solid #273247!important;
+}
+
+body #adk-market-15#adk-market-15 .sidebar-section {
+  margin:0 0 17px!important;
+}
+
+body #adk-market-15#adk-market-15 .sidebar-section label {
+  display:block!important;
+  margin:0 0 7px!important;
+  color:#728095!important;
+  font:900 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:1.4px!important;
+}
+
+body #adk-market-15#adk-market-15 .search-box {
+  height:39px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  padding:0 10px!important;
+  background:#070a10!important;
+  border:1px solid #334058!important;
+}
+
+body #adk-market-15#adk-market-15 .search-box:focus-within {
+  border-color:var(--mx-cyan)!important;
+  box-shadow:0 0 0 1px rgba(89,217,255,.18)!important;
+}
+
+body #adk-market-15#adk-market-15 .search-box i {
+  color:#66758b!important;
+  font-size:11px!important;
+}
+
+body #adk-market-15#adk-market-15 .search-box input {
+  width:100%!important;
+  height:100%!important;
+  padding:0!important;
+  color:#eef5ff!important;
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  font-size:11px!important;
+  font-weight:700!important;
+}
+
+body #adk-market-15#adk-market-15 .filter-grid {
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:5px!important;
+}
+
+body #adk-market-15#adk-market-15 .filter-chip {
+  min-height:29px!important;
+  padding:5px 9px!important;
+  color:#8d98aa!important;
+  background:#0e121b!important;
+  border:1px solid #2d384c!important;
+  font-size:8px!important;
+  font-weight:900!important;
+}
+
+body #adk-market-15#adk-market-15 .filter-chip:hover {
+  color:#eaf1fb!important;
+  border-color:#52617a!important;
+  background:#141a25!important;
+}
+
+body #adk-market-15#adk-market-15 .filter-chip.active {
+  color:#fff!important;
+  border-color:var(--mx-cyan)!important;
+  background:rgba(89,217,255,.08)!important;
+  box-shadow:inset 2px 0 var(--mx-cyan)!important;
+}
+
+body #adk-market-15#adk-market-15 .mk-filter.active {
+  color:var(--filter-accent)!important;
+  border-color:var(--filter-accent)!important;
+  background:var(--filter-glow)!important;
+  box-shadow:inset 0 -2px var(--filter-accent)!important;
+}
+
+body #adk-market-15#adk-market-15 .side-select {
+  width:100%!important;
+  height:37px!important;
+  padding:0 28px 0 10px!important;
+  color:#dfe7f2!important;
+  background:#0c1019!important;
+  border:1px solid #334058!important;
+  font-size:10px!important;
+  font-weight:800!important;
+}
+
+body #adk-market-15#adk-market-15 .sidebar-footer {
+  padding-top:13px!important;
+  border-top:1px solid #253046!important;
+}
+
+body #adk-market-15#adk-market-15 .reset-btn {
+  width:100%!important;
+  height:35px!important;
+  color:#9aa7b8!important;
+  background:#0d111a!important;
+  border:1px solid #354158!important;
+  font-size:9px!important;
+  font-weight:900!important;
+}
+
+body #adk-market-15#adk-market-15 .reset-btn:hover {
+  color:#fff!important;
+  border-color:#697991!important;
+}
+
+/* ---------- STORE HEADER ---------- */
+
+body #adk-market-15#adk-market-15 .store-main {
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) 52px!important;
+  overflow:hidden!important;
+  background:#070910!important;
+}
+
+body #adk-market-15#adk-market-15 .store-header {
+  min-height:104px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  padding:16px 20px!important;
+  background:
+    linear-gradient(90deg,rgba(89,217,255,.035),transparent 30%),
+    #0c1018!important;
+  border:0!important;
+  border-bottom:1px solid #273247!important;
+}
+
+body #adk-market-15#adk-market-15 .store-heading {
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:15px!important;
+}
+
+body #adk-market-15#adk-market-15 .back-btn {
+  height:38px!important;
+  min-width:96px!important;
+  padding:0 12px!important;
+  color:#cbd5e3!important;
+  background:#0c111b!important;
+  border:1px solid #354159!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:.6px!important;
+}
+
+body #adk-market-15#adk-market-15 .back-btn:hover {
+  color:#fff!important;
+  border-color:var(--mx-cyan)!important;
+  background:rgba(89,217,255,.06)!important;
+}
+
+body #adk-market-15#adk-market-15 .store-heading h1 {
+  margin:6px 0 0!important;
+  color:#fff!important;
+  font-size:27px!important;
+  font-weight:950!important;
+  line-height:1!important;
+  letter-spacing:-.4px!important;
+}
+
+body #adk-market-15#adk-market-15 .store-heading p {
+  margin:7px 0 0!important;
+  max-width:590px!important;
+  color:#8490a3!important;
+  font-size:10px!important;
+  line-height:1.4!important;
+}
+
+body #adk-market-15#adk-market-15 .store-status {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+  flex:0 0 auto!important;
+}
+
+body #adk-market-15#adk-market-15 #reroll-stock {
+  min-width:128px!important;
+  height:38px!important;
+  padding:0 13px!important;
+  color:#e9d59b!important;
+  background:#15140f!important;
+  border:1px solid rgba(243,200,108,.46)!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:.7px!important;
+}
+
+body #adk-market-15#adk-market-15 #reroll-stock:hover {
+  color:#fff4cf!important;
+  border-color:var(--mx-gold)!important;
+  background:rgba(243,200,108,.09)!important;
+}
+
+body #adk-market-15#adk-market-15 .vendor-tier {
+  min-width:118px!important;
+  padding:8px 12px!important;
+  text-align:right!important;
+  color:#f1f5fb!important;
+  background:#0e121c!important;
+  border:1px solid #303c51!important;
+  border-right:3px solid var(--vendor-accent)!important;
+  font:900 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+
+body #adk-market-15#adk-market-15 .vendor-tier span {
+  display:block!important;
+  margin-top:5px!important;
+  color:var(--vendor-accent)!important;
+  font-size:8px!important;
+  letter-spacing:.8px!important;
+}
+
+body #adk-market-15#adk-market-15 .match-count {
+  min-width:66px!important;
+  text-align:center!important;
+}
+
+body #adk-market-15#adk-market-15 .match-count strong {
+  display:block!important;
+  color:var(--mx-red)!important;
+  font:900 26px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+
+body #adk-market-15#adk-market-15 .match-count span {
+  display:block!important;
+  margin-top:5px!important;
+  color:#778398!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:1px!important;
+}
+
+/* ---------- RESULTS / ITEM CARDS ---------- */
+
+body #adk-market-15#adk-market-15 .results-scroll {
+  min-height:0!important;
+  overflow:auto!important;
+  padding:14px!important;
+  background:
+    linear-gradient(rgba(89,217,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(89,217,255,.014) 1px,transparent 1px),
+    #080a10!important;
+  background-size:32px 32px,32px 32px,auto!important;
+}
+
+body #adk-market-15#adk-market-15 .results-grid {
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:12px!important;
+  align-content:start!important;
+}
+
+body #adk-market-15#adk-market-15 .item-card {
+  min-width:0!important;
+  min-height:386px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  background:#0d1018!important;
+  border:1px solid #2c374a!important;
+  border-top:2px solid color-mix(in srgb,var(--item-accent) 72%,#2c374a)!important;
+  box-shadow:none!important;
+}
+
+body #adk-market-15#adk-market-15 .item-card:hover {
+  transform:translateY(-1px)!important;
+  border-color:color-mix(in srgb,var(--item-accent) 62%,#354157)!important;
+  border-top-color:var(--item-accent)!important;
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.32),
+    0 0 0 1px var(--item-glow)!important;
+}
+
+body #adk-market-15#adk-market-15 .item-art-wrap {
+  position:relative!important;
+  width:100%!important;
+  height:174px!important;
+  flex:0 0 174px!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-bottom:1px solid #283449!important;
+  background:
+    radial-gradient(circle at 50% 48%,var(--item-glow),transparent 56%),
+    linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),
+    #090c13!important;
+  background-size:auto,28px 28px,28px 28px,auto!important;
+}
+
+body #adk-market-15#adk-market-15 .item-art {
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  border:0!important;
+  filter:drop-shadow(0 12px 16px rgba(0,0,0,.44))!important;
+  transform:scale(.96)!important;
+  transition:transform .18s ease!important;
+}
+
+body #adk-market-15#adk-market-15 .item-art-wrap:hover .item-art {
+  transform:scale(1.02)!important;
+}
+
+body #adk-market-15#adk-market-15 .item-mk {
+  position:absolute!important;
+  left:9px!important;
+  top:9px!important;
+  padding:4px 7px!important;
+  color:var(--item-accent)!important;
+  background:#090c13e8!important;
+  border:1px solid var(--item-accent)!important;
+  font:900 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:.5px!important;
+  box-shadow:0 0 12px var(--item-glow)!important;
+}
+
+body #adk-market-15#adk-market-15 .item-body {
+  flex:1 1 auto!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  padding:13px 14px 14px!important;
+}
+
+body #adk-market-15#adk-market-15 .item-title-row {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:start!important;
+  gap:10px!important;
+}
+
+body #adk-market-15#adk-market-15 .item-name {
+  min-width:0!important;
+  padding:0!important;
+  text-align:left!important;
+  color:#f5f8fc!important;
+  background:transparent!important;
+  border:0!important;
+  font-size:15px!important;
+  font-weight:950!important;
+  line-height:1.16!important;
+}
+
+body #adk-market-15#adk-market-15 .item-name:hover {
+  color:var(--item-accent)!important;
+}
+
+body #adk-market-15#adk-market-15 .item-price {
+  color:#ff6c7d!important;
+  font:900 12px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  white-space:nowrap!important;
+}
+
+body #adk-market-15#adk-market-15 .item-maker {
+  margin-top:7px!important;
+  min-height:22px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:0 8px!important;
+  color:#aebbd0!important;
+  background:#0b0f17!important;
+  border:1px solid #2c384c!important;
+  border-left:2px solid var(--item-accent)!important;
+  font:800 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:.45px!important;
+}
+
+body #adk-market-15#adk-market-15 .item-tags {
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:4px!important;
+  margin-top:7px!important;
+}
+
+body #adk-market-15#adk-market-15 .item-tags span {
+  padding:3px 6px!important;
+  color:#8794a8!important;
+  background:#0a0d14!important;
+  border:1px solid #293449!important;
+  font-size:8px!important;
+  font-weight:900!important;
+}
+
+body #adk-market-15#adk-market-15 .item-effect {
+  flex:1 1 auto!important;
+  margin:10px 0 12px!important;
+  color:#bdc6d4!important;
+  font-size:11px!important;
+  line-height:1.48!important;
+}
+
+body #adk-market-15#adk-market-15 .item-actions {
+  display:grid!important;
+  grid-template-columns:84px minmax(0,1fr)!important;
+  gap:7px!important;
+  margin-top:auto!important;
+}
+
+body #adk-market-15#adk-market-15 :is(.detail-btn,.buy-btn) {
+  min-height:37px!important;
+  height:37px!important;
+  padding:0 9px!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  letter-spacing:.6px!important;
+  line-height:1!important;
+}
+
+body #adk-market-15#adk-market-15 .detail-btn {
+  color:#c9d4e3!important;
+  background:#0c111a!important;
+  border:1px solid #3a465c!important;
+}
+
+body #adk-market-15#adk-market-15 .detail-btn:hover {
+  color:#fff!important;
+  border-color:var(--mx-cyan)!important;
+  background:rgba(89,217,255,.06)!important;
+}
+
+body #adk-market-15#adk-market-15 .buy-btn {
+  color:#071018!important;
+  background:var(--item-accent)!important;
+  border:1px solid var(--item-accent)!important;
+  box-shadow:0 0 18px var(--item-glow)!important;
+}
+
+body #adk-market-15#adk-market-15 .buy-btn:hover:not(:disabled) {
+  color:#000!important;
+  filter:brightness(1.08)!important;
+  box-shadow:0 0 24px var(--item-glow)!important;
+}
+
+body #adk-market-15#adk-market-15 button:disabled,
+body #adk-market-15#adk-market-15 .buy-btn.disabled {
+  opacity:.56!important;
+  color:#747f90!important;
+  background:#11151e!important;
+  border-color:#303a4b!important;
+  box-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+  cursor:not-allowed!important;
+}
+
+body #adk-market-15#adk-market-15 .empty-state {
+  grid-column:1 / -1!important;
+  min-height:260px!important;
+  display:grid!important;
+  place-items:center!important;
+  align-content:center!important;
+  gap:10px!important;
+  color:#8a96a8!important;
+  background:#0d1018!important;
+  border:1px dashed #354158!important;
+}
+
+body #adk-market-15#adk-market-15 .empty-state i {
+  color:var(--mx-cyan)!important;
+  font-size:26px!important;
+}
+
+body #adk-market-15#adk-market-15 .empty-state strong {
+  color:#e5ebf4!important;
+  font-size:14px!important;
+}
+
+body #adk-market-15#adk-market-15 .empty-state span {
+  max-width:440px!important;
+  text-align:center!important;
+  font-size:11px!important;
+  line-height:1.45!important;
+}
+
+/* ---------- PAGINATION ---------- */
+
+body #adk-market-15#adk-market-15 .pagination {
+  height:52px!important;
+  min-height:52px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:12px!important;
+  padding:0 14px!important;
+  background:#0b0e16!important;
+  border:0!important;
+  border-top:1px solid #273247!important;
+}
+
+body #adk-market-15#adk-market-15 .page-btn {
+  min-width:36px!important;
+  height:34px!important;
+  padding:0 11px!important;
+  color:#bec9d8!important;
+  background:#0e121c!important;
+  border:1px solid #354158!important;
+  font-size:9px!important;
+  font-weight:900!important;
+}
+
+body #adk-market-15#adk-market-15 .page-btn:hover:not(:disabled) {
+  color:#fff!important;
+  border-color:var(--mx-cyan)!important;
+  background:rgba(89,217,255,.06)!important;
+}
+
+body #adk-market-15#adk-market-15 .page-copy {
+  min-width:105px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  color:#d5dce7!important;
+  font:900 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+
+body #adk-market-15#adk-market-15 .page-copy span {
+  color:#69768b!important;
+  font-size:8px!important;
+}
+
+/* Native DETAILS sheets explicitly raised by Market remain visually above it. */
+body:has(#adk-market-15#adk-market-15) [data-adk-market-layer-lock="1"] {
+  border:1px solid #3f5876!important;
+  border-top:2px solid var(--mx-cyan)!important;
+  box-shadow:0 28px 90px rgba(0,0,0,.82),0 0 0 1px rgba(89,217,255,.08)!important;
+}
+
+body:has(#adk-market-15#adk-market-15) [data-adk-market-layer-lock="1"] > .window-header {
+  color:#edf6ff!important;
+  background:#0c111a!important;
+  border-bottom:1px solid #2d3d53!important;
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@container (max-width:1120px) {
+  body #adk-market-15#adk-market-15 .shop-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  body #adk-market-15#adk-market-15 .results-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  body #adk-market-15#adk-market-15 .store-header {
+    flex-wrap:wrap!important;
+  }
+
+  body #adk-market-15#adk-market-15 .store-status {
+    margin-left:auto!important;
+  }
+
+  body #adk-market-15#adk-market-15 .top-select {
+    width:160px!important;
+  }
+}
+
+@container (max-width:820px) {
+  body #adk-market-15#adk-market-15 .market-titlebar {
+    min-height:112px!important;
+    height:auto!important;
+    flex-wrap:wrap!important;
+    align-content:center!important;
+  }
+
+  body #adk-market-15#adk-market-15 .market-content {
+    height:auto!important;
+  }
+
+  body #adk-market-15#adk-market-15 .top-actions {
+    width:100%!important;
+    justify-content:flex-start!important;
+    flex-wrap:wrap!important;
+  }
+
+  body #adk-market-15#adk-market-15 .directory-heading {
+    grid-template-columns:1fr!important;
+  }
+
+  body #adk-market-15#adk-market-15 .directory-tier-display {
+    justify-self:start!important;
+    text-align:left!important;
+    border-left:3px solid var(--vendor-accent)!important;
+    border-right:1px solid #283349!important;
+  }
+
+  body #adk-market-15#adk-market-15 .tier-selector {
+    grid-template-columns:1fr!important;
+  }
+
+  body #adk-market-15#adk-market-15 .tier-info {
+    border-right:0!important;
+    border-bottom:1px solid #28354a!important;
+  }
+
+  body #adk-market-15#adk-market-15 .store-layout {
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:auto!important;
+  }
+
+  body #adk-market-15#adk-market-15 .market-sidebar {
+    height:auto!important;
+    max-height:280px!important;
+    flex:0 0 auto!important;
+    border-right:0!important;
+    border-bottom:1px solid #273247!important;
+  }
+
+  body #adk-market-15#adk-market-15 .store-main {
+    height:auto!important;
+    min-height:520px!important;
+    flex:1 0 auto!important;
+  }
+
+  body #adk-market-15#adk-market-15 .results-scroll {
+    overflow:visible!important;
+  }
+}
+
+@container (max-width:620px) {
+  body #adk-market-15#adk-market-15 .directory-view {
+    padding:18px!important;
+  }
+
+  body #adk-market-15#adk-market-15 .directory-heading h1 {
+    font-size:29px!important;
+  }
+
+  body #adk-market-15#adk-market-15 .shop-grid,
+  body #adk-market-15#adk-market-15 .results-grid {
+    grid-template-columns:1fr!important;
+  }
+
+  body #adk-market-15#adk-market-15 .tier-buttons {
+    grid-template-columns:repeat(5,minmax(74px,1fr))!important;
+    overflow-x:auto!important;
+  }
+
+  body #adk-market-15#adk-market-15 .store-heading {
+    flex-wrap:wrap!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  body #adk-market-15#adk-market-15 *,
+  body #adk-market-15#adk-market-15 *::before,
+  body #adk-market-15#adk-market-15 *::after {
+    animation:none!important;
+    transition:none!important;
+  }
+}
