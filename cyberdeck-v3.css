@@ -5468,11 +5468,11 @@ body > #feha-jackin-overlay {
 
 /* Keep geography visible, but make UI the visual priority. */
 #feha-jackin-overlay .jack-scene-map img {
-  opacity:.36 !important;
+  opacity:.42 !important;
   filter:
-    saturate(.40)
-    brightness(.56)
-    contrast(1.16)
+    saturate(.44)
+    brightness(.62)
+    contrast(1.13)
     hue-rotate(145deg) !important;
 }
 
