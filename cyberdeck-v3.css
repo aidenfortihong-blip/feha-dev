@@ -6986,3 +6986,91 @@ body > #feha-jackin-overlay {
     font-size:10px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.14 NO-SCROLL CENTER FIT
+   Keep loaded software visible and let Software Library consume only leftover height.
+   ========================================================================== */
+
+#feha-cyberdeck-v2.feha-v3 .v3-scroll {
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+  height:100% !important;
+  overflow:hidden !important;
+  padding-right:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-scroll > .v3-section:first-child {
+  flex:0 0 auto !important;
+  min-height:0 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library {
+  flex:1 1 0 !important;
+  min-height:0 !important;
+  margin-top:18px !important;
+  padding-top:18px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-section-head {
+  flex:0 0 auto !important;
+  margin-bottom:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-library-list {
+  flex:1 1 0 !important;
+  min-height:0 !important;
+  height:auto !important;
+  width:100% !important;
+  display:grid !important;
+  align-items:stretch !important;
+  align-content:stretch !important;
+  overflow:hidden !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message {
+  grid-column:1 / -1 !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  max-height:none !important;
+  padding:18px 24px !important;
+  display:grid !important;
+  place-content:center !important;
+  place-items:center !important;
+  overflow:hidden !important;
+  font-size:14px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message::before {
+  margin-bottom:10px !important;
+  font-size:10px !important;
+}
+
+/* Prevent loaded rack from creating a vertical overflow on shorter windows. */
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card,
+#feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot {
+  min-height:172px !important;
+}
+
+@media(max-height:820px) {
+  #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card,
+  #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot {
+    min-height:158px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-library {
+    margin-top:14px !important;
+    padding-top:14px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message {
+    padding:14px 20px !important;
+    font-size:13px !important;
+  }
+}
