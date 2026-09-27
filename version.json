@@ -1,7 +1,7 @@
 {
-  "version": "0.10.3",
+  "version": "0.10.4",
   "updated": "2026-09-27",
-  "scope": "native-resolution-jack-in",
+  "scope": "jack-in-readability-scale-pass",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -14,7 +14,13 @@
     "FIT now recenters the topology at native 100% resolution instead of shrinking the world to 65–80%",
     "Native-scale pan is rounded to whole pixels to reduce subpixel blur in text and portraits",
     "Actor-backed endpoint cards now prefer the full Actor/character portrait over lower-resolution Token textures",
-    "Removed the JACK IN world will-change transform hint so Chromium does not unnecessarily pre-rasterize the entire topology layer"
+    "Removed the JACK IN world will-change transform hint so Chromium does not unnecessarily pre-rasterize the entire topology layer",
+    "Increased JACK IN operator core size and portrait scale for clearer visual hierarchy",
+    "Enlarged actor/device endpoint cards, thumbnails, labels, and state text",
+    "Expanded Quickhack execution cards and RUN controls for easier scanning and clicking",
+    "Increased target lock and viewport control sizing",
+    "Reduced Scene background prominence so topology and interactables read more clearly",
+    "Expanded endpoint collision solver spacing and search rings to support the larger cards without stacking"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
