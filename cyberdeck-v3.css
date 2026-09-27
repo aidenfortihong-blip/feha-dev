@@ -8305,3 +8305,176 @@ body > #feha-jackin-overlay {
   outline:2px solid rgb(var(--jack-mag)) !important;
   outline-offset:2px !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.24 TOPOLOGY + READABLE ZOOM
+   Preserve real actor anchors, limit card drift, keep relays readable at all zooms.
+   ========================================================================== */
+
+/* Actor cards: larger native size, only slight screen-space shrink at deep zoom. */
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node.is-targeted {
+  width:220px !important;
+  min-height:90px !important;
+  grid-template-columns:66px minmax(0,1fr) !important;
+  gap:6px 12px !important;
+  padding:12px 13px !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-card-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node img {
+  width:64px !important;
+  height:64px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node-copy b {
+  font-size:19px !important;
+  line-height:1.05 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node-copy small {
+  font-size:10.5px !important;
+  line-height:1.35 !important;
+  color:#a7bec4 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node > em {
+  font-size:11px !important;
+}
+
+/* Relays: constant screen size at every zoom. */
+#feha-jackin-overlay .jack-world .jack-relay,
+#feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-relay-scale,1)) !important;
+  transform-origin:center center !important;
+  width:92px !important;
+  min-height:50px !important;
+  padding:7px 9px !important;
+  grid-template-columns:20px minmax(0,1fr) !important;
+  gap:0 8px !important;
+  z-index:46 !important;
+  opacity:1 !important;
+  background:rgba(2,8,10,.96) !important;
+  border:1px solid rgba(var(--jack-cyan),.34) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-cyan),.06),
+    0 8px 20px rgba(0,0,0,.40) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay.is-gateway,
+#feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay.is-gateway {
+  width:112px !important;
+  min-height:52px !important;
+  border-color:rgba(var(--jack-yellow),.62) !important;
+  background:rgba(9,10,7,.97) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay-core {
+  width:19px !important;
+  height:19px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay small {
+  color:#eefbff !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  letter-spacing:.9px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay em {
+  color:#90a7ad !important;
+  font-size:8px !important;
+  line-height:1.05 !important;
+  letter-spacing:.85px !important;
+}
+
+/* Operator shrinks only slightly. */
+#feha-jackin-overlay .jack-world .jack-operator {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-operator-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+/* Token anchors stay constant screen-size for precise route reading. */
+#feha-jackin-overlay .jack-world .jack-token-anchor {
+  transform:
+    translate(-50%,-50%)
+    rotate(45deg)
+    scale(var(--jack-anchor-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+/* Devices follow actor-card scaling. */
+#feha-jackin-overlay .jack-world .jack-device-node {
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-card-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+/* Keep semantic UI on top without changing coordinates. */
+#feha-jackin-overlay .jack-world .jack-links {
+  z-index:2 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node {
+  z-index:30 !important;
+  overflow:visible !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-targeted {
+  z-index:60 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted {
+  outline:2px solid rgb(var(--jack-mag)) !important;
+  outline-offset:2px !important;
+  border-color:rgb(var(--jack-mag)) !important;
+}
+
+/* Do not let older sparse-scene rules blow cards up again. */
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node {
+  width:232px !important;
+  min-height:94px !important;
+}
+
+@media(max-width:1350px) {
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node {
+    width:208px !important;
+    min-height:86px !important;
+  }
+
+  #feha-jackin-overlay .jack-world .jack-relay,
+  #feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay {
+    width:88px !important;
+    min-height:48px !important;
+  }
+
+  #feha-jackin-overlay .jack-world .jack-relay.is-gateway,
+  #feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay.is-gateway {
+    width:106px !important;
+  }
+}
