@@ -768,18 +768,15 @@
   function installMarketSoundUX() {
     removeMarketSoundUX();
 
-    const clickHandler = event => {
-      const root = event.target?.closest?.("#adk-market-15");
-      if (!root) return;
+    const play = (kind, cooldown = 0) => {
+      const sounds = globalThis.FEHA_SOUNDS;
+      if (!sounds?.play) return false;
+      void sounds.play(kind,{cooldown});
+      return true;
+    };
 
-      const button =
-        event.target?.closest?.("button,[role='button']") ??
-        null;
-
-      if (!button || !root.contains(button) || button.disabled) return;
-
-      const play = (kind, cooldown = 0) =>
-        globalThis.FEHA_SOUNDS?.play?.(kind,{cooldown});
+    const classifyAndPlay = button => {
+      if (!button || button.disabled) return;
 
       if (button.matches(".close-market")) {
         play("drawer_close");
@@ -797,7 +794,7 @@
       }
 
       if (button.matches("[data-shop-tier]")) {
-        play("subsystem_select",55);
+        play("subsystem_select",0);
         return;
       }
 
@@ -822,70 +819,105 @@
       }
 
       if (button.matches("[data-category]")) {
-        play("subsystem_select",45);
+        play("subsystem_select",0);
         return;
       }
 
       if (button.matches("[data-item-tier]")) {
-        play("cyberware_select",45);
+        play("cyberware_select",0);
         return;
       }
 
       if (button.matches("#reset-filters")) {
-        play("remove",65);
+        play("remove",0);
         return;
       }
 
       if (button.matches("[data-page]")) {
-        play("select",45);
+        play("select",0);
         return;
       }
 
-      if (button.matches(".icon-btn,.page-btn,.detail-btn,.filter-chip")) {
-        play("select",45);
-        return;
-      }
-
-      play("select",45);
+      play("select",0);
     };
 
-    const changeHandler = event => {
-      const root = event.target?.closest?.("#adk-market-15");
-      if (!root) return;
+    const bindRoot = root => {
+      if (!root || root.dataset.fehaMarketSoundBound === "1") return;
 
-      if (event.target.matches("#adk-market-actor")) {
-        globalThis.FEHA_SOUNDS?.play?.("actor_switch",{cooldown:70});
-        return;
-      }
+      const pointerHandler = event => {
+        if (event.button != null && event.button !== 0) return;
 
-      if (event.target.matches("#market-maker,#market-slot")) {
-        globalThis.FEHA_SOUNDS?.play?.("subsystem_select",{cooldown:60});
-      }
+        const button =
+          event.target?.closest?.("button,[role='button']") ??
+          null;
+
+        if (!button || !root.contains(button)) return;
+        classifyAndPlay(button);
+      };
+
+      const changeHandler = event => {
+        if (!root.contains(event.target)) return;
+
+        if (event.target.matches("#adk-market-actor")) {
+          play("actor_switch",0);
+          return;
+        }
+
+        if (event.target.matches("#market-maker,#market-slot")) {
+          play("subsystem_select",0);
+        }
+      };
+
+      root.addEventListener("pointerdown",pointerHandler,true);
+      root.addEventListener("change",changeHandler,true);
+      root.dataset.fehaMarketSoundBound = "1";
+
+      marketSoundUX.roots.set(root,{
+        pointerHandler,
+        changeHandler
+      });
     };
 
-    document.addEventListener("click",clickHandler,true);
-    document.addEventListener("change",changeHandler,true);
+    const observer = new MutationObserver(() => {
+      bindRoot(document.getElementById("adk-market-15"));
+    });
 
     marketSoundUX = {
-      clickHandler,
-      changeHandler
+      observer,
+      roots:new Map(),
+      bindRoot
     };
+
+    observer.observe(document.body,{
+      childList:true,
+      subtree:true
+    });
+
+    bindRoot(document.getElementById("adk-market-15"));
   }
 
   function removeMarketSoundUX() {
     if (!marketSoundUX) return;
 
-    document.removeEventListener(
-      "click",
-      marketSoundUX.clickHandler,
-      true
-    );
+    marketSoundUX.observer?.disconnect?.();
 
-    document.removeEventListener(
-      "change",
-      marketSoundUX.changeHandler,
-      true
-    );
+    for (const [root,handlers] of marketSoundUX.roots ?? []) {
+      root.removeEventListener(
+        "pointerdown",
+        handlers.pointerHandler,
+        true
+      );
+
+      root.removeEventListener(
+        "change",
+        handlers.changeHandler,
+        true
+      );
+
+      if (root.dataset) {
+        delete root.dataset.fehaMarketSoundBound;
+      }
+    }
 
     marketSoundUX = null;
   }
