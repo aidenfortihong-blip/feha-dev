@@ -1,7 +1,7 @@
 {
-  "version": "0.10.9",
+  "version": "0.10.10",
   "updated": "2026-09-27",
-  "scope": "side-panel-fill-pass",
+  "scope": "side-typography-cleanup",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -40,7 +40,11 @@
     "Expanded the installed Cyberdeck block to fill the remaining left rail height and increased deck name, manufacturer, image, and spec readability",
     "Reworked the right rail to fill its available height with readable Deck Status, Support Chrome, and Deck Passive sections",
     "Increased right-rail labels, values, support-card sizing, and passive body text while preserving the existing center/top layout",
-    "Kept the center software area and top header unchanged"
+    "Kept the center software area and top header unchanged",
+    "Removed decorative magenta accent lines above right-rail section headings",
+    "Increased right-rail magenta heading size and support/passive subtext readability",
+    "Increased installed Cyberdeck manufacturer/MK text size and contrast",
+    "Increased Cyberdeck RAM, Slots, and QH DC label/value sizing to match the surrounding status treatment"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
