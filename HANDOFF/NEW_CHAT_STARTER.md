@@ -1,34 +1,59 @@
-# FEHA NEW CHAT STARTER
+# FEHA / ADK NEW CHAT STARTER — 2026-09-27
 
-Continue the **Flesh Enshrouded Heart Ablaze / ADK Foundry VTT project**.
+Continue the FEHA / ADK Foundry project from:
 
-Repository:
-https://github.com/aidenfortihong-blip/feha-dev
+`aidenfortihong-blip/feha-dev`
 
-Before editing anything:
-1. Read `HANDOFF/FEHA_MASTER_HANDOFF_2026-09-26.md` completely.
-2. Inspect current `latest-dev.js`, `latest-dev.css`, and `version.json`.
-3. If the user uploaded `FEHA_ADK_MODULE_SOURCE_*.json` and `FEHA_ADK_HANDOFF_*.json`, use those as the live Foundry/module source of truth.
-4. Patch GitHub directly when possible.
-5. Do not make the user manually paste tiny CSS/JS patches if repo write access exists.
-6. Never ask for passwords, GitHub tokens, Forge credentials, API keys, or OAuth secrets.
+## First thing to do
 
-Current live dev baseline:
-- **0.6.2**
-- Chrome Manager cleanup is stable enough to leave alone unless a regression appears.
-- Legacy wallet presentation is suppressed while `ADKWallet` data remains intact.
-- The legacy purple Cyberdeck UI has been replaced by **Cyberdeck V2**.
-- Cyberdeck roster is **Ponyboy / Derke / Sasha / Zach only**.
-- Cyberdeck has **no Heat and no Humanity**.
-- Cyberdeck telemetry is **RAM / installed deck / software load**.
-- Cyberdeck should use the private CP2077 asset pack and FEHA sound engine aggressively.
-- Do not revive the old Cyberdeck template.
+Read:
 
-Immediate priorities:
-- obtain/use the actual installed ADK module source and live actor/item export
-- continue Cyberdeck V2 from the real data/backend
-- character sheet: present **Spells as Quickhacks** and display **RAM** near that section
-- progressively move live-patch systems into the real module source
-- preserve current Chrome Manager visual language and wallet suppression
+`HANDOFF/FEHA_MASTER_HANDOFF_2026-09-27.md`
 
-When screenshots conflict with assumptions, inspect the real source/export instead of stacking guessed DOM patches.
+Then inspect the current repo before making any changes.
+
+## Current build
+
+**0.10.38**
+
+## Working rules
+
+- Patch GitHub directly. Do not ask me to paste repo code into Foundry.
+- One conceptual change per pass. Test it, then move on.
+- Preserve working functionality.
+- V3 is primary. V2 is fallback only.
+- Real Scene Token positions are authoritative in JACK IN.
+- Current JACK IN uses direct trace lines only; do not restore relays unless I ask.
+- Do not spend Quickhack RAM until APPLY DAMAGE / APPLY EFFECT.
+- Target repeat-click deselects.
+- Do not rerender JACK IN on simple target-state changes.
+- Camera tokens are not normal actor targets.
+
+## Current task
+
+We are working on Cameras.
+
+Camera placement foundation is already implemented in 0.10.38:
+- Actor folder named `Camera`
+- per-operator/per-user Camera actor
+- user OWNER permission
+- JACK IN CAMERA placement mode
+- placement ghost
+- normalized JACK IN position -> matching real active Scene Camera token
+- existing Camera tokens mirror back into JACK IN
+- FOV metadata already stored on Camera token flags
+
+**Next pass: FOV only.**
+
+Build:
+- selectable FOV presets
+- directional cone
+- rotation control
+- persist angle/rotation through `FEHA_CAMERAS.js`
+
+Do not rebuild placement.
+Do not add camera range/movement in the same pass unless I explicitly ask.
+Do not add relays.
+Do not refactor unrelated CSS.
+
+If I say “continue cameras,” start from the current 0.10.38 repo and patch the FOV pass directly.
