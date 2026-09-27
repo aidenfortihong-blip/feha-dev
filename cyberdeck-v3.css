@@ -3702,3 +3702,348 @@ body > #feha-jackin-overlay {
     min-width:170px;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.8.10 SCENE MAP
+   Use the actual Foundry Scene as the spatial basis for JACK IN.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   HEADER NAV
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-header {
+  grid-template-columns:minmax(0,1fr) auto auto !important;
+}
+
+#feha-jackin-overlay .jack-head-actions {
+  display:grid;
+  grid-template-columns:auto auto;
+  gap:8px;
+  align-items:stretch;
+}
+
+#feha-jackin-overlay .jack-head-actions button {
+  min-width:132px;
+  height:46px;
+  padding:0 14px;
+  color:rgb(var(--jack-cyan));
+  background:#03090b;
+  border:1px solid rgba(var(--jack-cyan),.25);
+  border-radius:0;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+  cursor:pointer;
+}
+
+#feha-jackin-overlay .jack-head-actions button:hover {
+  color:#fff;
+  border-color:rgba(var(--jack-cyan),.55);
+  background:rgba(var(--jack-cyan),.04);
+}
+
+#feha-jackin-overlay .jack-head-actions button.is-danger {
+  color:rgb(var(--jack-mag));
+  border-color:rgba(var(--jack-mag),.35);
+}
+
+#feha-jackin-overlay .jack-head-actions button.is-danger:hover {
+  color:#fff;
+  border-color:rgba(var(--jack-mag),.62);
+  background:rgba(var(--jack-mag),.045);
+}
+
+/* --------------------------------------------------------------------------
+   ACTUAL SCENE UNDERLAY
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-space.has-scene-map {
+  background:
+    linear-gradient(180deg,rgba(1,7,9,.30),rgba(1,5,7,.54)),
+    #010507 !important;
+}
+
+#feha-jackin-overlay .jack-scene-map {
+  position:absolute;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  background:#020709;
+}
+
+#feha-jackin-overlay .jack-scene-map img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  opacity:.34;
+  filter:
+    saturate(.38)
+    brightness(.48)
+    contrast(1.42)
+    hue-rotate(145deg);
+  transform:scale(1.002);
+}
+
+#feha-jackin-overlay .jack-scene-map::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,16,20,.12),
+      rgba(0,8,12,.24)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(var(--jack-cyan),.018) 3px 4px
+    );
+  mix-blend-mode:screen;
+}
+
+#feha-jackin-overlay .jack-scene-map::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 0 34%,
+      rgba(0,5,7,.26) 72%,
+      rgba(0,3,5,.58) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--jack-cyan),.055),
+      transparent 18% 82%,
+      rgba(var(--jack-mag),.025)
+    );
+}
+
+/* Existing decorative rings become subtle AR overlays over the actual map. */
+#feha-jackin-overlay .jack-space.has-scene-map::before {
+  z-index:1 !important;
+  opacity:.24 !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map::after {
+  z-index:1 !important;
+  opacity:.28 !important;
+}
+
+/* --------------------------------------------------------------------------
+   REAL TOKEN ENDPOINTS
+   -------------------------------------------------------------------------- */
+
+/* The actual Token coordinates now own endpoint positioning. */
+#feha-jackin-overlay .jack-space .jack-node {
+  left:var(--jack-x) !important;
+  top:var(--jack-y) !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node {
+  width:166px !important;
+  min-height:68px !important;
+  grid-template-columns:48px minmax(0,1fr) !important;
+  gap:4px 9px !important;
+  padding:8px 9px !important;
+  background:rgba(2,8,10,.92) !important;
+  backdrop-filter:blur(3px);
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.42),
+    0 0 0 1px rgba(var(--jack-cyan),.025) !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node img {
+  width:46px !important;
+  height:46px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node-copy b {
+  font-size:10px !important;
+  line-height:1.12;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node-copy small {
+  margin-top:3px !important;
+  font-size:6.5px !important;
+  line-height:1.2;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node > em {
+  font-size:6.5px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node.is-targeted {
+  width:188px !important;
+  min-height:76px !important;
+  z-index:12 !important;
+  background:
+    linear-gradient(
+      115deg,
+      rgba(var(--jack-yellow),.075),
+      transparent 60%
+    ),
+    rgba(5,9,9,.96) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-yellow),.16),
+    0 0 34px rgba(var(--jack-yellow),.13),
+    0 10px 26px rgba(0,0,0,.50) !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node.is-targeted img {
+  width:52px !important;
+  height:52px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-node.is-targeted .jack-node-copy b {
+  font-size:11px !important;
+}
+
+/* --------------------------------------------------------------------------
+   OPERATOR POSITION = ACTUAL OPERATOR TOKEN
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-space .jack-operator,
+#feha-jackin-overlay .jack-space.is-sparse .jack-operator {
+  left:var(--jack-x,50%) !important;
+  top:var(--jack-y,50%) !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-operator {
+  width:176px !important;
+  height:176px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-operator img {
+  width:92px !important;
+  height:92px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-operator > span {
+  top:calc(50% + 59px) !important;
+  min-width:142px !important;
+  padding:6px 9px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-operator::before {
+  width:132% !important;
+  height:132% !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-operator::after {
+  width:160% !important;
+  height:160% !important;
+}
+
+/* --------------------------------------------------------------------------
+   ROUTE RELAYS
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-relay {
+  width:58px !important;
+  min-height:38px !important;
+  padding:5px 6px !important;
+  grid-template-columns:15px minmax(0,1fr) !important;
+  column-gap:5px !important;
+  background:rgba(2,8,10,.66) !important;
+  opacity:.66;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-relay.is-gateway {
+  width:76px !important;
+  opacity:.86;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-relay-core {
+  width:14px !important;
+  height:14px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-relay small {
+  font-size:5.5px !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-relay em {
+  font-size:5px !important;
+}
+
+/* Routes float over the scene, but don't erase the geography beneath them. */
+#feha-jackin-overlay .jack-space.has-scene-map .jack-net-line.is-backbone {
+  stroke-width:1.8 !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-net-line.is-branch {
+  stroke-width:1.25 !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-net-line.is-mesh {
+  opacity:.28 !important;
+}
+
+#feha-jackin-overlay .jack-space.has-scene-map .jack-net-line.is-selected-route {
+  stroke-width:3 !important;
+}
+
+/* --------------------------------------------------------------------------
+   RESOLUTION NAV
+   -------------------------------------------------------------------------- */
+
+#feha-jackin-overlay .qh-resolution-foot {
+  grid-template-columns:minmax(0,1fr) auto !important;
+}
+
+#feha-jackin-overlay .qh-resolution-actions {
+  display:grid;
+  grid-template-columns:170px 190px;
+  gap:8px;
+}
+
+#feha-jackin-overlay .qh-resolution-actions button {
+  height:48px;
+  padding:0 12px;
+  color:rgb(var(--jack-cyan));
+  background:rgba(var(--jack-cyan),.025);
+  border:1px solid rgba(var(--jack-cyan),.32);
+  border-radius:0;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+  cursor:pointer;
+}
+
+#feha-jackin-overlay .qh-resolution-actions button:hover {
+  color:#fff;
+  border-color:rgba(var(--jack-cyan),.58);
+}
+
+#feha-jackin-overlay .qh-resolution-actions button.is-danger {
+  color:rgb(var(--jack-mag));
+  border-color:rgba(var(--jack-mag),.35);
+}
+
+#feha-jackin-overlay .qh-resolution-actions button.is-danger:hover {
+  color:#fff;
+  border-color:rgba(var(--jack-mag),.60);
+  background:rgba(var(--jack-mag),.035);
+}
+
+@media(max-width:1200px) {
+  #feha-jackin-overlay .jack-head-actions button {
+    min-width:108px;
+    padding:0 10px;
+    font-size:7px;
+  }
+
+  #feha-jackin-overlay .qh-resolution-actions {
+    grid-template-columns:1fr;
+  }
+}
