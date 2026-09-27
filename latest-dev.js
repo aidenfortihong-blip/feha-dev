@@ -1045,6 +1045,153 @@
     delete globalThis.__FEHA_SOUND_ENGINE_028;
   }
 
+  const FEHA_PLAYABLE_ROSTER = Object.freeze([
+    "ponyboy",
+    "derke",
+    "sasha",
+    "zach"
+  ]);
+
+  const FEHA_PLAYABLE_ROSTER_SET = new Set(FEHA_PLAYABLE_ROSTER);
+
+  function playableActorKey(actorOrName) {
+    const raw =
+      typeof actorOrName === "string"
+        ? actorOrName
+        : (
+            actorOrName?.flags?.fleshEnshrouded?.adkCharacter ??
+            actorOrName?.name ??
+            ""
+          );
+
+    const key = norm(raw);
+
+    if (key === "sasha bogdanov" || key.startsWith("sasha ")) {
+      return "sasha";
+    }
+
+    return key;
+  }
+
+  function playableDisplayName(actorOrName) {
+    const key = playableActorKey(actorOrName);
+
+    if (key === "ponyboy") return "Ponyboy";
+    if (key === "derke") return "Derke";
+    if (key === "sasha") return "Sasha";
+    if (key === "zach") return "Zach";
+
+    return String(
+      typeof actorOrName === "string"
+        ? actorOrName
+        : actorOrName?.name ?? ""
+    );
+  }
+
+  function normalizePlayableRoster(scope = document.body) {
+    if (!scope?.querySelectorAll) return 0;
+
+    const selectors = [
+      "#adk-market-15 #adk-market-actor",
+      "#adk-chrome-manager-34 #actor-select",
+      "#adk-cyberdeck-terminal #cd2-actor",
+      "#feha-cyberdeck-v2 #cd2-actor"
+    ];
+
+    const selects = new Set();
+
+    if (scope instanceof Element && scope.matches?.(selectors.join(","))) {
+      selects.add(scope);
+    }
+
+    for (const select of scope.querySelectorAll(selectors.join(","))) {
+      selects.add(select);
+    }
+
+    let changed = 0;
+
+    for (const select of selects) {
+      for (const option of [...select.options]) {
+        const actor =
+          game?.actors?.get?.(String(option.value ?? "")) ??
+          null;
+
+        const key = playableActorKey(
+          actor ?? option.textContent ?? option.label ?? ""
+        );
+
+        if (!FEHA_PLAYABLE_ROSTER_SET.has(key)) {
+          option.remove();
+          changed++;
+          continue;
+        }
+
+        const display = playableDisplayName(actor ?? key);
+
+        if (option.textContent !== display) {
+          option.textContent = display;
+          option.label = display;
+          changed++;
+        }
+      }
+    }
+
+    const adkRoots = [];
+
+    if (
+      scope instanceof Element &&
+      scope.matches?.(
+        "#adk-market-15,#adk-chrome-manager-34,#adk-cyberdeck-terminal,#feha-cyberdeck-v2,#feha-credits-wallet"
+      )
+    ) {
+      adkRoots.push(scope);
+    }
+
+    adkRoots.push(
+      ...scope.querySelectorAll(
+        "#adk-market-15,#adk-chrome-manager-34,#adk-cyberdeck-terminal,#feha-cyberdeck-v2,#feha-credits-wallet"
+      )
+    );
+
+    for (const root of new Set(adkRoots)) {
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT
+      );
+
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+
+      for (const node of nodes) {
+        const before = node.nodeValue ?? "";
+        const after = before.replace(/\bSasha\s+Bogdanov\b/gi,"Sasha");
+
+        if (after !== before) {
+          node.nodeValue = after;
+          changed++;
+        }
+      }
+
+      root
+        .querySelectorAll("[title],[aria-label],[data-tooltip],[placeholder],[alt]")
+        .forEach(el => {
+          for (const attr of ["title","aria-label","data-tooltip","placeholder","alt"]) {
+            if (!el.hasAttribute(attr)) continue;
+
+            const before = el.getAttribute(attr) ?? "";
+            const after = before.replace(/\bSasha\s+Bogdanov\b/gi,"Sasha");
+
+            if (after !== before) {
+              el.setAttribute(attr,after);
+              changed++;
+            }
+          }
+        });
+    }
+
+    return changed;
+  }
+
   const FEHA_PORTRAIT_OVERRIDES = Object.freeze({
     derke:
       "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
@@ -1077,16 +1224,8 @@
   }
 
   function filterActorRoster(root = document.getElementById("adk-chrome-manager-34")) {
-    const select = root?.querySelector?.("#actor-select");
-    if (!select) return false;
-
-    const blocked = new Set(["nina", "florence", "cael", "xiao"]);
-
-    for (const option of [...select.options]) {
-      const label = norm(option.textContent || option.label || "");
-      if (blocked.has(label)) option.remove();
-    }
-
+    if (!root) return false;
+    normalizePlayableRoster(root);
     return true;
   }
 
@@ -2615,22 +2754,20 @@
   }
 
   function cyberActors() {
-    const allowed = new Map([
-      ["ponyboy", 0],
-      ["derke", 1],
-      ["sasha", 2],
-      ["zach", 3]
-    ]);
-
-    const actorKey = actor =>
-      norm(actor?.flags?.fleshEnshrouded?.adkCharacter ?? actor?.name);
+    const allowed = new Map(
+      FEHA_PLAYABLE_ROSTER.map((key,index) => [key,index])
+    );
 
     return [...(game?.actors ?? [])]
       .filter(actor => {
-        const key = actorKey(actor);
+        const key = playableActorKey(actor);
         return allowed.has(key) && (game.user?.isGM || actor.isOwner);
       })
-      .sort((a,b) => (allowed.get(actorKey(a)) ?? 99) - (allowed.get(actorKey(b)) ?? 99));
+      .sort(
+        (a,b) =>
+          (allowed.get(playableActorKey(a)) ?? 99) -
+          (allowed.get(playableActorKey(b)) ?? 99)
+      );
   }
 
   function cyberActorById(id) {
@@ -2919,7 +3056,7 @@
 
         <div class="cd2-header-actions">
           <select id="cd2-actor">
-            ${actors.map(actor => `<option value="${esc(actor.id)}" ${actor.id === fallback.id ? "selected" : ""}>${esc(actor.name)}</option>`).join("")}
+            ${actors.map(actor => `<option value="${esc(actor.id)}" ${actor.id === fallback.id ? "selected" : ""}>${esc(playableDisplayName(actor))}</option>`).join("")}
           </select>
           <button type="button" class="cd2-close" data-cd-action="close">×</button>
         </div>
@@ -2929,11 +3066,11 @@
         <div class="cd2-portrait">
           <img src="${esc(cyberPortrait(fallback))}" alt="${esc(fallback.name)}">
           <div class="cd2-portrait-grid"></div>
-          <div class="cd2-operator-tag">OPERATOR // ${esc(fallback.name.toUpperCase())}</div>
+          <div class="cd2-operator-tag">OPERATOR // ${esc(playableDisplayName(fallback).toUpperCase())}</div>
         </div>
 
         <div class="cd2-operator-meta">
-          <div><span>SUBJECT</span><b>${esc(fallback.name)}</b></div>
+          <div><span>SUBJECT</span><b>${esc(playableDisplayName(fallback))}</b></div>
           <div><span>NODE</span><b>${esc(String(fallback.id).slice(-6).toUpperCase())}</b></div>
           <div><span>PROFILE</span><b>NETRUNNER</b></div>
         </div>
@@ -3811,6 +3948,7 @@ if (!game.user?.isGM) {
         patchBackend();
         markRoot();
         normalizeDossierSchematics();
+        normalizePlayableRoster(document.body);
 
         for (const scope of addedScopes) {
           if (scope.isConnected) tagLegacyWallets(scope);
@@ -3921,6 +4059,7 @@ if (!game.user?.isGM) {
   startObserver();
   patchBackend();
   markRoot();
+  normalizePlayableRoster(document.body);
   tagLegacyWallets();
   suppressLegacyWalletChrome();
   installCyberdeckV2();
