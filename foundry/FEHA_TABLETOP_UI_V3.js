@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.12";
+  const VERSION = "0.10.13";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -2129,8 +2129,31 @@
     const selectedId = selected?.id ?? "";
 
     for (const node of root.querySelectorAll(".jack-node[data-token-id]")) {
+      if (node.dataset.jackStableSize !== "1") {
+        const rect = node.getBoundingClientRect();
+        const zoom = Math.max(
+          1,
+          Number(root.dataset.jackZoom) || 1
+        );
+
+        node.style.setProperty(
+          "width",
+          Math.round(rect.width/zoom)+"px",
+          "important"
+        );
+
+        node.style.setProperty(
+          "min-height",
+          Math.round(rect.height/zoom)+"px",
+          "important"
+        );
+
+        node.dataset.jackStableSize = "1";
+      }
+
       const active = node.dataset.tokenId === selectedId;
       node.classList.toggle("is-targeted",active);
+      node.setAttribute("aria-pressed",active ? "true" : "false");
 
       const state = node.querySelector(":scope > em");
       if (state) state.textContent = active ? "LOCKED" : "ACQUIRE";
@@ -2177,7 +2200,6 @@
       button.disabled = !selected || m.currentRam < cost;
     }
 
-    layoutJackEndpointCards(root);
   }
 
   function renderJack(actorId) {
