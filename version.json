@@ -1,8 +1,9 @@
 {
-  "version": "0.10.42",
+  "version": "0.10.43",
   "updated": "2026-09-27",
-  "scope": "click-sound-rebalance",
+  "scope": "zoom-out-sound-fix",
   "notes": [
+    "Changed JACK IN zoom-out/minus click from subsystem_select to cyberware_select so the minus button uses a sound confirmed available in the active pack.",
     "Removed blanket hover audio from Cyberdeck/JACK IN; sound now triggers from clicks/actions only.",
     "Rebalanced click feedback so different controls reuse different existing Cyberpunk UI samples instead of one universal click.",
     "Zoom in uses select; zoom out uses subsystem_select; Quickhack +/- uses cyberware_select.",
