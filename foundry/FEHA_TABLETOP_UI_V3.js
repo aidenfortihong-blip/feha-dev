@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.41";
+  const VERSION = "0.10.42";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -3065,30 +3065,7 @@
     },1050);
   }
 
-  function bindV3SoundFeedback(root) {
-    if (!root) return;
-
-    root.onpointerover = event => {
-      const interactive =
-        event.target?.closest?.(
-          "button:not(:disabled),select:not(:disabled),[role='button']"
-        ) ?? null;
-
-      if (!interactive || !root.contains(interactive)) return;
-
-      const related = event.relatedTarget;
-      if (related && interactive.contains?.(related)) return;
-
-      globalThis.FEHA_SOUNDS?.play?.(
-        "hover",
-        {cooldown:70}
-      );
-    };
-  }
-
   function bindBase(root,m) {
-    bindV3SoundFeedback(root);
-
     root.onchange = event => {
       if (!event.target?.matches?.("#v3-actor")) return;
       render(String(event.target.value ?? ""));
@@ -3186,8 +3163,6 @@
   }
 
   function bindJack(root,actor) {
-    bindV3SoundFeedback(root);
-
     root.onclick = async event => {
       const jackButton = event.target?.closest?.("[data-jack-action]") ?? null;
       const qhButton = event.target?.closest?.("[data-qh-action]") ?? null;
@@ -3278,7 +3253,7 @@
           if (!capability) return;
           if (deviceButton.dataset.busy === "1") return;
 
-          globalThis.FEHA_SOUNDS?.play?.("select",{cooldown:80});
+          globalThis.FEHA_SOUNDS?.play?.("subsystem_select",{cooldown:80});
           deviceButton.dataset.busy = "1";
           deviceButton.disabled = true;
 
@@ -3411,7 +3386,7 @@
 
         if (qhAction === "minus-damage" || qhAction === "plus-damage") {
           if (!input) return;
-          globalThis.FEHA_SOUNDS?.play?.("select",{cooldown:45});
+          globalThis.FEHA_SOUNDS?.play?.("cyberware_select",{cooldown:45});
           const delta = qhAction === "plus-damage" ? 1 : -1;
           input.value = String(Math.max(0,(Number(input.value)||0)+delta));
           return;
@@ -3420,7 +3395,7 @@
         if (qhAction === "apply-effect") {
           if (qhButton.dataset.busy === "1") return;
 
-          globalThis.FEHA_SOUNDS?.play?.("select",{cooldown:80});
+          globalThis.FEHA_SOUNDS?.play?.("subsystem_select",{cooldown:80});
 
           const resolution =
             qhButton.closest(".qh-resolution");
@@ -3478,7 +3453,7 @@
         if (qhAction === "apply-damage") {
           if (!input || qhButton.dataset.busy === "1") return;
 
-          globalThis.FEHA_SOUNDS?.play?.("select",{cooldown:80});
+          globalThis.FEHA_SOUNDS?.play?.("cyberware_select",{cooldown:80});
 
           const resolution = qhButton.closest(".qh-resolution");
           const tokenId = resolution?.dataset?.qhTarget ?? "";
@@ -3581,14 +3556,14 @@
       if (action === "zoom-in") {
         const state = jackViewportState(root);
         zoomJackAt(root,state.zoom*1.18);
-        globalThis.FEHA_SOUNDS?.play?.("hover",{cooldown:70});
+        globalThis.FEHA_SOUNDS?.play?.("select",{cooldown:70});
         return;
       }
 
       if (action === "zoom-out") {
         const state = jackViewportState(root);
         zoomJackAt(root,state.zoom*.84);
-        globalThis.FEHA_SOUNDS?.play?.("hover",{cooldown:70});
+        globalThis.FEHA_SOUNDS?.play?.("subsystem_select",{cooldown:70});
         return;
       }
 
