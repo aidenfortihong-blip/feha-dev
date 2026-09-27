@@ -1101,6 +1101,240 @@
       marketSoundUX.selects.set(select,changeHandler);
     };
 
+    const bindGatewaySounds = root => {
+      gatewaySoundCleanup?.();
+      gatewaySoundCleanup = null;
+
+      if (!root) return;
+
+      const sounds = globalThis.FEHA_SOUNDS;
+      if (!sounds?.play) return;
+
+      const playSoft = (kind,gain = .32,cooldown = 0) =>
+        void sounds.play(kind,{gain,cooldown});
+
+      const cleanups = [];
+      const observers = [];
+
+      const on = (target,type,handler,options) => {
+        target?.addEventListener?.(type,handler,options);
+        if (target) {
+          cleanups.push(() =>
+            target.removeEventListener(type,handler,options)
+          );
+        }
+      };
+
+      // Candidate hover/select.
+      const hoverHandler = event => {
+        const candidate =
+          event.target?.closest?.("[data-candidate]") ??
+          null;
+
+        if (!candidate || !root.contains(candidate)) return;
+
+        const related = event.relatedTarget;
+        if (related && candidate.contains?.(related)) return;
+
+        playSoft("hover",.20,60);
+      };
+
+      const pressHandler = event => {
+        if (event.button != null && event.button !== 0) return;
+
+        const candidate =
+          event.target?.closest?.("[data-candidate]") ??
+          null;
+
+        if (candidate && root.contains(candidate)) {
+          playSoft("cyberware_select",.28,0);
+          return;
+        }
+
+        if (event.target?.closest?.("[data-auth]")) {
+          playSoft("scan",.34,0);
+          return;
+        }
+
+        if (event.target?.closest?.("[data-enter]")) {
+          playSoft("drawer_open",.30,0);
+          return;
+        }
+
+        if (event.target?.closest?.("[data-bypass]")) {
+          playSoft("drawer_close",.28,0);
+        }
+      };
+
+      on(root,"pointerover",hoverHandler,true);
+      on(root,"pointerdown",pressHandler,true);
+
+      // Typing / registry match feedback.
+      const input = root.querySelector("#adk-eg-id-input");
+      let lastExact = false;
+
+      const inputHandler = () => {
+        if (!input || input.disabled) return;
+
+        playSoft("hover",.16,45);
+
+        const typed = norm(input.value);
+        const exact =
+          typed === "ponyboy" ||
+          typed === "derke" ||
+          typed === "sasha" ||
+          typed === "zach";
+
+        if (exact && !lastExact) {
+          playSoft("confirm",.28,0);
+        }
+
+        lastExact = exact;
+      };
+
+      on(input,"input",inputHandler,false);
+
+      // Boot lines: one soft tick as each subsystem comes online.
+      const bootLog = root.querySelector("[data-boot-log]");
+      if (bootLog) {
+        const observer = new MutationObserver(mutations => {
+          let added = 0;
+
+          for (const mutation of mutations) {
+            added += [...(mutation.addedNodes ?? [])]
+              .filter(node => node instanceof Element)
+              .length;
+          }
+
+          if (added > 0) {
+            playSoft("select",.17,70);
+          }
+        });
+
+        observer.observe(bootLog,{childList:true});
+        observers.push(observer);
+      }
+
+      // Node-state changes: ready/auth/granted.
+      const nodeState = root.querySelector("[data-node-state]");
+      if (nodeState) {
+        let lastState = String(nodeState.textContent ?? "").trim();
+
+        const observer = new MutationObserver(() => {
+          const next = String(nodeState.textContent ?? "").trim();
+          if (!next || next === lastState) return;
+          lastState = next;
+
+          const upper = next.toUpperCase();
+
+          if (upper.includes("ID REQUIRED")) {
+            playSoft("confirm",.24,0);
+          } else if (upper.includes("AUTHENTICATING")) {
+            playSoft("scan",.26,0);
+          } else if (upper.includes("ACCESS GRANTED")) {
+            playSoft("compatibility_ok",.40,0);
+          } else if (upper.includes("LINK ESTABLISHED")) {
+            playSoft("drawer_open",.34,0);
+          }
+        });
+
+        observer.observe(nodeState,{
+          childList:true,
+          subtree:true,
+          characterData:true
+        });
+
+        observers.push(observer);
+      }
+
+      // Biometric rows: scan on row creation, verify on completion.
+      const bioList = root.querySelector("[data-biometric-list]");
+      if (bioList) {
+        const observer = new MutationObserver(mutations => {
+          let scanned = false;
+          let verified = false;
+
+          for (const mutation of mutations) {
+            if (mutation.type === "childList") {
+              for (const node of mutation.addedNodes ?? []) {
+                if (
+                  node instanceof Element &&
+                  node.classList.contains("adk-eg-biometric-row")
+                ) {
+                  scanned = true;
+                }
+              }
+            }
+
+            if (
+              mutation.type === "attributes" &&
+              mutation.target instanceof Element &&
+              mutation.target.classList.contains("verified")
+            ) {
+              verified = true;
+            }
+          }
+
+          if (scanned) playSoft("scan",.20,80);
+          if (verified) playSoft("confirm",.23,80);
+        });
+
+        observer.observe(bioList,{
+          childList:true,
+          subtree:true,
+          attributes:true,
+          attributeFilter:["class"]
+        });
+
+        observers.push(observer);
+      }
+
+      // Profile activation / verified transition.
+      const profile = root.querySelector("[data-profile]");
+      if (profile) {
+        let wasActive = profile.classList.contains("is-active");
+        let wasVerified = profile.classList.contains("is-verified");
+
+        const observer = new MutationObserver(() => {
+          const active = profile.classList.contains("is-active");
+          const verified = profile.classList.contains("is-verified");
+
+          if (active && !wasActive) {
+            playSoft("cyberware_select",.24,0);
+          }
+
+          if (verified && !wasVerified) {
+            playSoft("confirm",.30,0);
+          }
+
+          wasActive = active;
+          wasVerified = verified;
+        });
+
+        observer.observe(profile,{
+          attributes:true,
+          attributeFilter:["class"]
+        });
+
+        observers.push(observer);
+      }
+
+      // Initial boot/open cue.
+      playSoft("drawer_open",.20,0);
+
+      gatewaySoundCleanup = () => {
+        for (const observer of observers) {
+          observer.disconnect();
+        }
+
+        for (const cleanup of cleanups) {
+          try { cleanup(); } catch {}
+        }
+
+        gatewaySoundCleanup = null;
+      };
+    };
+
     const bindRoot = root => {
       if (!root) return;
 
@@ -1401,6 +1635,7 @@
     let restoringInput = false;
     let derkeAuthInterval = null;
     let derkeIdentityObserver = null;
+    let gatewaySoundCleanup = null;
     let timers = new Set();
 
     const schedule = (fn,delay = 0) => {
@@ -1675,6 +1910,8 @@
       rewriteVisible(root);
 
       if (boundRoot === root) return true;
+
+      bindGatewaySounds(root);
       boundRoot = root;
 
       const input = root.querySelector("#adk-eg-id-input");
@@ -1804,6 +2041,9 @@
       refresh:patchCurrent,
       destroy() {
         stopDerkeAuthSync();
+
+        gatewaySoundCleanup?.();
+        gatewaySoundCleanup = null;
 
         for (const timer of timers) clearTimeout(timer);
         timers.clear();
