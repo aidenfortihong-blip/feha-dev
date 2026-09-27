@@ -770,121 +770,128 @@
 
     const play = (kind, cooldown = 0) => {
       const sounds = globalThis.FEHA_SOUNDS;
-      if (!sounds?.play) return false;
-      void sounds.play(kind,{cooldown});
-      return true;
+      if (sounds?.play) {
+        void sounds.play(kind,{cooldown});
+        return true;
+      }
+
+      const src =
+        sounds?.paths?.[kind] ??
+        null;
+
+      if (!src) return false;
+
+      try {
+        const audio = new Audio(src);
+        audio.volume = .75;
+        void audio.play();
+        return true;
+      } catch {
+        return false;
+      }
     };
 
-    const classifyAndPlay = button => {
-      if (!button || button.disabled) return;
+    const soundForButton = button => {
+      if (button.matches(".close-market")) return ["drawer_close",0];
+      if (button.matches("#top-directory,#back-directory")) return ["drawer_close",0];
+      if (button.matches("#adk-market-wallet")) return ["drawer_open",0];
 
-      if (button.matches(".close-market")) {
-        play("drawer_close");
-        return;
-      }
+      if (button.matches("[data-shop-tier]")) return ["subsystem_select",0];
+      if (button.matches("[data-shop]")) return ["drawer_open",0];
 
-      if (button.matches("#top-directory,#back-directory")) {
-        play("drawer_close");
-        return;
-      }
+      if (button.matches("#reroll-stock")) return ["scan",0];
 
-      if (button.matches("#adk-market-wallet")) {
-        play("drawer_open");
-        return;
-      }
+      // Item interactions intentionally do NOT all sound alike.
+      if (button.matches(".detail-btn[data-open-item]")) return ["scan",0];
+      if (button.matches(".item-art-wrap[data-open-item]")) return ["cyberware_select",0];
+      if (button.matches(".item-name[data-open-item]")) return ["drawer_open",0];
+      if (button.matches("[data-open-item]")) return ["drawer_open",0];
 
-      if (button.matches("[data-shop-tier]")) {
-        play("subsystem_select",0);
-        return;
-      }
+      if (button.matches("[data-buy-item]")) return ["install",0];
 
-      if (button.matches("[data-shop]")) {
-        play("drawer_open");
-        return;
-      }
+      if (button.matches("[data-category]")) return ["select",0];
+      if (button.matches("[data-item-tier]")) return ["cyberware_select",0];
+      if (button.matches("#reset-filters")) return ["remove",0];
+      if (button.matches("[data-page]")) return ["select",0];
 
-      if (button.matches("#reroll-stock")) {
-        play("scan");
-        return;
-      }
+      if (button.matches(".icon-btn")) return ["select",0];
+      if (button.matches(".filter-chip")) return ["select",0];
+      if (button.matches("button,[role='button']")) return ["select",0];
 
-      if (button.matches("[data-open-item]")) {
-        play("drawer_open");
-        return;
-      }
-
-      if (button.matches("[data-buy-item]")) {
-        play("install");
-        return;
-      }
-
-      if (button.matches("[data-category]")) {
-        play("subsystem_select",0);
-        return;
-      }
-
-      if (button.matches("[data-item-tier]")) {
-        play("cyberware_select",0);
-        return;
-      }
-
-      if (button.matches("#reset-filters")) {
-        play("remove",0);
-        return;
-      }
-
-      if (button.matches("[data-page]")) {
-        play("select",0);
-        return;
-      }
-
-      play("select",0);
+      return null;
     };
 
-    const bindRoot = root => {
-      if (!root || root.dataset.fehaMarketSoundBound === "1") return;
+    const bindButton = button => {
+      if (!(button instanceof HTMLElement)) return;
+      if (button.dataset.fehaMarketSoundButton === "1") return;
+
+      const sound = soundForButton(button);
+      if (!sound) return;
 
       const pointerHandler = event => {
         if (event.button != null && event.button !== 0) return;
-
-        const button =
-          event.target?.closest?.("button,[role='button']") ??
-          null;
-
-        if (!button || !root.contains(button)) return;
-        classifyAndPlay(button);
+        if (button.disabled) return;
+        play(sound[0],sound[1]);
       };
 
-      const changeHandler = event => {
-        if (!root.contains(event.target)) return;
+      button.addEventListener("pointerdown",pointerHandler,true);
+      button.dataset.fehaMarketSoundButton = "1";
+      marketSoundUX.buttons.set(button,pointerHandler);
+    };
 
-        if (event.target.matches("#adk-market-actor")) {
+    const bindSelect = select => {
+      if (!(select instanceof HTMLElement)) return;
+      if (select.dataset.fehaMarketSoundSelect === "1") return;
+
+      const changeHandler = () => {
+        if (select.id === "adk-market-actor") {
           play("actor_switch",0);
-          return;
-        }
-
-        if (event.target.matches("#market-maker,#market-slot")) {
+        } else {
           play("subsystem_select",0);
         }
       };
 
-      root.addEventListener("pointerdown",pointerHandler,true);
-      root.addEventListener("change",changeHandler,true);
-      root.dataset.fehaMarketSoundBound = "1";
-
-      marketSoundUX.roots.set(root,{
-        pointerHandler,
-        changeHandler
-      });
+      select.addEventListener("change",changeHandler,true);
+      select.dataset.fehaMarketSoundSelect = "1";
+      marketSoundUX.selects.set(select,changeHandler);
     };
 
-    const observer = new MutationObserver(() => {
-      bindRoot(document.getElementById("adk-market-15"));
+    const bindRoot = root => {
+      if (!root) return;
+
+      root
+        .querySelectorAll("button,[role='button']")
+        .forEach(bindButton);
+
+      root
+        .querySelectorAll("#adk-market-actor,#market-maker,#market-slot")
+        .forEach(bindSelect);
+    };
+
+    const observer = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes ?? []) {
+          if (!(node instanceof Element)) continue;
+
+          if (node.matches?.("#adk-market-15")) {
+            bindRoot(node);
+            continue;
+          }
+
+          const root =
+            node.closest?.("#adk-market-15") ??
+            node.querySelector?.("#adk-market-15") ??
+            document.getElementById("adk-market-15");
+
+          if (root) bindRoot(root);
+        }
+      }
     });
 
     marketSoundUX = {
       observer,
-      roots:new Map(),
+      buttons:new Map(),
+      selects:new Map(),
       bindRoot
     };
 
@@ -901,21 +908,17 @@
 
     marketSoundUX.observer?.disconnect?.();
 
-    for (const [root,handlers] of marketSoundUX.roots ?? []) {
-      root.removeEventListener(
-        "pointerdown",
-        handlers.pointerHandler,
-        true
-      );
+    for (const [button,handler] of marketSoundUX.buttons ?? []) {
+      button.removeEventListener("pointerdown",handler,true);
+      if (button.dataset) {
+        delete button.dataset.fehaMarketSoundButton;
+      }
+    }
 
-      root.removeEventListener(
-        "change",
-        handlers.changeHandler,
-        true
-      );
-
-      if (root.dataset) {
-        delete root.dataset.fehaMarketSoundBound;
+    for (const [select,handler] of marketSoundUX.selects ?? []) {
+      select.removeEventListener("change",handler,true);
+      if (select.dataset) {
+        delete select.dataset.fehaMarketSoundSelect;
       }
     }
 
