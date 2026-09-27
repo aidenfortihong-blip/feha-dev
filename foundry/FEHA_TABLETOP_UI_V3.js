@@ -320,6 +320,7 @@
         ability:rule.saveKey,
         label:rule.saveLabel,
         modifier,
+        die:Number(saveRoll?.dice?.[0]?.total ?? (total - modifier)),
         total,
         passed:total >= m.dc,
         margin:total - m.dc,
@@ -423,8 +424,8 @@
           '<div class="qh-resolve-state '+(save.passed?"is-pass":"is-fail")+'">'+
             '<small>'+esc(save.label).toUpperCase()+' SAVE // DC '+dc+'</small>'+
             '<b>'+save.total+' <em>'+(save.passed?"RESISTED":"FAILED")+'</em></b>'+
-            '<span>d20 '+(save.modifier>=0?"+":"")+save.modifier+
-            ' // margin '+(save.margin>=0?"+":"")+save.margin+'</span>'+
+            '<span>'+save.die+' '+(save.modifier>=0?"+ ":"− ")+Math.abs(save.modifier)+
+            ' = '+save.total+' // margin '+(save.margin>=0?"+":"")+save.margin+'</span>'+
           '</div>'
         );
 
@@ -449,7 +450,7 @@
                 '<input type="number" min="0" step="1" value="'+damage.suggested+'" data-qh-damage>'+
                 '<button type="button" data-qh-action="plus-damage">+</button>'+
               '</div>'+
-              '<span>HP '+hp.value+(hp.temp?' + '+hp.temp+' TEMP':'')+' / '+hp.max+'</span>'+
+              '<span data-qh-hp>HP '+hp.value+(hp.temp?' + '+hp.temp+' TEMP':'')+' / '+hp.max+'</span>'+
               '<button type="button" class="qh-apply-damage" data-qh-action="apply-damage" '+(!canApplyDamage?'disabled':'')+'>'+
                 (canApplyDamage?"APPLY DAMAGE":"GM PERMISSION REQUIRED")+
               '</button>'+
@@ -1509,6 +1510,20 @@
 
             input.disabled = true;
 
+            const hpReadout = resolution?.querySelector?.("[data-qh-hp]");
+            if (hpReadout) {
+              hpReadout.textContent =
+                "HP "+result.after.value+
+                (result.after.temp ? " + "+result.after.temp+" TEMP" : "")+
+                " / "+result.after.max;
+            }
+
+            for (const adjuster of resolution?.querySelectorAll?.(
+              '[data-qh-action="minus-damage"],[data-qh-action="plus-damage"]'
+            ) ?? []) {
+              adjuster.disabled = true;
+            }
+
             await ChatMessage.create({
               speaker:ChatMessage.getSpeaker({actor}),
               content:
@@ -1644,6 +1659,7 @@
 
           const liveRoot = document.getElementById(JACK_ID);
           if (liveRoot?.isConnected) {
+            delete liveRoot.dataset.executing;
             showResolution(liveRoot,resolution);
           }
 
