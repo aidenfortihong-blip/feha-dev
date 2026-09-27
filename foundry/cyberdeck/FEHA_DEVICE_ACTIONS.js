@@ -404,18 +404,21 @@
 
     if (!result && cap === "REVEAL_NETWORK") {
       const approvals = core.module("deviceApprovals");
+      const revealUserId =
+        context?.requestingUserId ??
+        game.user?.id;
 
       const revealResult =
         game.user?.isGM
           ? {
               count:await devices.revealCustomDevices?.(
                 device.sceneId,
-                game.user?.id
+                revealUserId
               )
             }
           : await approvals?.requestReveal?.(
               device.sceneId,
-              game.user?.id
+              revealUserId
             );
 
       await genericState(
