@@ -1,7 +1,7 @@
 {
-  "version": "0.9.9",
+  "version": "0.9.10",
   "updated": "2026-09-27",
-  "scope": "camera-placement-surface-pan-overscan",
+  "scope": "window-capture-camera-input",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -58,7 +58,11 @@
     "Added an explicit transparent camera-placement interaction surface above the transformed JACK IN world",
     "When CAMERA mode is active, left pointerdown is owned directly by that placement surface and reports captured map coordinates before persistence",
     "Viewport panning now has overscan padding at every zoom level, including 100% and zoomed-out states",
-    "RMB drag may intentionally reveal some empty margin at scene edges so the tabletop can always be repositioned"
+    "RMB drag may intentionally reveal some empty margin at scene edges so the tabletop can always be repositioned",
+    "Camera authoring now captures the next left mousedown at window capture phase and checks coordinates against the JACK IN map rectangle",
+    "Camera placement no longer depends on descendant hit-testing or the camera overlay receiving pointer events",
+    "The camera placement overlay is visual-only again so it cannot block JACK IN interactions",
+    "Pan overscan increased to roughly 22% horizontal and 24% vertical padding, with larger minimum pixel margins, so RMB drag remains obvious at 100% zoom"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
