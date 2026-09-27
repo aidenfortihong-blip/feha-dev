@@ -1,7 +1,7 @@
 {
-  "version": "0.10.14",
+  "version": "0.10.15",
   "updated": "2026-09-27",
-  "scope": "no-scroll-center-fit",
+  "scope": "network-telemetry-target-card-states",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -60,7 +60,11 @@
     "Removed vertical scrolling from the main Cyberdeck center content",
     "Software Library now consumes only the remaining center-column height instead of forcing a fixed minimum",
     "Empty Software Library panel fills the available remainder while keeping both labels fully visible",
-    "Reduced loaded Quickhack card minimum height slightly so shorter windows still fit without scrolling"
+    "Reduced loaded Quickhack card minimum height slightly so shorter windows still fit without scrolling",
+    "Replaced redundant right-rail Deck Status numbers with an animated Network Telemetry panel",
+    "Network Telemetry now visualizes Operator, Deck, Software, and Scene Link routing with animated packets and scan motion",
+    "Target-card hover now blacks out the card for a clearer inspection state",
+    "Selected JACK IN targets now use cyan lock styling instead of the previous yellow treatment"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
