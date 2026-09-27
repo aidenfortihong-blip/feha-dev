@@ -1,7 +1,7 @@
 {
-  "version": "0.10.24",
+  "version": "0.10.25",
   "updated": "2026-09-27",
-  "scope": "topology-readable-zoom",
+  "scope": "actor-token-topology-authority",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -99,7 +99,11 @@
     "Moved endpoint relays farther along the true operator-to-token route and moved Scene Gate outside the operator core",
     "Kept relay boxes and relay labels constant screen-size at every zoom",
     "Reduced actor-card zoom shrink to a small readable amount instead of allowing deep-zoom collapse",
-    "Preserved actor token anchors as authoritative while keeping topology/route geometry visually layered above the scene"
+    "Preserved actor token anchors as authoritative while keeping topology/route geometry visually layered above the scene",
+    "Real scene Token coordinates now have absolute authority over JACK IN actor-card positions",
+    "Actor cards no longer participate in collision displacement; Civil Corps, Derke, and other actors render centered on their actual scene token coordinates",
+    "Actor leader lines collapse to zero length because actor cards are no longer displaced from their token anchors",
+    "This pass intentionally does not change relay topology, zoom behavior, sizing, or styling"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
