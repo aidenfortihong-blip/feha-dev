@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.31";
+  const VERSION = "0.10.32";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1035,10 +1035,39 @@
       ? percentOf(operatorToken)
       : {x:50,y:52};
 
+    const operatorPlaceable =
+      operatorToken
+        ? (
+            canvas?.tokens?.get?.(operatorToken.id) ??
+            canvas?.tokens?.placeables?.find?.(
+              candidate => candidate.id === operatorToken.id
+            ) ??
+            null
+          )
+        : null;
+
+    const operatorPixelWidth = operatorToken
+      ? Math.max(
+          1,
+          Number(operatorPlaceable?.w) ||
+          Number(operatorToken.width ?? 1)*gridSize
+        )
+      : gridSize;
+
+    const operatorPixelHeight = operatorToken
+      ? Math.max(
+          1,
+          Number(operatorPlaceable?.h) ||
+          Number(operatorToken.height ?? 1)*gridSize
+        )
+      : gridSize;
+
     const operator = {
       x:operatorPos.x,
       y:operatorPos.y,
-      tokenId:operatorToken?.id ?? null
+      tokenId:operatorToken?.id ?? null,
+      tokenWidthPct:(operatorPixelWidth/rw)*100,
+      tokenHeightPct:(operatorPixelHeight/rh)*100
     };
 
     const endpointTokens = allSceneTokens.filter(token => {
@@ -1456,6 +1485,45 @@
     return {zoom,panX,panY};
   }
 
+  function syncJackOperatorTokenSize(root) {
+    const world = root?.querySelector?.(".jack-world");
+    const operator = world?.querySelector?.(".jack-operator");
+    if (!world || !operator) return;
+
+    const widthPct =
+      Math.max(
+        0,
+        Number(operator.dataset.tokenWidthPct) || 0
+      );
+
+    const heightPct =
+      Math.max(
+        0,
+        Number(operator.dataset.tokenHeightPct) || 0
+      );
+
+    const tokenWorldWidth =
+      world.clientWidth*(widthPct/100);
+
+    const tokenWorldHeight =
+      world.clientHeight*(heightPct/100);
+
+    const tokenWorldSize = Math.max(
+      32,
+      Math.round(
+        Math.max(
+          tokenWorldWidth,
+          tokenWorldHeight
+        )
+      )
+    );
+
+    operator.style.setProperty(
+      "--jack-operator-size",
+      tokenWorldSize+"px"
+    );
+  }
+
   function syncJackActorConstantSize(root) {
     const world = root?.querySelector?.(".jack-world");
     if (!world) return;
@@ -1622,6 +1690,7 @@
       readout.textContent = Math.round(state.zoom*100)+"%";
     }
 
+    syncJackOperatorTokenSize(root);
     syncJackActorConstantSize(root);
     syncJackRouteScale(root,state);
 
@@ -2192,7 +2261,9 @@
           <div class="jack-operator"
             style="--jack-x:${net.operator.x.toFixed(2)}%;--jack-y:${net.operator.y.toFixed(2)}%"
             data-jack-anchor-x="${net.operator.x.toFixed(4)}"
-            data-jack-anchor-y="${net.operator.y.toFixed(4)}">
+            data-jack-anchor-y="${net.operator.y.toFixed(4)}"
+            data-token-width-pct="${Number(net.operator.tokenWidthPct||0).toFixed(6)}"
+            data-token-height-pct="${Number(net.operator.tokenHeightPct||0).toFixed(6)}">
             <div></div>
             <div class="jack-operator-hub">${operatorPorts}</div>
             <img src="${esc(portrait(actor))}" alt="">
