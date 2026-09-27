@@ -637,6 +637,89 @@
     HTMLMediaElement.prototype.play = routedPlay;
 
     const clickHandler = event => {
+      const market = event.target?.closest?.("#adk-market-15");
+
+      if (market) {
+        const button =
+          event.target?.closest?.("button,[role='button']") ??
+          null;
+
+        if (!button || button.disabled) return;
+
+        if (button.matches(".close-market")) {
+          void play("drawer_close", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("#top-directory,#back-directory")) {
+          void play("drawer_close", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("#adk-market-wallet")) {
+          void play("drawer_open", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("[data-shop]")) {
+          void play("drawer_open", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("[data-shop-tier]")) {
+          void play("subsystem_select", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("#reroll-stock")) {
+          void play("scan", {cooldown:0});
+          return;
+        }
+
+        if (button.matches(".detail-btn[data-open-item]")) {
+          void play("scan", {cooldown:0});
+          return;
+        }
+
+        if (button.matches(".item-art-wrap[data-open-item]")) {
+          void play("cyberware_select", {cooldown:0});
+          return;
+        }
+
+        if (button.matches(".item-name[data-open-item]")) {
+          void play("drawer_open", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("[data-buy-item]")) {
+          void play("install", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("[data-item-tier]")) {
+          void play("cyberware_select", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("[data-category]")) {
+          void play("select", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("#reset-filters")) {
+          void play("remove", {cooldown:0});
+          return;
+        }
+
+        if (button.matches("[data-page]")) {
+          void play("select", {cooldown:0});
+          return;
+        }
+
+        void play("select", {cooldown:0});
+        return;
+      }
+
       const root = event.target?.closest?.("#adk-chrome-manager-34");
       if (!root) return;
 
@@ -678,6 +761,16 @@
     };
 
     const changeHandler = event => {
+      if (event.target?.matches?.("#adk-market-15 #adk-market-actor")) {
+        void play("actor_switch", {cooldown:0});
+        return;
+      }
+
+      if (event.target?.matches?.("#adk-market-15 #market-maker,#adk-market-15 #market-slot")) {
+        void play("subsystem_select", {cooldown:0});
+        return;
+      }
+
       if (event.target?.matches?.("#adk-chrome-manager-34 #actor-select")) {
         void play("actor_switch", {cooldown:110});
       }
@@ -3180,7 +3273,6 @@ if (!game.user?.isGM) {
   globalThis.FEHA_DEV_DIAGNOSTICS = globalThis.FEHA_DEV_DIAGNOSTICS ?? false;
 
   installSoundEngine();
-  installMarketSoundUX();
   installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
