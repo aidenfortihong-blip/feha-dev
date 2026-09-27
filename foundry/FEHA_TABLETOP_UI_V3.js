@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.36";
+  const VERSION = "0.10.37";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -3189,19 +3189,86 @@
       if (action === "target") {
         const token =
           canvas?.tokens?.get?.(button.dataset.tokenId) ??
-          canvas?.tokens?.placeables?.find?.(t => t.id === button.dataset.tokenId) ??
+          canvas?.tokens?.placeables?.find?.(
+            t => t.id === button.dataset.tokenId
+          ) ??
           null;
-        if (!token) return ui?.notifications?.warn?.("That scene token is no longer available.");
+
+        if (!token) {
+          return ui?.notifications?.warn?.(
+            "That scene token is no longer available."
+          );
+        }
+
+        const tokenId =
+          token.id ??
+          token.document?.id ??
+          button.dataset.tokenId;
+
+        const alreadyTargeted =
+          [...(game.user?.targets ?? [])].some(
+            current =>
+              (current?.id ?? current?.document?.id) === tokenId
+          );
+
         try {
-          await token.setTarget(true,{user:game.user,releaseOthers:true,groupSelection:true});
-          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
-          setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),90);
+          if (alreadyTargeted) {
+            await token.setTarget(
+              false,
+              {
+                user:game.user,
+                releaseOthers:false,
+                groupSelection:true
+              }
+            );
+
+            globalThis.FEHA_SOUNDS?.play?.(
+              "drawer_close",
+              {cooldown:0}
+            );
+          } else {
+            await token.setTarget(
+              true,
+              {
+                user:game.user,
+                releaseOthers:true,
+                groupSelection:true
+              }
+            );
+
+            globalThis.FEHA_SOUNDS?.play?.(
+              "scan",
+              {cooldown:0}
+            );
+
+            setTimeout(
+              () =>
+                globalThis.FEHA_SOUNDS?.play?.(
+                  "confirm",
+                  {cooldown:0}
+                ),
+              90
+            );
+          }
         } catch (err) {
-          console.warn("FEHA V3 target selection failed",err);
-          globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
-          ui?.notifications?.warn?.("Could not acquire that scene target.");
+          console.warn(
+            "FEHA V3 target toggle failed",
+            err
+          );
+
+          globalThis.FEHA_SOUNDS?.play?.(
+            "error",
+            {cooldown:0}
+          );
+
+          ui?.notifications?.warn?.(
+            alreadyTargeted
+              ? "Could not release that scene target."
+              : "Could not acquire that scene target."
+          );
           return;
         }
+
         updateJackTargetUI(root,actor);
         return;
       }
