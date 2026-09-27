@@ -1,8 +1,11 @@
 {
-  "version": "0.10.51",
+  "version": "0.10.52",
   "updated": "2026-09-27",
-  "scope": "remove-market-cap-pill",
+  "scope": "credits-wallet-readability",
   "notes": [
+    "Removed the redundant CANONICAL CURRENCY / CREDITS footer block from the Credits Wallet.",
+    "Increased readability across the entire wallet: larger command header, labels, holder name, account line, live-balance copy, balance amount, edit label/input, synced indicator, close control, and SAVE CREDITS button.",
+    "Slightly enlarged the wallet frame and spacing so the larger typography remains clean rather than cramped.",
     "Removed the stale CAP used/max pill from the Market header. Cyberware capacity remains owned/displayed by the Chrome system instead of Market.",
     "Added a new FEHA Credits Wallet showing the selected actor name and live Credits balance, with direct numeric editing and SAVE CREDITS.",
     "Credits is now canonical at flags.fleshEnshrouded.credits. Existing character balances migrate from the old GP/Eurodollar setup without summing duplicate mirror fields.",
