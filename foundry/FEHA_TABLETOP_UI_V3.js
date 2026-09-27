@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.8.11";
+  const VERSION = "0.9.0";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -869,6 +869,23 @@
     return true;
   }
 
+  function cyberModule(name) {
+    return (
+      globalThis.FEHA_CYBER_CORE?.module?.(name) ??
+      game?.adk?.cyberdeck?.module?.(name) ??
+      null
+    );
+  }
+
+  function sceneNetworkDevices(scene) {
+    try {
+      return cyberModule("devices")?.scanScene?.(scene) ?? [];
+    } catch (err) {
+      console.warn("FEHA V3 // Network Device scan failed",err);
+      return [];
+    }
+  }
+
   function sceneModel(actor) {
     const scene = canvas?.scene ?? null;
 
@@ -877,6 +894,7 @@
         scene:null,
         backgroundSrc:"",
         nodes:[],
+        devices:[],
         relays:[],
         links:[],
         selected:null,
@@ -1214,6 +1232,47 @@
       });
     }
 
+    const networkDevices = sceneNetworkDevices(scene)
+      .map((device,index) => ({
+        ...device,
+        index,
+        x:Number(device.xPct),
+        y:Number(device.yPct)
+      }))
+      .filter(device =>
+        Number.isFinite(device.x) &&
+        Number.isFinite(device.y)
+      );
+
+    // Devices join the same topology graph but keep their exact scene
+    // coordinates. They never need to know how JACK IN renders them.
+    for (const device of networkDevices) {
+      const relay = relays.length
+        ? [...relays].sort((a,b) => {
+            const da = Math.hypot(device.x-a.x,device.y-a.y);
+            const db = Math.hypot(device.x-b.x,device.y-b.y);
+            return da-db;
+          })[0]
+        : gateway;
+
+      if (!relay) continue;
+
+      links.push({
+        id:"link-device-"+device.id,
+        from:relay.id,
+        to:"device:"+device.id,
+        x1:relay.x,
+        y1:relay.y,
+        x2:device.x,
+        y2:device.y,
+        kind:"device",
+        selected:false,
+        relation:"device",
+        targetId:null,
+        deviceId:device.id
+      });
+    }
+
     const backgroundSrc =
       String(
         scene?.background?.src ??
@@ -1225,6 +1284,7 @@
       scene,
       backgroundSrc,
       nodes,
+      devices:networkDevices,
       relays,
       links,
       selected,
