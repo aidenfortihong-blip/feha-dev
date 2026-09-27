@@ -640,86 +640,9 @@
     const clickHandler = event => {
       const market = event.target?.closest?.("#adk-market-15");
 
-      if (market) {
-        const button =
-          event.target?.closest?.("button,[role='button']") ??
-          null;
-
-        if (!button || button.disabled) return;
-
-        if (button.matches(".close-market")) {
-          void play("drawer_close", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("#top-directory,#back-directory")) {
-          void play("drawer_close", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("#adk-market-wallet")) {
-          void play("drawer_open", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("[data-shop]")) {
-          void play("drawer_open", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("[data-shop-tier]")) {
-          void play("subsystem_select", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("#reroll-stock")) {
-          void play("scan", {cooldown:0});
-          return;
-        }
-
-        if (button.matches(".detail-btn[data-open-item]")) {
-          void play("scan", {cooldown:0});
-          return;
-        }
-
-        if (button.matches(".item-art-wrap[data-open-item]")) {
-          void play("cyberware_select", {cooldown:0});
-          return;
-        }
-
-        if (button.matches(".item-name[data-open-item]")) {
-          void play("drawer_open", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("[data-buy-item]")) {
-          void play("install", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("[data-item-tier]")) {
-          void play("cyberware_select", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("[data-category]")) {
-          void play("select", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("#reset-filters")) {
-          void play("remove", {cooldown:0});
-          return;
-        }
-
-        if (button.matches("[data-page]")) {
-          void play("select", {cooldown:0});
-          return;
-        }
-
-        void play("select", {cooldown:0});
-        return;
-      }
+      // Market uses pointerdown instead of click so its sound fires before
+      // Market rerenders/replaces the pressed control.
+      if (market) return;
 
       const root = event.target?.closest?.("#adk-chrome-manager-34");
       if (!root) return;
@@ -761,6 +684,136 @@
       }
     };
 
+    const marketPointerHandler = event => {
+      if (event.button != null && event.button !== 0) return;
+
+      const market = event.target?.closest?.("#adk-market-15");
+      if (!market) return;
+
+      const target =
+        event.target?.closest?.(
+          "[data-shop]," +
+          ".shop-card," +
+          "[data-shop-tier]," +
+          ".tier-choice," +
+          "[data-item-tier]," +
+          ".mk-filter," +
+          ".detail-btn[data-open-item]," +
+          ".item-art-wrap[data-open-item]," +
+          ".item-name[data-open-item]," +
+          "[data-buy-item]," +
+          "[data-category]," +
+          "#reroll-stock," +
+          "#reset-filters," +
+          "[data-page]," +
+          "#adk-market-wallet," +
+          "#top-directory," +
+          "#back-directory," +
+          ".close-market," +
+          ".icon-btn," +
+          "button," +
+          "[role='button']"
+        ) ??
+        null;
+
+      if (!target || !market.contains(target) || target.disabled) return;
+
+      // Storefronts: a bigger/opening cue.
+      if (target.matches("[data-shop],.shop-card")) {
+        void play("drawer_open",{cooldown:0});
+        return;
+      }
+
+      // Vendor clearance tier tabs.
+      if (target.matches("[data-shop-tier],.tier-choice")) {
+        void play("subsystem_select",{cooldown:0});
+        return;
+      }
+
+      // Item Mk filter tabs.
+      if (target.matches("[data-item-tier],.mk-filter")) {
+        void play("cyberware_select",{cooldown:0});
+        return;
+      }
+
+      if (target.matches(".close-market,#top-directory,#back-directory")) {
+        void play("drawer_close",{cooldown:0});
+        return;
+      }
+
+      if (target.matches("#adk-market-wallet")) {
+        void play("drawer_open",{cooldown:0});
+        return;
+      }
+
+      if (target.matches("#reroll-stock")) {
+        void play("scan",{cooldown:0});
+        return;
+      }
+
+      if (target.matches(".detail-btn[data-open-item]")) {
+        void play("scan",{cooldown:0});
+        return;
+      }
+
+      if (target.matches(".item-art-wrap[data-open-item]")) {
+        void play("cyberware_select",{cooldown:0});
+        return;
+      }
+
+      if (target.matches(".item-name[data-open-item]")) {
+        void play("drawer_open",{cooldown:0});
+        return;
+      }
+
+      if (target.matches("[data-buy-item]")) {
+        void play("install",{cooldown:0});
+        return;
+      }
+
+      if (target.matches("[data-category]")) {
+        void play("select",{cooldown:0});
+        return;
+      }
+
+      if (target.matches("#reset-filters")) {
+        void play("remove",{cooldown:0});
+        return;
+      }
+
+      if (target.matches("[data-page]")) {
+        void play("select",{cooldown:0});
+        return;
+      }
+
+      void play("select",{cooldown:0});
+    };
+
+    const marketHoverHandler = event => {
+      const market = event.target?.closest?.("#adk-market-15");
+      if (!market) return;
+
+      // Hover audio is intentionally limited to the three large interactive
+      // groups the user asked for. No global Market hover spam.
+      const target =
+        event.target?.closest?.(
+          "[data-shop]," +
+          ".shop-card," +
+          "[data-shop-tier]," +
+          ".tier-choice," +
+          "[data-item-tier]," +
+          ".mk-filter"
+        ) ??
+        null;
+
+      if (!target || !market.contains(target)) return;
+
+      const related = event.relatedTarget;
+      if (related && target.contains?.(related)) return;
+
+      void play("hover",{cooldown:65});
+    };
+
     const changeHandler = event => {
       if (event.target?.matches?.("#adk-market-15 #adk-market-actor")) {
         void play("actor_switch", {cooldown:0});
@@ -777,6 +830,8 @@
       }
     };
 
+    document.addEventListener("pointerdown", marketPointerHandler, true);
+    document.addEventListener("pointerover", marketHoverHandler, true);
     document.addEventListener("click", clickHandler, true);
     document.addEventListener("change", changeHandler, true);
 
@@ -821,6 +876,8 @@
         if (disposed) return;
         disposed = true;
 
+        document.removeEventListener("pointerdown", marketPointerHandler, true);
+        document.removeEventListener("pointerover", marketHoverHandler, true);
         document.removeEventListener("click", clickHandler, true);
         document.removeEventListener("change", changeHandler, true);
 
