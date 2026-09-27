@@ -1,7 +1,7 @@
 {
-  "version": "0.10.5",
+  "version": "0.10.6",
   "updated": "2026-09-27",
-  "scope": "map-brightness-tweak",
+  "scope": "loadout-readability-pass",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -21,7 +21,11 @@
     "Increased target lock and viewport control sizing",
     "Reduced Scene background prominence so topology and interactables read more clearly",
     "Expanded endpoint collision solver spacing and search rings to support the larger cards without stacking",
-    "Slightly increased JACK IN Scene background opacity and brightness while keeping topology/UI as the visual priority"
+    "Slightly increased JACK IN Scene background opacity and brightness while keeping topology/UI as the visual priority",
+    "Increased Cyberdeck loadout typography across header, operator rail, RAM panel, loaded quickhacks, software library, and right-side status rail",
+    "Enlarged quickhack icons, EJECT controls, empty-slot labels, RAM segments, and key status values",
+    "Expanded left and right rails slightly to give readable text more room without changing the overall visual language",
+    "Increased JACK IN launcher text and metadata sizing while preserving its existing high-contrast treatment"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
