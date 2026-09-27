@@ -9,17 +9,34 @@
     throw new Error("FEHA_DEVICE_ACTIONS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.9.0";
+  const VERSION = "0.9.3";
   const FLAG_SCOPE = "fleshEnshrouded";
   const DEVICE_FLAG = "networkDevice";
   const sessionAccess = new Set();
 
-  function accessKey(actor,device) {
+  function accessTuple(actor,device) {
     return [
-      actor?.id ?? "actor",
-      device?.sceneId ?? canvas?.scene?.id ?? "scene",
-      device?.id ?? "device"
-    ].join(":");
+      String(actor?.id ?? "actor"),
+      String(device?.sceneId ?? canvas?.scene?.id ?? "scene"),
+      String(device?.id ?? "device")
+    ];
+  }
+
+  function accessKey(actor,device) {
+    // Device IDs intentionally contain ":" (door:abc, probe:xyz, doc:...).
+    // JSON encoding keeps the cache key reversible without delimiter bugs.
+    return JSON.stringify(accessTuple(actor,device));
+  }
+
+  function parseAccessKey(key) {
+    try {
+      const tuple = JSON.parse(String(key));
+      return Array.isArray(tuple) && tuple.length === 3
+        ? tuple.map(String)
+        : null;
+    } catch {
+      return null;
+    }
   }
 
   function hasAccess(actor,device) {
@@ -39,9 +56,16 @@
     const deviceId = device?.id ?? null;
 
     for (const key of [...sessionAccess]) {
-      const [a,,d] = key.split(":");
-      if (actorId && a !== actorId) continue;
-      if (deviceId && d !== deviceId) continue;
+      const tuple = parseAccessKey(key);
+      if (!tuple) {
+        // Stale keys from an older hot-loaded build are never trustworthy.
+        sessionAccess.delete(key);
+        continue;
+      }
+
+      const [a,,d] = tuple;
+      if (actorId && a !== String(actorId)) continue;
+      if (deviceId && d !== String(deviceId)) continue;
       sessionAccess.delete(key);
     }
   }
