@@ -1,8 +1,12 @@
 {
-  "version": "0.10.59",
+  "version": "0.10.60",
   "updated": "2026-09-27",
-  "scope": "gateway-and-market-sound-hard-fix",
+  "scope": "disable-gateway-soften-market-audio",
   "notes": [
+    "Disabled the custom Entry Gateway DOM normalizer because its mutation loop could freeze Foundry; the native gateway is left untouched for stability.",
+    "Added per-call gain support to the FEHA sound engine so Market can be quieter without changing Cyberdeck or Chrome Manager levels.",
+    "Storefront cards now play a soft immediate select click on press and a separate softer drawer-open cue after the storefront view appears.",
+    "Reduced Market hover/click volume across storefront, vendor tier, Mk filters, details, buy, reroll, reset, pagination, wallet, back/close, and Market dropdowns.",
     "Moved Entry Gateway normalization into latest-dev.js so the user's existing DEV LOADER macro definitely executes it without needing a new hardcoded loader file.",
     "Entry Gateway now rewrites the title to CYBERPUNK and reduces/reorders the native candidate DOM to Ponyboy, Derke, Sasha, Zach with 04 RECORDS.",
     "Derke is functionally proxied through the legacy Jing candidate during native gateway input/authentication, then rewritten visually to Derke with Derke portrait.",
