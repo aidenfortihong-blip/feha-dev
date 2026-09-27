@@ -1,8 +1,11 @@
 {
-  "version": "0.10.61",
+  "version": "0.10.62",
   "updated": "2026-09-27",
-  "scope": "safe-entry-gateway-one-shot-patch",
+  "scope": "entry-gateway-boot-phase-timing",
   "notes": [
+    "Fixed Entry Gateway first-half timing: the dev patch now runs while the native async boot sequence is still in progress instead of waiting for open()/reopen() to resolve.",
+    "Gateway receives bounded rewrite passes at 0, 50, 150, 350, 700, 1200, and 1800ms during BOOTING, then a final pass after native boot completes.",
+    "No MutationObserver or continuous polling was added; the anti-freeze one-shot architecture remains intact.",
     "Re-enabled Entry Gateway customization using a safe one-shot patch with no MutationObserver.",
     "Gateway title is rewritten to CYBERPUNK and candidate list is reduced/reordered to Ponyboy, Derke, Sasha, Zach with 04 RECORDS.",
     "Legacy Jing remains the hidden functional auth slot for Derke; capture-phase input proxy preserves native matching/authentication while visible UI stays Derke.",
