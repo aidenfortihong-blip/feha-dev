@@ -1,8 +1,13 @@
 {
-  "version": "0.10.41",
+  "version": "0.10.42",
   "updated": "2026-09-27",
-  "scope": "cyberdeck-sound-coverage",
+  "scope": "click-sound-rebalance",
   "notes": [
+    "Removed blanket hover audio from Cyberdeck/JACK IN; sound now triggers from clicks/actions only.",
+    "Rebalanced click feedback so different controls reuse different existing Cyberpunk UI samples instead of one universal click.",
+    "Zoom in uses select; zoom out uses subsystem_select; Quickhack +/- uses cyberware_select.",
+    "Device capability clicks and Quickhack APPLY EFFECT use subsystem_select; APPLY DAMAGE uses cyberware_select.",
+    "Preserved existing scan/confirm/error/install/remove/drawer sequences for major actions and outcomes.",
     "Sound coverage rerun: preserved the existing Cyberdeck/JACK IN sound palette and added hover feedback to active buttons/selects.",
     "Added immediate scan feedback when BREACH starts and select feedback when a Network Device capability is pressed, while keeping the existing confirm/error result sounds.",
     "Added select clicks to Quickhack damage +/- controls and APPLY DAMAGE / APPLY EFFECT presses so those controls are no longer silent.",
