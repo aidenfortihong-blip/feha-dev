@@ -1773,7 +1773,7 @@
     };
 
     // JACK IN NAVIGATION: RMB only.
-    // Camera placement is handled by its own full-map button surface.
+    // Camera placement lives entirely in FEHA_CAMERA_PLACEMENT.js.
     space.onpointerdown = event => {
       if (event.button !== 2) return;
 
