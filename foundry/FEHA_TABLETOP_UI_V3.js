@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.30";
+  const VERSION = "0.10.31";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1594,11 +1594,14 @@
         String(relayReadability/zoom)
       );
 
-      // Wielder/operator core: fixed screen size at every zoom,
-      // deliberately 1.5x the baseline visual size.
+      // Wielder/operator core:
+      // normal size at 100% zoom, growing smoothly to 1.5x at max zoom.
+      const operatorScreenScale =
+        1 + ((zoom-1) / 2) * .5;
+
       world.style.setProperty(
         "--jack-operator-scale",
-        String(1.5/zoom)
+        String(operatorScreenScale/zoom)
       );
 
       world.style.setProperty(
