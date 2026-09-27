@@ -383,7 +383,13 @@
 
     for (const wall of collectionContents(scene.walls)) {
       const door = doorRecord(scene,wall);
-      if (door) records.set(door.id,door);
+
+      if (door) {
+        // Door-specific normalization already consumes the networkDevice flag.
+        // Do not create a second tagged endpoint for the same Wall.
+        records.set(door.id,door);
+        continue;
+      }
 
       const tagged = taggedRecord(scene,wall,"tagged-wall");
       if (tagged && visibleToCurrentUser(tagged)) {
