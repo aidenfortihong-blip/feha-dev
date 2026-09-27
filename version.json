@@ -1,7 +1,7 @@
 {
-  "version": "0.10.10",
+  "version": "0.10.11",
   "updated": "2026-09-27",
-  "scope": "side-typography-cleanup",
+  "scope": "software-library-empty-state",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -44,7 +44,10 @@
     "Removed decorative magenta accent lines above right-rail section headings",
     "Increased right-rail magenta heading size and support/passive subtext readability",
     "Increased installed Cyberdeck manufacturer/MK text size and contrast",
-    "Increased Cyberdeck RAM, Slots, and QH DC label/value sizing to match the surrounding status treatment"
+    "Increased Cyberdeck RAM, Slots, and QH DC label/value sizing to match the surrounding status treatment",
+    "Expanded the empty Software Library panel to fill the available library width",
+    "Increased the ALL OWNED QUICKHACKS ARE LOADED message size, contrast, spacing, and empty-state height",
+    "Added a subtle SOFTWARE LIBRARY eyebrow label so the empty state reads as an intentional finished panel"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
