@@ -1,8 +1,14 @@
 {
-  "version": "0.10.49",
+  "version": "0.10.50",
   "updated": "2026-09-27",
-  "scope": "market-global-sound-router",
+  "scope": "credits-wallet-canonical-currency",
   "notes": [
+    "Added a new FEHA Credits Wallet showing the selected actor name and live Credits balance, with direct numeric editing and SAVE CREDITS.",
+    "Credits is now canonical at flags.fleshEnshrouded.credits. Existing character balances migrate from the old GP/Eurodollar setup without summing duplicate mirror fields.",
+    "Legacy ADKWallet getEuro/setEuro/add/spend/format calls remain compatibility aliases to the Credits balance so Market purchase/refund logic continues to use the same money.",
+    "Legacy nested wallet euro/eurodollars/money fields are cleaned during writes. D&D GP and root eurodollars remain compatibility mirrors only; Credits is authoritative.",
+    "Visible ADK currency labels are normalized from €$/Eurodollar/eddies to CR/Credits across Market, Chrome Manager, Cyberdeck, and the new wallet.",
+    "Wallet saves refresh open Market/Chrome surfaces and include FEHA scan/confirm/error/close/open sound feedback.",
     "Moved Market audio into the same proven global FEHA sound router used by Chrome Manager instead of relying on a separate Market binder.",
     "Storefront cards now use drawer_open; vendor tier buttons use subsystem_select; ITEM MK uses cyberware_select; category filters and pagination use select.",
     "DETAILS uses scan; item art uses cyberware_select; item names use drawer_open; BUY uses install; reroll uses scan; reset uses remove; wallet uses drawer_open; back/close use drawer_close.",
