@@ -1,7 +1,7 @@
 {
-  "version": "0.10.12",
+  "version": "0.10.13",
   "updated": "2026-09-27",
-  "scope": "jack-in-target-stability-text",
+  "scope": "library-fill-target-lock-feedback",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -51,7 +51,12 @@
     "Target selection in JACK IN now updates the existing DOM in place instead of calling renderJack(), preventing animated Scene backgrounds from restarting when a target is clicked",
     "The targetToken hook now patches target state in place rather than queueing a full JACK IN rebuild",
     "Added stable target IDs to network route elements so selected-route styling can update without replacing the Scene background element",
-    "Increased JACK IN actor-card, operator, relay, target-lock, Quickhack Execution, Quickhack card, RUN, and viewport-control typography"
+    "Increased JACK IN actor-card, operator, relay, target-lock, Quickhack Execution, Quickhack card, RUN, and viewport-control typography",
+    "Software Library empty state now spans both grid columns and fills the remaining lower library area",
+    "Increased SOFTWARE LIBRARY eyebrow text and ALL OWNED QUICKHACKS ARE LOADED message size",
+    "Target-state updates no longer rerun the endpoint collision solver",
+    "Target cards freeze their geometry before selection classes change so clicking a target cannot resize or distort the card",
+    "Strengthened selected-target feedback with a yellow outline, lock glow, LOCKED badge, target-lock caption, and brighter anchor/tether"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
