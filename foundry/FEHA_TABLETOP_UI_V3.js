@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.32";
+  const VERSION = "0.10.33";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -2287,10 +2287,16 @@
           <b>${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
         </div>
 
-        <div class="jack-lock-readout">
-          <small>TARGET LOCK</small>
-          <b>${selected?esc(selected.displayName):"NO TARGET"}</b>
-          <span>${net.relays.length} RELAYS // ${net.nodes.length + 1} SIGNATURES // OPERATOR INCLUDED</span>
+        <div class="jack-lock-readout${selected?" has-target is-"+selected.relation:""}">
+          <img class="jack-lock-portrait"
+            src="${selected?esc(selected.img):""}"
+            alt=""
+            ${selected?"":"hidden"}>
+          <div class="jack-lock-copy">
+            <small>TARGET LOCK</small>
+            <b>${selected?esc(selected.displayName):"NO TARGET"}</b>
+            <span>${selected?"LOCKED":"SELECT ACTOR"}</span>
+          </div>
         </div>
       </main>
 
@@ -2445,9 +2451,44 @@
       );
     }
 
-    const lockName = root.querySelector(".jack-lock-readout > b");
+    const lockPanel = root.querySelector(".jack-lock-readout");
+    const lockPortrait = lockPanel?.querySelector(".jack-lock-portrait");
+    const lockName = lockPanel?.querySelector(".jack-lock-copy > b");
+    const lockState = lockPanel?.querySelector(".jack-lock-copy > span");
+
+    if (lockPanel) {
+      lockPanel.classList.toggle("has-target",Boolean(selected));
+      lockPanel.classList.remove(
+        "is-hostile",
+        "is-friendly",
+        "is-neutral"
+      );
+
+      if (selected?.relation) {
+        lockPanel.classList.add("is-"+selected.relation);
+      }
+    }
+
+    if (lockPortrait) {
+      if (selected?.img) {
+        lockPortrait.src = selected.img;
+        lockPortrait.alt = selected.displayName ?? "";
+        lockPortrait.hidden = false;
+      } else {
+        lockPortrait.removeAttribute("src");
+        lockPortrait.alt = "";
+        lockPortrait.hidden = true;
+      }
+    }
+
     if (lockName) {
-      lockName.textContent = selected?.displayName ?? "NO TARGET";
+      lockName.textContent =
+        selected?.displayName ?? "NO TARGET";
+    }
+
+    if (lockState) {
+      lockState.textContent =
+        selected ? "LOCKED" : "SELECT ACTOR";
     }
 
     const actionTarget = root.querySelector(".jack-actions-title > span");
