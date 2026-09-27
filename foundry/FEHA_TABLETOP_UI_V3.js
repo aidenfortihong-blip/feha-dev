@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.12";
+  const VERSION = "0.10.0";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1743,94 +1743,6 @@
     resizeObserver?.observe?.(space);
     root.__jackResizeObserver = resizeObserver;
 
-    const cameraButton =
-      root.querySelector('[data-jack-action="place-camera"]');
-
-    cameraButton?.addEventListener("click",event => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (!game.user?.isGM) return;
-
-      const enabled =
-        root.dataset.cameraAuthorMode !== "1";
-
-      root.dataset.probeMode = "0";
-      delete root.dataset.devicePlacementMode;
-      delete root.dataset.devicePlacementId;
-
-      const liveSpace = root.querySelector(".jack-space");
-      liveSpace?.classList.remove("is-probing","is-camera-placement");
-
-      if (enabled) {
-        root.dataset.cameraAuthorMode = "1";
-        liveSpace?.classList.add("is-camera-authoring");
-        cameraButton.classList.add("is-active");
-
-        ui?.notifications?.info?.(
-          "PLACE CAMERA // LEFT-CLICK MAP POSITION // RMB DRAG TO PAN"
-        );
-      } else {
-        clearCameraAuthorMode(root);
-        ui?.notifications?.info?.("CAMERA PLACEMENT CANCELLED");
-      }
-    });
-
-    const cameraSurface =
-      root.querySelector("[data-camera-place-surface]");
-
-    cameraSurface?.addEventListener("click",async event => {
-      if (root.dataset.cameraAuthorMode !== "1") return;
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (root.dataset.cameraPlacementBusy === "1") return;
-      root.dataset.cameraPlacementBusy = "1";
-
-      const actor = actorById(root.dataset.actorId);
-
-      if (!actor) {
-        delete root.dataset.cameraPlacementBusy;
-        ui?.notifications?.error?.(
-          "Camera placement failed: operator Actor unavailable."
-        );
-        return;
-      }
-
-      const point = pointerToJackPercent(root,event);
-
-      if (!point) {
-        delete root.dataset.cameraPlacementBusy;
-        ui?.notifications?.error?.(
-          "Camera placement failed: map coordinates unavailable."
-        );
-        return;
-      }
-
-      ui?.notifications?.info?.(
-        "CAMERA SURFACE HIT // "+
-        point.xPct.toFixed(1)+"%, "+
-        point.yPct.toFixed(1)+"%"
-      );
-
-      try {
-        await authorCameraAtPoint(
-          root,
-          actor,
-          point.xPct,
-          point.yPct
-        );
-      } catch (err) {
-        delete root.dataset.cameraPlacementBusy;
-        console.error("FEHA V3 Camera placement failed",err);
-        ui?.notifications?.error?.(
-          "Camera could not be placed: "+
-          String(err?.message ?? err)
-        );
-      }
-    });
-
     root.onwheel = event => {
       if (!space.contains(event.target)) return;
       if (event.target?.closest?.(".qh-resolution")) return;
@@ -2111,8 +2023,6 @@
           ${deviceNodes}
         </div>
 
-        <button type="button" class="jack-camera-place-layer" data-camera-place-surface aria-label="Place camera"></button>
-
         <div class="jack-viewport-controls">
           <button type="button" data-jack-action="zoom-out" title="Zoom out">−</button>
           <b data-jack-zoom-readout>100%</b>
@@ -2126,7 +2036,7 @@
         </div>
 
         <div class="jack-net-caption">
-          <small>TOPOLOGY // CAMERA = PLACE // WHEEL = ZOOM // RMB DRAG = PAN</small>
+          <small>TOPOLOGY // WHEEL = ZOOM // RMB DRAG = PAN</small>
           <b>${net.relays.length} RELAYS // ${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
         </div>
 
@@ -2146,112 +2056,6 @@
         <div class="jack-hacks">${hacks}</div>
       </footer>
     `;
-  }
-
-  function pointerToJackPercent(root,event) {
-    const space = root?.querySelector?.(".jack-space");
-    if (!space) return null;
-
-    const rect = space.getBoundingClientRect();
-    const current = jackViewportState(root);
-
-    const worldX =
-      (event.clientX - rect.left - current.panX) /
-      current.zoom;
-
-    const worldY =
-      (event.clientY - rect.top - current.panY) /
-      current.zoom;
-
-    return {
-      xPct:Math.max(
-        0,
-        Math.min(100,(worldX/space.clientWidth)*100)
-      ),
-      yPct:Math.max(
-        0,
-        Math.min(100,(worldY/space.clientHeight)*100)
-      )
-    };
-  }
-
-  function clearCameraAuthorMode(root) {
-    if (!root) return;
-
-    delete root.dataset.cameraAuthorMode;
-    delete root.dataset.cameraPlacementBusy;
-
-    root
-      .querySelector(".jack-space")
-      ?.classList.remove("is-camera-authoring");
-
-    root
-      .querySelector('[data-jack-action="place-camera"]')
-      ?.classList.remove("is-active");
-  }
-
-  async function authorCameraAtPoint(root,actor,xPct,yPct) {
-    if (!game.user?.isGM) {
-      throw new Error("Only a GM may place Cameras directly.");
-    }
-
-    const deviceService = cyberModule("devices");
-    const scene = canvas?.scene;
-
-    if (!deviceService?.upsertCustomDevice || !scene) {
-      throw new Error("Camera placement service is unavailable.");
-    }
-
-    const type = "camera";
-    const accessScope =
-      deviceService.typeDef?.(type)?.defaultScope ??
-      "endpoint";
-
-    const securityDC =
-      deviceService.suggestedDC?.(type,accessScope) ??
-      11;
-
-    const existingCount = sceneNetworkDevices(scene)
-      .filter(device => device.type === "camera")
-      .length;
-
-    const name =
-      "CAMERA " +
-      String(existingCount + 1).padStart(2,"0");
-
-    const record = await deviceService.upsertCustomDevice(
-      scene.id,
-      {
-        type,
-        name,
-        xPct,
-        yPct,
-        accessScope,
-        securityDC,
-        capabilities:deviceService.defaultCapabilities?.(type) ?? [],
-        discoveredBy:[],
-        origin:"gm-authored-camera",
-        metadata:{
-          authoredBy:game.user.id,
-          authoredAt:new Date().toISOString(),
-          operatorActorId:actor?.id ?? null
-        }
-      }
-    );
-
-    clearCameraAuthorMode(root);
-
-    ui?.notifications?.info?.(
-      "CAMERA PLACED // "+
-      record.name+
-      " // DC "+
-      record.securityDC
-    );
-
-    globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
-    renderJack(actor.id);
-
-    return record;
   }
 
   function liveNetworkDevice(id) {
@@ -2316,13 +2120,6 @@
           '<small>CAPABILITIES</small>'+
           '<div>'+capabilityButtons+'</div>'+
         '</div>'+
-        (
-          device.type === "camera"
-            ? '<div class="jack-camera-feed-status"><small>ESTABLISHED FEEDS</small><b>'+
-              String(cyberModule("cameraFeeds")?.listFeeds?.(actor,device)?.length ?? 0)+
-              '</b></div>'
-            : ''
-        )+
         result+
       '</section>'
     );
@@ -2607,28 +2404,6 @@
               return;
             }
 
-            if (result?.uiMode === "camera-placement") {
-              root.dataset.devicePlacementMode = "camera";
-              root.dataset.devicePlacementId = device.id;
-
-              root.querySelector(".jack-device-panel")?.remove();
-
-              const space = root.querySelector(".jack-space");
-              space?.classList.add("is-camera-placement");
-
-              ui?.notifications?.info?.(
-                "CAMERA FEED // CLICK A MAP POSITION TO ESTABLISH POV"
-              );
-
-              globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
-              return;
-            }
-
-            if (result?.cameraFeed) {
-              globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
-              return;
-            }
-
             if (result?.error) {
               showDevicePanel(
                 root,
@@ -2806,6 +2581,21 @@
         }
 
         showDevicePanel(root,actor,device);
+        globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
+        return;
+      }
+
+      if (action === "place-camera") {
+        if (!game.user?.isGM) {
+          return ui?.notifications?.warn?.("Only the GM can place Cameras.");
+        }
+
+        const placement = cyberModule("cameraPlacement");
+        if (!placement?.open) {
+          return ui?.notifications?.error?.("Camera Placement module is unavailable.");
+        }
+
+        placement.open({actor});
         globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
         return;
       }
