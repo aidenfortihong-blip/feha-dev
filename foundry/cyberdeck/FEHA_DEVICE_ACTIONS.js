@@ -275,7 +275,18 @@
       throw new Error(device?.name+" does not expose "+cap+".");
     }
 
-    const access = await breach(actor,device);
+    const access =
+      context?.skipBreach === true
+        ? {
+            automatic:true,
+            cached:true,
+            passed:true,
+            dc:Number(device?.securityDC ?? 0),
+            total:null,
+            die:null,
+            modifier:null
+          }
+        : await breach(actor,device);
 
     if (!access.passed) {
       return {
@@ -302,6 +313,32 @@
         access,
         capability:cap,
         ...handled
+      };
+    }
+
+    if (
+      !game.user?.isGM &&
+      context?.remote !== true
+    ) {
+      const approvals = core.module("deviceApprovals");
+
+      if (!approvals?.requestDeviceCommand) {
+        throw new Error("No online GM command service is available.");
+      }
+
+      const remoteResult = await approvals.requestDeviceCommand({
+        actorId:actor?.id,
+        sceneId:device.sceneId,
+        deviceId:device.id,
+        capability:cap
+      });
+
+      return {
+        ok:true,
+        access,
+        capability:cap,
+        remote:true,
+        ...(remoteResult ?? {})
       };
     }
 
