@@ -9544,3 +9544,360 @@ body #adk-market-15#adk-market-15 .reset-btn {
     display:flex!important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CREDITS WALLET // 0.10.50
+   Canonical Credits ledger.
+   ========================================================================== */
+
+#feha-credits-wallet {
+  --cw-cyan:#63e7f5;
+  --cw-yellow:#f0c75e;
+  --cw-red:#ff5b70;
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(620px,94vw);
+  min-width:420px;
+  z-index:1000500;
+  overflow:hidden;
+  color:#eaf7f8;
+  background:
+    radial-gradient(circle at 86% 0,rgba(99,231,245,.065),transparent 34%),
+    #020708;
+  border:1px solid rgba(99,231,245,.28);
+  border-top:2px solid rgba(99,231,245,.78);
+  box-shadow:
+    0 30px 100px rgba(0,0,0,.82),
+    0 0 38px rgba(99,231,245,.055);
+  clip-path:polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    12px 100%,
+    0 calc(100% - 12px)
+  );
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+}
+
+#feha-credits-wallet *,
+#feha-credits-wallet *::before,
+#feha-credits-wallet *::after {
+  box-sizing:border-box;
+}
+
+#feha-credits-wallet::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.25;
+  background:
+    linear-gradient(rgba(99,231,245,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,231,245,.02) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+
+#feha-credits-wallet .credits-command {
+  position:relative;
+  z-index:2;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:0 18px;
+  background:#030a0d;
+  border-bottom:1px solid rgba(99,231,245,.16);
+  cursor:move;
+  user-select:none;
+}
+
+#feha-credits-wallet .credits-command::after {
+  content:"FINANCIAL NODE // SECURE LEDGER";
+  position:absolute;
+  left:18px;
+  bottom:5px;
+  color:rgba(99,231,245,.32);
+  font:800 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.4px;
+}
+
+#feha-credits-wallet .credits-brand {
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+}
+
+#feha-credits-wallet .credits-brand span {
+  color:var(--cw-cyan);
+  font:900 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.4px;
+}
+
+#feha-credits-wallet .credits-brand b {
+  color:#fff;
+  font-size:22px;
+  font-weight:950;
+  letter-spacing:3px;
+}
+
+#feha-credits-wallet .credits-brand small {
+  color:#607987;
+  font:800 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.1px;
+}
+
+#feha-credits-wallet .credits-command-actions {
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+#feha-credits-wallet .credits-live {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#7d95a1;
+  font:900 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1px;
+}
+
+#feha-credits-wallet .credits-live i {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--cw-cyan);
+  box-shadow:0 0 10px rgba(99,231,245,.55);
+  animation:feha-credit-live 2.3s ease-in-out infinite;
+}
+
+@keyframes feha-credit-live {
+  0%,100% {opacity:.45}
+  50% {opacity:1}
+}
+
+#feha-credits-wallet button {
+  border-radius:0;
+  cursor:pointer;
+  font:inherit;
+}
+
+#feha-credits-wallet .credits-command-actions button {
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  color:#9db0ba;
+  background:#040b0e;
+  border:1px solid rgba(99,231,245,.18);
+  clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,0 100%);
+}
+
+#feha-credits-wallet .credits-command-actions button:hover {
+  color:#fff;
+  border-color:rgba(255,91,112,.7);
+  background:rgba(255,91,112,.055);
+}
+
+#feha-credits-wallet .credits-shell {
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:210px minmax(0,1fr);
+  grid-template-rows:minmax(220px,auto) 62px;
+  min-height:330px;
+}
+
+#feha-credits-wallet .credits-identity {
+  padding:30px 22px;
+  background:
+    linear-gradient(145deg,rgba(99,231,245,.035),transparent 65%),
+    #03090c;
+  border-right:1px solid rgba(99,231,245,.13);
+}
+
+#feha-credits-wallet .credits-eyebrow,
+#feha-credits-wallet .credits-balance-top span,
+#feha-credits-wallet .credits-editor > span,
+#feha-credits-wallet .credits-footer span {
+  color:#73909e;
+  font:900 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.55px;
+}
+
+#feha-credits-wallet .credits-identity h1 {
+  margin:14px 0 0;
+  color:#fff;
+  font-size:26px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.2px;
+  overflow-wrap:anywhere;
+}
+
+#feha-credits-wallet .credits-idline {
+  margin-top:30px;
+  padding-top:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  border-top:1px solid rgba(99,231,245,.12);
+  font:800 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+#feha-credits-wallet .credits-idline span {
+  color:#536d78;
+}
+
+#feha-credits-wallet .credits-idline b {
+  color:var(--cw-cyan);
+  letter-spacing:1px;
+}
+
+#feha-credits-wallet .credits-balance {
+  padding:26px 26px 22px;
+}
+
+#feha-credits-wallet .credits-balance-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+#feha-credits-wallet .credits-balance-top small {
+  color:var(--cw-yellow);
+  font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1px;
+}
+
+#feha-credits-wallet .credits-balance-readout {
+  margin-top:16px;
+  padding:17px 0 18px;
+  color:#fff;
+  border-top:1px solid rgba(99,231,245,.14);
+  border-bottom:1px solid rgba(99,231,245,.09);
+  font:950 38px/.95 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:-1.5px;
+  text-shadow:0 0 20px rgba(99,231,245,.10);
+}
+
+#feha-credits-wallet .credits-editor {
+  display:block;
+  margin-top:20px;
+}
+
+#feha-credits-wallet .credits-input-wrap {
+  height:48px;
+  margin-top:8px;
+  display:grid;
+  grid-template-columns:52px minmax(0,1fr);
+  align-items:center;
+  background:#010507;
+  border:1px solid rgba(99,231,245,.20);
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%);
+}
+
+#feha-credits-wallet .credits-input-wrap:focus-within {
+  border-color:rgba(99,231,245,.65);
+  box-shadow:0 0 18px rgba(99,231,245,.05);
+}
+
+#feha-credits-wallet .credits-input-wrap b {
+  height:100%;
+  display:grid;
+  place-items:center;
+  color:var(--cw-cyan);
+  border-right:1px solid rgba(99,231,245,.13);
+  font:950 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+#feha-credits-wallet .credits-input-wrap input {
+  width:100%;
+  height:100%;
+  padding:0 14px;
+  color:#fff;
+  background:transparent;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  font:900 18px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+#feha-credits-wallet .credits-input-wrap input:disabled {
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+#feha-credits-wallet .credits-footer {
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:10px 18px;
+  background:#02080b;
+  border-top:1px solid rgba(99,231,245,.14);
+}
+
+#feha-credits-wallet .credits-footer > div {
+  display:flex;
+  align-items:baseline;
+  gap:9px;
+}
+
+#feha-credits-wallet .credits-footer b {
+  color:var(--cw-cyan);
+  font:950 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1px;
+}
+
+#feha-credits-wallet .credits-save {
+  min-width:150px;
+  height:39px;
+  padding:0 16px;
+  color:#100e05;
+  background:var(--cw-yellow);
+  border:1px solid var(--cw-yellow);
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%);
+  font-size:9px!important;
+  font-weight:950!important;
+  letter-spacing:.8px;
+}
+
+#feha-credits-wallet .credits-save:hover:not(:disabled) {
+  color:#000;
+  background:#ffe08b;
+  border-color:#ffe08b;
+  box-shadow:0 0 20px rgba(240,199,94,.13);
+}
+
+#feha-credits-wallet .credits-save:disabled {
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+@media(max-width:620px) {
+  #feha-credits-wallet {
+    min-width:0;
+  }
+
+  #feha-credits-wallet .credits-shell {
+    grid-template-columns:1fr;
+  }
+
+  #feha-credits-wallet .credits-identity {
+    border-right:0;
+    border-bottom:1px solid rgba(99,231,245,.13);
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #feha-credits-wallet .credits-live i {
+    animation:none;
+  }
+}
