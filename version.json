@@ -1,8 +1,11 @@
 {
-  "version": "0.10.57",
+  "version": "0.10.58",
   "updated": "2026-09-27",
-  "scope": "market-distinct-hover-click-sounds",
+  "scope": "market-sound-binding-scope-fix",
   "notes": [
+    "Fixed the Market direct-sound binder scope so it is fully owned by installSoundEngine and cannot throw from the outer UI observer.",
+    "Sound engine now observes Market DOM rerenders itself and rebinds storefront/tier/Mk click sounds directly.",
+    "Preserved distinct hover/click pairs: storefront hover=hover click=drawer_open; tier hover=select click=subsystem_select; Mk hover=actor_switch click=cyberware_select.",
     "Market storefront, vendor tier, and Item Mk controls now bind click audio directly to the rendered control on pointerdown, before native Market rerenders it.",
     "Storefront: hover=hover, click=drawer_open.",
     "Vendor Tier I-V: hover=select, click=subsystem_select.",
