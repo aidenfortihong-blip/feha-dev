@@ -7897,3 +7897,134 @@ body > #feha-jackin-overlay {
     font-size:10px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.19 NATIVE READABILITY + NATURAL ZOOM
+   Bigger at 100%; naturally shrinks with the map for precise zoomed-out views.
+   ========================================================================== */
+
+/* Actor cards: stronger native size, still inherit world zoom. */
+#feha-jackin-overlay
+  .jack-space.has-scene-map
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node {
+  width:228px !important;
+  min-height:92px !important;
+  grid-template-columns:68px minmax(0,1fr) !important;
+  gap:6px 13px !important;
+  padding:12px 13px !important;
+  transform:translate(-50%,-50%) !important;
+  transform-origin:center center !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node img {
+  width:66px !important;
+  height:66px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node-copy b {
+  font-size:21px !important;
+  line-height:1.04 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node-copy small {
+  font-size:12px !important;
+  line-height:1.35 !important;
+  letter-spacing:.9px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node > em {
+  font-size:12px !important;
+  line-height:1 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node-num {
+  font-size:10px !important;
+}
+
+/* Sparse scenes can be a touch larger without fighting precision. */
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node {
+  width:248px !important;
+  min-height:98px !important;
+}
+
+/* Relays: readable at 100%, but allowed to shrink with map zoom. */
+#feha-jackin-overlay .jack-world .jack-relay,
+#feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay {
+  transform:translate(-50%,-50%) !important;
+  width:96px !important;
+  min-height:50px !important;
+  padding:7px 9px !important;
+  grid-template-columns:20px minmax(0,1fr) !important;
+  column-gap:8px !important;
+  opacity:1 !important;
+  z-index:45 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay.is-gateway,
+#feha-jackin-overlay .jack-space.has-scene-map .jack-world .jack-relay.is-gateway {
+  width:116px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay small {
+  font-size:10px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay em {
+  font-size:8.5px !important;
+}
+
+/* Operator follows natural world zoom too. */
+#feha-jackin-overlay .jack-world .jack-operator {
+  transform:translate(-50%,-50%) !important;
+}
+
+/* Exact token anchors scale naturally with the map. */
+#feha-jackin-overlay .jack-world .jack-token-anchor {
+  transform:translate(-50%,-50%) rotate(45deg) !important;
+}
+
+/* Devices scale naturally as well. */
+#feha-jackin-overlay .jack-world .jack-device-node {
+  transform:translate(-50%,-50%) !important;
+}
+
+/* Keep selected visuals above route geometry at every zoom. */
+#feha-jackin-overlay .jack-world .jack-node {
+  z-index:30 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-targeted {
+  z-index:60 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-relay {
+  z-index:45 !important;
+}
+
+/* Slightly stronger native operator typography. */
+#feha-jackin-overlay .jack-operator > span small {
+  font-size:12px !important;
+}
+
+#feha-jackin-overlay .jack-operator > span b {
+  font-size:22px !important;
+}
+
+/* Preserve readability of static HUD elements that do not zoom. */
+#feha-jackin-overlay .jack-lock-readout b {
+  font-size:22px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout span,
+#feha-jackin-overlay .jack-net-caption b {
+  font-size:11px !important;
+}
