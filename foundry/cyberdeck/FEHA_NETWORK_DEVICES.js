@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_NETWORK_DEVICES requires FEHA_CYBER_CORE.");
 
-  const VERSION = "0.9.2";
+  const VERSION = "0.10.0";
   const FLAG_SCOPE = "fleshEnshrouded";
   const DEVICE_FLAG = "networkDevice";
   const SCENE_DEVICE_FLAG = "networkDevices";
@@ -22,8 +22,6 @@
   });
 
   const CAPABILITIES = Object.freeze({
-    PLACE_FEED:{label:"PLACE FEED",group:"camera"},
-    VIEW_FEED:{label:"VIEW FEED",group:"camera"},
     ROTATE:{label:"ROTATE",group:"physical"},
     DISABLE:{label:"DISABLE",group:"state"},
     ENABLE:{label:"ENABLE",group:"state"},
@@ -76,7 +74,7 @@
       icon:"fa-solid fa-video",
       baseDC:11,
       defaultScope:"endpoint",
-      capabilities:["PLACE_FEED","VIEW_FEED","ROTATE","DISABLE"]
+      capabilities:[]
     },
     door:{
       label:"DOOR",
