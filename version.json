@@ -1,7 +1,7 @@
 {
-  "version": "0.10.31",
+  "version": "0.10.32",
   "updated": "2026-09-27",
-  "scope": "operator-progressive-zoom-scale",
+  "scope": "operator-token-relative-size",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -129,7 +129,11 @@
     "Disabled legacy outline rings, pulse animations, and duplicate actor-node chrome",
     "Changed Zach/operator scaling from a constant 1.5x size to progressive zoom scaling",
     "Zach now renders at normal size at 100% zoom and grows smoothly to 1.5x at maximum zoom",
-    "No actor-node, topology, relay, or Quickhack behavior changed in this pass"
+    "No actor-node, topology, relay, or Quickhack behavior changed in this pass",
+    "Zach/operator portrait size is now based on the real Foundry scene token footprint instead of an arbitrary operator UI size",
+    "At 100% zoom Zach's portrait matches his real token footprint; at maximum zoom it grows smoothly to 1.5x that token size",
+    "The decorative operator frame and rings now scale around the token-relative portrait instead of defining Zach's size",
+    "Responsive rules no longer resize the operator independently from its token-relative size"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
