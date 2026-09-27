@@ -1,7 +1,7 @@
 {
-  "version": "0.9.5",
+  "version": "0.9.6",
   "updated": "2026-09-27",
-  "scope": "gm-device-authoring-rmb-navigation",
+  "scope": "jack-in-map-interaction-fix",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -42,7 +42,10 @@
     "GM device authoring supports type, access scope, Security DC, optional network label, then exact left-click map placement",
     "PROBE remains the separate player discovery/GM approval path rather than being used for GM scene setup",
     "JACK IN navigation now uses wheel to zoom and hold-right-mouse drag to pan; left click is reserved for targeting, probing, camera feed placement, and device placement",
-    "Right-drag panning may begin over actor/device cards while HUD controls remain protected"
+    "Right-drag panning may begin over actor/device cards while HUD controls remain protected",
+    "Moved PROBE, GM device placement, and camera feed placement off the shared root pointerdown path and onto an explicit left-click handler bound to the JACK IN map",
+    "Kept right mouse pointerdown exclusively for panning so navigation no longer competes with placement or discovery gestures",
+    "Probe and placement failures now surface their actual error text in Foundry notifications for easier live debugging"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
