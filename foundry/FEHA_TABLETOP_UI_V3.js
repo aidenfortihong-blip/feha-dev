@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.1";
+  const VERSION = "0.10.2";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1773,7 +1773,6 @@
     };
 
     // JACK IN NAVIGATION: RMB only.
-    // Camera placement lives entirely in FEHA_CAMERA_PLACEMENT.js.
     space.onpointerdown = event => {
       if (event.button !== 2) return;
 
@@ -2029,10 +2028,6 @@
           <button type="button" data-jack-action="zoom-in" title="Zoom in">+</button>
           <button type="button" data-jack-action="fit-view">FIT</button>
           <button type="button" data-jack-action="reset-view">RESET</button>
-          ${game.user?.isGM
-            ? '<button type="button" data-jack-action="place-camera">CAMERA</button>'
-            : ''
-          }
         </div>
 
         <div class="jack-net-caption">
@@ -2581,21 +2576,6 @@
         }
 
         showDevicePanel(root,actor,device);
-        globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
-        return;
-      }
-
-      if (action === "place-camera") {
-        if (!game.user?.isGM) {
-          return ui?.notifications?.warn?.("Only the GM can place Cameras.");
-        }
-
-        const placement = cyberModule("cameraPlacement");
-        if (!placement?.open) {
-          return ui?.notifications?.error?.("Camera Placement module is unavailable.");
-        }
-
-        placement.open({actor});
         globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
         return;
       }
