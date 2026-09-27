@@ -718,21 +718,15 @@
 
       if (!target || !market.contains(target) || target.disabled) return;
 
-      // Storefronts: a bigger/opening cue.
-      if (target.matches("[data-shop],.shop-card")) {
-        void play("drawer_open",{cooldown:0});
-        return;
-      }
-
-      // Vendor clearance tier tabs.
-      if (target.matches("[data-shop-tier],.tier-choice")) {
-        void play("subsystem_select",{cooldown:0});
-        return;
-      }
-
-      // Item Mk filter tabs.
-      if (target.matches("[data-item-tier],.mk-filter")) {
-        void play("cyberware_select",{cooldown:0});
+      // These three groups are bound directly by bindMarketControlSounds()
+      // so their click cue starts before the native Market rerender.
+      if (
+        target.matches(
+          "[data-shop],.shop-card," +
+          "[data-shop-tier],.tier-choice," +
+          "[data-item-tier],.mk-filter"
+        )
+      ) {
         return;
       }
 
@@ -793,25 +787,74 @@
       const market = event.target?.closest?.("#adk-market-15");
       if (!market) return;
 
-      // Hover audio is intentionally limited to the three large interactive
-      // groups the user asked for. No global Market hover spam.
-      const target =
-        event.target?.closest?.(
-          "[data-shop]," +
-          ".shop-card," +
-          "[data-shop-tier]," +
-          ".tier-choice," +
-          "[data-item-tier]," +
-          ".mk-filter"
-        ) ??
+      const shop =
+        event.target?.closest?.("[data-shop],.shop-card") ??
         null;
 
+      const tier =
+        event.target?.closest?.("[data-shop-tier],.tier-choice") ??
+        null;
+
+      const mk =
+        event.target?.closest?.("[data-item-tier],.mk-filter") ??
+        null;
+
+      const target = shop ?? tier ?? mk;
       if (!target || !market.contains(target)) return;
 
       const related = event.relatedTarget;
       if (related && target.contains?.(related)) return;
 
-      void play("hover",{cooldown:65});
+      // Every group intentionally has a different hover sound.
+      if (shop) {
+        void play("hover",{cooldown:55});
+        return;
+      }
+
+      if (tier) {
+        void play("select",{cooldown:55});
+        return;
+      }
+
+      if (mk) {
+        void play("actor_switch",{cooldown:55});
+      }
+    };
+
+    const bindMarketControlSounds = root => {
+      if (!root) return;
+
+      const bind = (selector,kind) => {
+        root.querySelectorAll(selector).forEach(control => {
+          if (!(control instanceof HTMLElement)) return;
+
+          const key = "fehaMarketDirectSound";
+          if (control.dataset[key] === kind) return;
+
+          const old = control.__fehaMarketDirectSoundHandler;
+          if (old) {
+            control.removeEventListener("pointerdown",old,true);
+          }
+
+          const handler = event => {
+            if (event.button != null && event.button !== 0) return;
+            if (control.disabled) return;
+
+            // Fire immediately on the actual control, before native Market
+            // handlers rerender/replace it.
+            void play(kind,{cooldown:0});
+          };
+
+          control.__fehaMarketDirectSoundHandler = handler;
+          control.dataset[key] = kind;
+          control.addEventListener("pointerdown",handler,true);
+        });
+      };
+
+      // Click sound is always different from that group's hover sound.
+      bind("[data-shop],.shop-card","drawer_open");
+      bind("[data-shop-tier],.tier-choice","subsystem_select");
+      bind("[data-item-tier],.mk-filter","cyberware_select");
     };
 
     const changeHandler = event => {
@@ -4006,6 +4049,7 @@ if (!game.user?.isGM) {
         markRoot();
         normalizeDossierSchematics();
         normalizePlayableRoster(document.body);
+        bindMarketControlSounds(document.getElementById("adk-market-15"));
 
         for (const scope of addedScopes) {
           if (scope.isConnected) tagLegacyWallets(scope);
@@ -4117,6 +4161,7 @@ if (!game.user?.isGM) {
   patchBackend();
   markRoot();
   normalizePlayableRoster(document.body);
+  bindMarketControlSounds(document.getElementById("adk-market-15"));
   tagLegacyWallets();
   suppressLegacyWalletChrome();
   installCyberdeckV2();
