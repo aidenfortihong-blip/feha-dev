@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.8.9";
+  const VERSION = "0.8.10";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -477,7 +477,7 @@
               '<h2>'+esc(item.name)+'</h2>'+
               '<span>TARGET // '+esc(targetName)+'</span>'+
             '</div>'+
-            '<button type="button" data-qh-action="close-resolution">×</button>'+
+            '<button type="button" data-qh-action="return-net">×</button>'+
           '</header>'+
           '<div class="qh-resolution-grid">'+
             '<div class="qh-resolution-target">'+
@@ -505,7 +505,10 @@
             : '')+
           '<footer class="qh-resolution-foot">'+
             '<span>RAM SPENT // '+hackCost(item)+'</span>'+
-            '<button type="button" data-qh-action="close-resolution">'+(damage?"RETURN TO NET":"COMPLETE")+'</button>'+
+            '<div class="qh-resolution-actions">'+
+              '<button type="button" data-qh-action="return-net">RETURN TO NET</button>'+
+              '<button type="button" class="is-danger" data-qh-action="close-cyberdeck">CLOSE CYBERDECK</button>'+
+            '</div>'+
           '</footer>'+
         '</div>'+
       '</section>'
@@ -868,20 +871,22 @@
 
   function sceneModel(actor) {
     const scene = canvas?.scene ?? null;
+
     if (!scene) {
       return {
         scene:null,
+        backgroundSrc:"",
         nodes:[],
         relays:[],
         links:[],
         selected:null,
-        operator:{x:50,y:50}
+        operator:{x:50,y:50,tokenId:null}
       };
     }
 
     const targeted = new Set(
       [...(game.user?.targets ?? [])]
-        .map(t => t?.id ?? t?.document?.id)
+        .map(token => token?.id ?? token?.document?.id)
         .filter(Boolean)
     );
 
@@ -892,267 +897,333 @@
 
     const rw = Math.max(1,Number(rect.width)||1);
     const rh = Math.max(1,Number(rect.height)||1);
+    const gridSize = Math.max(
+      1,
+      Number(
+        scene?.grid?.size ??
+        canvas?.grid?.size ??
+        canvas?.dimensions?.size ??
+        100
+      ) || 100
+    );
 
-    const all = [...(scene.tokens?.contents ?? scene.tokens ?? [])]
-      .filter(t => {
-        if (!(game.user?.isGM || !t.hidden) || !(t.actor || t.actorId)) return false;
-        const tokenActor = t.actor ?? game.actors?.get?.(t.actorId) ?? null;
-        return tokenActor?.id !== actor?.id;
-      });
+    const allSceneTokens =
+      [...(scene.tokens?.contents ?? scene.tokens ?? [])]
+        .filter(token =>
+          (game.user?.isGM || !token.hidden) &&
+          (token.actor || token.actorId)
+        );
 
     const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
-    const sparse = all.length <= 2;
-    const operator = {x:50,y:sparse ? 53 : 50};
 
-    const rawNodes = all.map((token,index) => {
-      const a = token.actor ?? game.actors?.get?.(token.actorId) ?? null;
+    const centerOf = token => {
+      const placeable =
+        canvas?.tokens?.get?.(token.id) ??
+        canvas?.tokens?.placeables?.find?.(candidate => candidate.id === token.id) ??
+        null;
+
+      const center = placeable?.center;
+
+      if (
+        Number.isFinite(Number(center?.x)) &&
+        Number.isFinite(Number(center?.y))
+      ) {
+        return {
+          x:Number(center.x),
+          y:Number(center.y)
+        };
+      }
+
+      return {
+        x:
+          Number(token.x ?? 0) +
+          (Number(token.width ?? 1) * gridSize / 2),
+        y:
+          Number(token.y ?? 0) +
+          (Number(token.height ?? 1) * gridSize / 2)
+      };
+    };
+
+    const percentOf = token => {
+      const center = centerOf(token);
+
+      return {
+        x:clamp(
+          ((center.x - Number(rect.x ?? 0)) / rw) * 100,
+          1.5,
+          98.5
+        ),
+        y:clamp(
+          ((center.y - Number(rect.y ?? 0)) / rh) * 100,
+          1.5,
+          98.5
+        )
+      };
+    };
+
+    const controlledOperator =
+      canvas?.tokens?.controlled?.find?.(
+        token => token?.actor?.id === actor?.id
+      )?.document ??
+      null;
+
+    const operatorToken =
+      controlledOperator ??
+      allSceneTokens.find(token => {
+        const tokenActor =
+          token.actor ??
+          game.actors?.get?.(token.actorId) ??
+          null;
+        return tokenActor?.id === actor?.id;
+      }) ??
+      null;
+
+    const operatorPos = operatorToken
+      ? percentOf(operatorToken)
+      : {x:50,y:52};
+
+    const operator = {
+      x:operatorPos.x,
+      y:operatorPos.y,
+      tokenId:operatorToken?.id ?? null
+    };
+
+    const endpointTokens = allSceneTokens.filter(token => {
+      const tokenActor =
+        token.actor ??
+        game.actors?.get?.(token.actorId) ??
+        null;
+
+      // The operator's chosen scene token is represented by the operator core.
+      return token.id !== operatorToken?.id && tokenActor?.id !== actor?.id;
+    });
+
+    // Count duplicated Actor documents before assigning visible endpoint labels.
+    const actorCounts = new Map();
+
+    for (const token of endpointTokens) {
+      const tokenActor =
+        token.actor ??
+        game.actors?.get?.(token.actorId) ??
+        null;
+
+      const key =
+        tokenActor?.id ??
+        token.actorId ??
+        token.name ??
+        token.id;
+
+      actorCounts.set(key,(actorCounts.get(key) ?? 0) + 1);
+    }
+
+    const actorSeen = new Map();
+
+    const nodes = endpointTokens.map((token,index) => {
+      const tokenActor =
+        token.actor ??
+        game.actors?.get?.(token.actorId) ??
+        null;
+
+      const actorKey =
+        tokenActor?.id ??
+        token.actorId ??
+        token.name ??
+        token.id;
+
+      const duplicateCount = actorCounts.get(actorKey) ?? 1;
+      const ordinal = (actorSeen.get(actorKey) ?? 0) + 1;
+      actorSeen.set(actorKey,ordinal);
+
+      const baseName =
+        token.name ??
+        tokenActor?.name ??
+        "UNKNOWN";
+
+      const displayName =
+        duplicateCount > 1
+          ? baseName+" // "+String(ordinal).padStart(2,"0")
+          : baseName;
+
       const disp = Number(token.disposition ?? 0);
-      const relation = disp < 0 ? "hostile" : disp > 0 ? "friendly" : "neutral";
-      const rawX = ((Number(token.x??0)-Number(rect.x??0))/rw)*100;
-      const rawY = ((Number(token.y??0)-Number(rect.y??0))/rh)*100;
+      const relation =
+        disp < 0 ? "hostile" :
+        disp > 0 ? "friendly" :
+        "neutral";
 
-      const count = Math.max(1,all.length);
-      const sceneX = clamp(10+rawX*.80,10,90);
-      const sceneY = clamp(12+rawY*.62,12,74);
-
-      const orbitalAngle =
-        (-Math.PI / 2) +
-        ((Math.PI * 2 * index) / count) +
-        ((index % 2) ? 0.18 : -0.12);
-
-      const orbitalX = 50 + Math.cos(orbitalAngle) * (count <= 3 ? 32 : 35);
-      const orbitalY = 44 + Math.sin(orbitalAngle) * (count <= 3 ? 28 : 30);
-
-      const sceneWeight =
-        count <= 2 ? 0.22 :
-        count <= 4 ? 0.38 :
-        count <= 8 ? 0.58 :
-        0.72;
+      const pos = percentOf(token);
 
       return {
         id:token.id,
-        name:token.name ?? a?.name ?? "UNKNOWN",
-        img:token.texture?.src ?? a?.img ?? "icons/svg/mystery-man.svg",
+        actorId:tokenActor?.id ?? token.actorId ?? null,
+        name:baseName,
+        displayName,
+        signature:
+          duplicateCount > 1
+            ? "TOKEN "+String(ordinal).padStart(2,"0")+
+              " / "+String(duplicateCount).padStart(2,"0")
+            : "TOKEN "+String(index+1).padStart(2,"0"),
+        img:
+          token.texture?.src ??
+          tokenActor?.img ??
+          "icons/svg/mystery-man.svg",
         relation,
         self:false,
         targeted:targeted.has(token.id),
-        x:clamp(orbitalX*(1-sceneWeight)+sceneX*sceneWeight,10,90),
-        y:clamp(orbitalY*(1-sceneWeight)+sceneY*sceneWeight,12,72),
+        x:pos.x,
+        y:pos.y,
         index
       };
     });
 
-    const placed = [];
+    const selected =
+      nodes.find(node => node.targeted) ??
+      null;
 
-    const separationScore = (x,y) => {
-      let min = Infinity;
+    const centroid =
+      nodes.length
+        ? {
+            x:nodes.reduce((sum,node) => sum+node.x,0)/nodes.length,
+            y:nodes.reduce((sum,node) => sum+node.y,0)/nodes.length
+          }
+        : {x:50,y:26};
 
-      const opDx = (x-operator.x)/13;
-      const opDy = (y-operator.y)/17;
-      min = Math.min(min,Math.hypot(opDx,opDy));
-
-      for (const node of placed) {
-        const dx = (x-node.x)/12;
-        const dy = (y-node.y)/15;
-        min = Math.min(min,Math.hypot(dx,dy));
-      }
-
-      return min;
-    };
-
-    const candidatesFor = node => {
-      const points = [{x:node.x,y:node.y,drift:0}];
-      const seed = (node.index * 137.507764) * Math.PI / 180;
-
-      for (let ring=1; ring<=4; ring++) {
-        const rx = 6.5 * ring;
-        const ry = 8.0 * ring;
-        const samples = 10 + ring * 4;
-
-        for (let step=0; step<samples; step++) {
-          const angle = seed + (Math.PI*2*step/samples);
-          const x = clamp(node.x + Math.cos(angle)*rx,8,92);
-          const y = clamp(node.y + Math.sin(angle)*ry,12,72);
-          const drift = Math.hypot(x-node.x,y-node.y);
-          points.push({x,y,drift});
-        }
-      }
-
-      const gridX = [8,20,32,44,56,68,80,92];
-      const gridY = [12,28,44,60,72];
-
-      for (const x of gridX) {
-        for (const y of gridY) {
-          const opDx = (x-operator.x)/14;
-          const opDy = (y-operator.y)/18;
-          if (Math.hypot(opDx,opDy) < 1.05) continue;
-
-          const drift = Math.hypot(x-node.x,y-node.y);
-          points.push({x,y,drift});
-        }
-      }
-
-      return points;
-    };
-
-    const nodes = rawNodes.map(node => {
-      const candidates = candidatesFor(node);
-      let best = candidates[0];
-      let bestScore = -Infinity;
-
-      for (const candidate of candidates) {
-        const separation = separationScore(candidate.x,candidate.y);
-        const score =
-          (separation >= 1 ? 1000 : separation * 100) -
-          candidate.drift * 1.35;
-
-        if (score > bestScore) {
-          bestScore = score;
-          best = candidate;
-        }
-      }
-
-      const laidOut = {...node,x:best.x,y:best.y};
-      placed.push(laidOut);
-      return laidOut;
-    });
-
-    // Synthetic infrastructure nodes make JACK IN read as a network topology,
-    // not just a line from operator -> token. They are non-interactive.
-    const relayBlueprints = [
-      {x:50,y:24,label:"GATE-01",kind:"gateway",parent:"operator"},
-      {x:27,y:39,label:"RLY-A3",kind:"relay",parent:"relay-0"},
-      {x:73,y:39,label:"RLY-B7",kind:"relay",parent:"relay-0"},
-      {x:13,y:59,label:"SUB-04",kind:"subnet",parent:"relay-1"},
-      {x:87,y:59,label:"SUB-09",kind:"subnet",parent:"relay-2"},
-      {x:30,y:78,label:"PORT-12",kind:"edge",parent:"relay-3"},
-      {x:70,y:78,label:"PORT-17",kind:"edge",parent:"relay-4"},
-      {x:9,y:29,label:"EDGE-03",kind:"edge",parent:"relay-1"},
-      {x:91,y:29,label:"EDGE-08",kind:"edge",parent:"relay-2"}
-    ];
-
-    const desiredRelayCount =
-      nodes.length <= 2 ? 9 :
-      nodes.length <= 5 ? 7 :
-      nodes.length <= 9 ? 6 :
-      5;
-
-    const relays = relayBlueprints
-      .slice(0,desiredRelayCount)
-      .map((relay,index) => ({
-        ...relay,
-        id:"relay-"+index,
-        index,
-        pulse:(index % 5) * 0.28
-      }));
+    const relays = [];
+    const links = [];
 
     const points = new Map([
-      ["operator",{id:"operator",x:operator.x,y:operator.y,kind:"operator"}],
-      ...relays.map(relay => [relay.id,relay]),
-      ...nodes.map(node => [node.id,node])
+      ["operator",{
+        id:"operator",
+        x:operator.x,
+        y:operator.y,
+        kind:"operator"
+      }]
     ]);
 
-    const links = [];
-    const linkKeys = new Set();
+    const addRelay = relay => {
+      relays.push(relay);
+      points.set(relay.id,relay);
+      return relay;
+    };
 
-    const canonicalKey = (a,b) =>
-      [String(a),String(b)].sort().join("::");
+    const gatewayVector = {
+      x:centroid.x-operator.x,
+      y:centroid.y-operator.y
+    };
 
-    const addLink = (from,to,kind="ambient",meta={}) => {
-      const a = points.get(from);
-      const b = points.get(to);
-      if (!a || !b) return;
+    const gateway = addRelay({
+      id:"relay-gateway",
+      kind:"gateway",
+      label:"SCENE GATE",
+      x:clamp(operator.x + gatewayVector.x*.28,7,93),
+      y:clamp(operator.y + gatewayVector.y*.28,8,92),
+      pulse:0
+    });
 
-      const key = canonicalKey(from,to);
-      if (linkKeys.has(key)) return;
-      linkKeys.add(key);
+    for (const node of nodes) {
+      points.set(node.id,node);
+
+      const dx = node.x-operator.x;
+      const dy = node.y-operator.y;
+      const length = Math.max(1,Math.hypot(dx,dy));
+      const perpendicular = {
+        x:-dy/length,
+        y:dx/length
+      };
+
+      const side = node.index % 2 ? 1 : -1;
+      const offset = Math.min(5.5,2.4 + length*.035) * side;
+
+      const relay = addRelay({
+        id:"relay-endpoint-"+node.index,
+        kind:"relay",
+        label:"RLY-"+String(node.index+1).padStart(2,"0"),
+        x:clamp(
+          operator.x + dx*.62 + perpendicular.x*offset,
+          5,
+          95
+        ),
+        y:clamp(
+          operator.y + dy*.62 + perpendicular.y*offset,
+          6,
+          94
+        ),
+        pulse:(node.index%5)*.24,
+        targetId:node.id
+      });
 
       links.push({
-        id:"link-"+links.length,
-        from,
-        to,
+        id:"link-gateway-"+node.index,
+        from:gateway.id,
+        to:relay.id,
+        x1:gateway.x,
+        y1:gateway.y,
+        x2:relay.x,
+        y2:relay.y,
+        kind:"branch",
+        selected:Boolean(node.targeted),
+        relation:node.relation,
+        targetId:node.id
+      });
+
+      links.push({
+        id:"link-endpoint-"+node.index,
+        from:relay.id,
+        to:node.id,
+        x1:relay.x,
+        y1:relay.y,
+        x2:node.x,
+        y2:node.y,
+        kind:"endpoint",
+        selected:Boolean(node.targeted),
+        relation:node.relation,
+        targetId:node.id
+      });
+    }
+
+    links.unshift({
+      id:"link-operator-gateway",
+      from:"operator",
+      to:gateway.id,
+      x1:operator.x,
+      y1:operator.y,
+      x2:gateway.x,
+      y2:gateway.y,
+      kind:"backbone",
+      selected:Boolean(selected),
+      relation:null,
+      targetId:selected?.id ?? null
+    });
+
+    // Cross-connect branch relays so multi-target scenes still read as one net.
+    for (let i=1;i<relays.length-1;i++) {
+      const a = relays[i];
+      const b = relays[i+1];
+
+      links.push({
+        id:"link-mesh-"+i,
+        from:a.id,
+        to:b.id,
         x1:a.x,
         y1:a.y,
         x2:b.x,
         y2:b.y,
-        kind,
+        kind:"mesh",
         selected:false,
-        relation:meta.relation ?? null,
-        targetId:meta.targetId ?? null
+        relation:null,
+        targetId:null
       });
-    };
-
-    // Backbone / branching mesh.
-    for (const relay of relays) {
-      addLink(relay.parent,relay.id,relay.kind === "gateway" ? "backbone" : "branch");
     }
 
-    const crossLinks = [
-      ["relay-1","relay-2"],
-      ["relay-3","relay-4"],
-      ["relay-1","relay-7"],
-      ["relay-2","relay-8"],
-      ["relay-3","relay-5"],
-      ["relay-4","relay-6"]
-    ];
-
-    for (const [a,b] of crossLinks) addLink(a,b,"mesh");
-
-    const relayDistance = (node,relay) =>
-      Math.hypot((node.x-relay.x)*1.0,(node.y-relay.y)*1.18);
-
-    const assignments = new Map();
-
-    for (const node of nodes) {
-      const ranked = [...relays]
-        .sort((a,b) => relayDistance(node,a)-relayDistance(node,b));
-
-      const primary = ranked[0] ?? null;
-      const secondary = ranked[1] ?? null;
-
-      if (primary) {
-        assignments.set(node.id,primary.id);
-        addLink(primary.id,node.id,"endpoint",{
-          relation:node.relation,
-          targetId:node.id
-        });
-      }
-
-      if (secondary && nodes.length <= 6) {
-        addLink(secondary.id,node.id,"shadow",{
-          relation:node.relation,
-          targetId:node.id
-        });
-      }
-    }
-
-    const selected = nodes.find(n => n.targeted) ?? null;
-
-    if (selected) {
-      const primaryId = assignments.get(selected.id);
-      const selectedKeys = new Set();
-
-      let cursor = primaryId;
-      while (cursor && cursor !== "operator") {
-        const relay = relays.find(r => r.id === cursor);
-        if (!relay) break;
-        selectedKeys.add(canonicalKey(relay.parent,cursor));
-        cursor = relay.parent;
-      }
-
-      if (primaryId) {
-        selectedKeys.add(canonicalKey(primaryId,selected.id));
-      }
-
-      for (const link of links) {
-        if (selectedKeys.has(canonicalKey(link.from,link.to))) {
-          link.selected = true;
-        }
-      }
-    }
+    const backgroundSrc =
+      String(
+        scene?.background?.src ??
+        scene?.img ??
+        ""
+      ).trim();
 
     return {
       scene,
+      backgroundSrc,
       nodes,
       relays,
       links,
@@ -1238,8 +1309,8 @@
       '%" data-jack-action="target" data-token-id="'+esc(n.id)+'">'+
         '<span class="jack-node-num">'+String(i+1).padStart(2,"0")+'</span>'+
         '<img src="'+esc(n.img)+'" alt="">'+
-        '<span class="jack-node-copy"><b>'+esc(n.name)+'</b><small>'+
-        n.relation.toUpperCase()+'</small></span>'+
+        '<span class="jack-node-copy"><b>'+esc(n.displayName)+'</b><small>'+
+        n.relation.toUpperCase()+' // '+esc(n.signature)+'</small></span>'+
         '<em>'+(n.targeted?'LOCKED':'ACQUIRE')+'</em>'+
       '</button>'
     ).join("");
@@ -1265,22 +1336,30 @@
         <div><small>NOCTURNE // LIVE NEURAL SPACE</small><h1>JACKED <span>IN</span></h1></div>
         <div class="jack-head-stat"><span>SCENE</span><b>${esc(net.scene?.name ?? "NO SCENE")}</b></div>
         <div class="jack-head-stat"><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
-        <button data-jack-action="close" class="jack-close">×</button>
+        <div class="jack-head-actions">
+          <button type="button" data-jack-action="return-deck">RETURN TO DECK</button>
+          <button type="button" data-jack-action="close-cyberdeck" class="is-danger">CLOSE CYBERDECK</button>
+        </div>
       </header>
 
-      <main class="jack-space ${net.nodes.length <= 2 ? "is-sparse" : ""}" data-node-count="${net.nodes.length}">
+      <main class="jack-space ${net.nodes.length <= 2 ? "is-sparse" : ""} ${net.backgroundSrc ? "has-scene-map" : ""}" data-node-count="${net.nodes.length}" data-map="${net.backgroundSrc ? "1" : "0"}">
+        ${net.backgroundSrc
+          ? '<div class="jack-scene-map"><img src="'+esc(net.backgroundSrc)+'" alt=""></div>'
+          : ''
+        }
+
         <svg class="jack-links" viewBox="0 0 1000 720" preserveAspectRatio="none" aria-hidden="true">
           ${linkSvg}
         </svg>
 
         <div class="jack-net-caption">
           <small>TOPOLOGY</small>
-          <b>${net.relays.length} RELAYS // ${net.nodes.length} ENDPOINT${net.nodes.length===1?"":"S"}</b>
+          <b>${net.relays.length} RELAYS // ${net.nodes.length} TOKEN ENDPOINT${net.nodes.length===1?"":"S"}</b>
         </div>
 
         ${relays}
 
-        <div class="jack-operator">
+        <div class="jack-operator" style="--jack-x:${net.operator.x.toFixed(2)}%;--jack-y:${net.operator.y.toFixed(2)}%">
           <div></div>
           <div class="jack-operator-hub">${operatorPorts}</div>
           <img src="${esc(portrait(actor))}" alt="">
@@ -1291,7 +1370,7 @@
 
         <div class="jack-lock-readout">
           <small>TARGET LOCK</small>
-          <b>${selected?esc(selected.name):"NO TARGET"}</b>
+          <b>${selected?esc(selected.displayName):"NO TARGET"}</b>
           <span>${net.relays.length} RELAYS // ${net.nodes.length + 1} SIGNATURES // OPERATOR INCLUDED</span>
         </div>
       </main>
@@ -1300,7 +1379,7 @@
         <div class="jack-actions-title">
           <small>LOADED SOFTWARE</small>
           <b>QUICKHACK EXECUTION</b>
-          <span>${selected?"TARGET // "+esc(selected.name):"SELECT A TARGET NODE"}</span>
+          <span>${selected?"TARGET // "+esc(selected.displayName):"SELECT A TARGET NODE"}</span>
         </div>
         <div class="jack-hacks">${hacks}</div>
       </footer>
@@ -1465,9 +1544,20 @@
       if (qhButton) {
         const qhAction = qhButton.dataset.qhAction;
 
-        if (qhAction === "close-resolution") {
+        if (
+          qhAction === "close-resolution" ||
+          qhAction === "return-net"
+        ) {
           root.querySelector(".qh-resolution")?.remove();
           delete root.dataset.resolvingQuickhack;
+          globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
+          return;
+        }
+
+        if (qhAction === "close-cyberdeck") {
+          root.remove();
+          document.getElementById(ROOT_ID)?.remove();
+          globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
           return;
         }
 
@@ -1553,10 +1643,20 @@
 
       if (!button || !action) return;
 
-      if (action === "close") {
+      if (
+        action === "close" ||
+        action === "return-deck"
+      ) {
         root.remove();
         globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
         render(actor.id);
+        return;
+      }
+
+      if (action === "close-cyberdeck") {
+        root.remove();
+        document.getElementById(ROOT_ID)?.remove();
+        globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
         return;
       }
 
