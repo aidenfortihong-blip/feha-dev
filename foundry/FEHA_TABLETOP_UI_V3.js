@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.20";
+  const VERSION = "0.10.21";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1166,12 +1166,39 @@
       y:centroid.y-operator.y
     };
 
+    const rawGatewayLength = Math.hypot(
+      gatewayVector.x,
+      gatewayVector.y
+    );
+
+    const gatewayDirection =
+      rawGatewayLength > 1
+        ? {
+            x:gatewayVector.x/rawGatewayLength,
+            y:gatewayVector.y/rawGatewayLength
+          }
+        : {x:1,y:-.25};
+
+    const gatewayDistance = clamp(
+      rawGatewayLength*.38,
+      14,
+      24
+    );
+
     const gateway = addRelay({
       id:"relay-gateway",
       kind:"gateway",
       label:"SCENE GATE",
-      x:clamp(operator.x + gatewayVector.x*.28,7,93),
-      y:clamp(operator.y + gatewayVector.y*.28,8,92),
+      x:clamp(
+        operator.x + gatewayDirection.x*gatewayDistance,
+        7,
+        93
+      ),
+      y:clamp(
+        operator.y + gatewayDirection.y*gatewayDistance,
+        8,
+        92
+      ),
       pulse:0
     });
 
@@ -1189,17 +1216,27 @@
       const side = node.index % 2 ? 1 : -1;
       const offset = Math.min(5.5,2.4 + length*.035) * side;
 
+      const relayDistance = clamp(
+        length*.62,
+        18,
+        44
+      );
+
       const relay = addRelay({
         id:"relay-endpoint-"+node.index,
         kind:"relay",
         label:"RLY-"+String(node.index+1).padStart(2,"0"),
         x:clamp(
-          operator.x + dx*.62 + perpendicular.x*offset,
+          operator.x +
+          (dx/length)*relayDistance +
+          perpendicular.x*offset,
           5,
           95
         ),
         y:clamp(
-          operator.y + dy*.62 + perpendicular.y*offset,
+          operator.y +
+          (dy/length)*relayDistance +
+          perpendicular.y*offset,
           6,
           94
         ),
@@ -1406,6 +1443,56 @@
     return {zoom,panX,panY};
   }
 
+  function syncJackRouteScale(root,state) {
+    const zoom = Math.max(
+      1,
+      Number(state?.zoom) || 1
+    );
+
+    for (
+      const packet of
+      root?.querySelectorAll?.(".jack-packet") ?? []
+    ) {
+      const baseRadius =
+        packet.classList.contains("is-selected-route")
+          ? 3.2
+          : 2.0;
+
+      packet.setAttribute(
+        "r",
+        (baseRadius/zoom).toFixed(3)
+      );
+    }
+
+    for (
+      const line of
+      root?.querySelectorAll?.(".jack-net-line") ?? []
+    ) {
+      let dash = [8,8];
+
+      if (line.classList.contains("is-selected-route")) {
+        dash = [13,5];
+      } else if (line.classList.contains("is-backbone")) {
+        dash = [10,8];
+      } else if (line.classList.contains("is-branch")) {
+        dash = [7,10];
+      } else if (line.classList.contains("is-mesh")) {
+        dash = [3,12];
+      } else if (line.classList.contains("is-shadow")) {
+        dash = [2,11];
+      } else if (line.classList.contains("is-device")) {
+        dash = [4,8];
+      }
+
+      line.style.setProperty(
+        "stroke-dasharray",
+        (dash[0]/zoom).toFixed(3)+" "+
+        (dash[1]/zoom).toFixed(3),
+        "important"
+      );
+    }
+  }
+
   function setJackViewport(root,next) {
     if (!root?.isConnected) return;
 
@@ -1424,9 +1511,52 @@
     const world = root.querySelector(".jack-world");
     if (world) {
       world.style.setProperty("--jack-zoom",String(state.zoom));
+      const zoom = Math.max(1,state.zoom);
+
+      // Screen-space targets:
+      // - cards shrink only mildly at deep zoom for spatial precision
+      // - relays remain nearly constant so labels stay readable
+      // - operator shrinks modestly
+      // - anchors stay constant
+      const cardScreenScale = Math.max(
+        .88,
+        1-(zoom-1)*.06
+      );
+
+      const relayScreenScale = Math.max(
+        .96,
+        1-(zoom-1)*.02
+      );
+
+      const operatorScreenScale = Math.max(
+        .90,
+        1-(zoom-1)*.05
+      );
+
+      world.style.setProperty(
+        "--jack-card-scale",
+        String(cardScreenScale/zoom)
+      );
+
+      world.style.setProperty(
+        "--jack-relay-scale",
+        String(relayScreenScale/zoom)
+      );
+
+      world.style.setProperty(
+        "--jack-operator-scale",
+        String(operatorScreenScale/zoom)
+      );
+
+      world.style.setProperty(
+        "--jack-anchor-scale",
+        String(1/zoom)
+      );
+
+      // Legacy alias for any older selector still referencing this variable.
       world.style.setProperty(
         "--jack-ui-scale",
-        String(1/Math.max(.001,Math.pow(state.zoom,1.28)))
+        String(cardScreenScale/zoom)
       );
       world.style.setProperty("--jack-pan-x",state.panX+"px");
       world.style.setProperty("--jack-pan-y",state.panY+"px");
@@ -1436,6 +1566,8 @@
     if (readout) {
       readout.textContent = Math.round(state.zoom*100)+"%";
     }
+
+    syncJackRouteScale(root,state);
 
     return state;
   }
@@ -2233,6 +2365,10 @@
       button.disabled = !selected || m.currentRam < cost;
     }
 
+    syncJackRouteScale(
+      root,
+      jackViewportState(root)
+    );
   }
 
   function renderJack(actorId) {
