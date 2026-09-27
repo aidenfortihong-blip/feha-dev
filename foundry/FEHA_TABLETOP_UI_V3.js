@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.6";
+  const VERSION = "0.9.7";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1718,6 +1718,71 @@
     resizeObserver?.observe?.(space);
     root.__jackResizeObserver = resizeObserver;
 
+    const cameraButton =
+      root.querySelector('[data-jack-action="place-camera"]');
+
+    cameraButton?.addEventListener("click",event => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!game.user?.isGM) return;
+
+      const enabled =
+        root.dataset.cameraAuthorMode !== "1";
+
+      root.dataset.probeMode = "0";
+      delete root.dataset.devicePlacementMode;
+      delete root.dataset.devicePlacementId;
+
+      const liveSpace = root.querySelector(".jack-space");
+      liveSpace?.classList.remove("is-probing","is-camera-placement");
+
+      root
+        .querySelector('[data-jack-action="probe-device"]')
+        ?.classList.remove("is-active");
+
+      if (enabled) {
+        root.dataset.cameraAuthorMode = "1";
+        liveSpace?.classList.add("is-camera-authoring");
+        cameraButton.classList.add("is-active");
+
+        ui?.notifications?.info?.(
+          "PLACE CAMERA // LEFT-CLICK MAP POSITION // RMB DRAG TO PAN"
+        );
+      } else {
+        clearCameraAuthorMode(root);
+        ui?.notifications?.info?.("CAMERA PLACEMENT CANCELLED");
+      }
+    });
+
+    const probeButton =
+      root.querySelector('[data-jack-action="probe-device"]');
+
+    probeButton?.addEventListener("click",event => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const enabled =
+        root.dataset.probeMode !== "1";
+
+      clearCameraAuthorMode(root);
+      delete root.dataset.devicePlacementMode;
+      delete root.dataset.devicePlacementId;
+
+      const liveSpace = root.querySelector(".jack-space");
+      liveSpace?.classList.remove("is-camera-placement");
+      liveSpace?.classList.toggle("is-probing",enabled);
+
+      root.dataset.probeMode = enabled ? "1" : "0";
+      probeButton.classList.toggle("is-active",enabled);
+
+      ui?.notifications?.info?.(
+        enabled
+          ? "NETWORK PROBE // LEFT-CLICK AN UNKNOWN DEVICE LOCATION"
+          : "NETWORK PROBE CANCELLED"
+      );
+    });
+
     root.onwheel = event => {
       if (!space.contains(event.target)) return;
       if (event.target?.closest?.(".qh-resolution")) return;
@@ -1738,7 +1803,7 @@
     space.oncontextmenu = event => {
       if (
         event.target?.closest?.(
-          "input,select,textarea,.jack-device-author-panel"
+          "input,select,textarea"
         )
       ) {
         return;
@@ -1753,7 +1818,7 @@
 
       if (
         event.target?.closest?.(
-          "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.jack-device-author-panel"
+          "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel"
         )
       ) {
         return;
@@ -1782,12 +1847,12 @@
     // Authoring / probe / camera placement are explicit LEFT-CLICK map actions.
     // Keeping this on the map itself avoids conflicts with the delegated UI
     // click handler and with RMB navigation.
-    space.onclick = async event => {
+    space.addEventListener("click",async event => {
       if (event.button !== 0) return;
 
       if (
         event.target?.closest?.(
-          "button,input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.jack-device-author-panel"
+          "button,input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel"
         )
       ) {
         return;
@@ -1796,7 +1861,7 @@
       const actor = actorById(root.dataset.actorId);
       if (!actor) return;
 
-      if (root.dataset.deviceAuthorMode === "1") {
+      if (root.dataset.cameraAuthorMode === "1") {
         event.preventDefault();
         event.stopPropagation();
 
@@ -1804,16 +1869,16 @@
         if (!point) return;
 
         try {
-          await authorNetworkDeviceAtPoint(
+          await authorCameraAtPoint(
             root,
             actor,
             point.xPct,
             point.yPct
           );
         } catch (err) {
-          console.error("FEHA V3 Network Device placement failed",err);
+          console.error("FEHA V3 Camera placement failed",err);
           ui?.notifications?.error?.(
-            "Network Device could not be placed: "+
+            "Camera could not be placed: "+
             String(err?.message ?? err)
           );
         }
@@ -1920,7 +1985,7 @@
 
         return;
       }
-    };
+    },true);
 
     root.onpointermove = event => {
       const drag = root.__jackDrag;
@@ -2147,7 +2212,7 @@
           <button type="button" data-jack-action="fit-view">FIT</button>
           <button type="button" data-jack-action="reset-view">RESET</button>
           ${game.user?.isGM
-            ? '<button type="button" data-jack-action="place-device">PLACE</button>'
+            ? '<button type="button" data-jack-action="place-camera">CAMERA</button>'
             : ''
           }
           <button type="button" data-jack-action="probe-device">PROBE</button>
@@ -2174,164 +2239,6 @@
         <div class="jack-hacks">${hacks}</div>
       </footer>
     `;
-  }
-
-  function deviceAuthorPanelMarkup() {
-    const deviceService = cyberModule("devices");
-    if (!deviceService) return "";
-
-    const defaultType = "camera";
-    const defaultScope =
-      deviceService.typeDef?.(defaultType)?.defaultScope ??
-      "endpoint";
-
-    const typeOptions = Object.entries(deviceService.types ?? {})
-      .map(([key,def]) =>
-        '<option value="'+esc(key)+'" '+
-        (key === defaultType ? "selected" : "")+
-        '>'+esc(def.label)+'</option>'
-      )
-      .join("");
-
-    const scopeOptions = Object.entries(deviceService.accessScopes ?? {})
-      .map(([key,def]) =>
-        '<option value="'+esc(key)+'" '+
-        (key === defaultScope ? "selected" : "")+
-        '>'+esc(def.label)+" // "+
-        (Number(def.dcMod ?? 0) >= 0 ? "+" : "")+
-        Number(def.dcMod ?? 0)+" DC</option>"
-      )
-      .join("");
-
-    const suggested =
-      deviceService.suggestedDC?.(defaultType,defaultScope) ??
-      11;
-
-    return (
-      '<section class="jack-device-author-panel">'+
-        '<header>'+
-          '<div>'+
-            '<small>GM NETWORK AUTHORING</small>'+
-            '<h3>PLACE DEVICE</h3>'+
-            '<span>CREATE A HACKABLE DEVICE DIRECTLY ON THIS SCENE</span>'+
-          '</div>'+
-          '<button type="button" data-device-author-action="close">×</button>'+
-        '</header>'+
-        '<div class="jack-device-author-grid">'+
-          '<label><small>DEVICE TYPE</small>'+
-            '<select data-device-author-type>'+typeOptions+'</select>'+
-          '</label>'+
-          '<label><small>ACCESS SCOPE</small>'+
-            '<select data-device-author-scope>'+scopeOptions+'</select>'+
-          '</label>'+
-          '<label><small>SECURITY DC</small>'+
-            '<input type="number" min="0" max="30" step="1" value="'+
-            esc(String(suggested))+'" data-device-author-dc>'+
-          '</label>'+
-          '<label class="is-wide"><small>NETWORK LABEL</small>'+
-            '<input type="text" placeholder="OPTIONAL DEVICE NAME" data-device-author-name>'+
-          '</label>'+
-        '</div>'+
-        '<div class="jack-device-author-summary">'+
-          '<small>PLACEMENT PROFILE</small>'+
-          '<b data-device-author-summary>CAMERA // ENDPOINT // DC '+esc(String(suggested))+'</b>'+
-          '<span>Arm placement, then left-click the exact point on the cyber map.</span>'+
-        '</div>'+
-        '<div class="jack-device-author-actions">'+
-          '<button type="button" data-device-author-action="cancel">CANCEL</button>'+
-          '<button type="button" data-device-author-action="arm">ARM PLACEMENT</button>'+
-        '</div>'+
-      '</section>'
-    );
-  }
-
-  function refreshDeviceAuthorPanel(root,{resetScope=false}={}) {
-    const panel = root?.querySelector?.(".jack-device-author-panel");
-    const deviceService = cyberModule("devices");
-    if (!panel || !deviceService) return;
-
-    const typeSelect = panel.querySelector("[data-device-author-type]");
-    const scopeSelect = panel.querySelector("[data-device-author-scope]");
-    const dcInput = panel.querySelector("[data-device-author-dc]");
-    const summary = panel.querySelector("[data-device-author-summary]");
-
-    const type = String(typeSelect?.value ?? "camera");
-    const def = deviceService.typeDef?.(type);
-    const normalScope = def?.defaultScope ?? "endpoint";
-
-    if (resetScope && scopeSelect) {
-      scopeSelect.value =
-        deviceService.normalizeScope?.(normalScope,type) ??
-        normalScope;
-    }
-
-    const scope =
-      deviceService.normalizeScope?.(
-        scopeSelect?.value,
-        type
-      ) ??
-      scopeSelect?.value ??
-      normalScope;
-
-    const suggested =
-      deviceService.suggestedDC?.(type,scope) ??
-      Number(dcInput?.value ?? 12);
-
-    if (dcInput) dcInput.value = String(suggested);
-
-    if (summary) {
-      summary.textContent =
-        String(def?.label ?? type).toUpperCase()+
-        " // "+
-        String(
-          deviceService.accessScopes?.[scope]?.label ??
-          scope
-        ).toUpperCase()+
-        " // DC "+
-        suggested;
-    }
-  }
-
-  function showDeviceAuthorPanel(root) {
-    if (!game.user?.isGM) return;
-
-    root.querySelector(".jack-device-author-panel")?.remove();
-    root.insertAdjacentHTML("beforeend",deviceAuthorPanelMarkup());
-
-    const panel = root.querySelector(".jack-device-author-panel");
-    if (!panel) return;
-
-    panel
-      .querySelector("[data-device-author-type]")
-      ?.addEventListener("change",() =>
-        refreshDeviceAuthorPanel(root,{resetScope:true})
-      );
-
-    panel
-      .querySelector("[data-device-author-scope]")
-      ?.addEventListener("change",() =>
-        refreshDeviceAuthorPanel(root)
-      );
-
-    refreshDeviceAuthorPanel(root);
-  }
-
-  function clearDeviceAuthorMode(root) {
-    if (!root) return;
-
-    delete root.dataset.deviceAuthorMode;
-    delete root.dataset.deviceAuthorType;
-    delete root.dataset.deviceAuthorScope;
-    delete root.dataset.deviceAuthorDc;
-    delete root.dataset.deviceAuthorName;
-
-    root
-      .querySelector(".jack-space")
-      ?.classList.remove("is-device-authoring");
-
-    root
-      .querySelector('[data-jack-action="place-device"]')
-      ?.classList.remove("is-active");
   }
 
   function pointerToJackPercent(root,event) {
@@ -2361,64 +2268,74 @@
     };
   }
 
-  async function authorNetworkDeviceAtPoint(root,actor,xPct,yPct) {
+  function clearCameraAuthorMode(root) {
+    if (!root) return;
+
+    delete root.dataset.cameraAuthorMode;
+
+    root
+      .querySelector(".jack-space")
+      ?.classList.remove("is-camera-authoring");
+
+    root
+      .querySelector('[data-jack-action="place-camera"]')
+      ?.classList.remove("is-active");
+  }
+
+  async function authorCameraAtPoint(root,actor,xPct,yPct) {
     if (!game.user?.isGM) {
-      throw new Error("Only a GM may author Network Devices directly.");
+      throw new Error("Only a GM may place Cameras directly.");
     }
 
     const deviceService = cyberModule("devices");
     const scene = canvas?.scene;
 
     if (!deviceService?.upsertCustomDevice || !scene) {
-      throw new Error("Network Device authoring service is unavailable.");
+      throw new Error("Camera placement service is unavailable.");
     }
 
-    const type = String(root.dataset.deviceAuthorType ?? "camera");
-    const def = deviceService.typeDef?.(type);
+    const type = "camera";
     const accessScope =
-      deviceService.normalizeScope?.(
-        root.dataset.deviceAuthorScope,
-        type
-      ) ??
-      def?.defaultScope ??
+      deviceService.typeDef?.(type)?.defaultScope ??
       "endpoint";
 
-    const enteredDC = Number(root.dataset.deviceAuthorDc);
-    const securityDC = Number.isFinite(enteredDC)
-      ? enteredDC
-      : deviceService.suggestedDC?.(type,accessScope);
+    const securityDC =
+      deviceService.suggestedDC?.(type,accessScope) ??
+      11;
 
-    const enteredName =
-      String(root.dataset.deviceAuthorName ?? "").trim();
+    const existingCount = sceneNetworkDevices(scene)
+      .filter(device => device.type === "camera")
+      .length;
+
+    const name =
+      "CAMERA " +
+      String(existingCount + 1).padStart(2,"0");
 
     const record = await deviceService.upsertCustomDevice(
       scene.id,
       {
         type,
-        name:enteredName || String(def?.label ?? type)+" NODE",
+        name,
         xPct,
         yPct,
         accessScope,
         securityDC,
         capabilities:deviceService.defaultCapabilities?.(type) ?? [],
         discoveredBy:[],
-        origin:"gm-authored",
+        origin:"gm-authored-camera",
         metadata:{
           authoredBy:game.user.id,
           authoredAt:new Date().toISOString(),
-          operatorActorId:actor?.id ?? null,
-          accessScope
+          operatorActorId:actor?.id ?? null
         }
       }
     );
 
-    clearDeviceAuthorMode(root);
+    clearCameraAuthorMode(root);
 
     ui?.notifications?.info?.(
-      "NETWORK DEVICE PLACED // "+
+      "CAMERA PLACED // "+
       record.name+
-      " // "+
-      record.accessScopeLabel+
       " // DC "+
       record.securityDC
     );
@@ -2663,83 +2580,11 @@
       const jackButton = event.target?.closest?.("[data-jack-action]") ?? null;
       const qhButton = event.target?.closest?.("[data-qh-action]") ?? null;
       const deviceButton = event.target?.closest?.("[data-device-action]") ?? null;
-      const authorButton = event.target?.closest?.("[data-device-author-action]") ?? null;
 
-      if (!jackButton && !qhButton && !deviceButton && !authorButton) return;
+      if (!jackButton && !qhButton && !deviceButton) return;
       if (jackButton && !root.contains(jackButton)) return;
       if (qhButton && !root.contains(qhButton)) return;
       if (deviceButton && !root.contains(deviceButton)) return;
-      if (authorButton && !root.contains(authorButton)) return;
-
-      if (authorButton) {
-        const authorAction = authorButton.dataset.deviceAuthorAction;
-        const panel = authorButton.closest(".jack-device-author-panel");
-
-        if (authorAction === "close" || authorAction === "cancel") {
-          clearDeviceAuthorMode(root);
-          panel?.remove();
-          globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
-          return;
-        }
-
-        if (authorAction === "arm") {
-          if (!game.user?.isGM) return;
-
-          const type = String(
-            panel?.querySelector("[data-device-author-type]")?.value ??
-            "camera"
-          );
-
-          const scope = String(
-            panel?.querySelector("[data-device-author-scope]")?.value ??
-            "endpoint"
-          );
-
-          const dc = Number(
-            panel?.querySelector("[data-device-author-dc]")?.value
-          );
-
-          const name = String(
-            panel?.querySelector("[data-device-author-name]")?.value ??
-            ""
-          ).trim();
-
-          root.dataset.deviceAuthorMode = "1";
-          root.dataset.deviceAuthorType = type;
-          root.dataset.deviceAuthorScope = scope;
-          root.dataset.deviceAuthorDc = Number.isFinite(dc)
-            ? String(dc)
-            : "";
-          root.dataset.deviceAuthorName = name;
-
-          root.dataset.probeMode = "0";
-          delete root.dataset.devicePlacementMode;
-          delete root.dataset.devicePlacementId;
-
-          const space = root.querySelector(".jack-space");
-          space?.classList.remove("is-probing","is-camera-placement");
-          space?.classList.add("is-device-authoring");
-
-          root
-            .querySelector('[data-jack-action="probe-device"]')
-            ?.classList.remove("is-active");
-
-          root
-            .querySelector('[data-jack-action="place-device"]')
-            ?.classList.add("is-active");
-
-          panel?.remove();
-
-          ui?.notifications?.info?.(
-            "PLACE DEVICE // LEFT-CLICK MAP POSITION // RMB DRAG STILL PANS"
-          );
-
-          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
-          return;
-        }
-
-        return;
-      }
 
       if (deviceButton) {
         const deviceAction = deviceButton.dataset.deviceAction;
@@ -3054,59 +2899,6 @@
 
         showDevicePanel(root,actor,device);
         globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
-        return;
-      }
-
-      if (action === "place-device") {
-        if (!game.user?.isGM) {
-          return ui?.notifications?.warn?.("Only the GM can place Network Devices directly.");
-        }
-
-        clearDeviceAuthorMode(root);
-
-        root.dataset.probeMode = "0";
-        delete root.dataset.devicePlacementMode;
-        delete root.dataset.devicePlacementId;
-
-        const space = root.querySelector(".jack-space");
-        space?.classList.remove("is-probing","is-camera-placement");
-
-        root
-          .querySelector('[data-jack-action="probe-device"]')
-          ?.classList.remove("is-active");
-
-        showDeviceAuthorPanel(root);
-        globalThis.FEHA_SOUNDS?.play?.("drawer_open",{cooldown:0});
-        return;
-      }
-
-      if (action === "probe-device") {
-        const enabled = root.dataset.probeMode !== "1";
-
-        if (enabled) {
-          clearDeviceAuthorMode(root);
-          root.querySelector(".jack-device-author-panel")?.remove();
-          delete root.dataset.devicePlacementMode;
-          delete root.dataset.devicePlacementId;
-          root.querySelector(".jack-space")?.classList.remove(
-            "is-camera-placement"
-          );
-        }
-
-        root.dataset.probeMode = enabled ? "1" : "0";
-        root.querySelector(".jack-space")?.classList.toggle(
-          "is-probing",
-          enabled
-        );
-
-        button.classList.toggle("is-active",enabled);
-
-        ui?.notifications?.info?.(
-          enabled
-            ? "NETWORK PROBE // LEFT-CLICK AN UNKNOWN DEVICE LOCATION"
-            : "NETWORK PROBE CANCELLED"
-        );
-
         return;
       }
 
