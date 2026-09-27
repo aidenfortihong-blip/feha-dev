@@ -4982,3 +4982,33 @@ body > #feha-jackin-overlay {
     width:min(360px,44vw);
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.9.0 DEVICE DECLUTTER
+   Device anchors remain exact; cards participate in the existing fan-out pass.
+   ========================================================================== */
+
+#feha-jackin-overlay
+  .jack-world
+  .jack-device-node {
+  left:var(--jack-card-x,var(--jack-x)) !important;
+  top:var(--jack-card-y,var(--jack-y)) !important;
+}
+
+#feha-jackin-overlay
+  .jack-world
+  .jack-device-node:hover {
+  transform:
+    translate(-50%,-50%)
+    scale(1.035) !important;
+}
+
+#feha-jackin-overlay .jack-card-leader.is-device {
+  stroke:rgba(var(--jack-yellow),.24);
+}
+
+#feha-jackin-overlay .jack-card-leader.is-device.is-displaced {
+  stroke:rgba(var(--jack-yellow),.50);
+  opacity:.58;
+}
