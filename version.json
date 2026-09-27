@@ -1,7 +1,7 @@
 {
-  "version": "0.9.8",
+  "version": "0.9.9",
   "updated": "2026-09-27",
-  "scope": "camera-pointerdown-placement",
+  "scope": "camera-placement-surface-pan-overscan",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -54,7 +54,11 @@
     "Removed the visible PROBE control while camera placement is being stabilized",
     "GM CAMERA placement now uses capture-phase left pointerdown on the JACK IN overlay rather than relying on a later click event",
     "Camera placement checks the live map rectangle directly and places immediately from that pointer event",
-    "RMB drag remains the navigation gesture and is isolated from left-button placement"
+    "RMB drag remains the navigation gesture and is isolated from left-button placement",
+    "Added an explicit transparent camera-placement interaction surface above the transformed JACK IN world",
+    "When CAMERA mode is active, left pointerdown is owned directly by that placement surface and reports captured map coordinates before persistence",
+    "Viewport panning now has overscan padding at every zoom level, including 100% and zoomed-out states",
+    "RMB drag may intentionally reveal some empty margin at scene edges so the tabletop can always be repositioned"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
