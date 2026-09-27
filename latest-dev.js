@@ -3,6 +3,7 @@
   let lifecycleActive = true;
   let observer = null;
   let walletGuard = null;
+  let marketSoundUX = null;
   let cyberdeckCombatHooks = [];
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -762,6 +763,131 @@
         "FEHA DEV 0.8.4 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
+  }
+
+  function installMarketSoundUX() {
+    removeMarketSoundUX();
+
+    const clickHandler = event => {
+      const root = event.target?.closest?.("#adk-market-15");
+      if (!root) return;
+
+      const button =
+        event.target?.closest?.("button,[role='button']") ??
+        null;
+
+      if (!button || !root.contains(button) || button.disabled) return;
+
+      const play = (kind, cooldown = 0) =>
+        globalThis.FEHA_SOUNDS?.play?.(kind,{cooldown});
+
+      if (button.matches(".close-market")) {
+        play("drawer_close");
+        return;
+      }
+
+      if (button.matches("#top-directory,#back-directory")) {
+        play("drawer_close");
+        return;
+      }
+
+      if (button.matches("#adk-market-wallet")) {
+        play("drawer_open");
+        return;
+      }
+
+      if (button.matches("[data-shop-tier]")) {
+        play("subsystem_select",55);
+        return;
+      }
+
+      if (button.matches("[data-shop]")) {
+        play("drawer_open");
+        return;
+      }
+
+      if (button.matches("#reroll-stock")) {
+        play("scan");
+        return;
+      }
+
+      if (button.matches("[data-open-item]")) {
+        play("drawer_open");
+        return;
+      }
+
+      if (button.matches("[data-buy-item]")) {
+        play("install");
+        return;
+      }
+
+      if (button.matches("[data-category]")) {
+        play("subsystem_select",45);
+        return;
+      }
+
+      if (button.matches("[data-item-tier]")) {
+        play("cyberware_select",45);
+        return;
+      }
+
+      if (button.matches("#reset-filters")) {
+        play("remove",65);
+        return;
+      }
+
+      if (button.matches("[data-page]")) {
+        play("select",45);
+        return;
+      }
+
+      if (button.matches(".icon-btn,.page-btn,.detail-btn,.filter-chip")) {
+        play("select",45);
+        return;
+      }
+
+      play("select",45);
+    };
+
+    const changeHandler = event => {
+      const root = event.target?.closest?.("#adk-market-15");
+      if (!root) return;
+
+      if (event.target.matches("#adk-market-actor")) {
+        globalThis.FEHA_SOUNDS?.play?.("actor_switch",{cooldown:70});
+        return;
+      }
+
+      if (event.target.matches("#market-maker,#market-slot")) {
+        globalThis.FEHA_SOUNDS?.play?.("subsystem_select",{cooldown:60});
+      }
+    };
+
+    document.addEventListener("click",clickHandler,true);
+    document.addEventListener("change",changeHandler,true);
+
+    marketSoundUX = {
+      clickHandler,
+      changeHandler
+    };
+  }
+
+  function removeMarketSoundUX() {
+    if (!marketSoundUX) return;
+
+    document.removeEventListener(
+      "click",
+      marketSoundUX.clickHandler,
+      true
+    );
+
+    document.removeEventListener(
+      "change",
+      marketSoundUX.changeHandler,
+      true
+    );
+
+    marketSoundUX = null;
   }
 
   function removeSoundEngine() {
@@ -2980,6 +3106,7 @@ if (!game.user?.isGM) {
       removeCacheSelectionUX();
       removeActorSwitchFix();
       removeTelemetryMotion();
+      removeMarketSoundUX();
       removeSoundEngine();
       removeWalletGuard();
       clearLegacyWalletTags();
@@ -3018,6 +3145,7 @@ if (!game.user?.isGM) {
   globalThis.FEHA_DEV_DIAGNOSTICS = globalThis.FEHA_DEV_DIAGNOSTICS ?? false;
 
   installSoundEngine();
+  installMarketSoundUX();
   installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
