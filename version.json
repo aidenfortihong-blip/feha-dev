@@ -1,21 +1,18 @@
 {
-  "version": "0.8.9",
+  "version": "0.8.10",
   "updated": "2026-09-26",
-  "scope": "quickhack-resolution-and-network-spacing",
+  "scope": "scene-mapped-jack-in",
   "notes": [
-    "Spread JACK IN infrastructure farther from the operator and reduced relay footprint for more negative space",
-    "Added Quickhack rule parsing for save ability, damage formula/type, half-on-success, lingering/timed damage, conditional requirements, and secondary-target warnings",
-    "Target saving throws now use the target actor's real D&D5e ability score, save proficiency, proficiency bonus, and numeric save bonuses",
-    "RUN now spends RAM then opens an in-JACK-IN Quickhack Resolution screen instead of only posting chat",
-    "Resolution screen shows actual d20 save roll, modifier, total, DC, pass/fail margin, effect state, and source effect text",
-    "Damage Quickhacks roll their actual damage formula and prefill a suggested application amount based on save outcome",
-    "Half-on-success damage is automatically suggested at half; successful negating saves suggest zero damage",
-    "Lingering-save patterns such as Overheat keep primary damage separate from the save and visibly flag lingering adjudication",
-    "Conditional and splash/secondary-target Quickhacks are visibly flagged instead of being falsely auto-resolved",
-    "Damage application consumes temporary HP first, then HP, and updates the target actor directly when the user has permission",
-    "Damage resolution stays bound to the originally Quickhacked token even if Foundry target selection changes while the panel is open",
-    "Resolved HP is updated live in the resolution panel and duplicate application is prevented",
-    "Static gate passed: V3 JS parses cleanly and Cyberdeck V3 CSS is structurally balanced"
+    "JACK IN now uses the active Foundry Scene background as a cyberized underlay when one is available",
+    "Real scene endpoints are positioned from exact Token center coordinates instead of synthetic orbital placement",
+    "The operator core uses the current actor's actual scene token position when available",
+    "Multiple Tokens referencing the same Actor remain distinct endpoints and are labeled with stable ordinal signatures such as // 01, // 02",
+    "Synthetic network relays are now route infrastructure between real token positions rather than the primary spatial layout",
+    "Selected-route packets and branch topology remain layered over the actual map geography",
+    "Quickhack resolution now exposes explicit RETURN TO NET and CLOSE CYBERDECK controls",
+    "JACK IN header now exposes RETURN TO DECK and CLOSE CYBERDECK instead of relying on an ambiguous X",
+    "Retains 0.8.9 save/damage resolution and direct HP application",
+    "Static gate passed after scene-map refactor"
   ],
   "knownManualRules": [
     "Status conditions and non-damage secondary effects are resolved and displayed but not yet converted into Foundry Active Effects",
