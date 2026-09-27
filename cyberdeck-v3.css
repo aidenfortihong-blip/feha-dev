@@ -8478,3 +8478,165 @@ body > #feha-jackin-overlay {
     width:106px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.26 SQUARE ACTOR ENDPOINTS
+   Actor node center = exact scene-token center. No relay/route visual layer.
+   ========================================================================== */
+
+/* Belt-and-suspenders: stripped in markup, hidden here too in case of hot reload. */
+#feha-jackin-overlay .jack-links,
+#feha-jackin-overlay .jack-relay,
+#feha-jackin-overlay .jack-token-anchor {
+  display:none !important;
+}
+
+/* Square actor endpoints centered exactly on their scene token coordinate. */
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node.is-targeted,
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node {
+  left:var(--jack-card-x,var(--jack-x)) !important;
+  top:var(--jack-card-y,var(--jack-y)) !important;
+  width:156px !important;
+  height:156px !important;
+  min-height:156px !important;
+  max-width:156px !important;
+  max-height:156px !important;
+  padding:10px !important;
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:76px minmax(0,1fr) 24px !important;
+  gap:5px !important;
+  justify-items:center !important;
+  align-items:center !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-card-scale,1)) !important;
+  transform-origin:center center !important;
+  overflow:visible !important;
+}
+
+/* Portrait is the visual center of the square. */
+#feha-jackin-overlay .jack-world .jack-node img {
+  width:76px !important;
+  height:76px !important;
+  margin:0 !important;
+  object-fit:cover !important;
+  justify-self:center !important;
+}
+
+/* Node number stays in the corner instead of consuming grid space. */
+#feha-jackin-overlay .jack-world .jack-node-num {
+  position:absolute !important;
+  top:7px !important;
+  right:8px !important;
+  left:auto !important;
+  font-size:8px !important;
+  line-height:1 !important;
+}
+
+/* Actor identity becomes a compact centered stack. */
+#feha-jackin-overlay .jack-world .jack-node-copy {
+  width:100% !important;
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:3px !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node-copy b {
+  max-width:100% !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  font-size:15px !important;
+  line-height:1.05 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node-copy small {
+  max-width:100% !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  font-size:7.5px !important;
+  line-height:1.1 !important;
+  letter-spacing:.75px !important;
+}
+
+/* Lock state sits at the bottom of the square and never changes geometry. */
+#feha-jackin-overlay .jack-world .jack-node > em {
+  align-self:end !important;
+  justify-self:center !important;
+  width:auto !important;
+  min-width:68px !important;
+  margin:0 !important;
+  padding:5px 8px !important;
+  text-align:center !important;
+  font-size:8px !important;
+  line-height:1 !important;
+}
+
+/* Selected state changes color only, never size. */
+#feha-jackin-overlay .jack-world .jack-node.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted {
+  width:156px !important;
+  height:156px !important;
+  min-height:156px !important;
+  max-width:156px !important;
+  max-height:156px !important;
+}
+
+/* Keep friendly/hostile outlines continuously visible. */
+#feha-jackin-overlay .jack-world .jack-node.is-hostile {
+  border-color:rgb(var(--jack-yellow)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-friendly {
+  border-color:rgba(var(--jack-cyan),.78) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted {
+  border-color:rgb(var(--jack-mag)) !important;
+  outline:2px solid rgb(var(--jack-mag)) !important;
+  outline-offset:2px !important;
+}
+
+@media(max-width:1350px) {
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node,
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node.is-targeted {
+    width:146px !important;
+    height:146px !important;
+    min-height:146px !important;
+    max-width:146px !important;
+    max-height:146px !important;
+    grid-template-rows:70px minmax(0,1fr) 22px !important;
+  }
+
+  #feha-jackin-overlay .jack-world .jack-node img {
+    width:70px !important;
+    height:70px !important;
+  }
+}
