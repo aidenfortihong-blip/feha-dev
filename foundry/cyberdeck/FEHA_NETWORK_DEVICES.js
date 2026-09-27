@@ -1,0 +1,449 @@
+// FEHA // NETWORK DEVICES
+// Data-driven Network Entity registry + scene scanners.
+// No UI or action logic belongs in this file.
+
+(() => {
+  const core = globalThis.FEHA_CYBER_CORE;
+  if (!core) throw new Error("FEHA_NETWORK_DEVICES requires FEHA_CYBER_CORE.");
+
+  const VERSION = "0.9.0";
+  const FLAG_SCOPE = "fleshEnshrouded";
+  const DEVICE_FLAG = "networkDevice";
+  const SCENE_DEVICE_FLAG = "networkDevices";
+
+  const SECURITY = Object.freeze({
+    0:{label:"UNSECURED",dc:0},
+    1:{label:"BASIC",dc:10},
+    2:{label:"SECURED",dc:12},
+    3:{label:"HARDENED",dc:14},
+    4:{label:"CENTRAL",dc:16},
+    5:{label:"CORE",dc:18},
+    6:{label:"EXCEPTIONAL",dc:20}
+  });
+
+  const CAPABILITIES = Object.freeze({
+    PLACE_FEED:{label:"PLACE FEED",group:"camera"},
+    VIEW_FEED:{label:"VIEW FEED",group:"camera"},
+    ROTATE:{label:"ROTATE",group:"physical"},
+    DISABLE:{label:"DISABLE",group:"state"},
+    ENABLE:{label:"ENABLE",group:"state"},
+    OPEN:{label:"OPEN",group:"door"},
+    CLOSE:{label:"CLOSE",group:"door"},
+    LOCK:{label:"LOCK",group:"door"},
+    UNLOCK:{label:"UNLOCK",group:"door"},
+    TAKEOVER:{label:"TAKE CONTROL",group:"turret"},
+    FIRE:{label:"FIRE",group:"turret"},
+    REVEAL_NETWORK:{label:"REVEAL NETWORK",group:"intel"},
+    DOWNLOAD_DATA:{label:"DOWNLOAD DATA",group:"intel"},
+    TRIGGER:{label:"TRIGGER",group:"alarm"},
+    POWER_OFF:{label:"POWER OFF",group:"power"},
+    POWER_ON:{label:"POWER ON",group:"power"},
+    OVERLOAD:{label:"OVERLOAD",group:"power"},
+    CONTROL_SUBSYSTEM:{label:"CONTROL SUBSYSTEM",group:"system"}
+  });
+
+  const TYPES = Object.freeze({
+    camera:{
+      label:"CAMERA",
+      icon:"fa-solid fa-video",
+      defaultDC:11,
+      capabilities:["PLACE_FEED","VIEW_FEED","ROTATE","DISABLE"]
+    },
+    door:{
+      label:"DOOR",
+      icon:"fa-solid fa-door-open",
+      defaultDC:12,
+      capabilities:["OPEN","CLOSE","LOCK","UNLOCK"]
+    },
+    turret:{
+      label:"TURRET",
+      icon:"fa-solid fa-crosshairs",
+      defaultDC:15,
+      capabilities:["DISABLE","ENABLE","ROTATE","TAKEOVER"]
+    },
+    terminal:{
+      label:"TERMINAL",
+      icon:"fa-solid fa-terminal",
+      defaultDC:16,
+      capabilities:["REVEAL_NETWORK","DOWNLOAD_DATA"]
+    },
+    alarm:{
+      label:"ALARM",
+      icon:"fa-solid fa-bell",
+      defaultDC:13,
+      capabilities:["DISABLE","ENABLE","TRIGGER"]
+    },
+    lights:{
+      label:"LIGHTING",
+      icon:"fa-solid fa-lightbulb",
+      defaultDC:10,
+      capabilities:["POWER_OFF","POWER_ON","OVERLOAD"]
+    },
+    system:{
+      label:"SYSTEM",
+      icon:"fa-solid fa-network-wired",
+      defaultDC:18,
+      capabilities:["REVEAL_NETWORK","CONTROL_SUBSYSTEM"]
+    }
+  });
+
+  const norm = value => String(value ?? "").trim().toLowerCase();
+  const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+
+  function collectionContents(collection) {
+    if (!collection) return [];
+    if (Array.isArray(collection)) return collection;
+    if (Array.isArray(collection.contents)) return collection.contents;
+    try { return [...collection]; } catch { return []; }
+  }
+
+  function sceneRect(scene) {
+    return (
+      scene?.dimensions?.sceneRect ??
+      canvas?.dimensions?.sceneRect ??
+      {x:0,y:0,width:1,height:1}
+    );
+  }
+
+  function toPercent(scene,x,y) {
+    const rect = sceneRect(scene);
+    const width = Math.max(1,Number(rect.width)||1);
+    const height = Math.max(1,Number(rect.height)||1);
+
+    return {
+      xPct:clamp(((Number(x)-Number(rect.x??0))/width)*100,0,100),
+      yPct:clamp(((Number(y)-Number(rect.y??0))/height)*100,0,100)
+    };
+  }
+
+  function centerForDocument(scene,doc) {
+    const name = String(doc?.documentName ?? doc?.constructor?.name ?? "");
+
+    if (/Wall/i.test(name)) {
+      const c = doc?.c ?? doc?.coordinates ?? doc?._source?.c ?? [];
+      if (Array.isArray(c) && c.length >= 4) {
+        return {
+          x:(Number(c[0])+Number(c[2]))/2,
+          y:(Number(c[1])+Number(c[3]))/2
+        };
+      }
+    }
+
+    if (/AmbientLight/i.test(name)) {
+      return {x:Number(doc?.x??0),y:Number(doc?.y??0)};
+    }
+
+    if (/Tile/i.test(name)) {
+      return {
+        x:Number(doc?.x??0)+(Number(doc?.width??0)/2),
+        y:Number(doc?.y??0)+(Number(doc?.height??0)/2)
+      };
+    }
+
+    if (/Token/i.test(name)) {
+      const gridSize = Math.max(
+        1,
+        Number(scene?.grid?.size ?? canvas?.grid?.size ?? canvas?.dimensions?.size ?? 100)||100
+      );
+
+      return {
+        x:Number(doc?.x??0)+(Number(doc?.width??1)*gridSize/2),
+        y:Number(doc?.y??0)+(Number(doc?.height??1)*gridSize/2)
+      };
+    }
+
+    return {
+      x:Number(doc?.x??0),
+      y:Number(doc?.y??0)
+    };
+  }
+
+  function typeDef(type) {
+    return TYPES[norm(type)] ?? TYPES.system;
+  }
+
+  function suggestedDC(type) {
+    return Number(typeDef(type).defaultDC)||12;
+  }
+
+  function securityLabel(dc) {
+    const value = Number(dc)||0;
+    const entries = Object.values(SECURITY);
+    return entries.reduce((best,current) =>
+      Math.abs(current.dc-value) < Math.abs(best.dc-value)
+        ? current
+        : best
+    ,entries[0]).label;
+  }
+
+  function defaultCapabilities(type) {
+    return [...(typeDef(type).capabilities ?? [])];
+  }
+
+  function sanitizeCapabilities(type,values) {
+    const provided = Array.isArray(values) ? values : [];
+    const clean = provided
+      .map(value => String(value ?? "").trim().toUpperCase())
+      .filter(value => CAPABILITIES[value]);
+
+    return clean.length ? [...new Set(clean)] : defaultCapabilities(type);
+  }
+
+  function cloneObject(value) {
+    if (!value || typeof value !== "object") return {};
+    try { return structuredClone(value); }
+    catch { return JSON.parse(JSON.stringify(value)); }
+  }
+
+  function makeRecord({
+    id,
+    sceneId,
+    type,
+    name,
+    xPct,
+    yPct,
+    securityDC,
+    capabilities,
+    sourceUuid=null,
+    sourceType=null,
+    sourceId=null,
+    discoveredBy=[],
+    state={},
+    origin="scene",
+    metadata={}
+  }) {
+    const key = norm(type) || "system";
+    const def = typeDef(key);
+    const dc = Number.isFinite(Number(securityDC))
+      ? Math.max(0,Math.floor(Number(securityDC)))
+      : suggestedDC(key);
+
+    return {
+      id:String(id),
+      sceneId:String(sceneId ?? ""),
+      type:key,
+      typeLabel:def.label,
+      icon:def.icon,
+      name:String(name || def.label),
+      xPct:clamp(Number(xPct)||0,0,100),
+      yPct:clamp(Number(yPct)||0,0,100),
+      securityDC:dc,
+      securityLabel:securityLabel(dc),
+      capabilities:sanitizeCapabilities(key,capabilities),
+      sourceUuid:sourceUuid ? String(sourceUuid) : null,
+      sourceType:sourceType ? String(sourceType) : null,
+      sourceId:sourceId ? String(sourceId) : null,
+      discoveredBy:Array.isArray(discoveredBy) ? [...new Set(discoveredBy.map(String))] : [],
+      state:cloneObject(state),
+      origin:String(origin),
+      metadata:cloneObject(metadata)
+    };
+  }
+
+  function readDeviceFlag(doc) {
+    try {
+      return doc?.getFlag?.(FLAG_SCOPE,DEVICE_FLAG) ??
+        doc?.flags?.[FLAG_SCOPE]?.[DEVICE_FLAG] ??
+        null;
+    } catch {
+      return null;
+    }
+  }
+
+  function taggedRecord(scene,doc,origin="tagged") {
+    const flag = readDeviceFlag(doc);
+    if (!flag || flag === false) return null;
+
+    const config = flag === true ? {} : flag;
+    if (config?.enabled === false) return null;
+
+    const type = norm(config?.type ?? config?.deviceType ?? "system");
+    const center = centerForDocument(scene,doc);
+    const pos = toPercent(scene,center.x,center.y);
+
+    return makeRecord({
+      id:config?.id ?? ("doc:"+(doc.uuid ?? doc.id)),
+      sceneId:scene.id,
+      type,
+      name:config?.name ?? doc.name ?? typeDef(type).label,
+      xPct:config?.xPct ?? pos.xPct,
+      yPct:config?.yPct ?? pos.yPct,
+      securityDC:config?.securityDC ?? config?.dc,
+      capabilities:config?.capabilities,
+      sourceUuid:doc.uuid ?? null,
+      sourceType:doc.documentName ?? null,
+      sourceId:doc.id ?? null,
+      discoveredBy:config?.discoveredBy ?? [],
+      state:config?.state ?? {},
+      origin,
+      metadata:config?.metadata ?? {}
+    });
+  }
+
+  function isDoorWall(wall) {
+    const raw = Number(wall?.door ?? wall?._source?.door ?? 0);
+    return Number.isFinite(raw) && raw > 0;
+  }
+
+  function doorRecord(scene,wall) {
+    if (!isDoorWall(wall)) return null;
+
+    const center = centerForDocument(scene,wall);
+    const pos = toPercent(scene,center.x,center.y);
+    const flag = readDeviceFlag(wall);
+    const config = flag && typeof flag === "object" ? flag : {};
+
+    return makeRecord({
+      id:config?.id ?? ("door:"+wall.id),
+      sceneId:scene.id,
+      type:"door",
+      name:config?.name ?? wall.name ?? ("DOOR "+String(wall.id).slice(0,4).toUpperCase()),
+      xPct:pos.xPct,
+      yPct:pos.yPct,
+      securityDC:config?.securityDC ?? config?.dc ?? suggestedDC("door"),
+      capabilities:config?.capabilities ?? defaultCapabilities("door"),
+      sourceUuid:wall.uuid ?? null,
+      sourceType:wall.documentName ?? "Wall",
+      sourceId:wall.id,
+      discoveredBy:config?.discoveredBy ?? [],
+      state:config?.state ?? {},
+      origin:"foundry-door",
+      metadata:{
+        ...(config?.metadata ?? {}),
+        doorState:Number(wall?.ds ?? wall?._source?.ds ?? 0)
+      }
+    });
+  }
+
+  function customRecords(scene) {
+    let raw = [];
+
+    try {
+      raw =
+        scene?.getFlag?.(FLAG_SCOPE,SCENE_DEVICE_FLAG) ??
+        scene?.flags?.[FLAG_SCOPE]?.[SCENE_DEVICE_FLAG] ??
+        [];
+    } catch {}
+
+    if (!Array.isArray(raw)) return [];
+
+    return raw.map((record,index) =>
+      makeRecord({
+        ...record,
+        id:record?.id ?? ("custom:"+scene.id+":"+index),
+        sceneId:scene.id,
+        origin:record?.origin ?? "custom"
+      })
+    );
+  }
+
+  function scanScene(scene=canvas?.scene) {
+    if (!scene) return [];
+
+    const records = new Map();
+
+    for (const wall of collectionContents(scene.walls)) {
+      const door = doorRecord(scene,wall);
+      if (door) records.set(door.id,door);
+
+      const tagged = taggedRecord(scene,wall,"tagged-wall");
+      if (tagged) records.set(tagged.id,tagged);
+    }
+
+    for (const token of collectionContents(scene.tokens)) {
+      const tagged = taggedRecord(scene,token,"tagged-token");
+      if (tagged) records.set(tagged.id,tagged);
+    }
+
+    for (const tile of collectionContents(scene.tiles)) {
+      const tagged = taggedRecord(scene,tile,"tagged-tile");
+      if (tagged) records.set(tagged.id,tagged);
+    }
+
+    for (const light of collectionContents(scene.lights)) {
+      const tagged = taggedRecord(scene,light,"tagged-light");
+      if (tagged) records.set(tagged.id,tagged);
+    }
+
+    for (const record of customRecords(scene)) {
+      records.set(record.id,record);
+    }
+
+    return [...records.values()];
+  }
+
+  async function upsertCustomDevice(sceneId,input) {
+    if (!game.user?.isGM) {
+      throw new Error("Only a GM may persist Network Devices.");
+    }
+
+    const scene = game.scenes?.get?.(sceneId);
+    if (!scene) throw new Error("Network Device scene not found.");
+
+    const current = customRecords(scene);
+    const randomId =
+      foundry?.utils?.randomID?.() ??
+      (crypto?.randomUUID?.() ?? String(Date.now()));
+
+    const record = makeRecord({
+      ...input,
+      sceneId,
+      id:input?.id ?? ("custom:"+randomId)
+    });
+
+    const index = current.findIndex(entry => entry.id === record.id);
+    if (index >= 0) current[index] = record;
+    else current.push(record);
+
+    await scene.setFlag(
+      FLAG_SCOPE,
+      SCENE_DEVICE_FLAG,
+      current
+    );
+
+    await core.emit("devices:changed",{sceneId,record});
+    return record;
+  }
+
+  async function removeCustomDevice(sceneId,id) {
+    if (!game.user?.isGM) {
+      throw new Error("Only a GM may remove Network Devices.");
+    }
+
+    const scene = game.scenes?.get?.(sceneId);
+    if (!scene) return false;
+
+    const next = customRecords(scene).filter(record => record.id !== id);
+    await scene.setFlag(FLAG_SCOPE,SCENE_DEVICE_FLAG,next);
+    await core.emit("devices:changed",{sceneId,removedId:id});
+    return true;
+  }
+
+  const api = {
+    version:VERSION,
+    security:SECURITY,
+    capabilities:CAPABILITIES,
+    types:TYPES,
+    typeDef,
+    suggestedDC,
+    securityLabel,
+    defaultCapabilities,
+    makeRecord,
+    scanScene,
+    upsertCustomDevice,
+    removeCustomDevice,
+
+    async init() {
+      console.log("FEHA NETWORK DEVICES",VERSION,"ready");
+    },
+
+    async destroy() {
+      if (globalThis.FEHA_NETWORK_DEVICES === api) {
+        delete globalThis.FEHA_NETWORK_DEVICES;
+      }
+    }
+  };
+
+  core.registerModule("devices",api);
+  globalThis.FEHA_NETWORK_DEVICES = api;
+})();
