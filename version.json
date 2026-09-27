@@ -1,7 +1,7 @@
 {
-  "version": "0.9.4",
+  "version": "0.9.5",
   "updated": "2026-09-27",
-  "scope": "jack-in-screenshot-polish",
+  "scope": "gm-device-authoring-rmb-navigation",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -37,7 +37,12 @@
     "Fixed JACK IN header grid mismatch that wrapped RETURN TO DECK / CLOSE CYBERDECK into an unintended second row",
     "Reduced Quickhack execution dock height to recover more vertical space for the live network map",
     "Increased real Scene underlay legibility while preserving the cyber treatment",
-    "Sparse one-endpoint scenes now use larger endpoint/operator decision surfaces without changing true token anchors"
+    "Sparse one-endpoint scenes now use larger endpoint/operator decision surfaces without changing true token anchors",
+    "Added GM PLACE DEVICE authoring directly inside JACK IN for Camera, Door, Turret, Terminal, Alarm, Lighting, and System nodes",
+    "GM device authoring supports type, access scope, Security DC, optional network label, then exact left-click map placement",
+    "PROBE remains the separate player discovery/GM approval path rather than being used for GM scene setup",
+    "JACK IN navigation now uses wheel to zoom and hold-right-mouse drag to pan; left click is reserved for targeting, probing, camera feed placement, and device placement",
+    "Right-drag panning may begin over actor/device cards while HUD controls remain protected"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
