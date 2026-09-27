@@ -1,7 +1,7 @@
 {
-  "version": "0.10.27",
+  "version": "0.10.28",
   "updated": "2026-09-27",
-  "scope": "token-floor-square-actor-nodes",
+  "scope": "constant-fullbleed-actor-squares",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -113,7 +113,12 @@
     "JACK IN actor zoom now has a per-node floor so an actor portrait square cannot render smaller than the actual token footprint on the scene",
     "Actor endpoint boxes now render only the centered portrait plus the bottom LOCKED/ACQUIRE state",
     "Removed actor name, relation, token signature, node number, decorative corner captions, and duplicate outline layers from actor squares",
-    "Hostile actor outlines are yellow, friendly outlines cyan, and selected actor outlines switch to a single red border"
+    "Hostile actor outlines are yellow, friendly outlines cyan, and selected actor outlines switch to a single red border",
+    "Removed actor token-footprint zoom floors and per-node actor scaling",
+    "Actor endpoint squares now remain a fixed constant screen size at every JACK IN zoom level",
+    "Actor portraits now fill the entire square edge-to-edge",
+    "Unselected actor squares render no internal text; selected actors show only a bottom LOCKED overlay",
+    "Preserved single-color actor outlines: hostile yellow, friendly cyan, selected red"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
