@@ -334,6 +334,59 @@
       return;
     }
 
+    if (kind === "deviceCommandRequest") {
+      if (!game.user?.isGM) return;
+
+      try {
+        const actions = core.module("deviceActions");
+        const actor = game.actors?.get?.(payload.actorId) ?? null;
+        const device = devices
+          .scanScene(game.scenes?.get?.(payload.sceneId))
+          .find(entry => entry.id === payload.deviceId) ?? null;
+
+        if (!actions || !actor || !device) {
+          throw new Error("Device command context is no longer available.");
+        }
+
+        const result = await actions.executeCapability(
+          actor,
+          device,
+          payload.capability,
+          {
+            skipBreach:true,
+            remote:true
+          }
+        );
+
+        emit("deviceCommandResolved",{
+          requestId:payload.requestId,
+          userId:payload.userId,
+          result
+        });
+      } catch (err) {
+        console.error("FEHA NETWORK device command failed",err);
+
+        emit("deviceCommandResolved",{
+          requestId:payload.requestId,
+          userId:payload.userId,
+          error:String(err?.message ?? err)
+        });
+      }
+
+      return;
+    }
+
+    if (kind === "deviceCommandResolved") {
+      const resolver = pending.get(payload.requestId);
+
+      if (resolver) {
+        pending.delete(payload.requestId);
+        resolver(payload);
+      }
+
+      return;
+    }
+
     if (kind === "revealRequest") {
       if (!game.user?.isGM) return;
 
@@ -434,6 +487,40 @@
     return {request,resolution};
   }
 
+  async function requestDeviceCommand({
+    actorId,
+    sceneId=canvas?.scene?.id,
+    deviceId,
+    capability
+  }={}) {
+    if (!actorId || !sceneId || !deviceId || !capability) {
+      throw new Error("Device command request is incomplete.");
+    }
+
+    const requestId = randomID();
+
+    const resolution = new Promise(resolve => {
+      pending.set(requestId,resolve);
+    });
+
+    emit("deviceCommandRequest",{
+      requestId,
+      actorId,
+      sceneId,
+      deviceId,
+      capability,
+      userId:game.user.id
+    });
+
+    const payload = await resolution;
+
+    if (payload?.error) {
+      throw new Error(payload.error);
+    }
+
+    return payload?.result ?? null;
+  }
+
   async function requestReveal(
     sceneId=canvas?.scene?.id,
     userId=game.user?.id
@@ -467,6 +554,7 @@
   const api = {
     version:VERSION,
     requestProbe,
+    requestDeviceCommand,
     requestReveal,
     queue,
     renderQueue,
