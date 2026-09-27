@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.1";
+  const VERSION = "0.9.2";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -2017,7 +2017,9 @@
         '" data-jack-anchor-y="'+Number(device.y).toFixed(4)+'">'+
           '<i class="'+esc(device.icon || "fa-solid fa-microchip")+'"></i>'+
           '<span><b>'+esc(device.name)+'</b><small>'+
-            esc(device.typeLabel)+' // '+esc(state)+
+            esc(device.typeLabel)+' // '+
+            esc(device.accessScopeLabel ?? "ENDPOINT")+
+            ' // '+esc(state)+
           '</small></span>'+
         '</button>'
       );
@@ -2174,11 +2176,14 @@
       '<section class="jack-device-panel" data-device-id="'+esc(device.id)+'">'+
         '<header>'+
           '<div><small>NETWORK DEVICE</small><h3>'+esc(device.name)+'</h3>'+
-          '<span>'+esc(device.typeLabel)+' // '+esc(device.origin.toUpperCase())+'</span></div>'+
+          '<span>'+esc(device.typeLabel)+' // '+
+          esc(device.accessScopeLabel ?? "ENDPOINT")+
+          ' // '+esc(device.origin.toUpperCase())+'</span></div>'+
           '<button type="button" data-device-action="close">×</button>'+
         '</header>'+
         '<div class="jack-device-security">'+
           '<div><small>SECURITY</small><b>DC '+device.securityDC+'</b><span>'+esc(device.securityLabel)+'</span></div>'+
+          '<div><small>SCOPE</small><b>'+esc(device.accessScopeLabel ?? "ENDPOINT")+'</b><span>CONTROL BREADTH</span></div>'+
           '<div><small>ACCESS</small><b>'+(hasAccess?"GRANTED":"LOCKED")+'</b><span>'+
             (hasAccess?"SESSION AUTHORIZED":"BREACH REQUIRED")+
           '</span></div>'+
