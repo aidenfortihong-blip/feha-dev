@@ -1,7 +1,7 @@
 {
-  "version": "0.9.6",
+  "version": "0.9.7",
   "updated": "2026-09-27",
-  "scope": "jack-in-map-interaction-fix",
+  "scope": "camera-only-authoring",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -45,7 +45,12 @@
     "Right-drag panning may begin over actor/device cards while HUD controls remain protected",
     "Moved PROBE, GM device placement, and camera feed placement off the shared root pointerdown path and onto an explicit left-click handler bound to the JACK IN map",
     "Kept right mouse pointerdown exclusively for panning so navigation no longer competes with placement or discovery gestures",
-    "Probe and placement failures now surface their actual error text in Foundry notifications for easier live debugging"
+    "Probe and placement failures now surface their actual error text in Foundry notifications for easier live debugging",
+    "Removed the generic GM PLACE DEVICE panel from JACK IN",
+    "GM setup now exposes only a dedicated CAMERA placement button",
+    "CAMERA arms immediately and places a normal endpoint Camera at the left-clicked cyber-map position using the standard Camera Security DC",
+    "Doors, turrets, alarms, terminals, lighting, and system placement are intentionally deferred to separate purpose-built flows",
+    "CAMERA and PROBE controls now use direct button listeners, while the map uses capture-phase left-click handling and RMB-only panning"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
