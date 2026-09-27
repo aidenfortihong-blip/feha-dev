@@ -5597,3 +5597,20 @@ body > #feha-jackin-overlay {
   box-shadow:
     inset 0 0 48px rgba(var(--jack-yellow),.018);
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.9.10 WINDOW-CAPTURE CAMERA INPUT
+   Placement no longer depends on descendant hit-testing.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-camera-place-layer,
+#feha-jackin-overlay
+  .jack-space.is-camera-authoring
+  .jack-camera-place-layer {
+  pointer-events:none !important;
+}
+
+#feha-jackin-overlay .jack-space.is-camera-authoring {
+  cursor:crosshair !important;
+}
