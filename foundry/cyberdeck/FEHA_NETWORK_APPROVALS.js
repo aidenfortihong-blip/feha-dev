@@ -10,7 +10,7 @@
     throw new Error("FEHA_NETWORK_APPROVALS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.9.0";
+  const VERSION = "0.9.2";
   const CHANNEL = "module.flesh-enshrouded-heart-ablaze";
   const MARKER = "fehaNetworkDevicesV1";
   const ROOT_ID = "feha-network-approval-queue";
@@ -62,11 +62,37 @@
     select.dataset.ndaType = "1";
 
     for (const [key,def] of Object.entries(devices.types)) {
+      const scope = def.defaultScope ?? "endpoint";
       const option = document.createElement("option");
       option.value = key;
       option.selected = key === selectedType;
       option.textContent =
-        def.label + " // DC " + devices.suggestedDC(key);
+        def.label + " // DC " + devices.suggestedDC(key,scope);
+      select.appendChild(option);
+    }
+
+    return select;
+  }
+
+  function makeScopeSelect(type,selectedScope=null) {
+    const select = document.createElement("select");
+    select.dataset.ndaScope = "1";
+
+    const normalized = devices.normalizeScope(
+      selectedScope,
+      type
+    );
+
+    for (const [key,def] of Object.entries(devices.accessScopes ?? {})) {
+      const option = document.createElement("option");
+      option.value = key;
+      option.selected = key === normalized;
+      option.textContent =
+        def.label +
+        " // " +
+        (Number(def.dcMod) >= 0 ? "+" : "") +
+        Number(def.dcMod ?? 0) +
+        " DC";
       select.appendChild(option);
     }
 
@@ -101,6 +127,10 @@
     );
 
     const typeSelect = makeTypeSelect(suggested);
+    const scopeSelect = makeScopeSelect(
+      suggested,
+      request.accessScope ?? null
+    );
 
     const nameInput = document.createElement("input");
     nameInput.dataset.ndaName = "1";
@@ -113,7 +143,12 @@
     dcInput.min = "0";
     dcInput.max = "30";
     dcInput.step = "1";
-    dcInput.value = String(devices.suggestedDC(suggested));
+    dcInput.value = String(
+      devices.suggestedDC(
+        suggested,
+        scopeSelect.value
+      )
+    );
 
     const security = element("div","nda-security");
     for (const value of [
@@ -142,15 +177,39 @@
     card.append(
       meta,
       labeledControl("DEVICE TYPE",typeSelect),
+      labeledControl("ACCESS SCOPE",scopeSelect),
       labeledControl("NETWORK LABEL",nameInput),
       labeledControl("SECURITY DC",dcInput),
       security,
       actions
     );
 
-    typeSelect.addEventListener("change",() => {
-      dcInput.value = String(devices.suggestedDC(typeSelect.value));
-    });
+    const refreshSuggestedDC = () => {
+      const type = typeSelect.value;
+      const currentScope = scopeSelect.value;
+      const typeDefaultScope =
+        devices.typeDef(type)?.defaultScope ??
+        "endpoint";
+
+      // When the user changes DEVICE TYPE, move the scope to that type's
+      // normal control breadth rather than keeping an unrelated old scope.
+      if (document.activeElement === typeSelect) {
+        scopeSelect.value = devices.normalizeScope(
+          typeDefaultScope,
+          type
+        );
+      }
+
+      dcInput.value = String(
+        devices.suggestedDC(
+          type,
+          scopeSelect.value
+        )
+      );
+    };
+
+    typeSelect.addEventListener("change",refreshSuggestedDC);
+    scopeSelect.addEventListener("change",refreshSuggestedDC);
 
     return card;
   }
@@ -236,6 +295,11 @@
         request.suggestedType ??
         "door";
 
+      const accessScope =
+        card.querySelector("[data-nda-scope]")?.value ??
+        devices.typeDef(type)?.defaultScope ??
+        "endpoint";
+
       const securityDC =
         Number(card.querySelector("[data-nda-dc]")?.value);
 
@@ -254,9 +318,10 @@
             name:enteredName || def.label + " NODE",
             xPct:request.xPct,
             yPct:request.yPct,
+            accessScope,
             securityDC:Number.isFinite(securityDC)
               ? securityDC
-              : devices.suggestedDC(type),
+              : devices.suggestedDC(type,accessScope),
             capabilities:devices.defaultCapabilities(type),
             discoveredBy:[request.userId],
             origin:"probe",
@@ -264,7 +329,8 @@
               requestId:request.id,
               requesterId:request.userId,
               approvedBy:game.user.id,
-              approvedAt:new Date().toISOString()
+              approvedAt:new Date().toISOString(),
+              accessScope
             }
           }
         );
@@ -282,6 +348,8 @@
         ui.notifications?.info?.(
           "NETWORK DEVICE APPROVED // " +
           record.name +
+          " // " +
+          (record.accessScopeLabel ?? "ENDPOINT") +
           " // DC " +
           record.securityDC
         );
