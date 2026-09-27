@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.0";
+  const VERSION = "0.9.1";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1747,6 +1747,65 @@
         return;
       }
 
+      if (root.dataset.devicePlacementMode === "camera") {
+        event.preventDefault();
+
+        const cameraFeeds = cyberModule("cameraFeeds");
+        const deviceId = root.dataset.devicePlacementId ?? "";
+        const device = liveNetworkDevice(deviceId);
+
+        if (!cameraFeeds?.placeFeed || !device) {
+          ui?.notifications?.warn?.("Camera Feed placement is unavailable.");
+          delete root.dataset.devicePlacementMode;
+          delete root.dataset.devicePlacementId;
+          space.classList.remove("is-camera-placement");
+          return;
+        }
+
+        const rect = space.getBoundingClientRect();
+        const current = jackViewportState(root);
+
+        const worldX =
+          (event.clientX - rect.left - current.panX) /
+          current.zoom;
+
+        const worldY =
+          (event.clientY - rect.top - current.panY) /
+          current.zoom;
+
+        const xPct = Math.max(
+          0,
+          Math.min(100,(worldX/space.clientWidth)*100)
+        );
+
+        const yPct = Math.max(
+          0,
+          Math.min(100,(worldY/space.clientHeight)*100)
+        );
+
+        delete root.dataset.devicePlacementMode;
+        delete root.dataset.devicePlacementId;
+        space.classList.remove("is-camera-placement");
+
+        try {
+          const feed = await cameraFeeds.placeFeed({
+            actor,
+            device,
+            xPct,
+            yPct
+          });
+
+          ui?.notifications?.info?.(
+            "CAMERA FEED ESTABLISHED // "+String(feed?.label ?? "ACTIVE")
+          );
+        } catch (err) {
+          console.error("FEHA V3 camera placement failed",err);
+          ui?.notifications?.error?.("Camera Feed could not be established.");
+        }
+
+        return;
+      }
+
       if (root.dataset.probeMode === "1") {
         event.preventDefault();
 
@@ -2132,6 +2191,13 @@
           '<small>CAPABILITIES</small>'+
           '<div>'+capabilityButtons+'</div>'+
         '</div>'+
+        (
+          device.type === "camera"
+            ? '<div class="jack-camera-feed-status"><small>ESTABLISHED FEEDS</small><b>'+
+              String(cyberModule("cameraFeeds")?.listFeeds?.(actor,device)?.length ?? 0)+
+              '</b></div>'
+            : ''
+        )+
         result+
       '</section>'
     );
@@ -2416,6 +2482,44 @@
               return;
             }
 
+            if (result?.uiMode === "camera-placement") {
+              root.dataset.devicePlacementMode = "camera";
+              root.dataset.devicePlacementId = device.id;
+
+              root.querySelector(".jack-device-panel")?.remove();
+
+              const space = root.querySelector(".jack-space");
+              space?.classList.add("is-camera-placement");
+
+              ui?.notifications?.info?.(
+                "CAMERA FEED // CLICK A MAP POSITION TO ESTABLISH POV"
+              );
+
+              globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+              return;
+            }
+
+            if (result?.cameraFeed) {
+              globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+              return;
+            }
+
+            if (result?.error) {
+              showDevicePanel(
+                root,
+                actor,
+                device,
+                {
+                  kind:"is-failure",
+                  title:capabilityLabel+" // FAILED",
+                  body:String(result.error)
+                }
+              );
+
+              globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
+              return;
+            }
+
             if (result?.requiresAdapter) {
               showDevicePanel(
                 root,
@@ -2583,6 +2687,14 @@
 
       if (action === "probe-device") {
         const enabled = root.dataset.probeMode !== "1";
+
+        if (enabled) {
+          delete root.dataset.devicePlacementMode;
+          delete root.dataset.devicePlacementId;
+          root.querySelector(".jack-space")?.classList.remove(
+            "is-camera-placement"
+          );
+        }
 
         root.dataset.probeMode = enabled ? "1" : "0";
         root.querySelector(".jack-space")?.classList.toggle(
