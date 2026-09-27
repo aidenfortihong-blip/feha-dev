@@ -1,7 +1,7 @@
 {
-  "version": "0.10.4",
+  "version": "0.10.5",
   "updated": "2026-09-27",
-  "scope": "jack-in-readability-scale-pass",
+  "scope": "map-brightness-tweak",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -20,7 +20,8 @@
     "Expanded Quickhack execution cards and RUN controls for easier scanning and clicking",
     "Increased target lock and viewport control sizing",
     "Reduced Scene background prominence so topology and interactables read more clearly",
-    "Expanded endpoint collision solver spacing and search rings to support the larger cards without stacking"
+    "Expanded endpoint collision solver spacing and search rings to support the larger cards without stacking",
+    "Slightly increased JACK IN Scene background opacity and brightness while keeping topology/UI as the visual priority"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
