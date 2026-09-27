@@ -19,6 +19,7 @@
     devices:"foundry/cyberdeck/FEHA_NETWORK_DEVICES.js",
     actions:"foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js",
     approvals:"foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js",
+    cameras:"foundry/cyberdeck/FEHA_CAMERAS.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js"
   };
 
@@ -120,13 +121,15 @@
     evaluate(source.devices,files.devices);
     evaluate(source.actions,files.actions);
     evaluate(source.approvals,files.approvals);
+    evaluate(source.cameras,files.cameras);
 
     await globalThis.FEHA_CYBER_CORE?.init?.();
 
     const requiredModules = [
       "devices",
       "deviceActions",
-      "deviceApprovals"
+      "deviceApprovals",
+      "cameras"
     ];
 
     const missingModules = requiredModules.filter(
