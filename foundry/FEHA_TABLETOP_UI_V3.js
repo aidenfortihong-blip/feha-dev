@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.9.10";
+  const VERSION = "0.9.11";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1776,102 +1776,6 @@
       }
     });
 
-    // Foundry and some UI layers can intercept map pointer events before they
-    // reach JACK IN descendants. Camera authoring therefore listens at WINDOW
-    // capture phase and uses screen coordinates against the live map rectangle.
-    // This is deliberately independent of the transformed map DOM.
-    if (root.__cameraPlacementCapture) {
-      window.removeEventListener(
-        "mousedown",
-        root.__cameraPlacementCapture,
-        true
-      );
-    }
-
-    root.__cameraPlacementCapture = async event => {
-      if (!root.isConnected) {
-        window.removeEventListener(
-          "mousedown",
-          root.__cameraPlacementCapture,
-          true
-        );
-        delete root.__cameraPlacementCapture;
-        return;
-      }
-
-      if (event.button !== 0) return;
-      if (root.dataset.cameraAuthorMode !== "1") return;
-
-      const liveSpace = root.querySelector(".jack-space");
-      if (!liveSpace) return;
-
-      const rect = liveSpace.getBoundingClientRect();
-
-      const inside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-
-      if (!inside) return;
-
-      // Keep fixed JACK IN HUD controls usable even while authoring.
-      const control = event.target?.closest?.(
-        ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.qh-resolution,.jack-header,.jack-actions,input,select,textarea,button"
-      );
-
-      if (control) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation?.();
-
-      const actor = actorById(root.dataset.actorId);
-
-      if (!actor) {
-        ui?.notifications?.error?.(
-          "Camera placement failed: operator Actor unavailable."
-        );
-        return;
-      }
-
-      const point = pointerToJackPercent(root,event);
-
-      if (!point) {
-        ui?.notifications?.error?.(
-          "Camera placement failed: map coordinates unavailable."
-        );
-        return;
-      }
-
-      ui?.notifications?.info?.(
-        "CAMERA INPUT CAPTURED // "+
-        point.xPct.toFixed(1)+"%, "+
-        point.yPct.toFixed(1)+"%"
-      );
-
-      try {
-        await authorCameraAtPoint(
-          root,
-          actor,
-          point.xPct,
-          point.yPct
-        );
-      } catch (err) {
-        console.error("FEHA V3 Camera placement failed",err);
-        ui?.notifications?.error?.(
-          "Camera could not be placed: "+
-          String(err?.message ?? err)
-        );
-      }
-    };
-
-    window.addEventListener(
-      "mousedown",
-      root.__cameraPlacementCapture,
-      true
-    );
-
     root.onwheel = event => {
       if (!space.contains(event.target)) return;
       if (event.target?.closest?.(".qh-resolution")) return;
@@ -1901,8 +1805,72 @@
       event.preventDefault();
     };
 
-    // Navigation is RMB-only. Left click never starts a pan.
-    space.onpointerdown = event => {
+    // JACK IN INPUT CONTRACT:
+    // - LEFT pointerdown places a Camera when CAMERA mode is armed.
+    // - RIGHT pointerdown starts map pan.
+    // This deliberately uses the same .jack-space pointer path that is already
+    // proven to work for RMB drag in the live Foundry client.
+    space.onpointerdown = async event => {
+      if (event.button === 0 && root.dataset.cameraAuthorMode === "1") {
+        if (
+          event.target?.closest?.(
+            ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel,.qh-resolution,.jack-header,.jack-actions,input,select,textarea,button"
+          )
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (root.dataset.cameraPlacementBusy === "1") return;
+        root.dataset.cameraPlacementBusy = "1";
+
+        const actor = actorById(root.dataset.actorId);
+
+        if (!actor) {
+          delete root.dataset.cameraPlacementBusy;
+          ui?.notifications?.error?.(
+            "Camera placement failed: operator Actor unavailable."
+          );
+          return;
+        }
+
+        const point = pointerToJackPercent(root,event);
+
+        if (!point) {
+          delete root.dataset.cameraPlacementBusy;
+          ui?.notifications?.error?.(
+            "Camera placement failed: map coordinates unavailable."
+          );
+          return;
+        }
+
+        ui?.notifications?.info?.(
+          "CAMERA INPUT 0.9.11 // "+
+          point.xPct.toFixed(1)+"%, "+
+          point.yPct.toFixed(1)+"%"
+        );
+
+        try {
+          await authorCameraAtPoint(
+            root,
+            actor,
+            point.xPct,
+            point.yPct
+          );
+        } catch (err) {
+          delete root.dataset.cameraPlacementBusy;
+          console.error("FEHA V3 Camera placement failed",err);
+          ui?.notifications?.error?.(
+            "Camera could not be placed: "+
+            String(err?.message ?? err)
+          );
+        }
+
+        return;
+      }
+
       if (event.button !== 2) return;
 
       if (
@@ -1932,71 +1900,6 @@
         space.setPointerCapture?.(event.pointerId);
       } catch {}
     };
-
-    // Authoring / probe / camera placement are explicit LEFT-CLICK map actions.
-    // Keeping this on the map itself avoids conflicts with the delegated UI
-    // click handler and with RMB navigation.
-    space.addEventListener("click",async event => {
-      if (event.button !== 0) return;
-
-      if (
-        event.target?.closest?.(
-          "button,input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel"
-        )
-      ) {
-        return;
-      }
-
-      const actor = actorById(root.dataset.actorId);
-      if (!actor) return;
-
-      if (root.dataset.devicePlacementMode === "camera") {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const cameraFeeds = cyberModule("cameraFeeds");
-        const deviceId = root.dataset.devicePlacementId ?? "";
-        const device = liveNetworkDevice(deviceId);
-
-        if (!cameraFeeds?.placeFeed || !device) {
-          ui?.notifications?.warn?.("Camera Feed placement is unavailable.");
-          delete root.dataset.devicePlacementMode;
-          delete root.dataset.devicePlacementId;
-          space.classList.remove("is-camera-placement");
-          return;
-        }
-
-        const point = pointerToJackPercent(root,event);
-        if (!point) return;
-
-        delete root.dataset.devicePlacementMode;
-        delete root.dataset.devicePlacementId;
-        space.classList.remove("is-camera-placement");
-
-        try {
-          const feed = await cameraFeeds.placeFeed({
-            actor,
-            device,
-            xPct:point.xPct,
-            yPct:point.yPct
-          });
-
-          ui?.notifications?.info?.(
-            "CAMERA FEED ESTABLISHED // "+
-            String(feed?.label ?? "ACTIVE")
-          );
-        } catch (err) {
-          console.error("FEHA V3 camera placement failed",err);
-          ui?.notifications?.error?.(
-            "Camera Feed could not be established: "+
-            String(err?.message ?? err)
-          );
-        }
-
-        return;
-      }
-
-    },true);
 
     root.onpointermove = event => {
       const drag = root.__jackDrag;
@@ -2284,6 +2187,7 @@
     if (!root) return;
 
     delete root.dataset.cameraAuthorMode;
+    delete root.dataset.cameraPlacementBusy;
 
     root
       .querySelector(".jack-space")
