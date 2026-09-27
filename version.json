@@ -1,7 +1,7 @@
 {
-  "version": "0.10.33",
+  "version": "0.10.34",
   "updated": "2026-09-27",
-  "scope": "target-lock-portrait-panel",
+  "scope": "deferred-quickhack-ram-commit",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -137,7 +137,14 @@
     "Selected JACK IN actors now appear as a large portrait in the bottom-left TARGET LOCK panel",
     "Switching targets updates the bottom-left portrait, name, relation styling, and LOCKED state in place without rerendering JACK IN",
     "Deselecting hides the portrait and returns the panel to NO TARGET / SELECT ACTOR",
-    "This pass does not change actor topology, actor square sizing, zoom behavior, or Quickhack behavior"
+    "This pass does not change actor topology, actor square sizing, zoom behavior, or Quickhack behavior",
+    "Opening or previewing a Quickhack resolution no longer spends RAM",
+    "Returning to the network or closing the resolution consumes zero RAM",
+    "Damage Quickhacks now spend RAM only after APPLY DAMAGE is committed",
+    "Non-damage Quickhacks now expose APPLY EFFECT and spend RAM only when that action is committed",
+    "Each resolution marks its RAM commit so the same Quickhack resolution cannot spend RAM twice",
+    "Resolution footer now shows RAM COST until the commit action succeeds, then changes to RAM SPENT",
+    "Quickhack resolution no longer rerenders JACK IN just to open the result panel, preserving the live scene background"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
