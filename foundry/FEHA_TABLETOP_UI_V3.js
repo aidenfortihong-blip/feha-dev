@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.22";
+  const VERSION = "0.10.23";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1486,10 +1486,9 @@
         1-(zoom-1)*.10
       );
 
-      const relayReadability = Math.max(
-        .88,
-        1-(zoom-1)*.035
-      );
+      // Relays are screen-space HUD markers. Their coordinates still
+      // follow the zoomed world, but their box/text size stays constant.
+      const relayReadability = 1;
 
       world.style.setProperty(
         "--jack-card-scale",
