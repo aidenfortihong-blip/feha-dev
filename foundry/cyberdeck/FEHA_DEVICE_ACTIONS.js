@@ -9,7 +9,7 @@
     throw new Error("FEHA_DEVICE_ACTIONS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.9.3";
+  const VERSION = "0.10.0";
   const FLAG_SCOPE = "fleshEnshrouded";
   const DEVICE_FLAG = "networkDevice";
   const sessionAccess = new Set();
@@ -467,15 +467,6 @@
 
     if (!result && cap === "CONTROL_SUBSYSTEM") {
       result = await genericState(device,source,{subsystemControl:true});
-    }
-
-    if (!result && (cap === "PLACE_FEED" || cap === "VIEW_FEED")) {
-      return {
-        ok:false,
-        access,
-        capability:cap,
-        requiresAdapter:"camera"
-      };
     }
 
     if (!result && (cap === "ROTATE" || cap === "FIRE")) {
