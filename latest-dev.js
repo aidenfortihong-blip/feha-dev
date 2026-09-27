@@ -4,6 +4,7 @@
   let observer = null;
   let walletGuard = null;
   let marketSoundUX = null;
+  let creditsSystem = null;
   let cyberdeckCombatHooks = [];
 
   const norm = value => String(value ?? "").trim().toLowerCase();
@@ -1213,6 +1214,649 @@
     if (!fix) return;
     document.removeEventListener("change", fix.handler, true);
     delete globalThis.__FEHA_ACTOR_SWITCH_FIX_026;
+  }
+
+  function installCreditsSystem() {
+    removeCreditsSystem();
+
+    const wallet = globalThis.ADKWallet;
+    if (!wallet) {
+      console.warn("FEHA DEV // Credits wallet skipped: ADKWallet unavailable.");
+      return false;
+    }
+
+    const FLAG = "fleshEnshrouded";
+    const ROOT_ID = "feha-credits-wallet";
+
+    const original = {
+      get:wallet.get,
+      getEuro:wallet.getEuro,
+      setEuro:wallet.setEuro,
+      add:wallet.add,
+      spend:wallet.spend,
+      update:wallet.update,
+      format:wallet.format,
+      open:wallet.open,
+      refresh:wallet.refresh
+    };
+
+    const finiteMoney = value => {
+      const n = Number(value);
+      return Number.isFinite(n) ? Math.max(0,Math.floor(n)) : null;
+    };
+
+    const rawGpValue = actor => {
+      const raw = actor?._source?.system?.currency?.gp;
+
+      if (typeof raw === "number") return finiteMoney(raw);
+      if (raw && typeof raw.value === "number") return finiteMoney(raw.value);
+
+      const current = actor?.system?.currency?.gp;
+      if (typeof current === "number") return finiteMoney(current);
+      if (current && typeof current.value === "number") {
+        return finiteMoney(current.value);
+      }
+
+      return null;
+    };
+
+    const legacyBalance = actor => {
+      if (!actor) return 0;
+
+      const flags = actor.flags?.[FLAG] ?? {};
+      const nested = flags.wallet ?? {};
+
+      const canonical = finiteMoney(flags.credits);
+      if (canonical !== null) return canonical;
+
+      // The old ADK Core explicitly treated D&D GP as canonical, so preserve
+      // that value first. Only fall back to older mirrors when GP is absent.
+      const gp = rawGpValue(actor);
+      if (gp !== null) return gp;
+
+      const candidates = [
+        flags.eurodollars,
+        nested.credits,
+        nested.eurodollars,
+        nested.euro,
+        flags.money,
+        nested.money
+      ];
+
+      for (const value of candidates) {
+        const parsed = finiteMoney(value);
+        if (parsed !== null) return parsed;
+      }
+
+      return 0;
+    };
+
+    const getCredits = actor => {
+      if (!actor) return 0;
+      const direct = finiteMoney(actor.flags?.[FLAG]?.credits);
+      return direct !== null ? direct : legacyBalance(actor);
+    };
+
+    const formatCredits = value =>
+      "CR " + (finiteMoney(value) ?? 0).toLocaleString();
+
+    const canEdit = actor =>
+      Boolean(
+        actor &&
+        (
+          game.user?.isGM ||
+          actor.isOwner
+        )
+      );
+
+    const refreshCreditLabels = scope => {
+      if (!scope) return;
+
+      const roots = [];
+
+      if (scope instanceof Element) {
+        if (
+          scope.matches?.(
+            "#adk-market-15,#adk-chrome-manager-34,#adk-cyberdeck-terminal,#feha-cyberdeck-v2,#feha-credits-wallet"
+          )
+        ) {
+          roots.push(scope);
+        }
+
+        roots.push(
+          ...scope.querySelectorAll?.(
+            "#adk-market-15,#adk-chrome-manager-34,#adk-cyberdeck-terminal,#feha-cyberdeck-v2,#feha-credits-wallet"
+          ) ?? []
+        );
+      } else if (scope === document || scope === document.body) {
+        roots.push(
+          ...document.querySelectorAll(
+            "#adk-market-15,#adk-chrome-manager-34,#adk-cyberdeck-terminal,#feha-cyberdeck-v2,#feha-credits-wallet"
+          )
+        );
+      }
+
+      const unique = [...new Set(roots)];
+
+      for (const root of unique) {
+        const walker = document.createTreeWalker(
+          root,
+          NodeFilter.SHOW_TEXT
+        );
+
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+
+        for (const node of nodes) {
+          const old = node.nodeValue;
+          if (!old) continue;
+
+          const next = old
+            .replace(/€\$/g,"CR")
+            .replace(/\bEURODOLLARS\b/gi,"CREDITS")
+            .replace(/\bEURODOLLAR\b/gi,"CREDIT")
+            .replace(/\bEDDIES\b/gi,"CREDITS")
+            .replace(/\bEDDIE\b/gi,"CREDIT");
+
+          if (next !== old) node.nodeValue = next;
+        }
+      }
+    };
+
+    const refreshSurfaces = actor => {
+      try {
+        if (document.getElementById("adk-market-15")) {
+          globalThis.ADKMarket?.refresh?.();
+        }
+      } catch {}
+
+      try {
+        globalThis.ADKChromeBackend?.refresh?.();
+      } catch {}
+
+      try {
+        const root = document.getElementById(ROOT_ID);
+        if (root?.dataset?.actorId === actor?.id) {
+          const input = root.querySelector("[data-credits-input]");
+          const readout = root.querySelector("[data-credits-readout]");
+          const amount = getCredits(actor);
+
+          if (input && document.activeElement !== input) {
+            input.value = String(amount);
+          }
+
+          if (readout) {
+            readout.textContent = formatCredits(amount);
+          }
+        }
+      } catch {}
+
+      requestAnimationFrame(() => refreshCreditLabels(document.body));
+    };
+
+    const setCredits = async (actor, amount) => {
+      if (!actor || !canEdit(actor)) return false;
+
+      const credits = finiteMoney(amount) ?? 0;
+      const update = {
+        [`flags.${FLAG}.credits`]:credits,
+
+        // Compatibility mirror only. Credits is authoritative from this build.
+        [`flags.${FLAG}.eurodollars`]:credits
+      };
+
+      const raw = actor?._source?.system?.currency?.gp;
+      if (
+        raw &&
+        typeof raw === "object" &&
+        "value" in raw
+      ) {
+        update["system.currency.gp.value"] = credits;
+      } else if (
+        foundry.utils.hasProperty(
+          actor.toObject(),
+          "system.currency.gp"
+        )
+      ) {
+        update["system.currency.gp"] = credits;
+      }
+
+      const nested = actor.flags?.[FLAG]?.wallet ?? {};
+
+      for (const key of ["eurodollars","euro","money"]) {
+        if (Object.prototype.hasOwnProperty.call(nested,key)) {
+          update[`flags.${FLAG}.wallet.-=${key}`] = null;
+        }
+      }
+
+      if (
+        Object.prototype.hasOwnProperty.call(
+          actor.flags?.[FLAG] ?? {},
+          "money"
+        )
+      ) {
+        update[`flags.${FLAG}.-=money`] = null;
+      }
+
+      await actor.update(update);
+      refreshSurfaces(actor);
+      return true;
+    };
+
+    const addCredits = async (actor, amount) =>
+      setCredits(actor,getCredits(actor) + Number(amount || 0));
+
+    const spendCredits = async (actor, amount, reason = "") => {
+      if (!actor) return false;
+
+      const cost = finiteMoney(amount) ?? 0;
+      const balance = getCredits(actor);
+
+      if (balance < cost) {
+        ui.notifications.warn(
+          actor.name +
+          " only has " +
+          formatCredits(balance) +
+          "."
+        );
+        globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
+        return false;
+      }
+
+      await setCredits(actor,balance - cost);
+
+      if (reason) {
+        console.log(
+          "FEHA CREDITS | " +
+          actor.name +
+          " spent " +
+          formatCredits(cost) +
+          " on " +
+          reason +
+          "."
+        );
+      }
+
+      return true;
+    };
+
+    const getWalletData = actor => {
+      let base = {};
+
+      try {
+        const result = original.get?.call(wallet,actor);
+        if (result && typeof result === "object") base = result;
+      } catch {}
+
+      const credits = getCredits(actor);
+
+      return {
+        ...base,
+        credits,
+        // Compatibility alias for legacy callers only.
+        eurodollars:credits
+      };
+    };
+
+    const updateWalletData = async (actor, data = {}) => {
+      if (!actor) return false;
+
+      if (data.credits !== undefined) {
+        await setCredits(actor,data.credits);
+      } else if (data.eurodollars !== undefined) {
+        await setCredits(actor,data.eurodollars);
+      }
+
+      const legacyData = {...data};
+      delete legacyData.credits;
+      delete legacyData.eurodollars;
+
+      if (Object.keys(legacyData).length && original.update) {
+        try {
+          await original.update.call(wallet,actor,legacyData);
+        } catch {}
+      }
+
+      refreshSurfaces(actor);
+      return true;
+    };
+
+    const resolveActor = actor =>
+      actor ??
+      canvas?.tokens?.controlled?.[0]?.actor ??
+      game.user?.character ??
+      game.actors?.find?.(a => a.type === "character") ??
+      null;
+
+    const openWallet = actorArg => {
+      const actor = resolveActor(actorArg);
+      if (!actor) {
+        ui.notifications.warn("No character available for Credits Wallet.");
+        return null;
+      }
+
+      document.getElementById(ROOT_ID)?.remove();
+
+      const root = document.createElement("section");
+      root.id = ROOT_ID;
+      root.dataset.actorId = actor.id;
+      root.dataset.editable = canEdit(actor) ? "1" : "0";
+
+      root.innerHTML = `
+        <header class="credits-command">
+          <div class="credits-brand">
+            <span>ADK //</span>
+            <b>WALLET</b>
+            <small>CREDITS LEDGER</small>
+          </div>
+
+          <div class="credits-command-actions">
+            <span class="credits-live">
+              <i></i>
+              SYNCED
+            </span>
+
+            <button
+              type="button"
+              data-credit-action="close"
+              aria-label="Close wallet"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="credits-shell">
+          <section class="credits-identity">
+            <div class="credits-eyebrow">
+              AUTHORIZED HOLDER
+            </div>
+
+            <h1>${String(actor.name ?? "UNKNOWN").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}</h1>
+
+            <div class="credits-idline">
+              <span>ACCOUNT</span>
+              <b>${String(actor.id ?? "").slice(-8).toUpperCase()}</b>
+            </div>
+          </section>
+
+          <section class="credits-balance">
+            <div class="credits-balance-top">
+              <span>AVAILABLE CREDITS</span>
+              <small>LIVE BALANCE</small>
+            </div>
+
+            <div class="credits-balance-readout" data-credits-readout>
+              ${formatCredits(getCredits(actor))}
+            </div>
+
+            <label class="credits-editor">
+              <span>EDIT BALANCE</span>
+              <div class="credits-input-wrap">
+                <b>CR</b>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="${getCredits(actor)}"
+                  data-credits-input
+                  ${canEdit(actor) ? "" : "disabled"}
+                >
+              </div>
+            </label>
+          </section>
+
+          <footer class="credits-footer">
+            <div>
+              <span>CANONICAL CURRENCY</span>
+              <b>CREDITS</b>
+            </div>
+
+            <button
+              type="button"
+              class="credits-save"
+              data-credit-action="save"
+              ${canEdit(actor) ? "" : "disabled"}
+            >
+              SAVE CREDITS
+            </button>
+          </footer>
+        </div>
+      `;
+
+      document.body.appendChild(root);
+
+      const close = () => {
+        globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
+        root.remove();
+      };
+
+      root
+        .querySelector('[data-credit-action="close"]')
+        ?.addEventListener("click",close);
+
+      const save = async () => {
+        const input = root.querySelector("[data-credits-input]");
+        if (!input || input.disabled) return;
+
+        const amount = finiteMoney(input.value) ?? 0;
+        const button = root.querySelector('[data-credit-action="save"]');
+
+        if (button) button.disabled = true;
+
+        try {
+          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+          await setCredits(actor,amount);
+          input.value = String(getCredits(actor));
+          root.querySelector("[data-credits-readout]").textContent =
+            formatCredits(getCredits(actor));
+          globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+        } catch (error) {
+          console.error("FEHA CREDITS | save failed",error);
+          ui.notifications.error("Credits update failed.");
+          globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
+        } finally {
+          if (button) button.disabled = !canEdit(actor);
+        }
+      };
+
+      root
+        .querySelector('[data-credit-action="save"]')
+        ?.addEventListener("click",save);
+
+      root
+        .querySelector("[data-credits-input]")
+        ?.addEventListener("keydown",event => {
+          if (event.key !== "Enter") return;
+          event.preventDefault();
+          void save();
+        });
+
+      // Drag from command bar, consistent with other FEHA applications.
+      const bar = root.querySelector(".credits-command");
+      let drag = null;
+
+      bar?.addEventListener("pointerdown",event => {
+        if (event.button !== 0 || event.target.closest("button,input")) return;
+
+        const rect = root.getBoundingClientRect();
+        root.style.transform = "none";
+        root.style.left = rect.left + "px";
+        root.style.top = rect.top + "px";
+
+        drag = {
+          id:event.pointerId,
+          dx:event.clientX - rect.left,
+          dy:event.clientY - rect.top
+        };
+
+        bar.setPointerCapture?.(event.pointerId);
+      });
+
+      bar?.addEventListener("pointermove",event => {
+        if (!drag || drag.id !== event.pointerId) return;
+
+        root.style.left =
+          Math.max(
+            0,
+            Math.min(
+              window.innerWidth - root.offsetWidth,
+              event.clientX - drag.dx
+            )
+          ) +
+          "px";
+
+        root.style.top =
+          Math.max(
+            0,
+            Math.min(
+              window.innerHeight - 60,
+              event.clientY - drag.dy
+            )
+          ) +
+          "px";
+      });
+
+      const stop = event => {
+        if (drag?.id === event.pointerId) drag = null;
+      };
+
+      bar?.addEventListener("pointerup",stop);
+      bar?.addEventListener("pointercancel",stop);
+
+      globalThis.FEHA_SOUNDS?.play?.("drawer_open",{cooldown:0});
+      refreshCreditLabels(root);
+      return root;
+    };
+
+    // Replace currency semantics while preserving all old call signatures.
+    wallet.getCredits = getCredits;
+    wallet.setCredits = setCredits;
+    wallet.addCredits = addCredits;
+    wallet.spendCredits = spendCredits;
+
+    wallet.get = getWalletData;
+    wallet.getEuro = getCredits;
+    wallet.setEuro = setCredits;
+    wallet.add = addCredits;
+    wallet.spend = spendCredits;
+    wallet.update = updateWalletData;
+    wallet.format = formatCredits;
+    wallet.open = openWallet;
+
+    if (globalThis.ADKCore) {
+      globalThis.ADKCore.wallet = wallet;
+    }
+
+    const mutationObserver = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes ?? []) {
+          if (node instanceof Element) refreshCreditLabels(node);
+        }
+      }
+    });
+
+    mutationObserver.observe(document.body,{
+      childList:true,
+      subtree:true
+    });
+
+    const actorHook = Hooks.on("updateActor",(actor,changes) => {
+      const flat = foundry.utils.flattenObject(changes ?? {});
+      const keys = Object.keys(flat);
+
+      if (
+        keys.some(key =>
+          key.includes(`flags.${FLAG}.credits`) ||
+          key.includes(`flags.${FLAG}.eurodollars`) ||
+          key.includes("system.currency.gp")
+        )
+      ) {
+        refreshSurfaces(actor);
+      }
+    });
+
+    creditsSystem = {
+      wallet,
+      original,
+      mutationObserver,
+      actorHook,
+      refreshCreditLabels
+    };
+
+    // One-time conversion for every editable character. Credits wins if already
+    // present; otherwise the old GP canonical value is preserved.
+    void (async () => {
+      let migrated = 0;
+
+      for (const actor of game.actors.filter(a => a.type === "character")) {
+        if (!canEdit(actor)) continue;
+
+        const hadCredits =
+          finiteMoney(actor.flags?.[FLAG]?.credits) !== null;
+
+        const balance = getCredits(actor);
+
+        try {
+          await setCredits(actor,balance);
+          if (!hadCredits) migrated++;
+        } catch (error) {
+          console.warn(
+            "FEHA CREDITS | migration failed for",
+            actor.name,
+            error
+          );
+        }
+      }
+
+      refreshCreditLabels(document.body);
+
+      console.info(
+        "FEHA CREDITS // canonical migration ready; new actor balances:",
+        migrated
+      );
+    })();
+
+    return true;
+  }
+
+  function removeCreditsSystem() {
+    if (!creditsSystem) return;
+
+    try {
+      creditsSystem.mutationObserver?.disconnect?.();
+    } catch {}
+
+    try {
+      if (creditsSystem.actorHook != null) {
+        Hooks.off("updateActor",creditsSystem.actorHook);
+      }
+    } catch {}
+
+    const wallet = creditsSystem.wallet;
+    const original = creditsSystem.original;
+
+    if (wallet && original) {
+      for (const [key,value] of Object.entries(original)) {
+        if (value === undefined) {
+          delete wallet[key];
+        } else {
+          wallet[key] = value;
+        }
+      }
+
+      delete wallet.getCredits;
+      delete wallet.setCredits;
+      delete wallet.addCredits;
+      delete wallet.spendCredits;
+
+      if (globalThis.ADKCore) {
+        globalThis.ADKCore.wallet = wallet;
+      }
+    }
+
+    document.getElementById("feha-credits-wallet")?.remove();
+    creditsSystem = null;
   }
 
   function tagLegacyWallets(scope = document.body) {
@@ -3235,6 +3879,7 @@ if (!game.user?.isGM) {
       removeActorSwitchFix();
       removeTelemetryMotion();
       removeMarketSoundUX();
+      removeCreditsSystem();
       removeSoundEngine();
       removeWalletGuard();
       clearLegacyWalletTags();
@@ -3273,6 +3918,7 @@ if (!game.user?.isGM) {
   globalThis.FEHA_DEV_DIAGNOSTICS = globalThis.FEHA_DEV_DIAGNOSTICS ?? false;
 
   installSoundEngine();
+  installCreditsSystem();
   installTelemetryMotion();
   installCacheSelectionUX();
   installActorSwitchFix();
