@@ -1725,7 +1725,7 @@
       );
     };
 
-    root.onpointerdown = event => {
+    root.onpointerdown = async event => {
       if (event.button !== 0) return;
       if (!space.contains(event.target)) return;
 
