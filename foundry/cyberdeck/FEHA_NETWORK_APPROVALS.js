@@ -296,7 +296,7 @@
     });
   }
 
-  function receive(message) {
+  async function receive(message) {
     if (!message?.[MARKER]) return;
 
     const kind = message.kind;
@@ -329,6 +329,59 @@
         } else {
           ui.notifications?.warn?.("NETWORK PROBE DENIED");
         }
+      }
+
+      return;
+    }
+
+    if (kind === "revealRequest") {
+      if (!game.user?.isGM) return;
+
+      try {
+        const count = await devices.revealCustomDevices(
+          payload.sceneId,
+          payload.userId
+        );
+
+        emit("revealResolved",{
+          requestId:payload.requestId,
+          sceneId:payload.sceneId,
+          userId:payload.userId,
+          count,
+          gmId:game.user.id
+        });
+      } catch (err) {
+        console.error("FEHA NETWORK reveal request failed",err);
+
+        emit("revealResolved",{
+          requestId:payload.requestId,
+          sceneId:payload.sceneId,
+          userId:payload.userId,
+          count:0,
+          error:String(err?.message ?? err),
+          gmId:game.user.id
+        });
+      }
+
+      return;
+    }
+
+    if (kind === "revealResolved") {
+      const resolver = pending.get(payload.requestId);
+
+      if (resolver) {
+        pending.delete(payload.requestId);
+        resolver(payload);
+      }
+
+      if (payload.userId === game.user?.id && !payload.error) {
+        ui.notifications?.info?.(
+          "NETWORK MAP UPDATED // " +
+          Number(payload.count ?? 0) +
+          " DEVICE" +
+          (Number(payload.count ?? 0) === 1 ? "" : "S") +
+          " REVEALED"
+        );
       }
     }
   }
@@ -381,9 +434,40 @@
     return {request,resolution};
   }
 
+  async function requestReveal(
+    sceneId=canvas?.scene?.id,
+    userId=game.user?.id
+  ) {
+    if (!sceneId || !userId) {
+      throw new Error("Network reveal requires Scene and User.");
+    }
+
+    if (game.user?.isGM) {
+      return {
+        count:await devices.revealCustomDevices(sceneId,userId),
+        local:true
+      };
+    }
+
+    const requestId = randomID();
+
+    const resolution = new Promise(resolve => {
+      pending.set(requestId,resolve);
+    });
+
+    emit("revealRequest",{
+      requestId,
+      sceneId,
+      userId
+    });
+
+    return resolution;
+  }
+
   const api = {
     version:VERSION,
     requestProbe,
+    requestReveal,
     queue,
     renderQueue,
 
