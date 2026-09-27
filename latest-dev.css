@@ -10052,3 +10052,14 @@ body #adk-market-15#adk-market-15 .cap-pill {
   font-size:12px!important;
   letter-spacing:.9px!important;
 }
+
+
+/* ==========================================================================
+   FEHA MARKET // 0.10.53 REMOVE TOP DIRECTORY ICON
+   Remove redundant top-right store/directory icon. The in-store DIRECTORY
+   control remains the intended navigation path.
+   ========================================================================== */
+
+body #adk-market-15#adk-market-15 #top-directory {
+  display:none!important;
+}
