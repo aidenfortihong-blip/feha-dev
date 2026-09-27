@@ -1,23 +1,18 @@
 {
-  "version": "0.10.1",
+  "version": "0.10.2",
   "updated": "2026-09-27",
-  "scope": "camera-module-registration-fix",
+  "scope": "camera-feature-removed",
   "notes": [
-    "Removed the legacy FEHA_CAMERA_FEEDS.js implementation and its PointVisionSource POV/feed stack",
-    "Removed legacy Camera PLACE_FEED and VIEW_FEED capabilities from Network Devices and Device Actions",
-    "Removed all experimental JACK IN camera authoring layers, mode state, click capture code, camera feed status UI, and camera-specific placement CSS",
-    "Camera Network Devices remain a generic device type with DC 11 endpoint security and no camera-specific capabilities in the 0.10.0 baseline",
-    "Added isolated FEHA_CAMERA_PLACEMENT.js: GM CAMERA opens a dedicated full-screen Scene-image placement overlay outside JACK IN",
-    "The clean placement overlay has exactly two interactions: CANCEL and one click on the Scene image to create a Camera",
-    "JACK IN now only launches the camera placement module; camera placement mechanics no longer live inside FEHA_TABLETOP_UI_V3.js",
-    "RMB JACK IN panning keeps the always-available overscan bounds introduced during 0.9.x stabilization",
-    "Fixed FEHA_CAMERA_PLACEMENT.js calling nonexistent core.register(); it now correctly uses core.registerModule()",
-    "Dev loader now asserts devices, deviceActions, deviceApprovals, and cameraPlacement are registered before V3 loads",
-    "If any required Cyberdeck module fails registration, the dev loader now surfaces a hard error instead of continuing with a half-loaded runtime"
+    "Removed the Camera feature from the active Cyberdeck runtime",
+    "Removed the JACK IN CAMERA button and all camera placement actions",
+    "Deleted FEHA_CAMERA_PLACEMENT.js and removed it from the dev loader",
+    "Removed Camera from the Network Device type registry",
+    "Legacy camera Scene records are ignored by Network Device scanning so old development data does not reappear in JACK IN",
+    "Removed camera-specific Cyberdeck CSS and restored the JACK IN viewport controls to the non-camera layout",
+    "Device runtime now consists of Cyber Core, Network Devices, Device Actions, Network Approvals, and V3 UI"
   ],
   "knownLimitations": [
-    "Camera 0.10.0 is placement-only: no feeds, POV, rotation, camera-specific hacking capabilities, or feed persistence exist yet",
-    "The new camera placement overlay must be live-tested in Foundry 14.361 before any additional camera mechanics are restored",
+    "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
     "Turret ROTATE/FIRE still require a future turret adapter",
     "Status effects and non-damage Quickhack secondary effects are still not yet Active Effects",
     "Quickhack rules still use effectText parsing as a legacy bridge pending explicit schema migration",
