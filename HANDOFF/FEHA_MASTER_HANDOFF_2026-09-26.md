@@ -577,7 +577,7 @@ Load order:
 3. `foundry/cyberdeck/FEHA_NETWORK_DEVICES.js`
 4. `foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js`
 5. `foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js`
-6. `foundry/cyberdeck/FEHA_CAMERA_FEEDS.js`
+6. `foundry/cyberdeck/FEHA_CAMERA_PLACEMENT.js`
 7. `FEHA_CYBER_CORE.init()`
 8. `foundry/FEHA_TABLETOP_UI_V3.js`
 
@@ -594,12 +594,12 @@ V2 remains recovery fallback only.
 - direct temp-HP/HP application
 - explicit RETURN TO NET / CLOSE CYBERDECK
 - Network Device endpoints and routes
-- player PROBE mode
+- PROBE / approval backend retained, but the visible PROBE control is currently hidden
 - GM device approval queue
 - device Security DC breach
 - real Foundry Door control
 - per-user discovered-device gating
-- hacked camera feed placement + client-local camera POV
+- clean 0.10.0 GM Camera placement launcher
 
 ## Device suggested DCs
 
@@ -608,8 +608,8 @@ V2 remains recovery fallback only.
 - Door 12
 - Alarm 13
 - Turret 15
-- Terminal 16
-- System/Core 18
+- Terminal 17
+- System/Core 19
 
 GM can override any DC.
 
@@ -643,21 +643,21 @@ After a successful local breach, persistent Door/Scene/etc. commands are sent to
 
 Do not bypass this architecture with ad-hoc player document writes.
 
-## Camera adapter
+## Camera reset // 0.10.0
 
-`FEHA_CAMERA_FEEDS.js` owns camera behavior.
+The previous `FEHA_CAMERA_FEEDS.js` implementation was removed completely after repeated input-layer failures in JACK IN.
 
-- PLACE FEED enters vague-map placement mode
-- selected point becomes a session camera POV origin
-- adapter creates a client-local Foundry PointVisionSource
-- normal vision sources are temporarily suppressed while viewing the feed
-- RETURN TO NET removes the camera source and restores player vision
-- multiple feeds persist for current session and can be cycled
-- camera feed HUD is owned by camera adapter
-- no permanent fake Actor/Token is created
+`FEHA_CAMERA_PLACEMENT.js` is the new ground-up baseline.
 
-Camera feeds are not yet persisted across reconnects.
-Camera limited-angle/rotation is not yet automated.
+Current camera scope is intentionally tiny:
+- GM clicks CAMERA in JACK IN
+- a dedicated full-screen placement overlay opens outside JACK IN
+- overlay shows only the active Scene image
+- one click writes one normalized Camera Network Device record
+- overlay closes
+- JACK IN refreshes through the existing `devices:changed` event
+
+No camera feeds, POV, rotation, feed switching, camera-specific breach actions, or PointVisionSource behavior exist in the 0.10.0 baseline. Do not restore those until this primitive placement flow is proven stable in live Foundry.
 
 ## Device adapters still planned
 
@@ -696,10 +696,10 @@ The current public dev loader is GM-only. The socket/device architecture is buil
 
 ## Next test order
 
-1. Load latest dev build.
-2. JACK IN on a Scene with at least one real Foundry Door.
-3. Click Door device -> BREACH -> OPEN/CLOSE/LOCK/UNLOCK.
-4. Enter PROBE mode -> click unmarked map point -> approve it in GM queue with chosen type/DC.
-5. Approve a Camera -> breach -> PLACE FEED -> click placement point -> verify camera POV -> RETURN TO NET.
-6. Establish a second camera feed -> verify PREV/NEXT.
-7. Test clustered actors + devices with zoom/pan and collision fan-out.
+1. Load latest dev build and confirm 0.10.0.
+2. JACK IN -> click CAMERA.
+3. Confirm the dedicated Camera Placement overlay opens above JACK IN.
+4. Click one point on the Scene image.
+5. Confirm the overlay reports CAMERA CLICK and CAMERA CREATED, closes, and JACK IN shows one Camera device node.
+6. Place a second Camera and verify numbering/positioning.
+7. Only after placement is stable, resume Door/PROBE/multiplayer regression testing and decide the next camera mechanic.
