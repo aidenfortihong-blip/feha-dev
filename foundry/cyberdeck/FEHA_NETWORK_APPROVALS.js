@@ -18,19 +18,17 @@
   const pending = new Map();
   let socketHandler = null;
 
-  function esc(value) {
-    return String(value ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;");
-  }
-
   function randomID() {
+    const foundryId =
+      globalThis.foundry?.utils?.randomID?.();
+
+    const cryptoId =
+      globalThis.crypto?.randomUUID?.();
+
     return (
-      foundry?.utils?.randomID?.() ??
-      crypto?.randomUUID?.() ??
-      String(Date.now())+Math.random().toString(36).slice(2)
+      foundryId ??
+      cryptoId ??
+      String(Date.now()) + Math.random().toString(36).slice(2)
     );
   }
 
@@ -45,20 +43,116 @@
     );
   }
 
-  function removeRequest(id) {
-    queue.delete(id);
-    renderQueue();
+  function element(tag,className="",text="") {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== "") node.textContent = text;
+    return node;
   }
 
-  function typeOptions(selected="door") {
-    return Object.entries(devices.types)
-      .map(([key,def]) =>
-        '<option value="'+esc(key)+'" '+(key===selected?"selected":"")+"> '+
-          esc(def.label)+
-          ' // DC '+devices.suggestedDC(key)+
-        '</option>'
+  function labeledControl(labelText,control) {
+    const label = element("label","nda-field");
+    const title = element("span","nda-field-label",labelText);
+    label.append(title,control);
+    return label;
+  }
+
+  function makeTypeSelect(selectedType) {
+    const select = document.createElement("select");
+    select.dataset.ndaType = "1";
+
+    for (const [key,def] of Object.entries(devices.types)) {
+      const option = document.createElement("option");
+      option.value = key;
+      option.selected = key === selectedType;
+      option.textContent =
+        def.label + " // DC " + devices.suggestedDC(key);
+      select.appendChild(option);
+    }
+
+    return select;
+  }
+
+  function makeRequestCard(request) {
+    const card = element("article","nda-request");
+    card.dataset.requestId = request.id;
+
+    const suggested = request.suggestedType || "door";
+    const user = game.users?.get?.(request.userId);
+
+    const meta = element("div","nda-meta");
+    meta.append(
+      element("small","","PROBE REQUEST"),
+      element("b","",user?.name ?? request.userName ?? "PLAYER"),
+      element(
+        "span",
+        "",
+        "SCENE // " +
+          (game.scenes?.get?.(request.sceneId)?.name ?? request.sceneId)
+      ),
+      element(
+        "span",
+        "",
+        "POSITION // " +
+          Number(request.xPct).toFixed(1) +
+          " / " +
+          Number(request.yPct).toFixed(1)
       )
-      .join("");
+    );
+
+    const typeSelect = makeTypeSelect(suggested);
+
+    const nameInput = document.createElement("input");
+    nameInput.dataset.ndaName = "1";
+    nameInput.value = String(request.label ?? "");
+    nameInput.placeholder = "OPTIONAL LABEL";
+
+    const dcInput = document.createElement("input");
+    dcInput.dataset.ndaDc = "1";
+    dcInput.type = "number";
+    dcInput.min = "0";
+    dcInput.max = "30";
+    dcInput.step = "1";
+    dcInput.value = String(devices.suggestedDC(suggested));
+
+    const security = element("div","nda-security");
+    for (const value of [
+      "10 BASIC",
+      "12 SECURED",
+      "14 HARDENED",
+      "16 CENTRAL",
+      "18 CORE",
+      "20+ EXCEPTIONAL"
+    ]) {
+      security.appendChild(element("span","",value));
+    }
+
+    const actions = element("div","nda-actions");
+
+    const deny = element("button","","DENY");
+    deny.type = "button";
+    deny.dataset.ndaAction = "deny";
+
+    const approve = element("button","","APPROVE DEVICE");
+    approve.type = "button";
+    approve.dataset.ndaAction = "approve";
+
+    actions.append(deny,approve);
+
+    card.append(
+      meta,
+      labeledControl("DEVICE TYPE",typeSelect),
+      labeledControl("NETWORK LABEL",nameInput),
+      labeledControl("SECURITY DC",dcInput),
+      security,
+      actions
+    );
+
+    typeSelect.addEventListener("change",() => {
+      dcInput.value = String(devices.suggestedDC(typeSelect.value));
+    });
+
+    return card;
   }
 
   function renderQueue() {
@@ -66,63 +160,41 @@
 
     if (!game.user?.isGM || !queue.size) return;
 
-    const root = document.createElement("section");
+    const root = element("section");
     root.id = ROOT_ID;
 
-    root.innerHTML =
-      '<div class="nda-shell">'+
-        '<header class="nda-head">'+
-          '<div><small>NETWORK APPROVAL QUEUE</small><b>'+
-            queue.size+' REQUEST'+(queue.size===1?"":"S")+
-          '</b></div>'+
-          '<button type="button" data-nda-action="close">×</button>'+
-        '</header>'+
-        '<div class="nda-list">'+
-          [...queue.values()].map(request => {
-            const suggested = request.suggestedType ?? "door";
-            const dc = devices.suggestedDC(suggested);
-            const user = game.users?.get?.(request.userId);
+    const shell = element("div","nda-shell");
+    const head = element("header","nda-head");
+    const title = element("div");
 
-            return (
-              '<article class="nda-request" data-request-id="'+esc(request.id)+'">'+
-                '<div class="nda-meta">'+
-                  '<small>PROBE REQUEST</small>'+
-                  '<b>'+esc(user?.name ?? request.userName ?? "PLAYER")+'</b>'+
-                  '<span>SCENE // '+esc(game.scenes?.get?.(request.sceneId)?.name ?? request.sceneId)+'</span>'+
-                  '<span>POSITION // '+Number(request.xPct).toFixed(1)+' / '+Number(request.yPct).toFixed(1)+'</span>'+
-                '</div>'+
-                '<label>DEVICE TYPE<select data-nda-type>'+typeOptions(suggested)+'</select></label>'+
-                '<label>NETWORK LABEL<input data-nda-name value="'+esc(request.label ?? "")+'" placeholder="OPTIONAL LABEL"></label>'+
-                '<label>SECURITY DC<input data-nda-dc type="number" min="0" max="30" step="1" value="'+dc+'"></label>'+
-                '<div class="nda-security">'+
-                  '<span>10 BASIC</span><span>12 SECURED</span><span>14 HARDENED</span>'+
-                  '<span>16 CENTRAL</span><span>18 CORE</span><span>20+ EXCEPTIONAL</span>'+
-                '</div>'+
-                '<div class="nda-actions">'+
-                  '<button type="button" data-nda-action="deny">DENY</button>'+
-                  '<button type="button" data-nda-action="approve">APPROVE DEVICE</button>'+
-                '</div>'+
-              '</article>'
-            );
-          }).join("")+
-        '</div>'+
-      '</div>';
+    title.append(
+      element("small","","NETWORK APPROVAL QUEUE"),
+      element(
+        "b",
+        "",
+        queue.size +
+          " REQUEST" +
+          (queue.size === 1 ? "" : "S")
+      )
+    );
 
+    const close = element("button","","×");
+    close.type = "button";
+    close.dataset.ndaAction = "close";
+
+    head.append(title,close);
+
+    const list = element("div","nda-list");
+
+    for (const request of queue.values()) {
+      list.appendChild(makeRequestCard(request));
+    }
+
+    shell.append(head,list);
+    root.appendChild(shell);
     document.body.appendChild(root);
 
-    root.onchange = event => {
-      const select = event.target?.closest?.("[data-nda-type]");
-      if (!select) return;
-
-      const card = select.closest(".nda-request");
-      const dc = card?.querySelector?.("[data-nda-dc]");
-
-      if (dc) {
-        dc.value = String(devices.suggestedDC(select.value));
-      }
-    };
-
-    root.onclick = async event => {
+    root.addEventListener("click",async event => {
       const button = event.target?.closest?.("[data-nda-action]");
       if (!button) return;
 
@@ -134,15 +206,16 @@
       }
 
       const card = button.closest(".nda-request");
-      const id = card?.dataset?.requestId;
-      const request = queue.get(id);
+      const requestId = card?.dataset?.requestId;
+      const request = queue.get(requestId);
+
       if (!card || !request) return;
 
       if (action === "deny") {
-        queue.delete(id);
+        queue.delete(requestId);
 
         emit("probeResolved",{
-          requestId:id,
+          requestId,
           userId:request.userId,
           decision:"denied",
           gmId:game.user.id
@@ -176,9 +249,9 @@
         const record = await devices.upsertCustomDevice(
           request.sceneId,
           {
-            id:"probe:"+request.id,
+            id:"probe:" + request.id,
             type,
-            name:enteredName || def.label+" NODE",
+            name:enteredName || def.label + " NODE",
             xPct:request.xPct,
             yPct:request.yPct,
             securityDC:Number.isFinite(securityDC)
@@ -196,10 +269,10 @@
           }
         );
 
-        queue.delete(id);
+        queue.delete(requestId);
 
         emit("probeResolved",{
-          requestId:id,
+          requestId,
           userId:request.userId,
           decision:"approved",
           gmId:game.user.id,
@@ -207,8 +280,10 @@
         });
 
         ui.notifications?.info?.(
-          "NETWORK DEVICE APPROVED // "+record.name+
-          " // DC "+record.securityDC
+          "NETWORK DEVICE APPROVED // " +
+          record.name +
+          " // DC " +
+          record.securityDC
         );
 
         renderQueue();
@@ -218,7 +293,7 @@
         button.disabled = false;
         delete button.dataset.busy;
       }
-    };
+    });
   }
 
   function receive(message) {
@@ -248,7 +323,7 @@
       if (payload.userId === game.user?.id) {
         if (payload.decision === "approved") {
           ui.notifications?.info?.(
-            "NETWORK PROBE APPROVED // "+
+            "NETWORK PROBE APPROVED // " +
             (payload.record?.name ?? "DEVICE")
           );
         } else {
@@ -265,7 +340,9 @@
     suggestedType="door",
     label=""
   }={}) {
-    if (!sceneId) throw new Error("No active Scene for Network Probe.");
+    if (!sceneId) {
+      throw new Error("No active Scene for Network Probe.");
+    }
 
     const request = {
       id:randomID(),
@@ -286,7 +363,7 @@
       throw new Error("Network Probe requires valid map coordinates.");
     }
 
-    const promise = new Promise(resolve => {
+    const resolution = new Promise(resolve => {
       pending.set(request.id,resolve);
     });
 
@@ -301,10 +378,7 @@
       "NETWORK PROBE SENT // GM APPROVAL REQUIRED"
     );
 
-    return {
-      request,
-      resolution:promise
-    };
+    return {request,resolution};
   }
 
   const api = {
@@ -321,7 +395,9 @@
 
     async destroy() {
       if (socketHandler) {
-        try { game.socket?.off?.(CHANNEL,socketHandler); } catch {}
+        try {
+          game.socket?.off?.(CHANNEL,socketHandler);
+        } catch {}
       }
 
       socketHandler = null;
