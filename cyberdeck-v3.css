@@ -9119,3 +9119,71 @@ body > #feha-jackin-overlay {
   display:none !important;
   content:none !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.32 OPERATOR TOKEN-RELATIVE SIZE
+   Zach portrait = real token size at 100%, 1.5x real token size at max zoom.
+   ========================================================================== */
+
+/* The computed variable is the real token footprint. The outer operator frame
+   is larger only to hold the rings/label around that portrait. */
+#feha-jackin-overlay .jack-world .jack-operator {
+  width:calc(var(--jack-operator-size,96px) * 1.62) !important;
+  height:calc(var(--jack-operator-size,96px) * 1.62) !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-operator-scale,1)) !important;
+  transform-origin:center center !important;
+}
+
+/* Zach's portrait itself is the token-relative measurement. */
+#feha-jackin-overlay .jack-world .jack-operator img {
+  width:var(--jack-operator-size,96px) !important;
+  height:var(--jack-operator-size,96px) !important;
+  min-width:var(--jack-operator-size,96px) !important;
+  min-height:var(--jack-operator-size,96px) !important;
+  max-width:var(--jack-operator-size,96px) !important;
+  max-height:var(--jack-operator-size,96px) !important;
+  padding:0 !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+
+/* Rings scale proportionally with the token-relative frame. */
+#feha-jackin-overlay .jack-world .jack-operator > div {
+  inset:9% !important;
+}
+
+/* Keep the label attached to the lower edge of the operator frame instead of
+   using old fixed-pixel offsets from the 250px layout. */
+#feha-jackin-overlay .jack-world .jack-operator > span {
+  top:78% !important;
+  min-width:max(120px,72%) !important;
+  padding:7px 10px !important;
+}
+
+/* Old responsive rules are not allowed to resize the operator independently. */
+@media(max-width:1500px) {
+  #feha-jackin-overlay .jack-world .jack-operator {
+    width:calc(var(--jack-operator-size,96px) * 1.62) !important;
+    height:calc(var(--jack-operator-size,96px) * 1.62) !important;
+  }
+
+  #feha-jackin-overlay .jack-world .jack-operator img {
+    width:var(--jack-operator-size,96px) !important;
+    height:var(--jack-operator-size,96px) !important;
+  }
+}
+
+@media(max-width:1350px) {
+  #feha-jackin-overlay .jack-world .jack-operator {
+    width:calc(var(--jack-operator-size,96px) * 1.62) !important;
+    height:calc(var(--jack-operator-size,96px) * 1.62) !important;
+  }
+
+  #feha-jackin-overlay .jack-world .jack-operator img {
+    width:var(--jack-operator-size,96px) !important;
+    height:var(--jack-operator-size,96px) !important;
+  }
+}
