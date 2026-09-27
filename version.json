@@ -1,7 +1,7 @@
 {
-  "version": "0.9.7",
+  "version": "0.9.8",
   "updated": "2026-09-27",
-  "scope": "camera-only-authoring",
+  "scope": "camera-pointerdown-placement",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -50,7 +50,11 @@
     "GM setup now exposes only a dedicated CAMERA placement button",
     "CAMERA arms immediately and places a normal endpoint Camera at the left-clicked cyber-map position using the standard Camera Security DC",
     "Doors, turrets, alarms, terminals, lighting, and system placement are intentionally deferred to separate purpose-built flows",
-    "CAMERA and PROBE controls now use direct button listeners, while the map uses capture-phase left-click handling and RMB-only panning"
+    "CAMERA and PROBE controls now use direct button listeners, while the map uses capture-phase left-click handling and RMB-only panning",
+    "Removed the visible PROBE control while camera placement is being stabilized",
+    "GM CAMERA placement now uses capture-phase left pointerdown on the JACK IN overlay rather than relying on a later click event",
+    "Camera placement checks the live map rectangle directly and places immediately from that pointer event",
+    "RMB drag remains the navigation gesture and is isolated from left-button placement"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
