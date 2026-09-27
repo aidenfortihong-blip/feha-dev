@@ -1,7 +1,7 @@
 {
-  "version": "0.10.7",
+  "version": "0.10.8",
   "updated": "2026-09-27",
-  "scope": "loadout-declutter-right-rail",
+  "scope": "side-rail-footer-balance",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -31,7 +31,12 @@
     "Removed helper copy from empty memory bays to reduce center-panel clutter",
     "Flattened nested right-rail boxes into clearer status, support, and passive sections",
     "Increased right-rail value size, passive copy contrast, line-height, and reading width",
-    "Simplified empty Support Chrome and Software Library states so they no longer compete with active content"
+    "Simplified empty Support Chrome and Software Library states so they no longer compete with active content",
+    "Kept the Cyberdeck center and top layout unchanged while rebalancing only the side rails and JACK IN footer",
+    "Reduced JACK IN footer height to return vertical space to the loadout screen",
+    "Compressed the left operator rail so portrait, stats, and installed deck fit without scrolling",
+    "Widened the right information rail and substantially increased Deck Status, Support Chrome, and Deck Passive readability",
+    "Strengthened right-rail value contrast and passive text line-height without reintroducing nested panel clutter"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
