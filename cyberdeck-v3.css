@@ -9402,3 +9402,161 @@ body > #feha-jackin-overlay {
     animation:none !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.38 CAMERA PLACEMENT FOUNDATION
+   Foundry-backed Camera placement. FOV controls intentionally follow later.
+   ========================================================================== */
+
+/* CAMERA joins the viewport tools without changing existing zoom behavior. */
+#feha-jackin-overlay .jack-viewport-controls {
+  grid-template-columns:
+    48px 72px 48px 72px 84px 112px !important;
+}
+
+#feha-jackin-overlay .jack-camera-tool {
+  min-width:112px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  color:rgb(var(--jack-cyan)) !important;
+  border-color:rgba(var(--jack-cyan),.38) !important;
+}
+
+#feha-jackin-overlay .jack-camera-tool i {
+  font-size:12px !important;
+}
+
+#feha-jackin-overlay .jack-camera-tool.is-active {
+  color:#021012 !important;
+  background:rgb(var(--jack-cyan)) !important;
+  border-color:rgb(var(--jack-cyan)) !important;
+  box-shadow:
+    0 0 22px rgba(var(--jack-cyan),.20) !important;
+}
+
+/* Existing Foundry Camera token markers. */
+#feha-jackin-overlay .jack-camera-node {
+  position:absolute !important;
+  left:var(--jack-x) !important;
+  top:var(--jack-y) !important;
+  z-index:38 !important;
+  width:44px !important;
+  height:44px !important;
+  display:grid !important;
+  place-items:center !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-camera-scale,1)) !important;
+  transform-origin:center center !important;
+  color:rgb(var(--jack-cyan)) !important;
+  background:rgba(2,10,13,.96) !important;
+  border:2px solid rgba(var(--jack-cyan),.88) !important;
+  border-radius:0 !important;
+  box-shadow:
+    0 0 14px rgba(var(--jack-cyan),.12),
+    0 8px 18px rgba(0,0,0,.36) !important;
+  pointer-events:none !important;
+}
+
+#feha-jackin-overlay .jack-camera-node i {
+  font-size:16px !important;
+}
+
+#feha-jackin-overlay .jack-camera-node small {
+  position:absolute !important;
+  left:50% !important;
+  top:calc(100% + 5px) !important;
+  transform:translateX(-50%) !important;
+  padding:3px 5px !important;
+  color:#9fdde5 !important;
+  background:rgba(1,7,9,.94) !important;
+  border-left:1px solid rgb(var(--jack-cyan)) !important;
+  font-size:7px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:1px !important;
+  white-space:nowrap !important;
+}
+
+/* Camera being positioned before the actual Foundry Token exists. */
+#feha-jackin-overlay .jack-camera-ghost {
+  position:absolute !important;
+  left:var(--jack-x) !important;
+  top:var(--jack-y) !important;
+  z-index:75 !important;
+  width:56px !important;
+  height:56px !important;
+  display:grid !important;
+  place-items:center !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-camera-scale,1)) !important;
+  transform-origin:center center !important;
+  color:#031113 !important;
+  background:rgba(var(--jack-cyan),.88) !important;
+  border:2px solid #d9fbff !important;
+  outline:1px dashed rgba(var(--jack-cyan),.88) !important;
+  outline-offset:7px !important;
+  box-shadow:
+    0 0 28px rgba(var(--jack-cyan),.24) !important;
+  pointer-events:none !important;
+  animation:
+    jack-camera-place-pulse 1.25s ease-in-out infinite !important;
+}
+
+#feha-jackin-overlay .jack-camera-ghost i {
+  font-size:20px !important;
+}
+
+#feha-jackin-overlay .jack-camera-ghost span {
+  position:absolute !important;
+  top:calc(100% + 12px) !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  padding:5px 7px !important;
+  color:rgb(var(--jack-cyan)) !important;
+  background:rgba(1,7,9,.96) !important;
+  border:1px solid rgba(var(--jack-cyan),.38) !important;
+  font-size:8px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:1.2px !important;
+  white-space:nowrap !important;
+}
+
+#feha-jackin-overlay .jack-camera-ghost.is-deploying {
+  opacity:.62 !important;
+  animation:none !important;
+}
+
+#feha-jackin-overlay .jack-space[data-camera-placement="1"] {
+  cursor:crosshair !important;
+}
+
+@keyframes jack-camera-place-pulse {
+  0%,100% {
+    filter:brightness(.96);
+    box-shadow:
+      0 0 20px rgba(var(--jack-cyan),.16);
+  }
+
+  50% {
+    filter:brightness(1.13);
+    box-shadow:
+      0 0 34px rgba(var(--jack-cyan),.34);
+  }
+}
+
+@media(max-width:1200px) {
+  #feha-jackin-overlay .jack-viewport-controls {
+    grid-template-columns:
+      44px 64px 44px 64px 72px 96px !important;
+  }
+
+  #feha-jackin-overlay .jack-camera-tool {
+    min-width:96px !important;
+  }
+}
