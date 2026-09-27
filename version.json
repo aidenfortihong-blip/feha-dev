@@ -1,7 +1,7 @@
 {
-  "version": "0.10.35",
+  "version": "0.10.36",
   "updated": "2026-09-27",
-  "scope": "direct-actor-trace-lines",
+  "scope": "quickhack-preview-run-refresh",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -149,7 +149,10 @@
     "Trace endpoints use the existing exact operator and actor scene coordinates",
     "Hostile traces are yellow, friendly traces cyan, and the selected target trace turns red",
     "No relay boxes, relay branches, route nodes, or packet dots are rendered in this pass",
-    "Target selection recolors the matching trace in place without rerendering JACK IN"
+    "Target selection recolors the matching trace in place without rerendering JACK IN",
+    "Closing a Quickhack resolution preview now refreshes RUN button availability immediately",
+    "RUN buttons re-enable after × / RETURN TO NET when the selected target is still valid and enough RAM remains",
+    "No RAM, damage, effect, targeting, or topology behavior changed in this pass"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
