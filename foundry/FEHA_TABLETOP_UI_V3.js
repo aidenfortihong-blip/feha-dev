@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.8.8";
+  const VERSION = "0.8.9";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -140,6 +140,382 @@
     const intMod = Number(actor?.system?.abilities?.int?.mod ?? 0);
     const prof = Number(actor?.system?.attributes?.prof ?? actor?.system?.details?.prof ?? 2);
     return 8 + prof + intMod;
+  }
+
+  const ABILITY_KEYS = {
+    strength:"str",
+    dexterity:"dex",
+    constitution:"con",
+    intelligence:"int",
+    wisdom:"wis",
+    charisma:"cha"
+  };
+
+  const ABILITY_LABELS = {
+    str:"Strength",
+    dex:"Dexterity",
+    con:"Constitution",
+    int:"Intelligence",
+    wis:"Wisdom",
+    cha:"Charisma"
+  };
+
+  function abilityModifier(actor,key) {
+    const ability = actor?.system?.abilities?.[key] ?? {};
+    const prepared = Number(ability.mod);
+    if (Number.isFinite(prepared)) return prepared;
+
+    const score = Number(ability.value);
+    return Number.isFinite(score)
+      ? Math.floor((score - 10) / 2)
+      : 0;
+  }
+
+  function actorProficiency(actor) {
+    const value = Number(
+      actor?.system?.attributes?.prof ??
+      actor?.system?.details?.prof ??
+      2
+    );
+    return Number.isFinite(value) ? value : 2;
+  }
+
+  function saveModifier(actor,key) {
+    const ability = actor?.system?.abilities?.[key] ?? {};
+
+    for (const candidate of [
+      ability?.save?.total,
+      ability?.save?.value,
+      ability?.saveModifier
+    ]) {
+      const value = Number(candidate);
+      if (Number.isFinite(value)) return value;
+    }
+
+    const mod = abilityModifier(actor,key);
+    const proficiencyScale = Number(ability.proficient ?? 0);
+    const prof = actorProficiency(actor) *
+      (Number.isFinite(proficiencyScale) ? proficiencyScale : 0);
+
+    const localBonus = Number(ability?.bonuses?.save);
+    const globalBonus = Number(actor?.system?.bonuses?.abilities?.save);
+
+    return (
+      mod +
+      prof +
+      (Number.isFinite(localBonus) ? localBonus : 0) +
+      (Number.isFinite(globalBonus) ? globalBonus : 0)
+    );
+  }
+
+  function quickhackRule(item) {
+    const text = hackEffect(item);
+    const lower = text.toLowerCase();
+
+    const saveMatch = text.match(
+      /\b(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)\s+save\b/i
+    );
+
+    const saveKey = saveMatch
+      ? ABILITY_KEYS[String(saveMatch[1]).toLowerCase()]
+      : null;
+
+    const damageMatch = text.match(
+      /\b(\d+d\d+(?:\s*[+-]\s*\d+)?)\s*(?:(acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|poison|psychic|radiant|slashing|thunder)\s+)?damage\b/i
+    );
+
+    const damageFormula = damageMatch
+      ? String(damageMatch[1]).replace(/\s+/g,"")
+      : null;
+
+    const damageType = damageMatch?.[2]
+      ? String(damageMatch[2]).toLowerCase()
+      : "untyped";
+
+    const halfOnSuccess = /half on success/i.test(text);
+    const lingeringSave =
+      /save\s+ends?\s+(?:the\s+)?lingering/i.test(text) ||
+      /save\s+ends?\s+(?:the\s+)?ongoing/i.test(text);
+
+    const saveControlsDamage = Boolean(
+      saveKey &&
+      damageFormula &&
+      !lingeringSave &&
+      (
+        halfOnSuccess ||
+        /save\s*;[^.]*damage/i.test(text) ||
+        /save\s+or[^.]*\d+d\d+/i.test(text) ||
+        /on\s+(?:a\s+)?failed\s+save[^.]*damage/i.test(text) ||
+        /failed\s+save[^.]*damage/i.test(text)
+      )
+    );
+
+    const conditional =
+      /\bif the target\b/i.test(text) ||
+      /\bif target\b/i.test(text) ||
+      /subject to access/i.test(text) ||
+      /cybernetic\/electronic/i.test(text) ||
+      /carries an explosive/i.test(text);
+
+    const timedDamage =
+      /current and following round/i.test(text) ||
+      /following round/i.test(text) ||
+      /lingering damage/i.test(text);
+
+    const secondaryTarget =
+      /additional networked target/i.test(text) ||
+      /creatures within/i.test(text) ||
+      /nearby ally/i.test(text);
+
+    return {
+      text,
+      saveKey,
+      saveLabel:saveKey ? ABILITY_LABELS[saveKey] : null,
+      damageFormula,
+      damageType,
+      halfOnSuccess,
+      lingeringSave,
+      saveControlsDamage,
+      conditional,
+      timedDamage,
+      secondaryTarget
+    };
+  }
+
+  async function evaluateRoll(formula) {
+    const roll = new Roll(String(formula));
+    await roll.evaluate();
+    return roll;
+  }
+
+  async function resolveQuickhack(actor,item,targetToken) {
+    const targetActor = targetToken?.actor ?? targetToken?.document?.actor ?? null;
+    const m = model(actor);
+    const rule = quickhackRule(item);
+
+    const result = {
+      operator:actor,
+      item,
+      targetToken,
+      targetActor,
+      rule,
+      dc:m.dc,
+      save:null,
+      damage:null,
+      appliedDamage:0,
+      canApplyDamage:Boolean(
+        targetActor &&
+        (game.user?.isGM || targetActor.isOwner)
+      )
+    };
+
+    if (rule.saveKey && targetActor) {
+      const modifier = saveModifier(targetActor,rule.saveKey);
+      const saveRoll = await evaluateRoll(
+        "1d20" + (modifier >= 0 ? "+" : "") + modifier
+      );
+
+      const total = Number(saveRoll.total ?? 0);
+      result.save = {
+        ability:rule.saveKey,
+        label:rule.saveLabel,
+        modifier,
+        total,
+        passed:total >= m.dc,
+        margin:total - m.dc,
+        formula:saveRoll.formula
+      };
+    }
+
+    if (rule.damageFormula) {
+      const damageRoll = await evaluateRoll(rule.damageFormula);
+      const raw = Math.max(0,Number(damageRoll.total ?? 0));
+
+      let suggested = raw;
+
+      if (
+        result.save?.passed &&
+        rule.saveControlsDamage
+      ) {
+        suggested = rule.halfOnSuccess
+          ? Math.floor(raw / 2)
+          : 0;
+      }
+
+      result.damage = {
+        formula:rule.damageFormula,
+        type:rule.damageType,
+        raw,
+        suggested,
+        roll:damageRoll
+      };
+    }
+
+    return result;
+  }
+
+  function targetHP(actor) {
+    const hp = actor?.system?.attributes?.hp ?? {};
+    return {
+      value:Math.max(0,Number(hp.value ?? 0)),
+      max:Math.max(0,Number(hp.max ?? 0)),
+      temp:Math.max(0,Number(hp.temp ?? 0))
+    };
+  }
+
+  async function applyResolvedDamage(targetActor,amount) {
+    const damage = Math.max(0,Math.floor(Number(amount) || 0));
+    const before = targetHP(targetActor);
+
+    let remaining = damage;
+    let temp = before.temp;
+    let value = before.value;
+
+    const tempSpent = Math.min(temp,remaining);
+    temp -= tempSpent;
+    remaining -= tempSpent;
+    value = Math.max(0,value - remaining);
+
+    const update = {
+      "system.attributes.hp.value":value
+    };
+
+    if (before.temp !== temp) {
+      update["system.attributes.hp.temp"] = temp;
+    }
+
+    await targetActor.update(update);
+
+    return {
+      damage,
+      before,
+      after:{value,max:before.max,temp}
+    };
+  }
+
+  function resolutionMarkup(result) {
+    const {
+      item,
+      targetActor,
+      targetToken,
+      rule,
+      save,
+      damage,
+      dc,
+      canApplyDamage
+    } = result;
+
+    const targetName =
+      targetToken?.name ??
+      targetToken?.document?.name ??
+      targetActor?.name ??
+      "UNKNOWN TARGET";
+
+    const hp = targetHP(targetActor);
+
+    const saveState = !save
+      ? (
+          rule.saveKey
+            ? '<div class="qh-resolve-state is-manual"><small>SAVE</small><b>NO ACTOR DATA</b><span>'+esc(rule.saveLabel)+' save requires manual resolution.</span></div>'
+            : '<div class="qh-resolve-state is-auto"><small>DEFENSE</small><b>AUTOMATIC</b><span>No save is specified by this Quickhack.</span></div>'
+        )
+      : (
+          '<div class="qh-resolve-state '+(save.passed?"is-pass":"is-fail")+'">'+
+            '<small>'+esc(save.label).toUpperCase()+' SAVE // DC '+dc+'</small>'+
+            '<b>'+save.total+' <em>'+(save.passed?"RESISTED":"FAILED")+'</em></b>'+
+            '<span>d20 '+(save.modifier>=0?"+":"")+save.modifier+
+            ' // margin '+(save.margin>=0?"+":"")+save.margin+'</span>'+
+          '</div>'
+        );
+
+    const effectLands =
+      !save ||
+      !save.passed ||
+      rule.lingeringSave ||
+      (damage && damage.suggested > 0);
+
+    const damageBlock = damage
+      ? (
+          '<section class="qh-damage-panel">'+
+            '<div class="qh-damage-roll">'+
+              '<small>DAMAGE ROLL</small>'+
+              '<b>'+damage.raw+'</b>'+
+              '<span>'+esc(damage.formula)+' '+esc(damage.type).toUpperCase()+'</span>'+
+            '</div>'+
+            '<div class="qh-damage-apply">'+
+              '<small>SUGGESTED APPLICATION</small>'+
+              '<div class="qh-damage-input">'+
+                '<button type="button" data-qh-action="minus-damage">−</button>'+
+                '<input type="number" min="0" step="1" value="'+damage.suggested+'" data-qh-damage>'+
+                '<button type="button" data-qh-action="plus-damage">+</button>'+
+              '</div>'+
+              '<span>HP '+hp.value+(hp.temp?' + '+hp.temp+' TEMP':'')+' / '+hp.max+'</span>'+
+              '<button type="button" class="qh-apply-damage" data-qh-action="apply-damage" '+(!canApplyDamage?'disabled':'')+'>'+
+                (canApplyDamage?"APPLY DAMAGE":"GM PERMISSION REQUIRED")+
+              '</button>'+
+            '</div>'+
+          '</section>'
+        )
+      : "";
+
+    const warnings = [
+      rule.conditional ? "CONDITIONAL TARGET REQUIREMENT — VERIFY BEFORE APPLYING." : "",
+      rule.timedDamage ? "TIMED / LINGERING DAMAGE — USE THE DAMAGE FIELD WHEN THE RULE CALLS FOR IT." : "",
+      rule.secondaryTarget ? "SECONDARY / SPLASH TARGETS REQUIRE SEPARATE GM ADJUDICATION." : "",
+      rule.lingeringSave && save
+        ? (save.passed ? "SAVE ENDS THE LINGERING PORTION." : "SAVE FAILED — LINGERING PORTION CONTINUES.")
+        : ""
+    ].filter(Boolean);
+
+    return (
+      '<section class="qh-resolution" data-qh-item="'+esc(item.id)+'">'+
+        '<div class="qh-resolution-shell">'+
+          '<header class="qh-resolution-head">'+
+            '<div>'+
+              '<small>QUICKHACK RESOLUTION</small>'+
+              '<h2>'+esc(item.name)+'</h2>'+
+              '<span>TARGET // '+esc(targetName)+'</span>'+
+            '</div>'+
+            '<button type="button" data-qh-action="close-resolution">×</button>'+
+          '</header>'+
+          '<div class="qh-resolution-grid">'+
+            '<div class="qh-resolution-target">'+
+              '<img src="'+esc(targetToken?.texture?.src ?? targetActor?.img ?? "icons/svg/mystery-man.svg")+'" alt="">'+
+              '<small>TARGET PROFILE</small>'+
+              '<b>'+esc(targetName)+'</b>'+
+              '<span>'+(
+                rule.saveKey
+                  ? esc(rule.saveLabel)+' defense'
+                  : 'No defensive save'
+              )+'</span>'+
+            '</div>'+
+            '<div class="qh-resolution-result">'+
+              saveState+
+              '<div class="qh-effect-state '+(effectLands?"is-landed":"is-resisted")+'">'+
+                '<small>QUICKHACK STATE</small>'+
+                '<b>'+(effectLands?"EFFECT RESOLVED":"EFFECT RESISTED")+'</b>'+
+                '<span>'+esc(rule.text)+'</span>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+          damageBlock+
+          (warnings.length
+            ? '<div class="qh-resolution-warnings">'+warnings.map(w => '<span>'+esc(w)+'</span>').join("")+'</div>'
+            : '')+
+          '<footer class="qh-resolution-foot">'+
+            '<span>RAM SPENT // '+hackCost(item)+'</span>'+
+            '<button type="button" data-qh-action="close-resolution">'+(damage?"RETURN TO NET":"COMPLETE")+'</button>'+
+          '</footer>'+
+        '</div>'+
+      '</section>'
+    );
+  }
+
+  function showResolution(root,result) {
+    if (!root?.isConnected) return;
+    root.querySelector(".qh-resolution")?.remove();
+    root.insertAdjacentHTML("beforeend",resolutionMarkup(result));
+    root.dataset.resolvingQuickhack = "1";
   }
 
   function model(actor) {
@@ -543,8 +919,8 @@
         ((Math.PI * 2 * index) / count) +
         ((index % 2) ? 0.18 : -0.12);
 
-      const orbitalX = 50 + Math.cos(orbitalAngle) * (count <= 3 ? 25 : 31);
-      const orbitalY = 45 + Math.sin(orbitalAngle) * (count <= 3 ? 22 : 27);
+      const orbitalX = 50 + Math.cos(orbitalAngle) * (count <= 3 ? 32 : 35);
+      const orbitalY = 44 + Math.sin(orbitalAngle) * (count <= 3 ? 28 : 30);
 
       const sceneWeight =
         count <= 2 ? 0.22 :
@@ -643,15 +1019,15 @@
     // Synthetic infrastructure nodes make JACK IN read as a network topology,
     // not just a line from operator -> token. They are non-interactive.
     const relayBlueprints = [
-      {x:50,y:34,label:"GATE-01",kind:"gateway",parent:"operator"},
-      {x:34,y:43,label:"RLY-A3",kind:"relay",parent:"relay-0"},
-      {x:66,y:43,label:"RLY-B7",kind:"relay",parent:"relay-0"},
-      {x:22,y:60,label:"SUB-04",kind:"subnet",parent:"relay-1"},
-      {x:78,y:60,label:"SUB-09",kind:"subnet",parent:"relay-2"},
-      {x:36,y:71,label:"PORT-12",kind:"edge",parent:"relay-3"},
-      {x:64,y:71,label:"PORT-17",kind:"edge",parent:"relay-4"},
-      {x:17,y:34,label:"EDGE-03",kind:"edge",parent:"relay-1"},
-      {x:83,y:34,label:"EDGE-08",kind:"edge",parent:"relay-2"}
+      {x:50,y:24,label:"GATE-01",kind:"gateway",parent:"operator"},
+      {x:27,y:39,label:"RLY-A3",kind:"relay",parent:"relay-0"},
+      {x:73,y:39,label:"RLY-B7",kind:"relay",parent:"relay-0"},
+      {x:13,y:59,label:"SUB-04",kind:"subnet",parent:"relay-1"},
+      {x:87,y:59,label:"SUB-09",kind:"subnet",parent:"relay-2"},
+      {x:30,y:78,label:"PORT-12",kind:"edge",parent:"relay-3"},
+      {x:70,y:78,label:"PORT-17",kind:"edge",parent:"relay-4"},
+      {x:9,y:29,label:"EDGE-03",kind:"edge",parent:"relay-1"},
+      {x:91,y:29,label:"EDGE-08",kind:"edge",parent:"relay-2"}
     ];
 
     const desiredRelayCount =
@@ -1082,6 +1458,74 @@
       if (!button || !root.contains(button)) return;
       const action = button.dataset.jackAction;
 
+      const qhButton = event.target?.closest?.("[data-qh-action]");
+      if (qhButton && root.contains(qhButton)) {
+        const qhAction = qhButton.dataset.qhAction;
+
+        if (qhAction === "close-resolution") {
+          root.querySelector(".qh-resolution")?.remove();
+          delete root.dataset.resolvingQuickhack;
+          return;
+        }
+
+        const input = root.querySelector("[data-qh-damage]");
+
+        if (qhAction === "minus-damage" || qhAction === "plus-damage") {
+          if (!input) return;
+          const delta = qhAction === "plus-damage" ? 1 : -1;
+          input.value = String(Math.max(0,(Number(input.value)||0)+delta));
+          return;
+        }
+
+        if (qhAction === "apply-damage") {
+          if (!input || qhButton.dataset.busy === "1") return;
+
+          const token = [...(game.user?.targets ?? [])][0] ?? null;
+          const targetActor = token?.actor ?? token?.document?.actor ?? null;
+
+          if (!targetActor) {
+            return ui?.notifications?.warn?.("Target actor is no longer available.");
+          }
+
+          if (!(game.user?.isGM || targetActor.isOwner)) {
+            return ui?.notifications?.warn?.("You do not have permission to modify that target's HP.");
+          }
+
+          qhButton.dataset.busy = "1";
+          qhButton.disabled = true;
+
+          try {
+            const result = await applyResolvedDamage(targetActor,input.value);
+
+            qhButton.textContent =
+              "APPLIED // "+result.damage+" DAMAGE";
+
+            input.disabled = true;
+
+            await ChatMessage.create({
+              speaker:ChatMessage.getSpeaker({actor}),
+              content:
+                "<p><strong>QUICKHACK DAMAGE APPLIED</strong></p>"+
+                "<p>"+esc(targetActor.name)+": "+
+                result.before.value+" → <strong>"+result.after.value+"</strong> HP"+
+                (result.before.temp ? " (TEMP "+result.before.temp+" → "+result.after.temp+")" : "")+
+                "</p>"
+            });
+
+            globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+          } catch (err) {
+            console.error("FEHA V3 damage application failed",err);
+            ui?.notifications?.error?.("Could not apply Quickhack damage.");
+            qhButton.disabled = false;
+            delete qhButton.dataset.busy;
+          }
+
+          return;
+        }
+
+        return;
+      }
+
       if (action === "close") {
         root.remove();
         globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
@@ -1125,33 +1569,77 @@
           !liveNet.nodes.some(node => node.id === targetId)
         ) {
           endAction(lock);
-          return ui?.notifications?.warn?.("Select a live scene target and load that Quickhack first.");
+          return ui?.notifications?.warn?.(
+            "Select a live scene target and load that Quickhack first."
+          );
         }
 
         const m = model(actor);
         const cost = hackCost(item);
+
         if (m.currentRam < cost) {
           endAction(lock);
-          return ui?.notifications?.warn?.("Not enough RAM. "+m.currentRam+"/"+cost+".");
+          return ui?.notifications?.warn?.(
+            "Not enough RAM. "+m.currentRam+"/"+cost+"."
+          );
         }
 
         root.dataset.executing = "1";
         button.disabled = true;
 
         try {
-          await actor.update({[`flags.${FLAG}.ramCurrent`]:m.currentRam-cost});
+          await actor.update({
+            [`flags.${FLAG}.ramCurrent`]:m.currentRam-cost
+          });
+
           globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
-          setTimeout(() => globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0}),100);
+
+          const resolution = await resolveQuickhack(
+            actor,
+            item,
+            target
+          );
 
           await ChatMessage.create({
             speaker:ChatMessage.getSpeaker({actor}),
-            content:'<div style="display:flex;gap:10px;align-items:center"><img src="'+esc(item.img)+'" style="width:54px;height:54px;object-fit:contain"><div><h3>'+esc(item.name)+'</h3><p><strong>RAM '+cost+'</strong> • DC '+m.dc+' • TARGET '+esc(target.name ?? target.document?.name ?? "UNKNOWN")+'</p><p>'+esc(hackEffect(item))+'</p></div></div>'
+            content:
+              '<div style="display:flex;gap:10px;align-items:center">'+
+                '<img src="'+esc(item.img)+'" style="width:54px;height:54px;object-fit:contain">'+
+                '<div>'+
+                  '<h3>'+esc(item.name)+'</h3>'+
+                  '<p><strong>RAM '+cost+'</strong> • DC '+m.dc+
+                  ' • TARGET '+esc(target.name ?? target.document?.name ?? "UNKNOWN")+'</p>'+
+                  (
+                    resolution.save
+                      ? '<p>'+esc(resolution.save.label)+' save: <strong>'+
+                        resolution.save.total+'</strong> vs DC '+m.dc+
+                        ' — '+(resolution.save.passed?'SUCCESS':'FAILURE')+'</p>'
+                      : ''
+                  )+
+                  (
+                    resolution.damage
+                      ? '<p>Damage roll: <strong>'+resolution.damage.raw+
+                        '</strong> '+esc(resolution.damage.type)+
+                        ' • suggested '+resolution.damage.suggested+'</p>'
+                      : ''
+                  )+
+                  '<p>'+esc(hackEffect(item))+'</p>'+
+                '</div>'+
+              '</div>'
           });
 
           renderJack(actor.id);
+
+          const liveRoot = document.getElementById(JACK_ID);
+          if (liveRoot?.isConnected) {
+            showResolution(liveRoot,resolution);
+          }
+
+          globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
         } catch (err) {
-          console.error("FEHA V3 Quickhack execution failed",err);
-          ui?.notifications?.error?.("Quickhack execution failed.");
+          console.error("FEHA V3 Quickhack resolution failed",err);
+          ui?.notifications?.error?.("Quickhack resolution failed.");
+
           if (root.isConnected) {
             delete root.dataset.executing;
             button.disabled = false;
