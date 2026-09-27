@@ -7536,3 +7536,64 @@ body > #feha-jackin-overlay {
   stroke:rgb(var(--jack-mag)) !important;
   filter:drop-shadow(0 0 5px rgba(var(--jack-mag),.38)) !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.17 APPLY DAMAGE ACTION
+   Larger rectangular primary action that grows left while keeping right edge.
+   ========================================================================== */
+
+#feha-jackin-overlay .qh-damage-apply {
+  grid-template-columns:minmax(0,1fr) 380px !important;
+}
+
+#feha-jackin-overlay .qh-apply-damage {
+  grid-column:2 !important;
+  grid-row:1 / span 3 !important;
+  justify-self:end !important;
+  align-self:center !important;
+  width:380px !important;
+  min-width:380px !important;
+  height:76px !important;
+  min-height:76px !important;
+  padding:0 28px !important;
+  color:#050708 !important;
+  background:rgb(var(--jack-yellow)) !important;
+  border:1px solid rgba(255,244,180,.72) !important;
+  border-radius:0 !important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% 100%,
+    0 100%
+  ) !important;
+  font-family:"Oxanium","Arial Narrow",sans-serif !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  letter-spacing:1.25px !important;
+  text-align:center !important;
+  line-height:1 !important;
+  cursor:pointer;
+}
+
+#feha-jackin-overlay .qh-apply-damage:hover:not(:disabled) {
+  filter:brightness(1.08) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-yellow),.12),
+    0 0 32px rgba(var(--jack-yellow),.18) !important;
+}
+
+@media(max-width:1200px) {
+  #feha-jackin-overlay .qh-damage-apply {
+    grid-template-columns:minmax(0,1fr) 300px !important;
+  }
+
+  #feha-jackin-overlay .qh-apply-damage {
+    width:300px !important;
+    min-width:300px !important;
+    height:68px !important;
+    min-height:68px !important;
+    font-size:13px !important;
+  }
+}
