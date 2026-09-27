@@ -8985,3 +8985,72 @@ body > #feha-jackin-overlay {
     max-height:154px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.29 TOKEN-MATCHED CONSTANT ACTOR SIZE
+   Actor square size comes from the real scene token footprint, not 154px.
+   ========================================================================== */
+
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node.is-targeted,
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node {
+  width:var(--jack-node-size,96px) !important;
+  height:var(--jack-node-size,96px) !important;
+  min-width:var(--jack-node-size,96px) !important;
+  min-height:var(--jack-node-size,96px) !important;
+  max-width:var(--jack-node-size,96px) !important;
+  max-height:var(--jack-node-size,96px) !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-actor-scale,1)) !important;
+}
+
+/* Selected state changes color only, never dimensions. */
+#feha-jackin-overlay .jack-world .jack-node.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-friendly.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-neutral.is-targeted {
+  width:var(--jack-node-size,96px) !important;
+  height:var(--jack-node-size,96px) !important;
+  min-width:var(--jack-node-size,96px) !important;
+  min-height:var(--jack-node-size,96px) !important;
+  max-width:var(--jack-node-size,96px) !important;
+  max-height:var(--jack-node-size,96px) !important;
+}
+
+/* Responsive rules are not allowed to resize actor nodes anymore. */
+@media(max-width:1350px) {
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node,
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node:hover,
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node.is-targeted {
+    width:var(--jack-node-size,96px) !important;
+    height:var(--jack-node-size,96px) !important;
+    min-width:var(--jack-node-size,96px) !important;
+    min-height:var(--jack-node-size,96px) !important;
+    max-width:var(--jack-node-size,96px) !important;
+    max-height:var(--jack-node-size,96px) !important;
+  }
+}
