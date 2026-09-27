@@ -5012,3 +5012,222 @@ body > #feha-jackin-overlay {
   stroke:rgba(var(--jack-yellow),.50);
   opacity:.58;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.9.1 CAMERA FEEDS
+   Vague-map placement mode + client-local compromised-camera POV HUD.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-space.is-camera-placement {
+  cursor:crosshair !important;
+}
+
+#feha-jackin-overlay .jack-space.is-camera-placement > .jack-world {
+  filter:saturate(.55) brightness(.88);
+}
+
+#feha-jackin-overlay .jack-space.is-camera-placement > .jack-world::after {
+  content:"CAMERA NETWORK // SELECT FEED ORIGIN";
+  position:absolute;
+  left:50%;
+  top:18px;
+  z-index:90;
+  transform:translateX(-50%);
+  padding:8px 13px;
+  color:#050708;
+  background:rgb(var(--jack-cyan));
+  border:1px solid rgba(205,255,255,.64);
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+  pointer-events:none;
+  box-shadow:0 0 26px rgba(var(--jack-cyan),.12);
+}
+
+#feha-jackin-overlay .jack-camera-feed-status {
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  background:#020709;
+  border-left:2px solid rgba(var(--jack-cyan),.44);
+}
+
+#feha-jackin-overlay .jack-camera-feed-status small {
+  color:#637b82;
+  font-size:7px;
+  letter-spacing:1px;
+}
+
+#feha-jackin-overlay .jack-camera-feed-status b {
+  color:rgb(var(--jack-cyan));
+  font-family:"Oxanium","Arial Narrow",sans-serif;
+  font-size:18px;
+}
+
+/* Actual Foundry canvas is visible beneath this small camera HUD. */
+#feha-camera-feed-hud {
+  position:fixed;
+  inset:0;
+  z-index:19000;
+  pointer-events:none;
+  overflow:hidden;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,18,21,.04),
+      transparent 22% 78%,
+      rgba(0,14,18,.07)
+    );
+}
+
+#feha-camera-feed-hud::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(92,239,255,.020) 3px 4px
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 0 58%,
+      rgba(0,7,9,.24) 100%
+    );
+  mix-blend-mode:screen;
+}
+
+#feha-camera-feed-hud .camera-feed-frame {
+  position:absolute;
+  inset:16px;
+  pointer-events:none;
+  border:
+    1px solid rgba(92,239,255,.24);
+  box-shadow:
+    inset 0 0 70px rgba(92,239,255,.018);
+  clip-path:polygon(
+    0 0,
+    calc(100% - 22px) 0,
+    100% 22px,
+    100% 100%,
+    22px 100%,
+    0 calc(100% - 22px)
+  );
+}
+
+#feha-camera-feed-hud .camera-feed-title {
+  position:absolute;
+  left:18px;
+  top:18px;
+  min-width:280px;
+  padding:11px 13px;
+  background:rgba(1,7,9,.90);
+  border-left:3px solid rgb(92,239,255);
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+}
+
+#feha-camera-feed-hud .camera-feed-title small,
+#feha-camera-feed-hud .camera-feed-title b,
+#feha-camera-feed-hud .camera-feed-title span {
+  display:block;
+}
+
+#feha-camera-feed-hud .camera-feed-title small {
+  color:rgb(255,73,119);
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:1.5px;
+}
+
+#feha-camera-feed-hud .camera-feed-title b {
+  margin-top:5px;
+  color:#eefeff;
+  font-family:"Oxanium","Arial Narrow",sans-serif;
+  font-size:22px;
+  line-height:1;
+}
+
+#feha-camera-feed-hud .camera-feed-title span {
+  margin-top:4px;
+  color:#789196;
+  font-size:7px;
+  letter-spacing:.7px;
+}
+
+#feha-camera-feed-hud .camera-feed-actions {
+  position:absolute;
+  right:18px;
+  top:18px;
+  display:grid;
+  grid-template-columns:64px 64px 150px;
+  gap:6px;
+  pointer-events:auto;
+}
+
+#feha-camera-feed-hud .camera-feed-actions button {
+  height:42px;
+  color:rgb(92,239,255);
+  background:rgba(2,8,10,.92);
+  border:1px solid rgba(92,239,255,.28);
+  border-radius:0;
+  font-size:7.5px;
+  font-weight:900;
+  letter-spacing:.8px;
+  cursor:pointer;
+}
+
+#feha-camera-feed-hud .camera-feed-actions button:hover:not(:disabled) {
+  color:#fff;
+  border-color:rgba(92,239,255,.58);
+  background:rgba(92,239,255,.045);
+}
+
+#feha-camera-feed-hud .camera-feed-actions button:disabled {
+  opacity:.26;
+  cursor:default;
+}
+
+#feha-camera-feed-hud .camera-feed-actions
+  [data-camera-action="return"] {
+  color:#050708;
+  background:rgb(255,214,90);
+  border-color:rgba(255,238,160,.52);
+}
+
+#feha-camera-feed-hud .camera-feed-scan {
+  position:absolute;
+  left:0;
+  right:0;
+  top:-10%;
+  height:16%;
+  pointer-events:none;
+  background:linear-gradient(
+    180deg,
+    transparent,
+    rgba(92,239,255,.04) 45%,
+    rgba(92,239,255,.16) 50%,
+    rgba(92,239,255,.04) 55%,
+    transparent
+  );
+  animation:camera-feed-scan 4.6s linear infinite;
+}
+
+@keyframes camera-feed-scan {
+  to { transform:translateY(780%); }
+}
+
+@media(max-width:900px) {
+  #feha-camera-feed-hud .camera-feed-title {
+    min-width:220px;
+  }
+
+  #feha-camera-feed-hud .camera-feed-actions {
+    grid-template-columns:54px 54px 120px;
+  }
+}
