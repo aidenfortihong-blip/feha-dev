@@ -1,7 +1,7 @@
 {
-  "version": "0.10.36",
+  "version": "0.10.37",
   "updated": "2026-09-27",
-  "scope": "quickhack-preview-run-refresh",
+  "scope": "toggle-actor-target",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -152,7 +152,10 @@
     "Target selection recolors the matching trace in place without rerendering JACK IN",
     "Closing a Quickhack resolution preview now refreshes RUN button availability immediately",
     "RUN buttons re-enable after × / RETURN TO NET when the selected target is still valid and enough RAM remains",
-    "No RAM, damage, effect, targeting, or topology behavior changed in this pass"
+    "No RAM, damage, effect, targeting, or topology behavior changed in this pass",
+    "Clicking an already-selected JACK IN actor now deselects that same actor",
+    "Deselecting clears the target panel, selected actor styling, selected trace state, and disables Quickhack RUN buttons until another actor is selected",
+    "Selecting a different actor still releases the previous target and locks the new one"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
