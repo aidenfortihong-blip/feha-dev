@@ -1,7 +1,7 @@
 {
-  "version": "0.10.19",
+  "version": "0.10.20",
   "updated": "2026-09-27",
-  "scope": "native-readability-natural-zoom",
+  "scope": "resolution-readability-precision-zoom",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -80,7 +80,11 @@
     "Restored natural JACK IN scaling so cards, relays, operator UI, devices, and anchors shrink with the map when zooming out",
     "Increased native 100% actor-card, portrait, relay, operator, and semantic label sizing for better readability before zooming",
     "Preserved the higher target-card and relay stacking layers so selection outlines and relay markers stay visually above route geometry",
-    "Kept stronger relay avoidance from 0.10.18 so endpoint cards are less likely to cover relay markers"
+    "Kept stronger relay avoidance from 0.10.18 so endpoint cards are less likely to cover relay markers",
+    "Substantially increased muted/gray Quickhack Resolution text across target, save, effect, damage, HP, and RAM-spent details",
+    "Enlarged RETURN TO NET and CLOSE CYBERDECK into substantially larger footer action buttons",
+    "Changed JACK IN semantic UI scaling so zooming in makes cards, relays, operator UI, devices, and anchors progressively smaller for more precise spatial inspection",
+    "Preserved the larger native 100% JACK IN card and relay sizing from the previous readability pass"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
