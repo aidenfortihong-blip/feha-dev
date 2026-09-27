@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.38";
+  const VERSION = "0.10.39";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -2785,7 +2785,6 @@
           <button type="button" data-jack-action="zoom-in" title="Zoom in">+</button>
           <button type="button" data-jack-action="fit-view">FIT</button>
           <button type="button" data-jack-action="reset-view">RESET</button>
-          <button type="button" class="jack-camera-tool" data-jack-action="camera-place"><i class="fa-solid fa-video"></i> CAMERA</button>
         </div>
 
         <div class="jack-net-caption">
