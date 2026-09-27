@@ -1505,8 +1505,8 @@
       // Because the entire world already scales by zoom, a factor below 1/zoom
       // makes semantic UI shrink slightly as the user zooms deeper.
       const precision = Math.max(
-        .72,
-        1-(zoom-1)*.10
+        .90,
+        1-(zoom-1)*.05
       );
 
       // Relays are screen-space HUD markers. Their coordinates still
@@ -1525,7 +1525,7 @@
 
       world.style.setProperty(
         "--jack-operator-scale",
-        String(Math.max(.80,1-(zoom-1)*.07)/zoom)
+        String(Math.max(.94,1-(zoom-1)*.03)/zoom)
       );
 
       world.style.setProperty(
