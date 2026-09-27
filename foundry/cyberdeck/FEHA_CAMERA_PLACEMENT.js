@@ -9,7 +9,7 @@
     throw new Error("FEHA_CAMERA_PLACEMENT requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "0.10.0";
+  const VERSION = "0.10.1";
   const ROOT_ID = "feha-camera-placement";
   const STYLE_ID = "feha-camera-placement-style";
 
@@ -235,7 +235,7 @@
     root.innerHTML =
       '<header class="fcp-head">'+
         '<div>'+
-          '<small>FEHA // CAMERA PLACEMENT 0.10.0</small>'+
+          '<small>FEHA // CAMERA PLACEMENT 0.10.1</small>'+
           '<b>'+esc(scene.name ?? "ACTIVE SCENE")+'</b>'+
           '<span>CLICK THE SCENE IMAGE ONCE. NOTHING ELSE HAPPENS HERE.</span>'+
         '</div>'+
