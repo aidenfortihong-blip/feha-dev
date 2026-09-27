@@ -1,7 +1,7 @@
 {
-  "version": "0.10.21",
+  "version": "0.10.22",
   "updated": "2026-09-27",
-  "scope": "coherent-jack-in-scale-system",
+  "scope": "restore-topology-position-safe-zoom",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -89,7 +89,12 @@
     "Cards now shrink only mildly at deep zoom while relays remain nearly constant screen-size for readability",
     "Compensated moving packet radius and route dash lengths for zoom so selected routes no longer become giant blobs/bars",
     "Moved Scene Gate and endpoint relays farther from the operator core to reduce overlap with the operator portrait",
-    "Kept selected target cards and relays above route geometry while preserving native 100% readability"
+    "Kept selected target cards and relays above route geometry while preserving native 100% readability",
+    "Rolled JACK IN CSS geometry back to the known-good 0.10.20 state after 0.10.21 moved cards and relays",
+    "Restored the original Scene Gate and endpoint relay coordinate formulas",
+    "Removed the heavy relay collision-protection weight that was pushing actor cards away from their topology anchors",
+    "Zoom compensation is now visual-only and does not participate in topology or collision placement",
+    "Kept cards/relays/operator/anchors on separate visual scale variables without changing their underlying coordinates"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
