@@ -9532,7 +9532,7 @@ body > #feha-jackin-overlay {
   animation:none !important;
 }
 
-#feha-jackin-overlay .jack-space[data-camera-placement="1"] {
+#feha-jackin-overlay[data-camera-placement="1"] .jack-space {
   cursor:crosshair !important;
 }
 
