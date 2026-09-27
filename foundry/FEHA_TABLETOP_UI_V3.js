@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.33";
+  const VERSION = "0.10.34";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -394,6 +394,74 @@
     };
   }
 
+  async function commitQuickhackRam(actor,resolution) {
+    if (!actor || !resolution) return false;
+
+    if (resolution.dataset.qhRamCommitted === "1") {
+      return true;
+    }
+
+    const itemId = resolution.dataset.qhItem ?? "";
+    const item = actor.items?.get?.(itemId) ?? null;
+
+    if (!item || !isQuickhack(item)) {
+      ui?.notifications?.warn?.(
+        "Quickhack is no longer available."
+      );
+      return false;
+    }
+
+    const cost = hackCost(item);
+    const m = model(actor);
+
+    if (m.currentRam < cost) {
+      ui?.notifications?.warn?.(
+        "Not enough RAM. "+m.currentRam+"/"+cost+"."
+      );
+      return false;
+    }
+
+    resolution.dataset.qhRamCommitted = "1";
+
+    try {
+      await actor.update({
+        [`flags.${FLAG}.ramCurrent`]:
+          m.currentRam-cost
+      });
+
+      const ramLabel =
+        resolution.querySelector("[data-qh-ram-state]");
+
+      if (ramLabel) {
+        ramLabel.textContent =
+          "RAM SPENT // "+cost;
+      }
+
+      const headerRam =
+        document.querySelector(
+          "#"+JACK_ID+" .jack-head-stat:nth-of-type(2) b"
+        );
+
+      if (headerRam) {
+        const next = model(actor);
+        headerRam.textContent =
+          next.currentRam+" / "+next.maxRam;
+      }
+
+      return true;
+    } catch (err) {
+      delete resolution.dataset.qhRamCommitted;
+      console.error(
+        "FEHA V3 RAM commit failed",
+        err
+      );
+      ui?.notifications?.error?.(
+        "Could not spend Quickhack RAM."
+      );
+      return false;
+    }
+  }
+
   function resolutionMarkup(result) {
     const {
       item,
@@ -504,8 +572,11 @@
             ? '<div class="qh-resolution-warnings">'+warnings.map(w => '<span>'+esc(w)+'</span>').join("")+'</div>'
             : '')+
           '<footer class="qh-resolution-foot">'+
-            '<span>RAM SPENT // '+hackCost(item)+'</span>'+
+            '<span data-qh-ram-state>RAM COST // '+hackCost(item)+'</span>'+
             '<div class="qh-resolution-actions">'+
+              (!damage
+                ? '<button type="button" class="qh-apply-effect" data-qh-action="apply-effect">APPLY EFFECT</button>'
+                : '')+
               '<button type="button" data-qh-action="return-net">RETURN TO NET</button>'+
               '<button type="button" class="is-danger" data-qh-action="close-cyberdeck">CLOSE CYBERDECK</button>'+
             '</div>'+
@@ -2878,6 +2949,62 @@
           return;
         }
 
+        if (qhAction === "apply-effect") {
+          if (qhButton.dataset.busy === "1") return;
+
+          const resolution =
+            qhButton.closest(".qh-resolution");
+
+          if (!resolution) return;
+
+          qhButton.dataset.busy = "1";
+          qhButton.disabled = true;
+
+          try {
+            const committed =
+              await commitQuickhackRam(
+                actor,
+                resolution
+              );
+
+            if (!committed) {
+              qhButton.disabled = false;
+              delete qhButton.dataset.busy;
+              return;
+            }
+
+            qhButton.textContent = "EFFECT APPLIED";
+
+            await ChatMessage.create({
+              speaker:ChatMessage.getSpeaker({actor}),
+              content:
+                "<p><strong>QUICKHACK EFFECT APPLIED</strong></p>"+
+                "<p>"+esc(
+                  actor.items?.get?.(
+                    resolution.dataset.qhItem ?? ""
+                  )?.name ?? "Quickhack"
+                )+"</p>"
+            });
+
+            globalThis.FEHA_SOUNDS?.play?.(
+              "confirm",
+              {cooldown:0}
+            );
+          } catch (err) {
+            console.error(
+              "FEHA V3 effect application failed",
+              err
+            );
+            ui?.notifications?.error?.(
+              "Could not apply Quickhack effect."
+            );
+            qhButton.disabled = false;
+            delete qhButton.dataset.busy;
+          }
+
+          return;
+        }
+
         if (qhAction === "apply-damage") {
           if (!input || qhButton.dataset.busy === "1") return;
 
@@ -2902,6 +3029,15 @@
 
           try {
             const result = await applyResolvedDamage(targetActor,input.value);
+
+            const ramCommitted =
+              await commitQuickhackRam(actor,resolution);
+
+            if (!ramCommitted) {
+              throw new Error(
+                "Quickhack RAM commit failed after damage application."
+              );
+            }
 
             qhButton.textContent =
               "APPLIED // "+result.damage+" DAMAGE";
@@ -3060,10 +3196,8 @@
         button.disabled = true;
 
         try {
-          await actor.update({
-            [`flags.${FLAG}.ramCurrent`]:m.currentRam-cost
-          });
-
+          // Resolution is preview-only. RAM is committed only when
+          // APPLY DAMAGE / APPLY EFFECT is actually confirmed.
           globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
 
           const resolution = await resolveQuickhack(
@@ -3079,7 +3213,7 @@
                 '<img src="'+esc(item.img)+'" style="width:54px;height:54px;object-fit:contain">'+
                 '<div>'+
                   '<h3>'+esc(item.name)+'</h3>'+
-                  '<p><strong>RAM '+cost+'</strong> • DC '+m.dc+
+                  '<p><strong>RAM COST '+cost+'</strong> • DC '+m.dc+
                   ' • TARGET '+esc(target.name ?? target.document?.name ?? "UNKNOWN")+'</p>'+
                   (
                     resolution.save
@@ -3100,9 +3234,9 @@
               '</div>'
           });
 
-          renderJack(actor.id);
+          const liveRoot =
+            document.getElementById(JACK_ID);
 
-          const liveRoot = document.getElementById(JACK_ID);
           if (liveRoot?.isConnected) {
             delete liveRoot.dataset.executing;
             showResolution(liveRoot,resolution);
