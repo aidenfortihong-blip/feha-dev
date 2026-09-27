@@ -693,6 +693,17 @@
       socketHandler = receive;
       game.socket?.on?.(CHANNEL,socketHandler);
 
+      if (game.user?.isGM) {
+        try {
+          await ensureCameraFolder();
+        } catch (err) {
+          console.warn(
+            "FEHA CAMERAS // folder bootstrap failed",
+            err
+          );
+        }
+      }
+
       console.log(
         "FEHA CAMERAS",
         VERSION,
