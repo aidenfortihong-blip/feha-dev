@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.37";
+  const VERSION = "0.10.38";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1014,6 +1014,15 @@
     }
   }
 
+  function sceneCameras(scene) {
+    try {
+      return cyberModule("cameras")?.scanScene?.(scene) ?? [];
+    } catch (err) {
+      console.warn("FEHA V3 // Camera scan failed",err);
+      return [];
+    }
+  }
+
   function sceneModel(actor) {
     const scene = canvas?.scene ?? null;
 
@@ -1023,6 +1032,7 @@
         backgroundSrc:"",
         nodes:[],
         devices:[],
+        cameras:[],
         relays:[],
         links:[],
         selected:null,
@@ -1053,11 +1063,14 @@
       ) || 100
     );
 
+    const cameraService = cyberModule("cameras");
+
     const allSceneTokens =
       [...(scene.tokens?.contents ?? scene.tokens ?? [])]
         .filter(token =>
           (game.user?.isGM || !token.hidden) &&
-          (token.actor || token.actorId)
+          (token.actor || token.actorId) &&
+          !cameraService?.isCameraToken?.(token)
         );
 
     const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
@@ -1442,6 +1455,18 @@
       });
     }
 
+    const cameraNodes = sceneCameras(scene)
+      .map((camera,index) => ({
+        ...camera,
+        index,
+        x:Number(camera.xPct),
+        y:Number(camera.yPct)
+      }))
+      .filter(camera =>
+        Number.isFinite(camera.x) &&
+        Number.isFinite(camera.y)
+      );
+
     const networkDevices = sceneNetworkDevices(scene)
       .map((device,index) => ({
         ...device,
@@ -1495,6 +1520,7 @@
       backgroundSrc,
       nodes,
       devices:networkDevices,
+      cameras:cameraNodes,
       relays,
       links,
       selected,
@@ -1743,6 +1769,11 @@
         String(precision/zoom)
       );
 
+      world.style.setProperty(
+        "--jack-camera-scale",
+        String(1/zoom)
+      );
+
       // Actor nodes are constant screen-size. Their world coordinates still
       // move with zoom/pan, but the square itself never grows or shrinks.
       world.style.setProperty(
@@ -1865,6 +1896,235 @@
       panX:Math.round(width/2-centerX),
       panY:Math.round(height/2-centerY)
     });
+  }
+
+  function jackWorldPercentAt(
+    root,
+    clientX,
+    clientY
+  ) {
+    const space = root?.querySelector?.(".jack-space");
+    const world = root?.querySelector?.(".jack-world");
+
+    if (!space || !world) return null;
+
+    const rect = space.getBoundingClientRect();
+    const state = jackViewportState(root);
+    const zoom = Math.max(1,Number(state.zoom)||1);
+
+    const worldX =
+      (Number(clientX)-rect.left-state.panX)/zoom;
+
+    const worldY =
+      (Number(clientY)-rect.top-state.panY)/zoom;
+
+    const clamp = (n,min,max) =>
+      Math.max(min,Math.min(max,n));
+
+    return {
+      xPct:clamp(
+        (worldX/Math.max(1,world.clientWidth))*100,
+        0,
+        100
+      ),
+      yPct:clamp(
+        (worldY/Math.max(1,world.clientHeight))*100,
+        0,
+        100
+      )
+    };
+  }
+
+  function setJackCameraGhost(
+    root,
+    position
+  ) {
+    const world =
+      root?.querySelector?.(".jack-world");
+
+    if (!world || !position) return null;
+
+    let ghost =
+      world.querySelector(".jack-camera-ghost");
+
+    if (!ghost) {
+      ghost = document.createElement("div");
+      ghost.className = "jack-camera-ghost";
+      ghost.innerHTML =
+        '<i class="fa-solid fa-video"></i>'+
+        '<span>PLACE</span>';
+
+      world.appendChild(ghost);
+    }
+
+    ghost.style.setProperty(
+      "--jack-x",
+      Number(position.xPct).toFixed(3)+"%"
+    );
+
+    ghost.style.setProperty(
+      "--jack-y",
+      Number(position.yPct).toFixed(3)+"%"
+    );
+
+    ghost.dataset.xPct =
+      Number(position.xPct).toFixed(6);
+
+    ghost.dataset.yPct =
+      Number(position.yPct).toFixed(6);
+
+    return ghost;
+  }
+
+  function cancelJackCameraPlacement(
+    root,
+    {silent=false}={}
+  ) {
+    if (!root) return;
+
+    delete root.dataset.cameraPlacement;
+
+    root.querySelector(
+      ".jack-camera-ghost"
+    )?.remove();
+
+    root.querySelector(
+      '[data-jack-action="camera-place"]'
+    )?.classList.remove("is-active");
+
+    if (!silent) {
+      globalThis.FEHA_SOUNDS?.play?.(
+        "drawer_close",
+        {cooldown:0}
+      );
+    }
+  }
+
+  async function beginJackCameraPlacement(
+    root,
+    actor
+  ) {
+    const cameras = cyberModule("cameras");
+    const world =
+      root?.querySelector?.(".jack-world");
+
+    if (!cameras || !world || !canvas?.scene) {
+      ui?.notifications?.warn?.(
+        "Camera placement is not available."
+      );
+      return;
+    }
+
+    if (root.dataset.cameraPlacement === "1") {
+      cancelJackCameraPlacement(root);
+      return;
+    }
+
+    const button =
+      root.querySelector(
+        '[data-jack-action="camera-place"]'
+      );
+
+    if (button?.dataset.busy === "1") return;
+
+    if (button) {
+      button.dataset.busy = "1";
+      button.disabled = true;
+    }
+
+    try {
+      await cameras.ensureCameraActor(
+        actor.id,
+        game.user?.id
+      );
+
+      root.dataset.cameraPlacement = "1";
+      button?.classList.add("is-active");
+
+      const operator =
+        root.querySelector(".jack-operator");
+
+      setJackCameraGhost(
+        root,
+        {
+          xPct:Number(
+            operator?.dataset.jackAnchorX ?? 50
+          ),
+          yPct:Number(
+            operator?.dataset.jackAnchorY ?? 50
+          )
+        }
+      );
+
+      ui?.notifications?.info?.(
+        "CAMERA READY // move over JACK IN and click to deploy"
+      );
+
+      globalThis.FEHA_SOUNDS?.play?.(
+        "scan",
+        {cooldown:0}
+      );
+    } catch (err) {
+      console.error(
+        "FEHA V3 camera preparation failed",
+        err
+      );
+
+      ui?.notifications?.error?.(
+        err?.message ??
+        "Could not prepare Camera placement."
+      );
+    } finally {
+      if (button) {
+        button.disabled = false;
+        delete button.dataset.busy;
+      }
+    }
+  }
+
+  function appendJackCameraNode(
+    root,
+    camera
+  ) {
+    const world =
+      root?.querySelector?.(".jack-world");
+
+    if (!world || !camera?.tokenId) return;
+
+    const existing =
+      [...world.querySelectorAll(
+        ".jack-camera-node[data-camera-token-id]"
+      )].find(
+        node =>
+          node.dataset.cameraTokenId ===
+          String(camera.tokenId)
+      );
+
+    const node =
+      existing ??
+      document.createElement("div");
+
+    node.className = "jack-camera-node";
+    node.dataset.cameraTokenId =
+      String(camera.tokenId);
+
+    node.style.setProperty(
+      "--jack-x",
+      Number(camera.xPct).toFixed(3)+"%"
+    );
+
+    node.style.setProperty(
+      "--jack-y",
+      Number(camera.yPct).toFixed(3)+"%"
+    );
+
+    node.innerHTML =
+      '<i class="fa-solid fa-video"></i>'+
+      '<small>CAM</small>';
+
+    if (!existing) {
+      world.appendChild(node);
+    }
   }
 
   function rectOverlapArea(a,b) {
@@ -2202,6 +2462,12 @@
     space.onpointerdown = event => {
       if (event.button !== 2) return;
 
+      if (root.dataset.cameraPlacement === "1") {
+        event.preventDefault();
+        cancelJackCameraPlacement(root);
+        return;
+      }
+
       if (
         event.target?.closest?.(
           "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel"
@@ -2231,6 +2497,25 @@
     };
 
     root.onpointermove = event => {
+      if (
+        root.dataset.cameraPlacement === "1" &&
+        space.contains(event.target)
+      ) {
+        const position =
+          jackWorldPercentAt(
+            root,
+            event.clientX,
+            event.clientY
+          );
+
+        if (position) {
+          setJackCameraGhost(
+            root,
+            position
+          );
+        }
+      }
+
       const drag = root.__jackDrag;
       if (!drag || drag.pointerId !== event.pointerId) return;
 
@@ -2263,6 +2548,104 @@
     root.onpointercancel = endDrag;
     root.onlostpointercapture = endDrag;
 
+    space.addEventListener(
+      "click",
+      async event => {
+        if (root.dataset.cameraPlacement !== "1") {
+          return;
+        }
+
+        if (
+          event.target?.closest?.(
+            ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-node,.jack-operator,.jack-device-node,.jack-camera-node"
+          )
+        ) {
+          return;
+        }
+
+        const position =
+          jackWorldPercentAt(
+            root,
+            event.clientX,
+            event.clientY
+          );
+
+        if (!position) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const ghost =
+          setJackCameraGhost(
+            root,
+            position
+          );
+
+        ghost?.classList.add(
+          "is-deploying"
+        );
+
+        root.dataset.cameraPlacement =
+          "deploying";
+
+        try {
+          const cameras =
+            cyberModule("cameras");
+
+          const camera =
+            await cameras?.placeCamera?.({
+              operatorActorId:root.dataset.actorId,
+              userId:game.user?.id,
+              sceneId:canvas?.scene?.id,
+              xPct:position.xPct,
+              yPct:position.yPct
+            });
+
+          if (!camera) {
+            throw new Error(
+              "Camera placement returned no token."
+            );
+          }
+
+          appendJackCameraNode(
+            root,
+            camera
+          );
+
+          cancelJackCameraPlacement(
+            root,
+            {silent:true}
+          );
+
+          globalThis.FEHA_SOUNDS?.play?.(
+            "confirm",
+            {cooldown:0}
+          );
+
+          ui?.notifications?.info?.(
+            "CAMERA DEPLOYED // Foundry token placed"
+          );
+        } catch (err) {
+          console.error(
+            "FEHA V3 camera placement failed",
+            err
+          );
+
+          root.dataset.cameraPlacement =
+            "1";
+
+          ghost?.classList.remove(
+            "is-deploying"
+          );
+
+          ui?.notifications?.error?.(
+            err?.message ??
+            "Could not place Camera."
+          );
+        }
+      }
+    );
+
     requestAnimationFrame(refresh);
   }
 
@@ -2285,6 +2668,16 @@
       '" x2="'+(node.x*10).toFixed(2)+
       '" y2="'+(node.y*7.2).toFixed(2)+
       '" vector-effect="non-scaling-stroke" />'
+    ).join("");
+
+    const cameraNodes = (net.cameras ?? []).map(camera =>
+      '<div class="jack-camera-node"'+
+      ' style="--jack-x:'+Number(camera.x).toFixed(3)+
+      '%;--jack-y:'+Number(camera.y).toFixed(3)+'%"'+
+      ' data-camera-token-id="'+esc(camera.tokenId)+'">'+
+        '<i class="fa-solid fa-video"></i>'+
+        '<small>CAM</small>'+
+      '</div>'
     ).join("");
 
     const nodes = net.nodes.map((n,i) =>
@@ -2382,6 +2775,7 @@
           </div>
 
           ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
+          ${cameraNodes}
           ${deviceNodes}
         </div>
 
@@ -2391,11 +2785,12 @@
           <button type="button" data-jack-action="zoom-in" title="Zoom in">+</button>
           <button type="button" data-jack-action="fit-view">FIT</button>
           <button type="button" data-jack-action="reset-view">RESET</button>
+          <button type="button" class="jack-camera-tool" data-jack-action="camera-place"><i class="fa-solid fa-video"></i> CAMERA</button>
         </div>
 
         <div class="jack-net-caption">
           <small>DIRECT TRACE // WHEEL = ZOOM // RMB DRAG = PAN</small>
-          <b>${net.nodes.length} ACTORS // ${net.devices.length} DEVICES</b>
+          <b>${net.nodes.length} ACTORS // ${net.devices.length} DEVICES // ${net.cameras.length} CAMERAS</b>
         </div>
 
         <div class="jack-lock-readout${selected?" has-target is-"+selected.relation:""}">
@@ -3140,6 +3535,14 @@
 
         showDevicePanel(root,actor,device);
         globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
+        return;
+      }
+
+      if (action === "camera-place") {
+        await beginJackCameraPlacement(
+          root,
+          actor
+        );
         return;
       }
 
