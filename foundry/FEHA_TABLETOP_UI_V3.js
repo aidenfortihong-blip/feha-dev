@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.24";
+  const VERSION = "0.10.25";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1718,6 +1718,53 @@
 
       const cardWidth = Math.max(180,card.offsetWidth);
       const cardHeight = Math.max(90,card.offsetHeight);
+
+      // ACTOR TOPOLOGY RULE:
+      // A real scene Token owns its endpoint coordinates. Never let the
+      // collision solver move an actor card away from that Token.
+      if (card.matches(".jack-node[data-token-id]")) {
+        card.style.setProperty(
+          "--jack-card-x",
+          anchorX+"px"
+        );
+
+        card.style.setProperty(
+          "--jack-card-y",
+          anchorY+"px"
+        );
+
+        const halfW = cardWidth/2;
+        const halfH = cardHeight/2;
+
+        const cardId = card.dataset.tokenId ?? "";
+
+        placed.push({
+          id:cardId,
+          rect:{
+            left:anchorX-halfW-7,
+            right:anchorX+halfW+7,
+            top:anchorY-halfH-6,
+            bottom:anchorY+halfH+6
+          },
+          x:anchorX,
+          y:anchorY
+        });
+
+        const leader = leaders.get(cardId);
+
+        if (leader) {
+          const sx=((anchorX/width)*1000).toFixed(2);
+          const sy=((anchorY/height)*720).toFixed(2);
+
+          leader.setAttribute("x1",sx);
+          leader.setAttribute("y1",sy);
+          leader.setAttribute("x2",sx);
+          leader.setAttribute("y2",sy);
+          leader.classList.remove("is-displaced");
+        }
+
+        continue;
+      }
 
       const halfW = cardWidth/2;
       const halfH = cardHeight/2;
