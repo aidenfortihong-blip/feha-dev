@@ -6113,3 +6113,224 @@ body > #feha-jackin-overlay {
     font-size:9px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.8 SIDE-RAIL + FOOTER BALANCE
+   Preserve the center/top. Remove left scrolling, shrink JACK IN, clarify right rail.
+   ========================================================================== */
+
+/* Give vertical space back to the application without touching the header. */
+#feha-cyberdeck-v2.feha-v3 {
+  grid-template-columns:280px minmax(760px,1fr) 360px !important;
+  grid-template-rows:92px minmax(0,1fr) 108px !important;
+}
+
+/* LEFT: fit the entire operator loadout into the available height. */
+#feha-cyberdeck-v2.feha-v3 .cd2-operator {
+  padding:12px !important;
+  overflow:hidden !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-portrait {
+  height:300px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-tag {
+  padding:7px 9px !important;
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta {
+  margin-top:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta > div {
+  padding:9px 9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span {
+  font-size:7px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-operator-meta b {
+  margin-top:3px !important;
+  font-size:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary {
+  margin-top:9px !important;
+  padding:11px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
+  font-size:7px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head {
+  gap:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head img {
+  width:56px !important;
+  height:56px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head h2 {
+  font-size:16px !important;
+  line-height:1.05 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
+  margin-top:4px !important;
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs {
+  margin-top:9px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs > div {
+  padding:8px 5px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
+  font-size:7px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
+  font-size:12px !important;
+}
+
+/* RIGHT: this is a readable information rail now, not decorative microcopy. */
+#feha-cyberdeck-v2.feha-v3 .cd2-right {
+  padding:20px 22px !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg,rgba(var(--v3-accent),.028),transparent 42%),
+    #03090b !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right > section {
+  margin:0 0 22px !important;
+  padding:0 0 20px !important;
+  border-bottom:1px solid rgba(var(--cd2-mag),.24) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-subhead {
+  margin-bottom:16px !important;
+  font-size:11px !important;
+  letter-spacing:1.5px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat {
+  min-height:46px !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  padding:11px 2px !important;
+  border-bottom:1px solid rgba(var(--v3-accent),.09) !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
+  color:#82969b !important;
+  font-size:9px !important;
+  letter-spacing:1.1px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-right-stat b {
+  color:#c9fbff !important;
+  font-size:17px !important;
+  line-height:1 !important;
+  text-shadow:0 0 10px rgba(var(--v3-accent),.12);
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-empty-message {
+  min-height:62px !important;
+  padding:8px 2px !important;
+  color:#82969b !important;
+  font-size:9px !important;
+  line-height:1.45 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card {
+  grid-template-columns:48px minmax(0,1fr) !important;
+  gap:10px !important;
+  padding:10px 2px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card img {
+  width:48px !important;
+  height:48px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card b {
+  font-size:12px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
+  font-size:9px !important;
+  line-height:1.5 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+  max-width:none !important;
+  color:#c0ced1 !important;
+  font-size:11px !important;
+  line-height:1.72 !important;
+  letter-spacing:.08px;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-deck-passive p::first-line {
+  color:#fff !important;
+  font-weight:800;
+}
+
+/* JACK IN: keep the hero treatment, just stop consuming so much vertical space. */
+#feha-cyberdeck-v2.feha-v3 .v3-bottom {
+  padding:7px 10px 10px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jackbar {
+  grid-template-columns:155px minmax(300px,1fr) 225px !important;
+  gap:14px !important;
+  padding:0 26px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jack-main small {
+  font-size:7px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jack-main b {
+  font-size:36px !important;
+  line-height:.95 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jack-state,
+#feha-cyberdeck-v2.feha-v3 .v3-jack-meta {
+  font-size:8px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-jackbar::before {
+  top:12px !important;
+  bottom:12px !important;
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 {
+    grid-template-columns:250px minmax(620px,1fr) 320px !important;
+    grid-template-rows:92px minmax(0,1fr) 102px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .cd2-portrait {
+    height:270px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .cd2-right {
+    padding:16px 18px !important;
+  }
+
+  #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
+    font-size:10px !important;
+  }
+}
