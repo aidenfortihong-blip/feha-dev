@@ -1,25 +1,38 @@
 {
-  "version": "0.8.11",
-  "updated": "2026-09-26",
-  "scope": "jack-in-declutter-zoom-pan",
+  "version": "0.9.1",
+  "updated": "2026-09-27",
+  "scope": "modular-network-devices-and-camera-feeds",
   "notes": [
-    "Separated exact Token anchor positions from readable endpoint-card positions",
-    "Endpoint cards now run through a deterministic collision solver and fan outward when clustered",
-    "Thin leader/tether lines connect displaced cards back to their exact Foundry Token anchors",
-    "Operator remains fixed to its exact scene-token coordinate while nearby endpoint cards move around its protected core",
-    "Added mouse-wheel zoom centered on the cursor with a 55% to 300% range",
-    "Added click-drag map panning while zoomed in",
-    "Added explicit minus, plus, FIT, and RESET viewport controls with a live zoom percentage",
-    "FIT frames the current operator/endpoint network while RESET returns to the full scene map",
-    "Viewport zoom/pan state is stored on the persistent JACK IN root and survives target/rerender updates",
-    "Scene map, token anchors, routes, relays, operator, endpoint cards, and packet traffic transform together as one world",
-    "Target lock/topology/zoom HUD remain fixed outside the transformed world",
-    "Retains 0.8.10 real scene-map positioning and 0.8.9 Quickhack save/damage resolution"
+    "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
+    "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
+    "Added capability-driven device actions with d20 + INT modifier + proficiency breach checks against device Security DC",
+    "Successful device access is cached per actor/scene/device for the current session",
+    "Added real Foundry Door discovery and OPEN/CLOSE/LOCK/UNLOCK actions",
+    "Secret Foundry doors are not automatically exposed to non-GM users unless explicitly discovered",
+    "Tagged Tokens, Tiles, Walls, and AmbientLights can become Network Devices through flags.fleshEnshrouded.networkDevice",
+    "Added player PROBE mode for marking unknown devices on the cyber map",
+    "Added online GM approval queue where the GM chooses device type, label, and Security DC or denies the probe",
+    "Approved probe devices are persisted as Scene network records and discovered only by the requesting player until revealed",
+    "Player world mutations are delegated through online GM authority instead of relying on player Scene/Wall write permission",
+    "Terminals/System nodes can reveal hidden custom network devices to the requesting player",
+    "Network Device cards participate in JACK IN's existing collision fan-out and tether layout",
+    "Default suggested DCs: Lights 10, Camera 11, Door 12, Alarm 13, Turret 15, Terminal 16, System/Core 18",
+    "Added isolated FEHA_CAMERA_FEEDS.js adapter instead of embedding camera behavior in JACK IN",
+    "Camera PLACE FEED enters a deliberately vague cyber-map placement mode",
+    "Camera feeds create client-local Foundry PointVisionSource POVs and temporarily suppress normal vision sources until RETURN TO NET",
+    "Multiple camera feeds persist for the current client session and can be cycled with PREV/NEXT",
+    "Camera POV has its own compromised-surveillance HUD and restores normal vision on return",
+    "Added HANDOFF/CYBERDECK_ARCHITECTURE_0.9.md as the authoritative anti-spaghetti module contract",
+    "Canonical loader now loads Cyber Core, Network Devices, Device Actions, Network Approvals, Camera Feeds, then V3 UI"
   ],
-  "knownManualRules": [
-    "Status conditions and non-damage secondary effects are resolved and displayed but not yet converted into Foundry Active Effects",
-    "Conditional requirements such as explosive possession, cybernetic/electronic eligibility, or nearby secondary targets still require GM confirmation",
-    "Timed damage such as Overheat is rolled and surfaced but the timing of later-round application remains manual",
-    "Quickhack rules are currently parsed from canonical effectText; a future catalog migration should move save/damage/effect metadata into explicit flags"
-  ]
+  "knownLimitations": [
+    "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
+    "Camera feeds are session-local in 0.9.1 and are not yet persisted across reconnects",
+    "Camera rotation/limited-angle behavior is not yet automated; the first adapter establishes a wall-aware point-of-view source",
+    "Turret ROTATE/FIRE still intentionally require a future turret adapter; generic DISABLE/ENABLE/TAKEOVER infrastructure is present",
+    "Status effects and non-damage Quickhack secondary effects are still not yet Active Effects",
+    "Quickhack rules still use effectText parsing as a legacy bridge pending explicit schema migration",
+    "The dev loader remains GM-only; player-client multiplayer device testing requires the modular runtime to be loaded through the actual FEHA module or an equivalent player-safe dev bootstrap"
+  ],
+  "architecture": "HANDOFF/CYBERDECK_ARCHITECTURE_0.9.md"
 }
