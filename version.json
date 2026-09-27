@@ -1,8 +1,9 @@
 {
-  "version": "0.10.38",
+  "version": "0.10.39",
   "updated": "2026-09-27",
-  "scope": "camera-placement-foundation",
+  "scope": "park-camera-ui",
   "notes": [
+    "Removed the visible JACK IN CAMERA placement button while camera work is parked; underlying camera code is left dormant for a later pass.",
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
     "Deleted FEHA_CAMERA_PLACEMENT.js and removed it from the dev loader",
