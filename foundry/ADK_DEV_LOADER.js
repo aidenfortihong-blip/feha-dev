@@ -15,7 +15,6 @@
     baseCss:"latest-dev.css",
     v3Css:"cyberdeck-v3.css",
     baseJs:"latest-dev.js",
-    entryGateway:"foundry/FEHA_ENTRY_GATEWAY_PATCH.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     devices:"foundry/cyberdeck/FEHA_NETWORK_DEVICES.js",
     actions:"foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js",
@@ -64,12 +63,6 @@
       console.warn("FEHA DEV // previous cyber-core cleanup warning",err);
     } finally {
       delete globalThis.FEHA_CYBER_CORE;
-    }
-
-    try {
-      globalThis.FEHA_ENTRY_GATEWAY_PATCH?.destroy?.();
-    } catch (err) {
-      console.warn("FEHA DEV // previous gateway patch cleanup warning",err);
     }
 
     try {
@@ -124,7 +117,6 @@
     };
 
     evaluate(source.baseJs,files.baseJs);
-    evaluate(source.entryGateway,files.entryGateway);
     evaluate(source.core,files.core);
     evaluate(source.devices,files.devices);
     evaluate(source.actions,files.actions);
