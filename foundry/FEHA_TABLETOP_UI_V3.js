@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.35";
+  const VERSION = "0.10.36";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -2969,6 +2969,11 @@
         ) {
           root.querySelector(".qh-resolution")?.remove();
           delete root.dataset.resolvingQuickhack;
+
+          // Previewing a Quickhack no longer spends RAM, so closing the
+          // resolution must immediately restore RUN availability.
+          updateJackTargetUI(root,actor);
+
           globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
           return;
         }
