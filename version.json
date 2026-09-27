@@ -1,8 +1,12 @@
 {
-  "version": "0.10.60",
+  "version": "0.10.61",
   "updated": "2026-09-27",
-  "scope": "disable-gateway-soften-market-audio",
+  "scope": "safe-entry-gateway-one-shot-patch",
   "notes": [
+    "Re-enabled Entry Gateway customization using a safe one-shot patch with no MutationObserver.",
+    "Gateway title is rewritten to CYBERPUNK and candidate list is reduced/reordered to Ponyboy, Derke, Sasha, Zach with 04 RECORDS.",
+    "Legacy Jing remains the hidden functional auth slot for Derke; capture-phase input proxy preserves native matching/authentication while visible UI stays Derke.",
+    "Gateway open/reopen are wrapped so the patch runs immediately after native rendering, with only a few bounded follow-up timeouts instead of continuous DOM observation.",
     "Disabled the custom Entry Gateway DOM normalizer because its mutation loop could freeze Foundry; the native gateway is left untouched for stability.",
     "Added per-call gain support to the FEHA sound engine so Market can be quieter without changing Cyberdeck or Chrome Manager levels.",
     "Storefront cards now play a soft immediate select click on press and a separate softer drawer-open cue after the storefront view appears.",
