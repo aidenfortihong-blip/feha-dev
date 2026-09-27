@@ -1,8 +1,13 @@
 {
-  "version": "0.10.44",
+  "version": "0.10.45",
   "updated": "2026-09-27",
-  "scope": "jack-zoom-minus-sound",
+  "scope": "market-ui-rebuild",
   "notes": [
+    "Rebuilt the ADK Market presentation layer while preserving the existing Market 1.6 data, stock, purchase, wallet, capacity, permission, reroll, filtering, pagination, and DETAILS behavior.",
+    "Replaced the old pink/brown Market skin with a distinct dark Night Market application using cyan navigation, red currency emphasis, vendor-tier accents, and per-storefront identities.",
+    "Reworked the directory hierarchy, vendor clearance selector, six storefront cards, header controls, storefront sidebar, store header, item cards, purchase states, empty state, and pagination.",
+    "Item Mk colors remain item-driven; vendor clearance remains vendor-tier driven.",
+    "Responsive layouts keep directory, filters, product grid, and details usable at narrower Market window sizes.",
     "Fixed the actual JACK IN zoom minus button: zoom-out now uses the same confirmed-working select click as zoom-in, with zero cooldown.",
     "Changed JACK IN zoom-out/minus click from subsystem_select to cyberware_select so the minus button uses a sound confirmed available in the active pack.",
     "Removed blanket hover audio from Cyberdeck/JACK IN; sound now triggers from clicks/actions only.",
