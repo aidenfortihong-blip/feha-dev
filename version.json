@@ -1,8 +1,13 @@
 {
-  "version": "0.10.58",
+  "version": "0.10.59",
   "updated": "2026-09-27",
-  "scope": "market-sound-binding-scope-fix",
+  "scope": "gateway-and-market-sound-hard-fix",
   "notes": [
+    "Moved Entry Gateway normalization into latest-dev.js so the user's existing DEV LOADER macro definitely executes it without needing a new hardcoded loader file.",
+    "Entry Gateway now rewrites the title to CYBERPUNK and reduces/reorders the native candidate DOM to Ponyboy, Derke, Sasha, Zach with 04 RECORDS.",
+    "Derke is functionally proxied through the legacy Jing candidate during native gateway input/authentication, then rewritten visually to Derke with Derke portrait.",
+    "Reworked Market storefront/tier/Mk sound routing to use document-level pointerdown + mousedown fallback with per-control dedupe.",
+    "Guaranteed distinct fallback hover/click pairs: storefront hover=tick click=doorOpen; tier hover=select click=laser scan; Mk hover=confirmation click=metal impact.",
     "Fixed the Market direct-sound binder scope so it is fully owned by installSoundEngine and cannot throw from the outer UI observer.",
     "Sound engine now observes Market DOM rerenders itself and rebinds storefront/tier/Mk click sounds directly.",
     "Preserved distinct hover/click pairs: storefront hover=hover click=drawer_open; tier hover=select click=subsystem_select; Mk hover=actor_switch click=cyberware_select.",
