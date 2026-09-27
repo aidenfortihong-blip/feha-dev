@@ -1399,6 +1399,7 @@
     let boundRoot = null;
     let derkeProxy = false;
     let restoringInput = false;
+    let derkeAuthInterval = null;
     let timers = new Set();
 
     const schedule = (fn,delay = 0) => {
@@ -1433,6 +1434,98 @@
       if (key === "zach" || key === "raiden") return "Zach";
 
       return null;
+    };
+
+    const syncDerkeIdentity = root => {
+      if (!root || !derkeProxy) return false;
+
+      const input = root.querySelector("#adk-eg-id-input");
+      if (input && input.value !== "Derke") {
+        restoringInput = true;
+        input.value = "Derke";
+        restoringInput = false;
+      }
+
+      const matchState = root.querySelector("[data-match-state]");
+      if (matchState) {
+        matchState.textContent = String(matchState.textContent ?? "")
+          .replace(/\bJING\b/gi,"DERKE");
+      }
+
+      const profileId = root.querySelector("[data-profile-id]");
+      if (profileId) {
+        profileId.textContent = String(profileId.textContent ?? "")
+          .replace(/\bJING\b/gi,"DERKE");
+
+        if (
+          root.classList.contains("is-authenticating") ||
+          root.classList.contains("is-granted")
+        ) {
+          profileId.textContent = "DERKE";
+        }
+      }
+
+      const art = root.querySelector("[data-profile-art]");
+      if (art) {
+        if (art.src !== DERKE_ART) art.src = DERKE_ART;
+        art.alt = "Derke";
+      }
+
+      // Keep any native auth console line from visibly leaking the legacy key.
+      root.querySelectorAll("[data-console] b").forEach(line => {
+        const before = line.textContent ?? "";
+        if (/\bJING\b/i.test(before)) {
+          line.textContent = before.replace(/\bJING\b/gi,"DERKE");
+        }
+      });
+
+      return true;
+    };
+
+    const stopDerkeAuthSync = () => {
+      if (derkeAuthInterval != null) {
+        clearInterval(derkeAuthInterval);
+        derkeAuthInterval = null;
+      }
+    };
+
+    const startDerkeAuthSync = root => {
+      stopDerkeAuthSync();
+      if (!root || !derkeProxy) return;
+
+      const started = performance.now();
+
+      const tick = () => {
+        if (
+          !root.isConnected ||
+          !derkeProxy ||
+          performance.now() - started > 8000
+        ) {
+          stopDerkeAuthSync();
+          return;
+        }
+
+        syncDerkeIdentity(root);
+
+        const state =
+          String(
+            root.querySelector("[data-node-state]")?.textContent ??
+            ""
+          ).toUpperCase();
+
+        if (
+          state.includes("ACCESS GRANTED") ||
+          root.classList.contains("is-granted")
+        ) {
+          // One final pass after the native function writes PROFILE ACCEPTED.
+          schedule(() => syncDerkeIdentity(root),0);
+          schedule(() => syncDerkeIdentity(root),120);
+          stopDerkeAuthSync();
+        }
+      };
+
+      tick();
+      derkeAuthInterval = setInterval(tick,90);
     };
 
     const rewriteVisible = root => {
@@ -1528,16 +1621,7 @@
       }
 
       if (derkeProxy) {
-        const art = root.querySelector("[data-profile-art]");
-        if (art) {
-          art.src = DERKE_ART;
-          art.alt = "Derke";
-        }
-
-        const profileId = root.querySelector("[data-profile-id]");
-        if (profileId && /jing|derke/i.test(profileId.textContent ?? "")) {
-          profileId.textContent = "DERKE";
-        }
+        syncDerkeIdentity(root);
       }
     };
 
@@ -1605,6 +1689,7 @@
             schedule(() => rewriteVisible(root),250);
             schedule(() => rewriteVisible(root),700);
             schedule(() => rewriteVisible(root),1500);
+            startDerkeAuthSync(root);
           }
 
           const auth =
@@ -1612,11 +1697,13 @@
             null;
 
           if (auth && derkeProxy) {
-            schedule(() => rewriteVisible(root),0);
-            schedule(() => rewriteVisible(root),350);
-            schedule(() => rewriteVisible(root),900);
-            schedule(() => rewriteVisible(root),1800);
-            schedule(() => rewriteVisible(root),3000);
+            startDerkeAuthSync(root);
+            schedule(() => syncDerkeIdentity(root),0);
+            schedule(() => syncDerkeIdentity(root),350);
+            schedule(() => syncDerkeIdentity(root),900);
+            schedule(() => syncDerkeIdentity(root),1800);
+            schedule(() => syncDerkeIdentity(root),3000);
+            schedule(() => syncDerkeIdentity(root),5000);
           }
         },
         true
@@ -1671,6 +1758,8 @@
     globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER = {
       refresh:patchCurrent,
       destroy() {
+        stopDerkeAuthSync();
+
         for (const timer of timers) clearTimeout(timer);
         timers.clear();
 
