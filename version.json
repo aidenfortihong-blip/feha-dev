@@ -1,7 +1,7 @@
 {
-  "version": "0.10.16",
+  "version": "0.10.17",
   "updated": "2026-09-27",
-  "scope": "smooth-telemetry-hostile-target-states",
+  "scope": "apply-damage-button-scale",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -69,7 +69,10 @@
     "Hostile JACK IN cards now keep a visible yellow outline at all times",
     "Hover no longer blacks out hostile cards; it only slightly brightens the existing yellow treatment",
     "Selected hostile targets now switch from yellow to red while preserving stable card geometry",
-    "Selected hostile target anchor, tether, route, badge, and lock accents now use red"
+    "Selected hostile target anchor, tether, route, badge, and lock accents now use red",
+    "Expanded the Quickhack resolution APPLY DAMAGE action into a larger rectangular primary button",
+    "Kept the button right-aligned so the added width extends leftward as requested",
+    "Increased APPLY DAMAGE button height, typography, padding, and hover emphasis while preserving the yellow action language"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
