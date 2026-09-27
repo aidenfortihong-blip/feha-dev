@@ -67,16 +67,16 @@
     if (!user || !actor) return false;
     if (user.isGM) return true;
 
-    try {
-      if (typeof actor.testUserPermission === "function") {
-        return actor.testUserPermission(user,"OWNER");
-      }
-    } catch {}
-
     const ownerLevel = Number(
       globalThis.CONST?.DOCUMENT_OWNERSHIP_LEVELS?.OWNER ??
       3
     );
+
+    try {
+      if (typeof actor.testUserPermission === "function") {
+        return actor.testUserPermission(user,ownerLevel);
+      }
+    } catch {}
 
     const ownership =
       actor?.ownership ??
