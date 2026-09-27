@@ -1,7 +1,7 @@
 {
-  "version": "0.10.0",
+  "version": "0.10.1",
   "updated": "2026-09-27",
-  "scope": "camera-ground-up-reset",
+  "scope": "camera-module-registration-fix",
   "notes": [
     "Removed the legacy FEHA_CAMERA_FEEDS.js implementation and its PointVisionSource POV/feed stack",
     "Removed legacy Camera PLACE_FEED and VIEW_FEED capabilities from Network Devices and Device Actions",
@@ -10,7 +10,10 @@
     "Added isolated FEHA_CAMERA_PLACEMENT.js: GM CAMERA opens a dedicated full-screen Scene-image placement overlay outside JACK IN",
     "The clean placement overlay has exactly two interactions: CANCEL and one click on the Scene image to create a Camera",
     "JACK IN now only launches the camera placement module; camera placement mechanics no longer live inside FEHA_TABLETOP_UI_V3.js",
-    "RMB JACK IN panning keeps the always-available overscan bounds introduced during 0.9.x stabilization"
+    "RMB JACK IN panning keeps the always-available overscan bounds introduced during 0.9.x stabilization",
+    "Fixed FEHA_CAMERA_PLACEMENT.js calling nonexistent core.register(); it now correctly uses core.registerModule()",
+    "Dev loader now asserts devices, deviceActions, deviceApprovals, and cameraPlacement are registered before V3 loads",
+    "If any required Cyberdeck module fails registration, the dev loader now surfaces a hard error instead of continuing with a half-loaded runtime"
   ],
   "knownLimitations": [
     "Camera 0.10.0 is placement-only: no feeds, POV, rotation, camera-specific hacking capabilities, or feed persistence exist yet",
