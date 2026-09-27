@@ -1,7 +1,7 @@
 {
-  "version": "0.10.34",
+  "version": "0.10.35",
   "updated": "2026-09-27",
-  "scope": "deferred-quickhack-ram-commit",
+  "scope": "direct-actor-trace-lines",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -144,7 +144,12 @@
     "Non-damage Quickhacks now expose APPLY EFFECT and spend RAM only when that action is committed",
     "Each resolution marks its RAM commit so the same Quickhack resolution cannot spend RAM twice",
     "Resolution footer now shows RAM COST until the commit action succeeds, then changes to RAM SPENT",
-    "Quickhack resolution no longer rerenders JACK IN just to open the result panel, preserving the live scene background"
+    "Quickhack resolution no longer rerenders JACK IN just to open the result panel, preserving the live scene background",
+    "Restored JACK IN network visualization as direct operator-to-actor trace lines only",
+    "Trace endpoints use the existing exact operator and actor scene coordinates",
+    "Hostile traces are yellow, friendly traces cyan, and the selected target trace turns red",
+    "No relay boxes, relay branches, route nodes, or packet dots are rendered in this pass",
+    "Target selection recolors the matching trace in place without rerendering JACK IN"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
