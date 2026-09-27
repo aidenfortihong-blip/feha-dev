@@ -1,7 +1,7 @@
 {
-  "version": "0.10.30",
+  "version": "0.10.31",
   "updated": "2026-09-27",
-  "scope": "static-wielder-clean-actor-outlines",
+  "scope": "operator-progressive-zoom-scale",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -126,7 +126,10 @@
     "Removed ACQUIRE from target-state updates; unselected actor nodes now have no status badge",
     "Selected actor nodes show only LOCKED",
     "Collapsed actor node styling to one clean border state: hostile yellow, friendly cyan, selected red",
-    "Disabled legacy outline rings, pulse animations, and duplicate actor-node chrome"
+    "Disabled legacy outline rings, pulse animations, and duplicate actor-node chrome",
+    "Changed Zach/operator scaling from a constant 1.5x size to progressive zoom scaling",
+    "Zach now renders at normal size at 100% zoom and grows smoothly to 1.5x at maximum zoom",
+    "No actor-node, topology, relay, or Quickhack behavior changed in this pass"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
