@@ -1,7 +1,7 @@
 {
-  "version": "0.9.11",
+  "version": "0.9.12",
   "updated": "2026-09-27",
-  "scope": "direct-space-camera-pointerdown",
+  "scope": "camera-placement-button-surface",
   "notes": [
     "Introduced a modular Cyberdeck core registry/event bus under game.adk.cyberdeck",
     "Moved Network Device definitions, scanning, persistence, security defaults, and discovery rules into FEHA_NETWORK_DEVICES.js",
@@ -66,7 +66,11 @@
     "Removed the window-level camera placement listener",
     "Camera authoring now uses the same JACK IN .jack-space pointerdown path already proven to receive RMB pan input in the live Foundry client",
     "Left pointerdown places the Camera immediately when CAMERA mode is armed; right pointerdown remains pan",
-    "Camera placement banner now includes BUILD 0.9.11 so screenshots can verify the running client version"
+    "Camera placement banner now includes BUILD 0.9.11 so screenshots can verify the running client version",
+    "Camera authoring now uses a real full-map HTML button surface instead of window/document/map event interception",
+    "The camera placement surface is pointer-disabled normally and becomes pointer-enabled only while CAMERA mode is armed",
+    "Left click on the placement surface writes the camera position directly; RMB still bubbles to the existing JACK IN pan handler",
+    "The placement banner now shows BUILD 0.9.12 so the running client can be verified visually"
   ],
   "knownLimitations": [
     "Camera feed vision uses a client-local PointVisionSource and requires live Foundry testing to confirm final LOS/range behavior on the user's exact v14.361 client",
