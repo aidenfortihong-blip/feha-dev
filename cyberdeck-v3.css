@@ -6680,3 +6680,49 @@ body > #feha-jackin-overlay {
     font-size:15px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.11 SOFTWARE LIBRARY EMPTY STATE
+   Fill the library width and make the loaded-all state read intentionally.
+   ========================================================================== */
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-library-list {
+  width:100% !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message {
+  width:100% !important;
+  min-height:150px !important;
+  display:grid !important;
+  place-items:center !important;
+  padding:22px 26px !important;
+  color:#a7bcc1 !important;
+  background:
+    linear-gradient(135deg,rgba(var(--v3-accent),.025),transparent 62%),
+    #020708 !important;
+  border:1px dashed rgba(var(--v3-accent),.18) !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1.3 !important;
+  letter-spacing:1.35px !important;
+  text-align:center !important;
+  text-transform:uppercase;
+}
+
+#feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message::before {
+  content:"SOFTWARE LIBRARY";
+  display:block;
+  margin-bottom:8px;
+  color:rgba(var(--v3-accent),.58);
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:1.8px;
+}
+
+@media(max-width:1450px) {
+  #feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message {
+    min-height:125px !important;
+    font-size:12px !important;
+  }
+}
