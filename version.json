@@ -1,8 +1,12 @@
 {
-  "version": "0.10.46",
+  "version": "0.10.47",
   "updated": "2026-09-27",
-  "scope": "market-family-cohesion-sounds",
+  "scope": "market-root-sound-binding",
   "notes": [
+    "Replaced Market document-level click audio delegation with direct #adk-market-15 root binding.",
+    "Market button sounds now trigger on left-button pointerdown, before Market rerenders its directory/store/filter DOM.",
+    "A MutationObserver binds every newly opened Market root automatically; inner Market rerenders keep the same working root listener.",
+    "Removed Market click cooldowns so each deliberate button press gets immediate tactile feedback; hover audio remains disabled.",
     "Pulled Market closer to the FEHA application family without copying the Cyberdeck terminal skin: clipped geometry, harder black/cyan shell, yellow action language, red currency emphasis, diagnostic microtext, and restrained scan motion.",
     "Market BUY actions are now consistently yellow while item Mk tier color remains on item framing/badges.",
     "Added Market click sounds with no hover audio. Store entry/details/wallet use drawer cues; tier/category/manufacturer/slot controls use system cues; Mk/pagination/general controls use lighter UI cues; reroll uses scan; buy uses install; reset uses remove; close/back use drawer_close.",
