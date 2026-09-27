@@ -7074,3 +7074,296 @@ body > #feha-jackin-overlay {
     font-size:13px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.15 NETWORK TELEMETRY + TARGET CARD STATES
+   Replace redundant stat recap with animated network routing.
+   ========================================================================== */
+
+/* -----------------------------
+   RIGHT RAIL NETWORK TELEMETRY
+   ----------------------------- */
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-telemetry {
+  min-height:230px !important;
+  padding-bottom:18px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:12px;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-head .cd2-subhead {
+  margin-bottom:5px !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-head small {
+  display:block;
+  color:#6f858b;
+  font-size:8px;
+  letter-spacing:1.2px;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-head > b {
+  flex:0 0 auto;
+  padding:5px 7px;
+  color:rgb(var(--cd2-cyan));
+  background:rgba(var(--cd2-cyan),.035);
+  border:1px solid rgba(var(--cd2-cyan),.18);
+  font-size:8px;
+  letter-spacing:1.15px;
+  line-height:1;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-telemetry.is-offline .cd2-net-head > b {
+  color:rgb(var(--cd2-mag));
+  border-color:rgba(var(--cd2-mag),.24);
+  background:rgba(var(--cd2-mag),.035);
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-stage {
+  position:relative;
+  height:168px;
+  overflow:hidden;
+  background:
+    linear-gradient(rgba(var(--cd2-cyan),.026) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--cd2-cyan),.022) 1px,transparent 1px),
+    radial-gradient(circle at 42% 28%,rgba(var(--cd2-cyan),.045),transparent 38%),
+    #020708;
+  background-size:18px 18px,18px 18px,auto,auto;
+  border:1px solid rgba(var(--cd2-cyan),.12);
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-stage::before {
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:
+    1px solid rgba(var(--cd2-cyan),.045);
+  pointer-events:none;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-svg {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-path {
+  fill:none;
+  stroke:rgba(var(--cd2-cyan),.28);
+  stroke-width:1.5;
+  stroke-dasharray:8 6;
+  vector-effect:non-scaling-stroke;
+  animation:cd2-net-flow 4s linear infinite;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-path.is-b {
+  animation-delay:-1.1s;
+  opacity:.86;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-path.is-c {
+  animation-delay:-2s;
+  opacity:.72;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-node {
+  fill:#031015;
+  stroke:rgb(var(--cd2-cyan));
+  stroke-width:2;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 5px rgba(var(--cd2-cyan),.34));
+  animation:cd2-net-node-pulse 2.4s ease-in-out infinite;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-node.is-deck {
+  fill:rgba(var(--cd2-yellow),.12);
+  stroke:rgb(var(--cd2-yellow));
+  filter:drop-shadow(0 0 6px rgba(var(--cd2-yellow),.32));
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-packet {
+  fill:rgb(var(--cd2-cyan));
+  filter:drop-shadow(0 0 5px rgba(var(--cd2-cyan),.62));
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-packet.is-p2 {
+  fill:rgb(var(--cd2-yellow));
+  filter:drop-shadow(0 0 5px rgba(var(--cd2-yellow),.56));
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-telemetry.is-offline .cd2-net-path,
+#feha-cyberdeck-v2.feha-v3 .cd2-net-telemetry.is-offline .cd2-net-node,
+#feha-cyberdeck-v2.feha-v3 .cd2-net-telemetry.is-offline .cd2-net-packet {
+  animation-play-state:paused !important;
+  opacity:.22 !important;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-label {
+  position:absolute;
+  color:#83979c;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:1px;
+  pointer-events:none;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-label.is-operator {
+  left:5%;
+  top:58%;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-label.is-deck {
+  left:38%;
+  top:9%;
+  color:rgba(var(--cd2-yellow),.88);
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-label.is-software {
+  right:8%;
+  top:56%;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-label.is-scene {
+  right:6%;
+  bottom:6%;
+}
+
+#feha-cyberdeck-v2.feha-v3 .cd2-net-scanline {
+  position:absolute;
+  left:0;
+  right:0;
+  top:-18px;
+  height:18px;
+  background:linear-gradient(
+    180deg,
+    transparent,
+    rgba(var(--cd2-cyan),.055),
+    transparent
+  );
+  pointer-events:none;
+  animation:cd2-net-scan 3.8s linear infinite;
+}
+
+@keyframes cd2-net-flow {
+  to { stroke-dashoffset:-28; }
+}
+
+@keyframes cd2-net-node-pulse {
+  0%,100% { opacity:.72; }
+  50% { opacity:1; }
+}
+
+@keyframes cd2-net-scan {
+  0% { transform:translateY(0); }
+  100% { transform:translateY(186px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #feha-cyberdeck-v2.feha-v3 .cd2-net-path,
+  #feha-cyberdeck-v2.feha-v3 .cd2-net-node,
+  #feha-cyberdeck-v2.feha-v3 .cd2-net-scanline {
+    animation:none !important;
+  }
+}
+
+/* -----------------------------
+   JACK IN TARGET CARD STATES
+   ----------------------------- */
+
+/* Hover should feel like the card is dropping into a dark inspection state. */
+#feha-jackin-overlay .jack-node:hover {
+  background:#010304 !important;
+  border-color:rgba(var(--jack-cyan),.42) !important;
+  outline:none !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-cyan),.10),
+    0 14px 30px rgba(0,0,0,.52) !important;
+  filter:none !important;
+}
+
+#feha-jackin-overlay .jack-node:hover .jack-node-copy b {
+  color:#f2fcff !important;
+}
+
+#feha-jackin-overlay .jack-node:hover .jack-node-copy small,
+#feha-jackin-overlay .jack-node:hover .jack-node-num {
+  color:#8ebbc4 !important;
+}
+
+#feha-jackin-overlay .jack-node:hover > em {
+  color:#bceff6 !important;
+  background:#010405 !important;
+  border-color:rgba(var(--jack-cyan),.28) !important;
+}
+
+/* Selected target = cyan lock, no yellow card treatment. */
+#feha-jackin-overlay .jack-node.is-targeted {
+  outline:2px solid rgb(var(--jack-cyan)) !important;
+  outline-offset:2px !important;
+  border-color:rgb(var(--jack-cyan)) !important;
+  background:
+    linear-gradient(110deg,rgba(var(--jack-cyan),.10),transparent 62%),
+    #03090b !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--jack-cyan),.16),
+    0 0 22px rgba(var(--jack-cyan),.18),
+    0 16px 34px rgba(0,0,0,.46) !important;
+  filter:none !important;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted::before {
+  background:
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) left top/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) left top/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) right top/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) right top/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) left bottom/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) left bottom/2px 18px no-repeat,
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) right bottom/18px 2px no-repeat,
+    linear-gradient(rgb(var(--jack-cyan)),rgb(var(--jack-cyan))) right bottom/2px 18px no-repeat !important;
+  opacity:.90 !important;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted::after {
+  content:"TARGETED" !important;
+  color:rgb(var(--jack-cyan)) !important;
+  opacity:.92 !important;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted .jack-node-num {
+  color:rgb(var(--jack-cyan)) !important;
+}
+
+#feha-jackin-overlay .jack-node.is-targeted > em {
+  color:#02090b !important;
+  background:rgb(var(--jack-cyan)) !important;
+  border-color:rgba(220,255,255,.52) !important;
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-targeted {
+  border-color:rgb(var(--jack-cyan)) !important;
+  box-shadow:
+    0 0 0 6px rgba(var(--jack-cyan),.05),
+    0 0 20px rgba(var(--jack-cyan),.42) !important;
+}
+
+#feha-jackin-overlay .jack-token-anchor.is-targeted::before {
+  background:rgb(var(--jack-cyan)) !important;
+  box-shadow:0 0 9px rgba(var(--jack-cyan),.62) !important;
+}
+
+#feha-jackin-overlay .jack-card-leader.is-targeted,
+#feha-jackin-overlay .jack-card-leader.is-targeted.is-displaced,
+#feha-jackin-overlay .jack-net-line.is-selected-route {
+  stroke:rgb(var(--jack-cyan)) !important;
+  filter:drop-shadow(0 0 5px rgba(var(--jack-cyan),.36)) !important;
+}
