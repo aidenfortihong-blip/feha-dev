@@ -5245,3 +5245,274 @@ body > #feha-jackin-overlay {
   image-rendering:auto !important;
   backface-visibility:visible !important;
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.4 READABILITY + SCALE PASS
+   Bigger decision surfaces, stronger hierarchy, quieter scene art.
+   ========================================================================== */
+
+#feha-jackin-overlay .jack-header {
+  min-height:86px !important;
+  padding:18px 22px !important;
+  gap:14px !important;
+}
+
+#feha-jackin-overlay .jack-header h1 {
+  font-size:30px !important;
+  letter-spacing:1.5px !important;
+}
+
+#feha-jackin-overlay .jack-header small {
+  font-size:9px !important;
+  letter-spacing:1.25px !important;
+}
+
+#feha-jackin-overlay .jack-head-stat {
+  min-height:48px !important;
+  padding:10px 14px !important;
+}
+
+#feha-jackin-overlay .jack-head-stat span {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-head-stat b {
+  font-size:13px !important;
+  line-height:1.1 !important;
+}
+
+#feha-jackin-overlay .jack-head-actions button {
+  min-height:46px !important;
+  min-width:142px !important;
+  padding:0 16px !important;
+  font-size:9px !important;
+  letter-spacing:1px !important;
+}
+
+/* Operator core becomes the obvious focal point. */
+#feha-jackin-overlay .jack-operator {
+  width:250px !important;
+  height:250px !important;
+}
+
+#feha-jackin-overlay .jack-operator img {
+  width:132px !important;
+  height:132px !important;
+  padding:3px !important;
+}
+
+#feha-jackin-overlay .jack-operator > span {
+  top:calc(50% + 78px) !important;
+  min-width:178px !important;
+  padding:9px 12px !important;
+}
+
+#feha-jackin-overlay .jack-operator > span small {
+  font-size:9px !important;
+  letter-spacing:1.25px !important;
+}
+
+#feha-jackin-overlay .jack-operator > span b {
+  margin-top:4px !important;
+  font-size:17px !important;
+  line-height:1.05 !important;
+}
+
+/* Actor/device endpoint cards. */
+#feha-jackin-overlay .jack-node,
+#feha-jackin-overlay .jack-device-node {
+  width:300px !important;
+  min-height:106px !important;
+  padding:12px 14px !important;
+  column-gap:12px !important;
+  grid-template-columns:72px minmax(0,1fr) !important;
+}
+
+#feha-jackin-overlay .jack-node img,
+#feha-jackin-overlay .jack-device-node img {
+  width:72px !important;
+  height:72px !important;
+}
+
+#feha-jackin-overlay .jack-node-copy b,
+#feha-jackin-overlay .jack-device-copy b {
+  font-size:17px !important;
+  line-height:1.05 !important;
+}
+
+#feha-jackin-overlay .jack-node-copy small,
+#feha-jackin-overlay .jack-device-copy small {
+  margin-top:6px !important;
+  font-size:9px !important;
+  letter-spacing:.95px !important;
+  opacity:.92 !important;
+}
+
+#feha-jackin-overlay .jack-node > em,
+#feha-jackin-overlay .jack-device-node > em {
+  margin-top:7px !important;
+  font-size:10px !important;
+  letter-spacing:1.1px !important;
+}
+
+/* Target readout should be readable without leaning in. */
+#feha-jackin-overlay .jack-lock-readout {
+  min-width:360px !important;
+  min-height:92px !important;
+  padding:14px 16px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout small {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout b {
+  margin-top:5px !important;
+  font-size:16px !important;
+}
+
+#feha-jackin-overlay .jack-lock-readout span {
+  margin-top:6px !important;
+  font-size:8px !important;
+  letter-spacing:.85px !important;
+}
+
+/* View controls get real click targets. */
+#feha-jackin-overlay .jack-viewport-controls {
+  grid-template-columns:48px 72px 48px 72px 84px !important;
+  gap:7px !important;
+}
+
+#feha-jackin-overlay .jack-viewport-controls button,
+#feha-jackin-overlay .jack-viewport-controls b {
+  height:44px !important;
+  min-height:44px !important;
+  font-size:10px !important;
+}
+
+/* Quickhack tray gets more breathing room and larger action cards. */
+#feha-jackin-overlay .jack-space {
+  bottom:190px !important;
+}
+
+#feha-jackin-overlay .jack-actions {
+  height:160px !important;
+  min-height:160px !important;
+  bottom:12px !important;
+  grid-template-columns:230px minmax(0,1fr) !important;
+  gap:12px !important;
+  padding:10px 12px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title {
+  padding:14px 15px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title small {
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title b {
+  margin-top:7px !important;
+  font-size:18px !important;
+}
+
+#feha-jackin-overlay .jack-actions-title span {
+  margin-top:8px !important;
+  font-size:8px !important;
+}
+
+#feha-jackin-overlay .jack-hacks {
+  gap:10px !important;
+  grid-template-columns:repeat(auto-fit,minmax(340px,1fr)) !important;
+}
+
+#feha-jackin-overlay .jack-hack {
+  height:auto !important;
+  min-height:118px !important;
+  max-height:none !important;
+  grid-template-columns:60px minmax(0,1fr) 104px !important;
+  gap:12px !important;
+  padding:12px 14px !important;
+}
+
+#feha-jackin-overlay .jack-hack img {
+  width:58px !important;
+  height:58px !important;
+}
+
+#feha-jackin-overlay .jack-hack b {
+  font-size:15px !important;
+}
+
+#feha-jackin-overlay .jack-hack small {
+  margin-top:6px !important;
+  font-size:9px !important;
+}
+
+#feha-jackin-overlay .jack-hack em {
+  min-width:96px !important;
+  min-height:58px !important;
+  padding:8px 10px !important;
+}
+
+#feha-jackin-overlay .jack-hack em span {
+  font-size:7px !important;
+}
+
+#feha-jackin-overlay .jack-hack em b {
+  font-size:20px !important;
+  line-height:1 !important;
+}
+
+/* Keep geography visible, but make UI the visual priority. */
+#feha-jackin-overlay .jack-scene-map img {
+  opacity:.36 !important;
+  filter:
+    saturate(.40)
+    brightness(.56)
+    contrast(1.16)
+    hue-rotate(145deg) !important;
+}
+
+/* Stronger graph readability. */
+#feha-jackin-overlay .jack-net-line {
+  opacity:.76 !important;
+}
+
+#feha-jackin-overlay .jack-net-line.is-targeted,
+#feha-jackin-overlay .jack-net-line.is-selected-route {
+  opacity:1 !important;
+}
+
+/* Sparse scenes can afford even more presence. */
+#feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node {
+  width:320px !important;
+  min-height:112px !important;
+}
+
+@media(max-width:1350px) {
+  #feha-jackin-overlay .jack-operator {
+    width:220px !important;
+    height:220px !important;
+  }
+
+  #feha-jackin-overlay .jack-operator img {
+    width:116px !important;
+    height:116px !important;
+  }
+
+  #feha-jackin-overlay .jack-node,
+  #feha-jackin-overlay .jack-device-node {
+    width:270px !important;
+    min-height:98px !important;
+    grid-template-columns:64px minmax(0,1fr) !important;
+  }
+
+  #feha-jackin-overlay .jack-node img,
+  #feha-jackin-overlay .jack-device-node img {
+    width:64px !important;
+    height:64px !important;
+  }
+}
