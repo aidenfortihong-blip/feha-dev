@@ -1,7 +1,7 @@
 {
-  "version": "0.10.25",
+  "version": "0.10.26",
   "updated": "2026-09-27",
-  "scope": "actor-token-topology-authority",
+  "scope": "square-actor-topology-no-relays",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -103,7 +103,12 @@
     "Real scene Token coordinates now have absolute authority over JACK IN actor-card positions",
     "Actor cards no longer participate in collision displacement; Civil Corps, Derke, and other actors render centered on their actual scene token coordinates",
     "Actor leader lines collapse to zero length because actor cards are no longer displaced from their token anchors",
-    "This pass intentionally does not change relay topology, zoom behavior, sizing, or styling"
+    "This pass intentionally does not change relay topology, zoom behavior, sizing, or styling",
+    "Changed JACK IN actor endpoints from rectangles to fixed square cards centered on exact scene-token coordinates",
+    "Removed relay boxes, route lines, packet dots, and separate actor anchor diamonds from the JACK IN visual layer",
+    "Kept relay/link data in sceneModel for a later topology rebuild without rendering it now",
+    "Updated topology caption to show only actor and device counts",
+    "This pass does not change zoom logic, Quickhack behavior, or device behavior"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
