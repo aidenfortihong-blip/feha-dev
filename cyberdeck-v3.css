@@ -8819,3 +8819,169 @@ body > #feha-jackin-overlay {
     max-height:144px !important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CYBERDECK V3 // 0.10.28 CONSTANT ACTOR SQUARES
+   Fixed screen-size portrait nodes. Full-bleed image. LOCKED overlay only.
+   ========================================================================== */
+
+/* Actor node size is constant at every zoom level. */
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node:hover,
+#feha-jackin-overlay
+  .jack-space[data-node-count]
+  .jack-world
+  .jack-node.is-targeted,
+#feha-jackin-overlay
+  .jack-space.has-scene-map[data-node-count="1"]
+  .jack-world
+  .jack-node {
+  position:absolute !important;
+  left:var(--jack-card-x,var(--jack-x)) !important;
+  top:var(--jack-card-y,var(--jack-y)) !important;
+  width:154px !important;
+  height:154px !important;
+  min-width:154px !important;
+  min-height:154px !important;
+  max-width:154px !important;
+  max-height:154px !important;
+  padding:0 !important;
+  margin:0 !important;
+  display:block !important;
+  box-sizing:border-box !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-actor-scale,1)) !important;
+  transform-origin:center center !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  background:#020405 !important;
+}
+
+/* Portrait fills the complete square. */
+#feha-jackin-overlay .jack-world .jack-node img {
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  min-width:100% !important;
+  min-height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:block !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  background:#020405 !important;
+}
+
+/* Remove all legacy card chrome/text. */
+#feha-jackin-overlay .jack-world .jack-node::before,
+#feha-jackin-overlay .jack-world .jack-node::after,
+#feha-jackin-overlay .jack-world .jack-node-num,
+#feha-jackin-overlay .jack-world .jack-node-copy,
+#feha-jackin-overlay .jack-world .jack-node > span {
+  display:none !important;
+  content:none !important;
+}
+
+/* LOCKED is a compact overlay on the image, not a separate layout row. */
+#feha-jackin-overlay .jack-world .jack-node > em {
+  position:absolute !important;
+  left:50% !important;
+  bottom:8px !important;
+  transform:translateX(-50%) !important;
+  z-index:4 !important;
+  width:auto !important;
+  min-width:78px !important;
+  height:26px !important;
+  min-height:26px !important;
+  margin:0 !important;
+  padding:0 11px !important;
+  display:grid !important;
+  place-items:center !important;
+  color:#fff !important;
+  background:rgb(var(--jack-mag)) !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.42) !important;
+  font-size:9px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:1.15px !important;
+  font-style:normal !important;
+}
+
+/* Exactly one outline. */
+#feha-jackin-overlay .jack-world .jack-node {
+  outline:none !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.34) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-hostile {
+  border:2px solid rgb(var(--jack-yellow)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-friendly {
+  border:2px solid rgb(var(--jack-cyan)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-neutral {
+  border:2px solid rgba(var(--jack-yellow),.72) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-node.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-friendly.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-neutral.is-targeted {
+  width:154px !important;
+  height:154px !important;
+  min-width:154px !important;
+  min-height:154px !important;
+  max-width:154px !important;
+  max-height:154px !important;
+  border:2px solid rgb(var(--jack-mag)) !important;
+  outline:none !important;
+  box-shadow:
+    0 0 18px rgba(var(--jack-mag),.16),
+    0 10px 24px rgba(0,0,0,.38) !important;
+}
+
+/* Hover never changes size, transform, or border identity. */
+#feha-jackin-overlay .jack-world .jack-node:hover {
+  filter:brightness(1.05) !important;
+}
+
+/* Kill responsive actor resizing: constant means constant. */
+@media(max-width:1350px) {
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node,
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node:hover,
+  #feha-jackin-overlay
+    .jack-space[data-node-count]
+    .jack-world
+    .jack-node.is-targeted {
+    width:154px !important;
+    height:154px !important;
+    min-width:154px !important;
+    min-height:154px !important;
+    max-width:154px !important;
+    max-height:154px !important;
+  }
+}
