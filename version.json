@@ -1,8 +1,13 @@
 {
-  "version": "0.10.48",
+  "version": "0.10.49",
   "updated": "2026-09-27",
-  "scope": "market-button-sounds-sidebar-readability",
+  "scope": "market-global-sound-router",
   "notes": [
+    "Moved Market audio into the same proven global FEHA sound router used by Chrome Manager instead of relying on a separate Market binder.",
+    "Storefront cards now use drawer_open; vendor tier buttons use subsystem_select; ITEM MK uses cyberware_select; category filters and pagination use select.",
+    "DETAILS uses scan; item art uses cyberware_select; item names use drawer_open; BUY uses install; reroll uses scan; reset uses remove; wallet uses drawer_open; back/close use drawer_close.",
+    "Market actor/manufacturer/body-slot select changes are handled by the same global change router.",
+    "Disabled the separate Market sound binder to prevent duplicate playback.",
     "Market sounds now bind directly to every rendered Market button instead of relying on root/document delegation; a MutationObserver rebinds newly-rendered controls after Market rerenders.",
     "Different Market interactions use different existing sound families: storefront/open/back/directory, tier/category/Mk filters, reroll, DETAILS, item art/name, BUY, pagination, reset, wallet, actor and dropdown changes.",
     "DETAILS uses scan, item art uses cyberware_select, item name uses drawer_open, BUY uses install, reroll uses scan, tier uses subsystem_select, pagination/category use select, Mk uses cyberware_select, reset uses remove, and back/close use drawer_close.",
