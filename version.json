@@ -1,7 +1,7 @@
 {
-  "version": "0.10.15",
+  "version": "0.10.16",
   "updated": "2026-09-27",
-  "scope": "network-telemetry-target-card-states",
+  "scope": "smooth-telemetry-hostile-target-states",
   "notes": [
     "Removed the Camera feature from the active Cyberdeck runtime",
     "Removed the JACK IN CAMERA button and all camera placement actions",
@@ -64,7 +64,12 @@
     "Replaced redundant right-rail Deck Status numbers with an animated Network Telemetry panel",
     "Network Telemetry now visualizes Operator, Deck, Software, and Scene Link routing with animated packets and scan motion",
     "Target-card hover now blacks out the card for a clearer inspection state",
-    "Selected JACK IN targets now use cyan lock styling instead of the previous yellow treatment"
+    "Selected JACK IN targets now use cyan lock styling instead of the previous yellow treatment",
+    "Slowed Network Telemetry packet, path, node-pulse, and scanline motion for smoother ambient animation",
+    "Hostile JACK IN cards now keep a visible yellow outline at all times",
+    "Hover no longer blacks out hostile cards; it only slightly brightens the existing yellow treatment",
+    "Selected hostile targets now switch from yellow to red while preserving stable card geometry",
+    "Selected hostile target anchor, tether, route, badge, and lock accents now use red"
   ],
   "knownLimitations": [
     "Camera functionality does not exist in 0.10.2 and should be treated as a future feature rather than a partial implementation",
