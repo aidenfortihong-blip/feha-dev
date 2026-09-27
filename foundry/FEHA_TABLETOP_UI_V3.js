@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.42";
+  const VERSION = "0.10.43";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -3563,7 +3563,7 @@
       if (action === "zoom-out") {
         const state = jackViewportState(root);
         zoomJackAt(root,state.zoom*.84);
-        globalThis.FEHA_SOUNDS?.play?.("subsystem_select",{cooldown:70});
+        globalThis.FEHA_SOUNDS?.play?.("cyberware_select",{cooldown:70});
         return;
       }
 
