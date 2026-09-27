@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.29";
+  const VERSION = "0.10.30";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1594,9 +1594,11 @@
         String(relayReadability/zoom)
       );
 
+      // Wielder/operator core: fixed screen size at every zoom,
+      // deliberately 1.5x the baseline visual size.
       world.style.setProperty(
         "--jack-operator-scale",
-        String(Math.max(.94,1-(zoom-1)*.03)/zoom)
+        String(1.5/zoom)
       );
 
       world.style.setProperty(
@@ -2333,8 +2335,17 @@
       node.classList.toggle("is-targeted",active);
       node.setAttribute("aria-pressed",active ? "true" : "false");
 
-      const state = node.querySelector(":scope > em");
-      if (state) state.textContent = active ? "LOCKED" : "ACQUIRE";
+      let state = node.querySelector(":scope > em");
+
+      if (active) {
+        if (!state) {
+          state = document.createElement("em");
+          node.appendChild(state);
+        }
+        state.textContent = "LOCKED";
+      } else {
+        state?.remove();
+      }
     }
 
     for (const anchor of root.querySelectorAll(".jack-token-anchor[data-token-id]")) {
