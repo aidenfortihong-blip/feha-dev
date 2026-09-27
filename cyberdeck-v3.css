@@ -5513,7 +5513,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-viewport-controls {
   grid-template-columns:
-    40px 58px 40px 54px 70px repeat(2,70px) !important;
+    40px 58px 40px 54px 70px 78px !important;
 }
 
 #feha-jackin-overlay
@@ -5562,6 +5562,6 @@ body > #feha-jackin-overlay {
 @media(max-width:1050px) {
   #feha-jackin-overlay .jack-viewport-controls {
     grid-template-columns:
-      36px 52px 36px 50px 62px repeat(2,62px) !important;
+      36px 52px 36px 50px 62px 68px !important;
   }
 }
