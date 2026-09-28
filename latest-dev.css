@@ -18069,3 +18069,36 @@ body #adk-market-15#adk-market-15 #top-directory {
 #adk-chrome-manager-34 .adk-v6-port.is-filled {
   min-height:54px!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.108 DEFINITIVE TOP EJECT REMOVAL
+   The older 0.4.7 installed-port rule uses the data-feha-rerun selector and
+   display:flex!important, so the 0.10.107 generic selector could not override
+   it. Match that selector exactly and remove the redundant port action row.
+   The large EJECT AUGMENT dossier action remains untouched.
+   ========================================================================== */
+
+#adk-chrome-manager-34[data-feha-rerun="040"]
+.adk-v6-port.is-filled .port-actions {
+  display:none!important;
+  visibility:hidden!important;
+  width:0!important;
+  height:0!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+
+/* Reclaim the third action column after hiding the redundant top EJECT. */
+#adk-chrome-manager-34[data-feha-rerun="040"]
+.adk-v6-port.is-filled {
+  grid-template-columns:42px minmax(0,1fr)!important;
+  grid-template-rows:1fr!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"]
+.adk-v6-port.is-filled .port-copy {
+  grid-column:2!important;
+}
