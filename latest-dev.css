@@ -18102,3 +18102,344 @@ body #adk-market-15#adk-market-15 #top-directory {
 .adk-v6-port.is-filled .port-copy {
   grid-column:2!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.109 SUBSTANTIAL READABILITY TYPOGRAPHY PASS
+   User-requested readability pass.
+   Make Chrome Manager text substantially larger across the whole app without
+   changing its layout logic, install/remove behavior, or the 0.10.108 EJECT fix.
+   ========================================================================== */
+
+/* TOP APP BAR */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand small {
+  font-size:12px!important;
+  line-height:1.05!important;
+  letter-spacing:1.9px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand h1,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand > b {
+  font-size:32px!important;
+  line-height:.96!important;
+  letter-spacing:1.4px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head span {
+  font-size:12px!important;
+  line-height:1.05!important;
+  letter-spacing:1.25px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head b {
+  font-size:18px!important;
+  line-height:1!important;
+}
+
+/* LEFT SUBJECT / SYSTEM INDEX */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems > header,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems > header b {
+  font-size:11px!important;
+  line-height:1.05!important;
+  letter-spacing:1.35px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini small {
+  font-size:11px!important;
+  line-height:1.05!important;
+  letter-spacing:1.35px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini b {
+  font-size:27px!important;
+  line-height:1!important;
+  letter-spacing:1.25px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini span {
+  font-size:11px!important;
+  line-height:1.05!important;
+  letter-spacing:1.05px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system {
+  min-height:60px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system .slot-no,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system .system-count {
+  font-size:10px!important;
+  line-height:1!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system .system-copy b {
+  font-size:16px!important;
+  line-height:1.02!important;
+  letter-spacing:.45px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system .system-copy small {
+  margin-top:5px!important;
+  font-size:10px!important;
+  line-height:1.12!important;
+  letter-spacing:.72px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger span {
+  font-size:14px!important;
+  line-height:1!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger b,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger i {
+  font-size:11px!important;
+}
+
+/* CENTER PORTRAIT TELEMETRY */
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-topology-mark {
+  font-size:11px!important;
+  line-height:1.08!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-topology-mark b {
+  font-size:17px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id span,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-coords,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-coords b {
+  font-size:10px!important;
+  line-height:1.08!important;
+  letter-spacing:1px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id b {
+  font-size:18px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+  min-height:98px!important;
+  padding:14px 17px 13px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title small {
+  font-size:11px!important;
+  line-height:1!important;
+  letter-spacing:1.2px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title h1 {
+  font-size:clamp(36px,3vw,54px)!important;
+  line-height:.90!important;
+  letter-spacing:1.8px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title > span {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:1px!important;
+}
+
+/* RIGHT INSPECTOR HEADER / SYSTEM VIEW */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header span,
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header b {
+  font-size:10px!important;
+  line-height:1.15!important;
+  letter-spacing:1.1px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title small {
+  font-size:11px!important;
+  line-height:1.05!important;
+  letter-spacing:1.2px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title h2 {
+  font-size:clamp(30px,2.15vw,40px)!important;
+  line-height:.96!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .port-heading {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:1.05px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .port-copy b,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-copy b,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-filled .port-copy b {
+  font-size:15px!important;
+  line-height:1.08!important;
+  letter-spacing:.25px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .port-copy small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-copy small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-filled .port-copy small {
+  font-size:10px!important;
+  line-height:1.12!important;
+  letter-spacing:.55px!important;
+}
+
+/* SYSTEM DOSSIER */
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-legend {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:1px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy span {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:1px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy p {
+  font-size:15px!important;
+  line-height:1.42!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics span {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:.8px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics b {
+  font-size:16px!important;
+  line-height:1!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-head,
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-head span,
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-head b,
+#adk-chrome-manager-34[data-feha-rerun="040"] .tech-coords {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:.85px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse span,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary span {
+  font-size:15px!important;
+  line-height:1.05!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary small {
+  font-size:10px!important;
+  line-height:1.08!important;
+}
+
+/* HARDWARE DOSSIER */
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-mk,
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-serial {
+  font-size:11px!important;
+  line-height:1.05!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-title small {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:1px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-title h3 {
+  font-size:24px!important;
+  line-height:1.02!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-title span {
+  font-size:10px!important;
+  line-height:1.15!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-specs span {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:.7px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-specs b {
+  font-size:15px!important;
+  line-height:1!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-effect span {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:1px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-effect p {
+  font-size:15px!important;
+  line-height:1.44!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .hardware-load > div:first-child {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:.8px!important;
+}
+
+/* CACHE DRAWER */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache header span {
+  font-size:13px!important;
+  line-height:1.05!important;
+  letter-spacing:1.1px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache header b {
+  font-size:10px!important;
+  line-height:1.05!important;
+  letter-spacing:.9px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card .cache-code {
+  font-size:11px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card .cache-mk {
+  font-size:12px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card .cache-copy small {
+  font-size:11px!important;
+  line-height:1.08!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card .cache-copy b {
+  font-size:20px!important;
+  line-height:1.06!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card .cache-meta i {
+  font-size:10px!important;
+  line-height:1.05!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty {
+  font-size:13px!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-empty b {
+  font-size:18px!important;
+}
+
+/* FOOTER / MISC MICROTEXT */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-statusbar,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-statusbar b,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-statusbar span {
+  font-size:9px!important;
+  line-height:1.05!important;
+  letter-spacing:.8px!important;
+}
+
+/* Preserve 0.10.108: the small installed-port EJECT remains hidden. */
+#adk-chrome-manager-34[data-feha-rerun="040"]
+.adk-v6-port.is-filled .port-actions {
+  display:none!important;
+  visibility:hidden!important;
+}
