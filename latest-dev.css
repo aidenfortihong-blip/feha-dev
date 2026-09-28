@@ -11574,3 +11574,130 @@ body #adk-market-15#adk-market-15 #top-directory {
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CUSTOM ENTRY GATEWAY // 0.10.68 CLEAN COLOR PASS
+   Remove the gray CP2077 overlay haze and the header strip while preserving
+   the custom Gateway layout, typography, colors, and functional private assets.
+   ========================================================================== */
+
+/* remove the decorative strip under CYBERPUNK */
+#adk-entry-gateway.feha-eg-custom .feha-eg-cp-header-strip {
+  display:none!important;
+  width:0!important;
+  height:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+/* remove the broad CP asset overlays that were washing the whole UI gray */
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-shell::before,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-header::after,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-boot::after,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-auth-card::before,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-candidates-panel::after,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-profile::before {
+  content:none!important;
+  display:none!important;
+  opacity:0!important;
+  background:none!important;
+  background-image:none!important;
+  mix-blend-mode:normal!important;
+}
+
+/* remove the portrait HUD film, which was also dulling the character art */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-hud,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-profile-hud {
+  display:none!important;
+  opacity:0!important;
+  background:none!important;
+  background-image:none!important;
+}
+
+/* make sure none of the major gateway surfaces inherit a gray/blur treatment */
+#adk-entry-gateway.feha-eg-custom,
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell,
+#adk-entry-gateway.feha-eg-custom .feha-eg-header,
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal,
+#adk-entry-gateway.feha-eg-custom .feha-eg-side,
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot,
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art {
+  filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* reassert clean, dark, saturated surfaces */
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.008),transparent 15%),
+    linear-gradient(135deg,rgba(57,230,255,.025),transparent 28%),
+    #02070a!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+  background:
+    linear-gradient(90deg,rgba(255,79,100,.055),transparent 18%),
+    linear-gradient(90deg,rgba(57,230,255,.035),transparent 58%),
+    #061015!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  background:#02080b!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-side {
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.012),transparent 24%),
+    #02070a!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot {
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.007),transparent 35%),
+    #010507!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+  background:
+    linear-gradient(135deg,rgba(57,230,255,.025),transparent 46%),
+    #061014!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  background:#02080b!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art {
+  background:
+    radial-gradient(
+      circle at 50% 44%,
+      color-mix(in srgb,var(--subject) 10%,transparent),
+      transparent 58%
+    ),
+    #010507!important;
+}
+
+/* preserve only the useful private-asset accents that do not wash the page */
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-progress {
+  background-image:var(--eg-cp-buffer-empty)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-progress > div {
+  background-image:
+    var(--eg-cp-buffer-active),
+    linear-gradient(90deg,var(--eg-red),var(--eg-yellow),var(--eg-green))!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-footer-code {
+  background-image:var(--eg-cp-barcode1)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-establish {
+  background-image:var(--eg-cp-reward)!important;
+}
