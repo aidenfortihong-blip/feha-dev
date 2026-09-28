@@ -1883,7 +1883,6 @@
 
                       <div>
                         <b>${safe(candidate.name)}</b>
-                        <small>${safe(candidate.signature)}</small>
                       </div>
 
                       <em>
@@ -1919,16 +1918,6 @@
                       <div>
                         <span>BIO-ID</span>
                         <b data-eg-profile-id></b>
-                      </div>
-
-                      <div>
-                        <span>SIGNATURE</span>
-                        <b data-eg-profile-signature></b>
-                      </div>
-
-                      <div>
-                        <span>CLEARANCE</span>
-                        <b data-eg-profile-clearance></b>
                       </div>
 
                       <div>
@@ -2040,12 +2029,6 @@
         (actor?.id ?? candidate.code)
           .slice(-8)
           .toUpperCase();
-
-      root.querySelector("[data-eg-profile-signature]").textContent =
-        candidate.signature;
-
-      root.querySelector("[data-eg-profile-clearance]").textContent =
-        candidate.clearance;
 
       root.querySelector("[data-eg-profile-sync]").textContent =
         String(94 + Math.floor(Math.random() * 6)) + "%";
