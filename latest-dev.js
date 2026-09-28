@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.8.5";
+  const BUILD = "0.8.6";
   let lifecycleActive = true;
   let observer = null;
   let walletGuard = null;
@@ -222,7 +222,7 @@
       cacheRepairBusy = true;
       Promise.resolve(repairCacheMetadata(api))
         .catch(err => {
-          console.warn("FEHA DEV 0.8.5 // cache repair attach failed", err);
+          console.warn("FEHA DEV 0.8.6 // cache repair attach failed", err);
         })
         .finally(() => {
           cacheRepairBusy = false;
@@ -312,7 +312,7 @@
     root.classList.add("adk-live-dev");
     root.dataset.fehaDevBuild = BUILD;
     const subject = globalThis.ADKChromeBackend?.getActor?.();
-    root.dataset.fehaSubject = norm(subject?.name)
+    root.dataset.fehaSubject = playableActorKey(subject)
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
     patchBackend();
@@ -547,7 +547,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.8.5 // preload failed", event, err);
+          console.warn("FEHA DEV 0.8.6 // preload failed", event, err);
         }
       }
     }
@@ -612,11 +612,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.8.5 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.8.6 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.8.5 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.8.6 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -639,7 +639,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.8.5 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.8.6 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -1005,12 +1005,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.8.5 // sound source: ${source}`
+      `FEHA DEV 0.8.6 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.8.5 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.8.6 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1457,6 +1457,10 @@
 
     if (key === "sasha bogdanov" || key.startsWith("sasha ")) {
       return "sasha";
+    }
+
+    if (key === "raiden") {
+      return "zach";
     }
 
     return key;
