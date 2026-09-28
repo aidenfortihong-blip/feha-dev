@@ -2315,62 +2315,60 @@
           .slice(-8)
           .toUpperCase();
 
-      const codeLines = Array.from(
-        {length:18},
+      const rings = Array.from(
+        {length:10},
         (_,index) =>
-          '<i style="--row:'+index+'">' +
-          randomHex(4) + '::' +
-          randomHex(8) + ' / ' +
-          randomHex(12) +
-          '</i>'
+          '<i class="feha-linkstart-ring" style="--ring:'+index+'"></i>'
       ).join("");
 
-      const segments = Array.from(
-        {length:24},
-        (_,index) => '<i style="--seg:'+index+'"></i>'
+      const rails = Array.from(
+        {length:18},
+        (_,index) =>
+          '<i class="feha-linkstart-rail" style="--rail:'+index+'"></i>'
+      ).join("");
+
+      const particles = Array.from(
+        {length:26},
+        (_,index) =>
+          '<i class="feha-linkstart-particle" style="--p:'+index+'"></i>'
       ).join("");
 
       return `
         <div class="feha-linkstart-shell">
-          <div class="feha-linkstart-noise" aria-hidden="true"></div>
-          <div class="feha-linkstart-scan" aria-hidden="true"></div>
+          <div class="feha-linkstart-space" aria-hidden="true">
+            <div class="feha-linkstart-rings">${rings}</div>
+            <div class="feha-linkstart-rails">${rails}</div>
+            <div class="feha-linkstart-particles">${particles}</div>
 
-          <div class="feha-linkstart-code feha-linkstart-code-a" aria-hidden="true">
-            ${codeLines}
+            <div class="feha-linkstart-reticle">
+              <i></i><i></i><i></i>
+            </div>
           </div>
 
-          <div class="feha-linkstart-code feha-linkstart-code-b" aria-hidden="true">
-            ${codeLines}
-          </div>
-
-          <div class="feha-linkstart-character" aria-hidden="true">
-            <img src="${safe(candidate?.art ?? "")}" alt="">
-          </div>
+          <div class="feha-linkstart-vignette" aria-hidden="true"></div>
+          <div class="feha-linkstart-flash" aria-hidden="true"></div>
 
           <header class="feha-linkstart-top">
-            <div>
-              <span>ADK // SESSION LINK</span>
-              <b data-link-phase>ESTABLISHING NEURAL LINK</b>
-            </div>
-
-            <div class="feha-linkstart-node">
-              <span>SUBJECT</span>
-              <b>${safe(candidate?.name?.toUpperCase?.() ?? "UNKNOWN")}</b>
-              <span>BIO-ID</span>
-              <b>${safe(bioId)}</b>
-            </div>
+            <span>ADK // NEURAL SESSION</span>
+            <b data-link-phase>INITIALIZING FULLDIVE LINK</b>
           </header>
 
           <main class="feha-linkstart-core">
-            <div class="feha-linkstart-kicker">NETWORK HANDSHAKE // ACTIVE</div>
+            <div class="feha-linkstart-subject">
+              <span>${safe(candidate?.name?.toUpperCase?.() ?? "UNKNOWN")}</span>
+              <i></i>
+              <b>${safe(bioId)}</b>
+            </div>
 
-            <h1>
-              <span>LINK</span>
-              <b>START</b>
-            </h1>
+            <div class="feha-linkstart-title-wrap">
+              <h1>
+                <span>LINK</span>
+                <b>START</b>
+              </h1>
+            </div>
 
             <div class="feha-linkstart-route">
-              <span data-link-route>ROUTE ACQUISITION</span>
+              <span data-link-route>NEURAL ROUTE ACQUISITION</span>
               <b data-link-percent>08%</b>
             </div>
 
@@ -2378,23 +2376,13 @@
               <div data-link-progress></div>
             </div>
 
-            <div class="feha-linkstart-segments" aria-hidden="true">
-              ${segments}
-            </div>
-
             <div class="feha-linkstart-status" data-link-status>
-              SYNCING CLIENT SESSION
+              SYNCHRONIZING CLIENT SESSION
             </div>
           </main>
 
           <footer class="feha-linkstart-footer">
-            <div>
-              <span>ROUTE</span>
-              0x${randomHex(4)}:${randomHex(4)}
-              <span>ENCRYPTION</span>
-              AES-ADK/4096
-            </div>
-
+            <span>SESSION 0x${randomHex(4)}:${randomHex(4)}</span>
             <b data-link-live>LINK PENDING</b>
           </footer>
         </div>
@@ -2446,10 +2434,10 @@
       });
 
       setLinkPhase({
-        phase:"ESTABLISHING NEURAL LINK",
-        route:"ROUTE ACQUISITION",
+        phase:"INITIALIZING FULLDIVE LINK",
+        route:"NEURAL ROUTE ACQUISITION",
         percent:"08%",
-        status:"SYNCING CLIENT SESSION",
+        status:"SYNCHRONIZING CLIENT SESSION",
         progress:"8%"
       });
 
@@ -2458,9 +2446,9 @@
 
       setLinkPhase({
         phase:"NEURAL ROUTE VERIFIED",
-        route:"ROUTE VERIFIED",
+        route:"NEURAL ROUTE LOCKED",
         percent:"34%",
-        status:"UPLINK CHANNEL LOCKED",
+        status:"DEPTH FIELD CALIBRATED",
         progress:"34%"
       });
       play("scan",.16,0);
@@ -2468,10 +2456,10 @@
       await sleep(520);
 
       setLinkPhase({
-        phase:"SESSION HANDSHAKE",
-        route:"HANDSHAKE ACCEPTED",
+        phase:"CONSCIOUSNESS HANDSHAKE",
+        route:"COGNITIVE LINK ACCEPTED",
         percent:"68%",
-        status:"CLIENT IDENTITY SYNCHRONIZED",
+        status:"SENSORY BRIDGE SYNCHRONIZED",
         progress:"68%"
       });
       play("confirm",.17,0);
@@ -2479,10 +2467,10 @@
       await sleep(560);
 
       setLinkPhase({
-        phase:"FINALIZING SESSION",
+        phase:"FULLDIVE SEQUENCE",
         route:"NEURAL BRIDGE STABLE",
         percent:"92%",
-        status:"ROUTING LIVE FEED",
+        status:"IMMERSION GATE OPENING",
         progress:"92%"
       });
       play("scan",.14,0);
