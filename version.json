@@ -1,8 +1,11 @@
 {
-  "version": "0.10.112",
+  "version": "0.10.113",
   "updated": "2026-09-28",
-  "scope": "chrome-header-clip-fix-sasha-purple",
+  "scope": "crisp-inspector-microheader",
   "notes": [
+    "Made the SELECTED AUGMENTATION BUS microheader crisp and legible with full opacity, 900 font weight, no soft text shadow/filter, and user-palette coloring.",
+    "Moved the two-line inspector header content down another 2px by redistributing the same total 8px vertical padding to 6px top / 2px bottom, preserving its overall footprint.",
+    "Kept font size, line-height, letter-spacing, surrounding panel geometry, Sasha purple palette, duplicate-EJECT fix, Chrome logic, Gateway behavior, and cinematic timing unchanged.",
     "Fixed the selected-augmentation header's clipped-top appearance by removing the 4px transform and redistributing the same 8px of vertical padding from 0/8 to 4/4, keeping the overall header footprint unchanged.",
     "Set inspector-header overflow visible so the larger readability typography cannot be visually cropped.",
     "Changed Sasha's Chrome Manager palette to purple-led (#CF73FF) with cyan secondary, matching her established FEHA identity more strongly.",
