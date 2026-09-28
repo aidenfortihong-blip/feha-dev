@@ -15172,3 +15172,133 @@ body #adk-market-15#adk-market-15 #top-directory {
     0 0 52px rgba(252,238,10,.24)!important;
 }
 
+/* ==========================================================================
+   FEHA ENTRY GATEWAY // 0.10.93 REMOVE GREEN / TRIAD PALETTE
+   Final color pass: red + cyan + yellow only. Green was fighting the red
+   identity accents, so all success/verified states now resolve into cyan.
+   JACK IN is forced to a warmer flat cyberpunk yellow.
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom {
+  --eg-green:var(--eg-cyan)!important;
+  --eg-success:#72efff!important;
+}
+
+/* SUCCESS / VERIFIED = cyan, not green. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="granted"] {
+  color:var(--eg-success)!important;
+  border-left-color:var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="granted"] i {
+  background:var(--eg-cyan)!important;
+  box-shadow:0 0 16px rgba(57,230,255,.50)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match[data-state="granted"] {
+  color:var(--eg-success)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified {
+  border-left-color:var(--eg-cyan)!important;
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.055),transparent 34%),
+    #061116!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified i {
+  color:var(--eg-success)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console [data-tone="grant"] b {
+  color:var(--eg-success)!important;
+}
+
+/* Progress now travels identity red -> action yellow -> interface cyan. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-progress > div {
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0%,
+      var(--eg-yellow) 48%,
+      var(--eg-cyan) 100%)!important;
+  box-shadow:0 0 10px rgba(57,230,255,.16)!important;
+}
+
+/* Bottom shell accent rail follows the same triad; no green segment. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell::after {
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0 7%,
+      transparent 7% 9%,
+      var(--eg-yellow) 9% 24%,
+      transparent 24% 26%,
+      var(--eg-cyan) 26% 61%,
+      transparent 61% 64%,
+      rgba(57,230,255,.18) 64% 82%,
+      transparent 82% 86%,
+      var(--eg-yellow) 86% 100%)!important;
+}
+
+/* JACK IN: unmistakably warm yellow. No green cast, no lime endpoint. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-jackin {
+  color:#070700!important;
+  background-color:#fcee0a!important;
+  background-image:
+    linear-gradient(90deg,
+      #d9b900 0%,
+      #f0d000 10%,
+      #fcee0a 24%,
+      #ffea27 52%,
+      #fcee0a 78%,
+      #dfbd00 100%)!important;
+  border-left:6px solid #fcee0a!important;
+  border-right:6px solid #fcee0a!important;
+  filter:none!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.60),
+    inset 0 -2px 0 rgba(70,52,0,.34),
+    0 0 0 1px rgba(252,238,10,.18),
+    0 0 42px rgba(252,238,10,.17)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-left,
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center,
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center small,
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center b,
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-right,
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-right i,
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-right em {
+  color:#070700!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin::after {
+  background:
+    linear-gradient(90deg,
+      #080800 0 10%,
+      transparent 10% 13%,
+      rgba(8,8,0,.46) 13% 31%,
+      transparent 31% 34%,
+      #080800 34% 43%,
+      transparent 43% 46%,
+      rgba(8,8,0,.46) 46% 76%,
+      transparent 76% 80%,
+      #080800 80% 100%)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin:hover {
+  filter:brightness(1.035)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.68),
+    inset 0 -2px 0 rgba(70,52,0,.34),
+    0 0 0 1px rgba(252,238,10,.24),
+    0 0 54px rgba(252,238,10,.23)!important;
+}
+
+/* Any legacy literal success greens that survived earlier layers are neutralized. */
+#adk-entry-gateway.feha-eg-custom .verified,
+#adk-entry-gateway.feha-eg-custom [data-tone="grant"],
+#adk-entry-gateway.feha-eg-custom [data-tone="granted"] {
+  --eg-success-local:var(--eg-success)!important;
+}
+
