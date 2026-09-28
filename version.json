@@ -1,8 +1,13 @@
 {
-  "version": "0.10.84",
+  "version": "0.10.85",
   "updated": "2026-09-28",
-  "scope": "satisfying-video-handoff",
+  "scope": "split-title-immediate-video-reveal",
   "notes": [
+    "The intro video now begins visibly fading in immediately when ESTABLISH LINK is pressed instead of waiting until SESSION TRANSFER.",
+    "The blue 3D link sequence remains on top while becoming progressively glassier, so the moving footage can be seen resolving underneath throughout the entire connection sequence.",
+    "At handoff, CONNECTION exits hard to the left and ESTABLISHED exits hard to the right with directional skew, blur, stretch, a center seam burst, and expanding halo.",
+    "Retimed the final beat to about 1.125 seconds of title hold, a 180ms split-charge impact, then a roughly 1.45 second environment release into the already-visible video.",
+    "Kept the final wording as only CONNECTION ESTABLISHED, centered before the split, with fullscreen, subtitle suppression, and delayed SKIP INTRO behavior unchanged.",
     "Retuned the centered CONNECTION ESTABLISHED ending from a long soft dissolve into a three-beat hold -> impact -> release transition.",
     "Shortened the final hold to about 1.25 seconds, added a 220ms confirmation impact pulse, and changed the actual blue-to-video release to about 1.18 seconds.",
     "Added a brief cyan-white handoff bloom, tiny title compression/release, and depth snap immediately before the video reveal so the transition has a clearer payoff.",
