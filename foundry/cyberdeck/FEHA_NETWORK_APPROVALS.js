@@ -10,7 +10,7 @@
     throw new Error("FEHA_NETWORK_APPROVALS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.9.3";
+  const VERSION = "0.9.4";
   const CHANNEL = "module.flesh-enshrouded-heart-ablaze";
   const MARKER = "fehaNetworkDevicesV1";
   const ROOT_ID = "feha-network-approval-queue";
@@ -18,10 +18,29 @@
   const pending = new Map();
   let socketHandler = null;
   const COMMAND_TIMEOUT_MS = 15000;
+  const PROBE_TIMEOUT_MS = 120000;
 
   function activeOnlineGM() {
     return [...(game.users?.contents ?? game.users ?? [])]
-      .find(user => user?.isGM && user?.active) ?? null;
+      .filter(user => user?.isGM && user?.active)
+      .sort((a,b) => String(a.id).localeCompare(String(b.id)))[0] ??
+      null;
+  }
+
+  function isAuthorityFor(payload={}) {
+    if (!game.user?.isGM) return false;
+
+    const requestedGM = String(payload?.gmId ?? "");
+    if (requestedGM) {
+      return requestedGM === String(game.user.id);
+    }
+
+    // Compatibility with an older client that omitted gmId: only the
+    // deterministic first active GM may process it.
+    return (
+      String(activeOnlineGM()?.id ?? "") ===
+      String(game.user.id)
+    );
   }
 
   function requireOnlineGM() {
@@ -43,24 +62,59 @@
     }={}
   ) {
     let timer = null;
+    let settled = false;
 
     return new Promise((resolve,reject) => {
       const resolver = payload => {
+        if (settled) return;
+        settled = true;
+
         if (timer) clearTimeout(timer);
-        pending.delete(requestId);
+
+        if (pending.get(requestId) === resolver) {
+          pending.delete(requestId);
+        }
+
         resolve(payload);
       };
+
+      resolver.cancel = (
+        message="Network authority service reloaded."
+      ) => resolver({
+        requestId,
+        cancelled:true,
+        error:message
+      });
 
       pending.set(requestId,resolver);
 
       if (timeoutMs > 0) {
         timer = setTimeout(() => {
-          if (pending.get(requestId) !== resolver) return;
+          if (
+            settled ||
+            pending.get(requestId) !== resolver
+          ) {
+            return;
+          }
+
+          settled = true;
           pending.delete(requestId);
           reject(new Error(timeoutMessage));
         },timeoutMs);
       }
     });
+  }
+
+  function cancelPending(
+    message="Network authority service reloaded."
+  ) {
+    for (const resolver of [...pending.values()]) {
+      try {
+        resolver?.cancel?.(message);
+      } catch {}
+    }
+
+    pending.clear();
   }
 
   function userOwnsActor(user,actor) {
@@ -514,20 +568,25 @@
     const payload = message.payload ?? {};
 
     if (kind === "probeRequest") {
-      if (!game.user?.isGM) return;
+      if (!isAuthorityFor(payload)) return;
       queue.set(payload.id,payload);
       renderQueue();
       return;
     }
 
     if (kind === "probeResolved") {
-      queue.delete(payload.requestId);
-      renderQueue();
+      if (game.user?.isGM) {
+        queue.delete(payload.requestId);
+        renderQueue();
+      }
+
+      if (String(payload.userId ?? "") !== String(game.user?.id ?? "")) {
+        return;
+      }
 
       const resolver = pending.get(payload.requestId);
 
       if (resolver) {
-        pending.delete(payload.requestId);
         resolver(payload);
       }
 
@@ -546,7 +605,7 @@
     }
 
     if (kind === "deviceCommandRequest") {
-      if (!game.user?.isGM) return;
+      if (!isAuthorityFor(payload)) return;
 
       try {
         const actions = core.module("deviceActions");
@@ -596,10 +655,13 @@
     }
 
     if (kind === "deviceCommandResolved") {
+      if (String(payload.userId ?? "") !== String(game.user?.id ?? "")) {
+        return;
+      }
+
       const resolver = pending.get(payload.requestId);
 
       if (resolver) {
-        pending.delete(payload.requestId);
         resolver(payload);
       }
 
@@ -607,7 +669,7 @@
     }
 
     if (kind === "revealRequest") {
-      if (!game.user?.isGM) return;
+      if (!isAuthorityFor(payload)) return;
 
       try {
         const count = await devices.revealCustomDevices(
@@ -639,10 +701,13 @@
     }
 
     if (kind === "revealResolved") {
+      if (String(payload.userId ?? "") !== String(game.user?.id ?? "")) {
+        return;
+      }
+
       const resolver = pending.get(payload.requestId);
 
       if (resolver) {
-        pending.delete(payload.requestId);
         resolver(payload);
       }
 
@@ -669,30 +734,41 @@
       throw new Error("No active Scene for Network Probe.");
     }
 
-    const request = {
-      id:randomID(),
-      sceneId,
-      xPct:Number(xPct),
-      yPct:Number(yPct),
-      suggestedType:String(suggestedType || "door"),
-      label:String(label || ""),
-      userId:game.user.id,
-      userName:game.user.name,
-      createdAt:new Date().toISOString()
-    };
+    const rawX = Number(xPct);
+    const rawY = Number(yPct);
 
     if (
-      !Number.isFinite(request.xPct) ||
-      !Number.isFinite(request.yPct)
+      !Number.isFinite(rawX) ||
+      !Number.isFinite(rawY)
     ) {
       throw new Error("Network Probe requires valid map coordinates.");
     }
 
-    if (!game.user?.isGM) {
-      requireOnlineGM();
-    }
+    const authority =
+      game.user?.isGM
+        ? game.user
+        : requireOnlineGM();
 
-    const resolution = createPendingResolution(request.id);
+    const request = {
+      id:randomID(),
+      sceneId,
+      xPct:Math.max(0,Math.min(100,rawX)),
+      yPct:Math.max(0,Math.min(100,rawY)),
+      suggestedType:String(suggestedType || "door"),
+      label:String(label || ""),
+      userId:game.user.id,
+      userName:game.user.name,
+      gmId:authority.id,
+      createdAt:new Date().toISOString()
+    };
+
+    const resolution = createPendingResolution(
+      request.id,
+      {
+        timeoutMs:PROBE_TIMEOUT_MS,
+        timeoutMessage:"Network Probe timed out waiting for GM approval."
+      }
+    );
 
     if (game.user?.isGM) {
       queue.set(request.id,request);
@@ -718,8 +794,7 @@
       throw new Error("Device command request is incomplete.");
     }
 
-    requireOnlineGM();
-
+    const authority = requireOnlineGM();
     const requestId = randomID();
 
     const resolution = createPendingResolution(
@@ -736,7 +811,8 @@
       sceneId,
       deviceId,
       capability,
-      userId:game.user.id
+      userId:game.user.id,
+      gmId:authority.id
     });
 
     const payload = await resolution;
@@ -756,6 +832,15 @@
       throw new Error("Network reveal requires Scene and User.");
     }
 
+    if (
+      !game.user?.isGM &&
+      String(userId) !== String(game.user?.id)
+    ) {
+      throw new Error(
+        "A player may only request Network reveal for their own user."
+      );
+    }
+
     if (game.user?.isGM) {
       return {
         count:await devices.revealCustomDevices(sceneId,userId),
@@ -763,8 +848,7 @@
       };
     }
 
-    requireOnlineGM();
-
+    const authority = requireOnlineGM();
     const requestId = randomID();
 
     const resolution = createPendingResolution(
@@ -778,7 +862,8 @@
     emit("revealRequest",{
       requestId,
       sceneId,
-      userId
+      userId,
+      gmId:authority.id
     });
 
     return resolution;
@@ -793,6 +878,12 @@
     renderQueue,
 
     async init() {
+      if (socketHandler) {
+        try {
+          game.socket?.off?.(CHANNEL,socketHandler);
+        } catch {}
+      }
+
       socketHandler = receive;
       game.socket?.on?.(CHANNEL,socketHandler);
       console.log("FEHA NETWORK APPROVALS",VERSION,"ready");
@@ -807,7 +898,7 @@
 
       socketHandler = null;
       queue.clear();
-      pending.clear();
+      cancelPending();
       document.getElementById(ROOT_ID)?.remove();
 
       if (globalThis.FEHA_NETWORK_APPROVALS === api) {
