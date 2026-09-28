@@ -1,8 +1,11 @@
 {
-  "version": "0.10.101",
+  "version": "0.10.102",
   "updated": "2026-09-28",
-  "scope": "verified-logo-url-and-visible-final-split",
+  "scope": "js-forced-final-title-flight",
   "notes": [
+    "Forced the final CONNECTION / ESTABLISHED departure directly in latest-dev.js with inline !important transforms so legacy CSS animations can no longer make the words stay centered or vanish instead of moving.",
+    "CONNECTION now travels 115vw left and ESTABLISHED 115vw right over 0.88s while remaining fully visible during the flight.",
+    "The final handoff still uses the exact existing 1080ms wait; no cinematic phase timing was changed.",
     "Corrected the Gateway logo source to the exact Wikimedia yellow/turquoise Cyberpunk 2077 SVG matching the supplied reference image.",
     "Kept the handoff overlay visible while CONNECTION and ESTABLISHED split, because the prior whole-overlay fade hid the movement before it could be seen.",
     "Added explicit final split keyframes: CONNECTION exits left, ESTABLISHED exits right, and the cyan center pulse expands/fades between them.",
