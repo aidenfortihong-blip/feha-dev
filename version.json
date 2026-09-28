@@ -1,8 +1,13 @@
 {
-  "version": "0.10.67",
+  "version": "0.10.68",
   "updated": "2026-09-27",
-  "scope": "gateway-cp2077-private-assets-readability",
+  "scope": "gateway-clean-color-pass",
   "notes": [
+    "Removed the gray CP2077 overlay haze from the custom Entry Gateway while preserving the working layout and functional asset bridge.",
+    "Removed the decorative strip beneath the CYBERPUNK title.",
+    "Disabled broad frame/HUD/line overlay pseudo-elements and the portrait HUD film that were dulling the entire screen.",
+    "Reasserted clean dark saturated surfaces and removed any filter/backdrop-filter treatment from major Gateway panels.",
+    "Kept only useful non-washing private CP2077 accents such as biometric buffer assets, footer barcode, and establish-link reward treatment.",
     "Wired the custom Entry Gateway into the existing private CP2077 UI asset bridge without committing proprietary media to GitHub.",
     "Gateway now maps the user's private CP2077 frame, HUD patch, linework, highlights, button holders, reward frame, barcode/code flourishes, glow frames, bars, and buffer assets into scoped CSS variables when available.",
     "Added CP2077 asset-aware header strip, authentication frame, biometric buffer bar, selected-candidate highlight, profile HUD/frame, footer barcode, and establish-link treatment with clean non-asset fallbacks.",
