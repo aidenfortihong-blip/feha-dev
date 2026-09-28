@@ -1,8 +1,11 @@
 {
-  "version": "0.10.81",
+  "version": "0.10.82",
   "updated": "2026-09-28",
-  "scope": "entry-gateway-fullscreen-lifecycle",
+  "scope": "connection-established-title-lockup",
   "notes": [
+    "Recomposed the blue transition centerpiece into one unified title lockup instead of the previous split left/right headline.",
+    "ACTIVATED is now a smaller white kicker with a cyan // accent directly above the dominant stacked CONNECTION / ESTABLISHED title.",
+    "Kept the existing 3D title punch animation, transition timing, route/progress HUD, fullscreen lifecycle, YouTube intro, and skip behavior unchanged.",
     "Entry Gateway fullscreen is now a whole-Gateway behavior rather than something that begins only at ESTABLISH LINK.",
     "Gateway open() attempts fullscreen immediately when the screen mounts; if browser user-activation policy blocks that automatic request, the first pointer or keyboard gesture inside the Gateway retries synchronously.",
     "While the Gateway remains visible, subsequent pointer/key gestures retry fullscreen if the user has exited it, so the next interaction restores fullscreen.",
