@@ -15987,3 +15987,433 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.96 FULLSCREEN COMPOSITION + CYAN CENTER PULSE
+   Reduce the "window full of boxes" feeling: fewer framed modules, fewer
+   adjacent colors, more continuous fullscreen composition and selective
+   asymmetry. Final split line is an ultra-thin cyan pulse born between words.
+   ========================================================================== */
+
+/* PALETTE DISCIPLINE
+   Cyan = structure/data.
+   Yellow = major action / JACK IN.
+   Red = sparse identity accent only.
+   Stop stacking all three colors beside each other in tiny rails. */
+#adk-entry-gateway.feha-eg-custom {
+  --eg-cyan:#39e6ff!important;
+  --eg-yellow:#fcee0a!important;
+  --eg-red:#ff3b5c!important;
+  --eg-success:#72efff!important;
+}
+
+/* Make the shell feel like a fullscreen terminal plane instead of a centered
+   application window. Keep only one strong top edge and one faint perimeter. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+  width:min(1660px,99.4vw)!important;
+  height:min(980px,99vh)!important;
+  border-color:rgba(57,230,255,.11)!important;
+  border-top:2px solid rgba(252,238,10,.78)!important;
+  box-shadow:
+    0 26px 110px rgba(0,0,0,.72),
+    0 0 44px rgba(57,230,255,.025)!important;
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.012),transparent 18%),
+    #02070a!important;
+}
+
+/* Replace the rainbow/segmented bottom shell rail with one quiet cyan line. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell::after {
+  left:18px!important;
+  right:28%!important;
+  bottom:0!important;
+  height:2px!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.62),
+      rgba(57,230,255,.18) 64%,
+      transparent 100%)!important;
+  opacity:.56!important;
+}
+
+/* Header becomes one continuous plane. Red is kept only at the identity node;
+   yellow stays as the major top rule, not another nearby micro-segment. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+  background:
+    linear-gradient(110deg,rgba(57,230,255,.025),transparent 56%),
+    #061015!important;
+  border-bottom-color:rgba(57,230,255,.11)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1::after {
+  right:-54px!important;
+  height:2px!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.86) 0 46%,
+      rgba(57,230,255,.22) 46% 76%,
+      transparent 76%)!important;
+  opacity:.72!important;
+}
+
+/* Keep the off-axis header plate but make it structural cyan only. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header::after,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-header::after {
+  right:16.8%!important;
+  width:92px!important;
+  opacity:.44!important;
+  background:
+    linear-gradient(180deg,
+      rgba(57,230,255,.065),
+      rgba(57,230,255,.010))!important;
+}
+
+/* BODY: continuous left working field + right identity rail, not card-on-card. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-body {
+  grid-template-columns:minmax(0,1.79fr) minmax(375px,.76fr)!important;
+  background:
+    linear-gradient(90deg,
+      #02080b 0 72.2%,
+      rgba(57,230,255,.028) 72.2% 72.3%,
+      #02070a 72.3% 100%)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  border-right:0!important;
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.014),transparent 17%),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 74px,
+      rgba(57,230,255,.006) 74px 75px,
+      transparent 75px 150px
+    ),
+    #02080b!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-side {
+  border-left:0!important;
+  background:#02070a!important;
+}
+
+/* Top-middle wedge stays irregular, but becomes one dark structural cut with
+   only cyan definition rather than yellow+cyan+red all touching. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-body::before {
+  right:27.2%!important;
+  width:156px!important;
+  height:82px!important;
+  background:
+    linear-gradient(180deg,#081015,#03080b)!important;
+  border-left:1px solid rgba(57,230,255,.16)!important;
+  border-right:0!important;
+}
+
+/* Utility tab remains yellow because it is a deliberate singular interruption. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::before {
+  right:7%!important;
+  min-width:176px!important;
+  background:#fcee0a!important;
+  box-shadow:none!important;
+}
+
+/* Kill the multicolor section rail. Use cyan structure, yellow marker only. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::after {
+  height:1px!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.76) 0 34%,
+      transparent 34% 38%,
+      rgba(57,230,255,.23) 38% 68%,
+      transparent 68% 100%)!important;
+  opacity:.80!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::before {
+  background:#fcee0a!important;
+}
+
+/* BOOT: remove its enclosing card. It becomes open terminal content anchored
+   by one identity-red spine. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot {
+  background:transparent!important;
+  border:0!important;
+  border-left:3px solid rgba(255,59,92,.72)!important;
+  clip-path:none!important;
+  box-shadow:none!important;
+  padding-left:16px!important;
+  padding-right:8px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot::after {
+  color:rgba(57,230,255,.28)!important;
+}
+
+/* AUTH: no framed card. Make it one continuous interaction zone with a broken
+   top signal line and a single lower cyan boundary. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.025),transparent 64%)!important;
+  border:0!important;
+  border-bottom:1px solid rgba(57,230,255,.20)!important;
+  clip-path:none!important;
+  box-shadow:none!important;
+  padding-left:14px!important;
+  padding-right:14px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card::before,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-auth-card::before {
+  left:0!important;
+  right:18%!important;
+  height:1px!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.78) 0 42%,
+      transparent 42% 47%,
+      rgba(57,230,255,.20) 47% 74%,
+      transparent 74%)!important;
+}
+
+/* Input stays deliberately strong; it is the primary interaction surface. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell {
+  border-color:rgba(57,230,255,.44)!important;
+  border-left:4px solid var(--eg-cyan)!important;
+}
+
+/* BIOMETRICS: rows become one scan table, not seven mini-cards. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list {
+  gap:0!important;
+  border-top:1px solid rgba(57,230,255,.10)!important;
+  border-bottom:1px solid rgba(57,230,255,.10)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div,
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div:nth-child(odd),
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div:nth-child(even),
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified {
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid rgba(57,230,255,.07)!important;
+  border-left:2px solid rgba(57,230,255,.18)!important;
+  clip-path:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified {
+  border-left-color:rgba(57,230,255,.64)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div:last-child {
+  border-bottom:0!important;
+}
+
+/* RIGHT RAIL: remove enclosing candidate 'window'; retain only a top header
+   rule and row rhythm. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel {
+  background:transparent!important;
+  border:0!important;
+  border-top:2px solid rgba(57,230,255,.70)!important;
+  clip-path:none!important;
+  box-shadow:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  background:transparent!important;
+  border-bottom:1px solid rgba(57,230,255,.13)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel::before {
+  width:52px!important;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(57,230,255,.16) 0 2px,
+      transparent 2px 7px
+    )!important;
+  opacity:.20!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+  background:transparent!important;
+  border-bottom-color:rgba(57,230,255,.075)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate:hover {
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.040),transparent 62%)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate.active {
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb,var(--candidate) 12%,transparent),
+      transparent 58%)!important;
+}
+
+/* The bridge on the rail is now cyan with one sparse red identity cap. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-side::before {
+  width:7px!important;
+  background:
+    linear-gradient(180deg,
+      rgba(255,59,92,.76) 0 28%,
+      transparent 28% 36%,
+      rgba(57,230,255,.78) 36% 100%)!important;
+}
+
+/* PORTRAIT: let the image itself be the module. Remove the surrounding window
+   frame, keep only one red identity rail and one cyan top edge. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  background:transparent!important;
+  border:0!important;
+  border-top:1px solid rgba(57,230,255,.40)!important;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%)!important;
+  box-shadow:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live::before {
+  width:46%!important;
+  height:2px!important;
+  background:rgba(57,230,255,.62)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live::after {
+  width:3px!important;
+  background:rgba(255,59,92,.78)!important;
+}
+
+/* Empty scanner bay is quieter and integrated. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty {
+  background:
+    radial-gradient(circle at 50% 45%,rgba(57,230,255,.025),transparent 33%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 31px,
+      rgba(57,230,255,.008) 31px 32px
+    ),
+    transparent!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty::before {
+  border-color:rgba(57,230,255,.10)!important;
+  border-left-color:rgba(57,230,255,.22)!important;
+  border-right-color:rgba(57,230,255,.15)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty::after {
+  background:
+    linear-gradient(90deg,transparent,rgba(57,230,255,.16),transparent)!important;
+  box-shadow:none!important;
+}
+
+/* Footer becomes part of the terminal plane, not another boxed strip. */
+#adk-entry-gateway.feha-eg-custom:not(.is-granted) .feha-eg-footer {
+  border-top:1px solid rgba(57,230,255,.11)!important;
+  background:#010608!important;
+}
+
+#adk-entry-gateway.feha-eg-custom:not(.is-granted) .feha-eg-footer::before {
+  width:62%!important;
+  height:1px!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.46),
+      rgba(57,230,255,.11) 70%,
+      transparent)!important;
+  opacity:.54!important;
+}
+
+/* JACK IN remains the one huge yellow payoff; everything else yields to it. */
+
+/* ==========================================================================
+   FINAL CONNECTION ESTABLISHED // CYAN CENTER PULSE
+   The line is born BETWEEN CONNECTION and ESTABLISHED, then shoots equally
+   left and right. It is intentionally hairline-thin and electric blue/cyan.
+   ========================================================================== */
+
+/* Make a little breathing room between the two title words for the pulse. */
+#feha-link-start.is-live .feha-linkstart-title-main {
+  gap:clamp(3px,.45vh,7px)!important;
+}
+
+/* Repurpose the title-lock rail as the central cyber pulse. */
+#feha-link-start.is-live .feha-linkstart-title-lock::after {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:0!important;
+  height:1px!important;
+  transform:translate(-50%,-50%)!important;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(57,230,255,.18) 8%,
+      #9af6ff 46%,
+      #e9feff 50%,
+      #9af6ff 54%,
+      rgba(57,230,255,.18) 92%,
+      transparent 100%)!important;
+  box-shadow:
+    0 0 5px rgba(57,230,255,.52),
+    0 0 12px rgba(57,230,255,.18)!important;
+  opacity:0!important;
+  animation:feha-link-center-pulse-096 1.15s .18s cubic-bezier(.12,.82,.16,1) forwards!important;
+  z-index:8!important;
+}
+
+@keyframes feha-link-center-pulse-096 {
+  0%   {width:0; opacity:0}
+  14%  {width:3vw; opacity:1}
+  58%  {width:min(58vw,820px); opacity:.96}
+  100% {width:min(70vw,980px); opacity:.56}
+}
+
+/* When separation begins, the same cyan line extends farther left/right and
+   fades away while the words depart. */
+#feha-link-start.is-video-handoff .feha-linkstart-title-lock::after {
+  width:min(92vw,1320px)!important;
+  height:1px!important;
+  opacity:0!important;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(57,230,255,.20) 12%,
+      #a9f8ff 49.5%,
+      #ffffff 50%,
+      #a9f8ff 50.5%,
+      rgba(57,230,255,.20) 88%,
+      transparent)!important;
+  box-shadow:
+    0 0 4px rgba(57,230,255,.42),
+    0 0 10px rgba(57,230,255,.14)!important;
+  transition:
+    width .72s cubic-bezier(.10,.84,.14,1),
+    opacity .74s .18s ease!important;
+}
+
+/* The old full-screen split flash becomes almost invisible; the line itself
+   is now the separation effect. */
+#feha-link-start.is-video-preopen.is-video-impact .feha-linkstart-flash {
+  opacity:.12!important;
+  background:
+    linear-gradient(180deg,
+      transparent 0 49.92%,
+      rgba(57,230,255,.20) 49.92% 49.97%,
+      #bafaff 49.97% 50.03%,
+      rgba(57,230,255,.20) 50.03% 50.08%,
+      transparent 50.08% 100%)!important;
+}
+
+/* No yellow/black incision anymore. Keep the existing impact timing but make
+   it a hairline cyan charge. */
+@keyframes feha-link-split-charge-086 {
+  0%   {opacity:0; transform:scaleX(.18) scaleY(.18)}
+  36%  {opacity:.28; transform:scaleX(.92) scaleY(.22)}
+  100% {opacity:0; transform:scaleX(1.16) scaleY(.24)}
+}
+
+@media(max-height:820px) and (min-width:1001px) {
+  #adk-entry-gateway.feha-eg-body::before {
+    width:118px!important;
+    height:64px!important;
+  }
+}
+
