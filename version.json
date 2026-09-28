@@ -1,8 +1,14 @@
 {
-  "version": "0.10.72",
+  "version": "0.10.73",
   "updated": "2026-09-27",
-  "scope": "fullscreen-link-start-transition",
+  "scope": "sao-inspired-3d-link-start",
   "notes": [
+    "Rebuilt Link Start into a SAO-inspired 3D full-dive transition rather than a flat cyberpunk terminal animation.",
+    "Added true CSS perspective and Z-space motion: concentric rings, radial rails, particles, and the LINK START title travel from deep negative Z toward and past the viewer.",
+    "The camera drifts forward through the tunnel and performs a final lunge at SESSION LIVE, creating a fly-into-you / pass-through-the-interface sensation.",
+    "Removed dense code-column and large character-art emphasis from the Link Start transition in favor of a cleaner centered ceremonial full-dive composition.",
+    "Changed transition copy toward INITIALIZING FULLDIVE LINK, CONSCIOUSNESS HANDSHAKE, SENSORY BRIDGE SYNCHRONIZED, and IMMERSION GATE OPENING.",
+    "Added a radial activation flash and forward zoom cut when SESSION LIVE triggers.",
     "Added a full-screen LINK START transition after ESTABLISH LINK and before returning to live play.",
     "Transition is character-aware and displays selected subject name, actor-derived BIO-ID when available, session route data, animated code columns, scan sweep, segmented signal animation, and progress.",
     "Link Start runs through ESTABLISHING NEURAL LINK, NEURAL ROUTE VERIFIED, SESSION HANDSHAKE, FINALIZING SESSION, and SESSION LIVE phases over roughly 2.6 seconds.",
