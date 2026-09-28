@@ -1,8 +1,12 @@
 {
-  "version": "0.10.109",
+  "version": "0.10.110",
   "updated": "2026-09-28",
-  "scope": "chrome-manager-large-readable-type",
+  "scope": "chrome-manager-cyberpunk-skin-zero-spacing-change",
   "notes": [
+    "Applied a Cyberpunk 2077-inspired paint-only skin to Chrome Manager using dark navy/black panels, cyan active hardware language, red system accents, subtle scan texture, glows, and technical panel contrast.",
+    "Explicitly preserved all 0.10.109 text metrics and spacing: no font-size, line-height, letter-spacing, padding, margin, gap, width, height, grid, flex-direction, transform, or content-position changes were introduced in this pass.",
+    "Kept the current Chrome Manager layout and every word in the same physical spacing/placement to avoid clipping and overlap regressions.",
+    "Preserved the 0.10.108 duplicate top EJECT removal, all Chrome Manager logic, Gateway behavior, and cinematic timing.",
     "Substantially increased Chrome Manager typography across the top bar, system index, subject telemetry, inspector, hardware dossier, cache drawer, buttons, metrics, and footer.",
     "Raised formerly 6-9px microtext into roughly 10-12px territory and increased normal labels/body copy into roughly 14-16px territory.",
     "Increased major system and hardware titles while keeping the existing layout and visual style intact.",
