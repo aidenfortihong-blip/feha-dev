@@ -1,8 +1,13 @@
 {
-  "version": "0.10.93",
+  "version": "0.10.94",
   "updated": "2026-09-28",
-  "scope": "gateway-red-cyan-yellow-palette",
+  "scope": "cyberpunk-yellow-link-animation",
   "notes": [
+    "Re-art-directed the post-JACK-IN link animation around Cyberpunk yellow, cyan, red, and black instead of the previous mostly-cyan/blue tunnel.",
+    "Rings, rails, particles, reticle, route data, progress bar, and industrial signal bands now use the Gateway's red/yellow/cyan visual language.",
+    "CONNECTION ESTABLISHED now pulses in black and yellow: yellow title, black hard shadow, black/yellow halo rings, black/yellow confirmation rail, and a black-core yellow energy flash.",
+    "The final split-charge seam is now black/yellow, and the pre-open/video reveal retains only a faint warm yellow cast before exposing the video.",
+    "No JS phase order, waits, split timing, fullscreen behavior, or video timing changed.",
     "Removed green from the Entry Gateway visual language because it was clashing with character red accents and weakening the palette.",
     "Success, verified, ACCESS GRANTED, and grant-log states now use cyan/pale-cyan instead of green.",
     "The biometric progress bar now resolves red -> yellow -> cyan, and the shell accent rail uses only red/yellow/cyan.",
