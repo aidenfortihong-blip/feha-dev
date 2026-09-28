@@ -2930,46 +2930,6 @@
       }
     };
 
-    const speakLinkSystem = text => {
-      try {
-        const synth = globalThis.speechSynthesis;
-        const SpeechCtor = globalThis.SpeechSynthesisUtterance;
-
-        if (!synth || !SpeechCtor) return false;
-
-        synth.cancel();
-
-        const utterance = new SpeechCtor(String(text ?? ""));
-        const voices = synth.getVoices?.() ?? [];
-
-        utterance.voice =
-          voices.find(voice =>
-            /microsoft.*(?:aria|jenny|zira|guy)/i.test(voice.name)
-          ) ??
-          voices.find(voice =>
-            /google.*english/i.test(voice.name)
-          ) ??
-          voices.find(voice =>
-            /samantha|daniel|serena/i.test(voice.name)
-          ) ??
-          voices.find(voice =>
-            /^en(?:-|_)/i.test(voice.lang)
-          ) ??
-          null;
-
-        utterance.lang = utterance.voice?.lang || "en-US";
-        utterance.rate = .83;
-        utterance.pitch = .72;
-        utterance.volume = .46;
-
-        synth.speak(utterance);
-        return true;
-      } catch (err) {
-        console.warn("FEHA DEV // system voice unavailable",err);
-        return false;
-      }
-    };
-
     const linkStartHtml = candidate => {
       const actor = actorFor(candidate);
       const bioId =
@@ -3149,14 +3109,9 @@
       });
 
       playLinkSceneCue("live");
-      setTimeout(
-        () => speakLinkSystem("Activated. Connection established."),
-        120
-      );
 
-      // Hold the live state long enough for the voice cue to land before
-      // the final camera cut back into the Foundry scene.
-      await sleep(1180);
+      // Hold briefly on the final connection state before the scene cut.
+      await sleep(620);
 
       // Remove the Gateway while the Link Start overlay still owns the screen.
       close(true,{keepLinkOverlay:true});
@@ -3204,10 +3159,6 @@
       if (!keepLinkOverlay) {
         linkOverlay?.remove?.();
         linkOverlay = null;
-
-        try {
-          globalThis.speechSynthesis?.cancel?.();
-        } catch {}
       }
     };
 
