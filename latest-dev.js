@@ -3200,10 +3200,17 @@
             </div>
 
             <div class="feha-linkstart-title-wrap">
-              <h1>
-                <span>ACTIVATED</span>
-                <b>// CONNECTION ESTABLISHED</b>
-              </h1>
+              <div class="feha-linkstart-title-lock">
+                <div class="feha-linkstart-kicker">
+                  <span>ACTIVATED</span>
+                  <b>//</b>
+                </div>
+
+                <h1 class="feha-linkstart-title-main">
+                  <span>CONNECTION</span>
+                  <span>ESTABLISHED</span>
+                </h1>
+              </div>
             </div>
 
             <div class="feha-linkstart-route">
