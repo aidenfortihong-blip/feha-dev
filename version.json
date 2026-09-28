@@ -1,8 +1,13 @@
 {
-  "version": "0.10.119",
+  "version": "0.10.120",
   "updated": "2026-09-28",
-  "scope": "deep-stability-audit-gameplay-transaction-hardening",
+  "scope": "deep-stability-audit-async-and-cleanup-ownership",
   "notes": [
+    "Gateway cancellation now settles tracked sleep Promises and stops each cinematic/boot/auth async flow cleanly instead of leaving unresolved closures after close, reopen, bypass, or hot reload.",
+    "Gateway delayed terminal scrolling and the final glitch/split launch timer now share the tracked timeout registry and are cancelled consistently.",
+    "Entry Gateway teardown restores only API methods/candidate data still owned by FEHA, so later module overrides are not overwritten.",
+    "Credits Wallet teardown now preserves pre-existing getCredits/setCredits/addCredits/spendCredits methods and restores only API slots still occupied by FEHA's own replacements.",
+    "A final reduced-motion rule now covers the later 0.10.117 real glitch strips as well as pseudo-letter ghosts; normal visuals are unchanged.",
     "Deep-pass follow-up: Network Device specialized adapters now execute only on the GM-authoritative path; player callers cannot self-promote remote/skip-breach context.",
     "Quickhack damage now commits RAM before mutating target HP, closing the free-damage race when RAM changes after preview; if HP mutation fails, a guarded RAM refund is attempted.",
     "Quickhack RAM commits/refunds hold an action lock while actor flags update, preventing the visible Cyberdeck from rerendering mid-transaction.",
