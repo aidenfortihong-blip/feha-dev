@@ -2350,7 +2350,7 @@
 
           <header class="feha-linkstart-top">
             <span>ADK // NEURAL SESSION</span>
-            <b data-link-phase>INITIALIZING FULLDIVE LINK</b>
+            <b data-link-phase>INITIALIZING SESSION</b>
           </header>
 
           <main class="feha-linkstart-core">
@@ -2362,8 +2362,8 @@
 
             <div class="feha-linkstart-title-wrap">
               <h1>
-                <span>LINK</span>
-                <b>START</b>
+                <span>SESSION</span>
+                <b>INIT</b>
               </h1>
             </div>
 
@@ -2434,7 +2434,7 @@
       });
 
       setLinkPhase({
-        phase:"INITIALIZING FULLDIVE LINK",
+        phase:"INITIALIZING SESSION",
         route:"NEURAL ROUTE ACQUISITION",
         percent:"08%",
         status:"SYNCHRONIZING CLIENT SESSION",
@@ -2456,10 +2456,10 @@
       await sleep(520);
 
       setLinkPhase({
-        phase:"CONSCIOUSNESS HANDSHAKE",
+        phase:"NEURAL HANDSHAKE",
         route:"COGNITIVE LINK ACCEPTED",
         percent:"68%",
-        status:"SENSORY BRIDGE SYNCHRONIZED",
+        status:"NEURAL BRIDGE SYNCHRONIZED",
         progress:"68%"
       });
       play("confirm",.17,0);
@@ -2467,10 +2467,10 @@
       await sleep(560);
 
       setLinkPhase({
-        phase:"FULLDIVE SEQUENCE",
+        phase:"SESSION TRANSFER",
         route:"NEURAL BRIDGE STABLE",
         percent:"92%",
-        status:"IMMERSION GATE OPENING",
+        status:"SESSION CHANNEL OPENING",
         progress:"92%"
       });
       play("scan",.14,0);
