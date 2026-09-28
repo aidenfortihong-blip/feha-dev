@@ -17885,3 +17885,124 @@ body #adk-market-15#adk-market-15 #top-directory {
     top:-7px!important;
   }
 }
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.104 CLEAN LOGO + BOOT SPACE + NO RAINBOW
+   Screenshot-driven cleanup:
+   - remove the awkward 2077/subline clutter from the header logo while
+     preserving the long Cyberpunk descender
+   - turn the left boot column into a full-height terminal instead of leaving
+     a dead black slab beneath the boot log
+   - replace the biometric red/yellow/green progress fill with one cyan signal
+   - do not touch 0.10.102 final split behavior or cinematic timing
+   ========================================================================== */
+
+/* LOGO CLEANUP
+   Keep the top wordmark and the lower-left descender, but clip away the
+   separate 2077 subline that was making the header lockup look messy. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup {
+  overflow:visible!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-logo {
+  clip-path:polygon(
+    0 0,
+    100% 0,
+    100% 74%,
+    30% 74%,
+    30% 100%,
+    0 100%
+  )!important;
+  filter:
+    saturate(.98)
+    contrast(1.05)
+    drop-shadow(0 0 5px rgba(57,230,255,.045))!important;
+}
+
+/* Remove the almost-invisible fallback text layer entirely now that the real
+   IMG is proven to render in Forge. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup > span {
+  display:none!important;
+}
+
+/* BOOT / AUTH COLUMN
+   Make the left terminal own its full body height. The event console grows
+   into the unused lower-left region instead of stopping after ~90px. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  display:flex!important;
+  flex-direction:column!important;
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal > .feha-eg-section-title,
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal > .feha-eg-boot,
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal > .feha-eg-auth-card,
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal > .feha-eg-biometrics {
+  flex:0 0 auto!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console {
+  flex:1 1 0!important;
+  min-height:148px!important;
+  max-height:none!important;
+  margin-top:12px!important;
+  margin-bottom:0!important;
+  overflow:auto!important;
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.018),transparent 22%),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 27px,
+      rgba(57,230,255,.018) 27px 28px
+    )!important;
+  border-top:1px solid rgba(57,230,255,.16)!important;
+  border-bottom:1px solid rgba(57,230,255,.06)!important;
+}
+
+/* Give the live log a little more vertical rhythm now that it has room. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-console > div {
+  min-height:20px!important;
+  align-items:center!important;
+}
+
+/* NO RAINBOW BAR
+   Biometric verification is one clean cyan data stream. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-progress {
+  background:#061116!important;
+  border-color:rgba(57,230,255,.20)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.01),
+    0 0 10px rgba(57,230,255,.035)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-progress > div,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-progress > div {
+  background-image:none!important;
+  background:
+    linear-gradient(
+      90deg,
+      #0ba9c4 0%,
+      #22d3ee 42%,
+      #39e6ff 76%,
+      #a9f8ff 100%
+    )!important;
+  box-shadow:
+    0 0 8px rgba(57,230,255,.38),
+    0 0 18px rgba(57,230,255,.14)!important;
+}
+
+/* Private CP2077 buffer art can stay as the dark track only; do not recolor
+   the active fill into the old multicolor ramp. */
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-progress {
+  background-image:var(--eg-cp-buffer-empty)!important;
+  background-size:100% 100%!important;
+  background-color:#061116!important;
+}
+
+@media(max-height:820px) and (min-width:1001px){
+  #adk-entry-gateway.feha-eg-custom .feha-eg-console{
+    min-height:110px!important;
+  }
+}
