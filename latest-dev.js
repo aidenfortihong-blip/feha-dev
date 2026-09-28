@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.8.6";
+  const BUILD = "0.8.7";
   let lifecycleActive = true;
   let observer = null;
   let walletGuard = null;
@@ -222,7 +222,7 @@
       cacheRepairBusy = true;
       Promise.resolve(repairCacheMetadata(api))
         .catch(err => {
-          console.warn("FEHA DEV 0.8.6 // cache repair attach failed", err);
+          console.warn("FEHA DEV 0.8.7 // cache repair attach failed", err);
         })
         .finally(() => {
           cacheRepairBusy = false;
@@ -547,7 +547,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.8.6 // preload failed", event, err);
+          console.warn("FEHA DEV 0.8.7 // preload failed", event, err);
         }
       }
     }
@@ -612,11 +612,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.8.6 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.8.7 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.8.6 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.8.7 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -639,7 +639,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.8.6 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.8.7 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -1005,12 +1005,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.8.6 // sound source: ${source}`
+      `FEHA DEV 0.8.7 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.8.6 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.8.7 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1681,6 +1681,7 @@
         : gateway.candidates
     };
 
+    let installedCandidates = null;
     let root = null;
     let linkOverlay = null;
     let linkAudioContext = null;
@@ -1696,7 +1697,11 @@
     let selected = null;
     let busy = false;
     let sequence = 0;
-    let timers = new Set();
+
+    // Tracked timeout registry. Cancelling the Gateway now settles outstanding
+    // sleep Promises instead of clearing their timeout and stranding the async
+    // flow forever.
+    let timers = new Map();
 
     const safe = value =>
       String(value ?? "")
@@ -1705,14 +1710,43 @@
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;");
 
+    const scheduleTimeout = (callback,ms,onCancel=null) => {
+      let id = null;
+
+      id = setTimeout(() => {
+        timers.delete(id);
+        callback();
+      },ms);
+
+      timers.set(
+        id,
+        typeof onCancel === "function"
+          ? onCancel
+          : null
+      );
+
+      return id;
+    };
+
     const sleep = ms =>
       new Promise(resolve => {
-        const id = setTimeout(() => {
-          timers.delete(id);
-          resolve();
-        },ms);
-        timers.add(id);
+        scheduleTimeout(
+          () => resolve(true),
+          ms,
+          () => resolve(false)
+        );
       });
+
+    const cancelGatewayTimers = () => {
+      for (const [id,onCancel] of [...timers]) {
+        clearTimeout(id);
+        timers.delete(id);
+
+        if (onCancel) {
+          try { onCancel(); } catch {}
+        }
+      }
+    };
 
     const play = (kind,gain = .25,cooldown = 0) =>
       globalThis.FEHA_SOUNDS?.play?.(kind,{gain,cooldown});
@@ -2475,11 +2509,7 @@
       };
 
       if (delay > 0) {
-        const id = setTimeout(() => {
-          timers.delete(id);
-          run();
-        },delay);
-        timers.add(id);
+        scheduleTimeout(run,delay);
       } else {
         run();
       }
@@ -2616,7 +2646,7 @@
         "IDENTITY GATE ............. READY"
       ];
 
-      await sleep(160);
+      if (!(await sleep(160))) return;
 
       for (const line of lines) {
         if (!root?.isConnected || sequence !== token) return;
@@ -2636,7 +2666,7 @@
         log("SYS/" + randomHex(3) + " " + line);
         play("select",.15,55);
 
-        await sleep(145);
+        if (!(await sleep(145))) return;
       }
 
       if (!root?.isConnected || sequence !== token) return;
@@ -2724,7 +2754,7 @@
         log("BIO/" + randomHex(4) + " " + label + " :: SCANNING");
         play("scan",.18,70);
 
-        await sleep(260 + Math.floor(Math.random() * 120));
+        if (!(await sleep(260 + Math.floor(Math.random() * 120)))) return;
 
         if (!root?.isConnected || sequence !== token) return;
 
@@ -2739,7 +2769,7 @@
         log("BIO/" + randomHex(4) + " " + label + " :: " + result,"good");
         play("confirm",.21,70);
 
-        await sleep(105);
+        if (!(await sleep(105))) return;
       }
 
       if (!root?.isConnected || sequence !== token) return;
@@ -3288,7 +3318,7 @@
       });
 
       playLinkSceneCue("launch");
-      await sleep(700);
+      if (!(await sleep(700))) return;
 
       setLinkPhase({
         phase:"NEURAL ROUTE VERIFIED",
@@ -3299,7 +3329,7 @@
       });
       playLinkSceneCue("route");
 
-      await sleep(850);
+      if (!(await sleep(850))) return;
 
       setLinkPhase({
         phase:"NEURAL HANDSHAKE",
@@ -3310,7 +3340,7 @@
       });
       playLinkSceneCue("handshake");
 
-      await sleep(850);
+      if (!(await sleep(850))) return;
 
       // The video has been resolving beneath the blue system since the
       // ESTABLISH LINK click. SESSION TRANSFER now advances the HUD only.
@@ -3323,7 +3353,7 @@
       });
       playLinkSceneCue("transfer");
 
-      await sleep(1350);
+      if (!(await sleep(1350))) return;
 
       setLinkPhase({
         phase:"SESSION LIVE",
@@ -3339,10 +3369,10 @@
       // Let CONNECTION ESTABLISHED land, then peel the blue environment away
       // FIRST. By the time the words split, the viewer should already be
       // looking at almost pure video with only the title floating over it.
-      await sleep(900);
+      if (!(await sleep(900))) return;
 
       linkOverlay?.classList.add("is-video-preopen");
-      await sleep(720);
+      if (!(await sleep(720))) return;
 
       // Commit once the blue field is nearly gone but the title is still held.
       close(true,{
@@ -3352,7 +3382,7 @@
 
       // Tiny seam-charge, then the two words rip apart over the exposed video.
       linkOverlay?.classList.add("is-video-impact");
-      await sleep(140);
+      if (!(await sleep(140))) return;
 
       // FINAL SPLIT: drive the two title words with inline !important
       // transforms so no older CSS animation/transition can swallow the motion.
@@ -3413,8 +3443,7 @@
       // Big 300ms corruption beat, still inside the existing 1080ms handoff.
       linkOverlay?.classList.add("is-video-glitch");
 
-      const splitLaunchTimer = setTimeout(() => {
-        timers.delete(splitLaunchTimer);
+      scheduleTimeout(() => {
         if (!linkOverlay?.isConnected) return;
 
         linkOverlay.classList.add("is-video-handoff");
@@ -3447,9 +3476,7 @@
         }
       },300);
 
-      timers.add(splitLaunchTimer);
-
-      await sleep(1080);
+      if (!(await sleep(1080))) return;
 
       linkOverlay?.remove?.();
       linkOverlay = null;
@@ -3492,8 +3519,7 @@
       cancelAnimationFrame(followFrame);
       followFrame = 0;
 
-      for (const timer of timers) clearTimeout(timer);
-      timers.clear();
+      cancelGatewayTimers();
 
       root?.remove();
       root = null;
@@ -3713,11 +3739,14 @@
     };
 
     // Replace the public Gateway API completely.
+    installedCandidates =
+      CANDIDATES.map(candidate => candidate.name);
+
     gateway.open = open;
     gateway.reopen = reopen;
     gateway.close = close;
     gateway.reset = reset;
-    gateway.candidates = CANDIDATES.map(candidate => candidate.name);
+    gateway.candidates = installedCandidates;
 
     // If the legacy gateway is currently visible, replace it immediately.
     if (document.getElementById(ROOT_ID)) {
@@ -3747,11 +3776,23 @@
           immediate:true
         });
 
-        gateway.open = original.open;
-        gateway.reopen = original.reopen;
-        gateway.close = original.close;
-        gateway.reset = original.reset;
-        gateway.candidates = original.candidates;
+        // Restore only API slots FEHA still owns. A later module override
+        // must survive our teardown.
+        if (gateway.open === open) {
+          gateway.open = original.open;
+        }
+        if (gateway.reopen === reopen) {
+          gateway.reopen = original.reopen;
+        }
+        if (gateway.close === close) {
+          gateway.close = original.close;
+        }
+        if (gateway.reset === reset) {
+          gateway.reset = original.reset;
+        }
+        if (gateway.candidates === installedCandidates) {
+          gateway.candidates = original.candidates;
+        }
       }
     };
 
@@ -3918,6 +3959,10 @@
     const ROOT_ID = "feha-credits-wallet";
 
     const original = {
+      getCredits:wallet.getCredits,
+      setCredits:wallet.setCredits,
+      addCredits:wallet.addCredits,
+      spendCredits:wallet.spendCredits,
       get:wallet.get,
       getEuro:wallet.getEuro,
       setEuro:wallet.setEuro,
@@ -3925,8 +3970,7 @@
       spend:wallet.spend,
       update:wallet.update,
       format:wallet.format,
-      open:wallet.open,
-      refresh:wallet.refresh
+      open:wallet.open
     };
 
     const finiteMoney = value => {
@@ -4428,6 +4472,21 @@
     wallet.format = formatCredits;
     wallet.open = openWallet;
 
+    const installedWalletApi = {
+      getCredits,
+      setCredits,
+      addCredits,
+      spendCredits,
+      get:getWalletData,
+      getEuro:getCredits,
+      setEuro:setCredits,
+      add:addCredits,
+      spend:spendCredits,
+      update:updateWalletData,
+      format:formatCredits,
+      open:openWallet
+    };
+
     if (globalThis.ADKCore) {
       globalThis.ADKCore.wallet = wallet;
     }
@@ -4463,6 +4522,7 @@
     creditsSystem = {
       wallet,
       original,
+      installed:installedWalletApi,
       mutationObserver,
       actorHook,
       refreshCreditLabels
@@ -4519,9 +4579,18 @@
 
     const wallet = creditsSystem.wallet;
     const original = creditsSystem.original;
+    const installed = creditsSystem.installed ?? {};
 
     if (wallet && original) {
       for (const [key,value] of Object.entries(original)) {
+        // Restore only a slot still occupied by FEHA's exact replacement.
+        if (
+          Object.prototype.hasOwnProperty.call(installed,key) &&
+          wallet[key] !== installed[key]
+        ) {
+          continue;
+        }
+
         if (value === undefined) {
           delete wallet[key];
         } else {
@@ -4529,12 +4598,10 @@
         }
       }
 
-      delete wallet.getCredits;
-      delete wallet.setCredits;
-      delete wallet.addCredits;
-      delete wallet.spendCredits;
-
-      if (globalThis.ADKCore) {
+      if (
+        globalThis.ADKCore &&
+        globalThis.ADKCore.wallet === wallet
+      ) {
         globalThis.ADKCore.wallet = wallet;
       }
     }
