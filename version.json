@@ -1,8 +1,13 @@
 {
-  "version": "0.10.88",
+  "version": "0.10.89",
   "updated": "2026-09-28",
-  "scope": "entry-gateway-full-bleed-subject-portrait",
+  "scope": "gateway-auth-jack-in-bar",
   "notes": [
+    "Replaced the small post-authentication ESTABLISH LINK button with a full-width yellow JACK IN launch bar at the bottom of the Entry Gateway.",
+    "The JACK IN bar appears only after authentication succeeds and shows SYSTEM READY on the left, NEURAL SESSION HANDOFF / JACK IN in the center, and the authenticated subject plus ACCESS GRANTED on the right.",
+    "Before authentication completes, the existing compact encryption/node footer and GM bypass remain visible; on grant the JACK IN bar takes over the footer.",
+    "The new JACK IN button keeps the existing data-eg-enter action and therefore launches the exact same cinematic handoff flow.",
+    "No cinematic/video transition timings were changed in this pass.",
     "Rebuilt the Entry Gateway live subject card markup itself so it contains only the subject image and the subject name.",
     "The portrait now fills the entire subject box with object-fit: cover; the character name overlays the bottom on a subtle dark gradient.",
     "Removed BIOMETRIC SUBJECT, SUBJECT, BIO-ID, SYNC, profile HUD, scan sweep, waveform, and the separate lower information panel from the live card.",
