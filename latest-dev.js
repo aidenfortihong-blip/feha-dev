@@ -461,7 +461,8 @@
     ];
 
     const OPTIONAL = [
-      "cache_open","cache_close","compatibility_ok","compatibility_fail"
+      "cache_open","cache_close","compatibility_ok","compatibility_fail",
+      "session_join"
     ];
 
     const FALLBACK_MAP = {
@@ -480,7 +481,8 @@
       cache_open: `${FALLBACK_BASE}/doorOpen_000.ogg`,
       cache_close: `${FALLBACK_BASE}/doorClose_000.ogg`,
       compatibility_ok: `${FALLBACK_BASE}/confirmation_003.wav`,
-      compatibility_fail: `${FALLBACK_BASE}/error_003.wav`
+      compatibility_fail: `${FALLBACK_BASE}/error_003.wav`,
+      session_join: `${FALLBACK_BASE}/impactMetal_001.ogg`
     };
 
     function readLocalPack() {
@@ -524,7 +526,8 @@
       cache_open: 0.74,
       cache_close: 0.72,
       compatibility_ok: 0.78,
-      compatibility_fail: 0.76
+      compatibility_fail: 0.76,
+      session_join: 0.68
     };
 
     let master = Number(localStorage.getItem("fehaRealSfxVolume") ?? 0.82);
@@ -559,7 +562,8 @@
         cacheOpen: "cache_open",
         cacheClose: "cache_close",
         compatibilityOk: "compatibility_ok",
-        compatibilityFail: "compatibility_fail"
+        compatibilityFail: "compatibility_fail",
+        sessionJoin: "session_join"
       };
 
       return aliases[kind] ?? kind;
@@ -2310,9 +2314,11 @@
       setState("LINK ESTABLISHED","granted");
       log("LINK/" + randomHex(5) + " CLIENT SESSION ESTABLISHED","grant");
 
-      play("drawer_open",.30,0);
+      // Dedicated session-join cue: connection hit + soft confirmation.
+      play("session_join",.34,0);
+      setTimeout(() => play("confirm",.20,0),95);
 
-      await sleep(560);
+      await sleep(620);
       close(true);
     };
 
@@ -2375,7 +2381,8 @@
           }
 
           if (event.target?.closest?.("[data-eg-enter]")) {
-            play("drawer_open",.26,0);
+            // Actual join audio fires in establishLink() so the press and
+            // successful connection do not double-trigger.
             return;
           }
 
