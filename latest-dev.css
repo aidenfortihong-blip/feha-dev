@@ -19598,3 +19598,176 @@ body #adk-market-15#adk-market-15 #top-directory {
   border-color:rgba(var(--cm-user-primary-rgb),.30)!important;
   background:rgba(var(--cm-user-primary-rgb),.025)!important;
 }
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.116 DIRECTIONAL GLITCH-TEAR HANDOFF
+   Brief signal-corruption beat before the proven JS-driven left/right split.
+   Main black/yellow words stay readable; cyan/red ghost slices tear outward.
+   No full-screen rainbow noise and no change to the total 1080ms handoff window.
+   ========================================================================== */
+
+/* Create non-layout ghost layers from the live text only during the glitch. */
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span[data-feha-glitch] {
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:visible!important;
+}
+
+/* CYAN upper/mid signal slice. */
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span[data-feha-glitch]::before {
+  content:attr(data-feha-glitch)!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:3!important;
+  pointer-events:none!important;
+  white-space:nowrap!important;
+  color:#56edff!important;
+  -webkit-text-stroke:1px rgba(0,0,0,.25)!important;
+  text-shadow:
+    0 0 7px rgba(57,230,255,.42),
+    0 0 16px rgba(57,230,255,.16)!important;
+  clip-path:inset(14% 0 57% 0)!important;
+  opacity:0!important;
+  animation:feha-link-glitch-cyan-0116 .28s steps(2,end) both!important;
+}
+
+/* RED lower signal slice. */
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span[data-feha-glitch]::after {
+  content:attr(data-feha-glitch)!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:4!important;
+  pointer-events:none!important;
+  white-space:nowrap!important;
+  color:#ff315d!important;
+  -webkit-text-stroke:1px rgba(0,0,0,.22)!important;
+  text-shadow:
+    0 0 7px rgba(255,49,93,.34),
+    0 0 14px rgba(255,49,93,.12)!important;
+  clip-path:inset(59% 0 17% 0)!important;
+  opacity:0!important;
+  animation:feha-link-glitch-red-0116 .27s .012s steps(2,end) both!important;
+}
+
+/* CONNECTION's corruption already leans left; ESTABLISHED leans right.
+   The real words do not move until JS launches the proven split at 220ms. */
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:first-child::before {
+  animation-name:feha-link-glitch-cyan-left-0116!important;
+}
+
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:first-child::after {
+  animation-name:feha-link-glitch-red-left-0116!important;
+}
+
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:last-child::before {
+  animation-name:feha-link-glitch-cyan-right-0116!important;
+}
+
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:last-child::after {
+  animation-name:feha-link-glitch-red-right-0116!important;
+}
+
+/* A thin center signal rupture. It is intentionally a line, not a screen flash. */
+#feha-link-start.is-video-glitch .feha-linkstart-flash {
+  opacity:1!important;
+  background:
+    linear-gradient(90deg,
+      transparent 0 49.72%,
+      rgba(255,49,93,.34) 49.78%,
+      rgba(255,49,93,.92) 49.90%,
+      #ffffff 49.98% 50.02%,
+      #66efff 50.10%,
+      rgba(57,230,255,.34) 50.22%,
+      transparent 50.28% 100%)!important;
+  animation:feha-link-glitch-seam-0116 .28s steps(2,end) both!important;
+}
+
+/* Keep the black/yellow body intact while its edge channels desync. */
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:first-child {
+  text-shadow:
+    -2px 0 0 rgba(57,230,255,.18),
+    2px 0 0 rgba(255,49,93,.14),
+    0 0 13px rgba(252,238,10,.20)!important;
+}
+
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:last-child {
+  text-shadow:
+    -2px 0 0 rgba(57,230,255,.16),
+    2px 0 0 rgba(255,49,93,.16),
+    0 0 15px rgba(252,238,10,.24)!important;
+}
+
+/* Ghost layers die as the real split takes ownership. */
+#feha-link-start.is-video-handoff
+.feha-linkstart-title-main > span[data-feha-glitch]::before,
+#feha-link-start.is-video-handoff
+.feha-linkstart-title-main > span[data-feha-glitch]::after {
+  opacity:0!important;
+}
+
+@keyframes feha-link-glitch-cyan-left-0116 {
+  0%   {opacity:0;transform:translate3d(0,0,0) skewX(0deg)}
+  16%  {opacity:.86;transform:translate3d(-5px,-1px,0) skewX(-2deg)}
+  31%  {opacity:.32;transform:translate3d(4px,0,0) skewX(1deg)}
+  47%  {opacity:.92;transform:translate3d(-13px,1px,0) skewX(-5deg)}
+  63%  {opacity:.28;transform:translate3d(7px,-1px,0)}
+  81%  {opacity:.74;transform:translate3d(-20px,0,0) skewX(-7deg)}
+  100% {opacity:0;transform:translate3d(-28px,0,0) skewX(-9deg)}
+}
+
+@keyframes feha-link-glitch-red-left-0116 {
+  0%   {opacity:0;transform:translate3d(0,0,0)}
+  18%  {opacity:.72;transform:translate3d(6px,1px,0)}
+  38%  {opacity:.28;transform:translate3d(-3px,-1px,0)}
+  55%  {opacity:.86;transform:translate3d(-10px,0,0) skewX(-4deg)}
+  76%  {opacity:.34;transform:translate3d(5px,1px,0)}
+  100% {opacity:0;transform:translate3d(-22px,0,0) skewX(-7deg)}
+}
+
+@keyframes feha-link-glitch-cyan-right-0116 {
+  0%   {opacity:0;transform:translate3d(0,0,0) skewX(0deg)}
+  16%  {opacity:.86;transform:translate3d(5px,-1px,0) skewX(2deg)}
+  31%  {opacity:.32;transform:translate3d(-4px,0,0) skewX(-1deg)}
+  47%  {opacity:.92;transform:translate3d(13px,1px,0) skewX(5deg)}
+  63%  {opacity:.28;transform:translate3d(-7px,-1px,0)}
+  81%  {opacity:.74;transform:translate3d(20px,0,0) skewX(7deg)}
+  100% {opacity:0;transform:translate3d(28px,0,0) skewX(9deg)}
+}
+
+@keyframes feha-link-glitch-red-right-0116 {
+  0%   {opacity:0;transform:translate3d(0,0,0)}
+  18%  {opacity:.72;transform:translate3d(-6px,1px,0)}
+  38%  {opacity:.28;transform:translate3d(3px,-1px,0)}
+  55%  {opacity:.86;transform:translate3d(10px,0,0) skewX(4deg)}
+  76%  {opacity:.34;transform:translate3d(-5px,1px,0)}
+  100% {opacity:0;transform:translate3d(22px,0,0) skewX(7deg)}
+}
+
+@keyframes feha-link-glitch-seam-0116 {
+  0%   {opacity:0;transform:scaleX(.18)}
+  18%  {opacity:.86;transform:scaleX(.62)}
+  34%  {opacity:.24;transform:scaleX(.34)}
+  52%  {opacity:.96;transform:scaleX(.88)}
+  72%  {opacity:.32;transform:scaleX(.70)}
+  100% {opacity:0;transform:scaleX(1.08)}
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #feha-link-start.is-video-glitch
+  .feha-linkstart-title-main > span[data-feha-glitch]::before,
+  #feha-link-start.is-video-glitch
+  .feha-linkstart-title-main > span[data-feha-glitch]::after,
+  #feha-link-start.is-video-glitch .feha-linkstart-flash {
+    animation:none!important;
+    opacity:0!important;
+  }
+}
