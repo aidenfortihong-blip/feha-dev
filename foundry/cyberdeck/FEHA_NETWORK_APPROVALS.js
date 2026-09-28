@@ -18,7 +18,7 @@
   const pending = new Map();
   let socketHandler = null;
   const COMMAND_TIMEOUT_MS = 15000;
-  const PROBE_TIMEOUT_MS = 120000;
+  const PROBE_TIMEOUT_MS = 600000;
 
   function activeOnlineGM() {
     return [...(game.users?.contents ?? game.users ?? [])]
@@ -470,12 +470,18 @@
       if (action === "deny") {
         queue.delete(requestId);
 
-        emit("probeResolved",{
+        const response = {
           requestId,
           userId:request.userId,
           decision:"denied",
           gmId:game.user.id
-        });
+        };
+
+        emit("probeResolved",response);
+
+        // Socket echo behavior can differ by host/proxy. If the GM created
+        // their own probe, settle its local Promise immediately as well.
+        pending.get(requestId)?.(response);
 
         renderQueue();
         return;
@@ -534,13 +540,16 @@
 
         queue.delete(requestId);
 
-        emit("probeResolved",{
+        const response = {
           requestId,
           userId:request.userId,
           decision:"approved",
           gmId:game.user.id,
           record
-        });
+        };
+
+        emit("probeResolved",response);
+        pending.get(requestId)?.(response);
 
         ui.notifications?.info?.(
           "NETWORK DEVICE APPROVED // " +
