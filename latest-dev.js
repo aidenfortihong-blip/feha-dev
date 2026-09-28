@@ -1981,6 +1981,36 @@
       el.querySelector("span").textContent = text;
     };
 
+    let followFrame = 0;
+
+    const followTerminalOutput = ({smooth = true, delay = 0} = {}) => {
+      const run = () => {
+        if (!root?.isConnected) return;
+
+        const terminal = root.querySelector(".feha-eg-terminal");
+        if (!terminal) return;
+
+        cancelAnimationFrame(followFrame);
+
+        followFrame = requestAnimationFrame(() => {
+          terminal.scrollTo({
+            top:terminal.scrollHeight,
+            behavior:smooth ? "smooth" : "auto"
+          });
+        });
+      };
+
+      if (delay > 0) {
+        const id = setTimeout(() => {
+          timers.delete(id);
+          run();
+        },delay);
+        timers.add(id);
+      } else {
+        run();
+      }
+    };
+
     const log = (message,tone = "normal") => {
       if (!root) return;
 
@@ -2003,6 +2033,7 @@
       }
 
       consoleEl.scrollTop = consoleEl.scrollHeight;
+      followTerminalOutput({smooth:true});
     };
 
     const renderProfile = candidate => {
@@ -2135,6 +2166,7 @@
 
         bootEl.appendChild(row);
         requestAnimationFrame(() => row.classList.add("visible"));
+        followTerminalOutput({smooth:true});
 
         log("SYS/" + randomHex(3) + " " + line);
         play("select",.15,55);
@@ -2182,6 +2214,7 @@
       bio.hidden = false;
       list.innerHTML = "";
       progress.style.width = "0%";
+      followTerminalOutput({smooth:true,delay:30});
 
       root.classList.add("is-authenticating");
       setState("AUTHENTICATING","auth");
@@ -2222,6 +2255,7 @@
           "</b><i>SCANNING...</i>";
 
         list.appendChild(row);
+        followTerminalOutput({smooth:true});
         log("BIO/" + randomHex(4) + " " + label + " :: SCANNING");
         play("scan",.18,70);
 
@@ -2232,6 +2266,7 @@
         row.classList.remove("scanning");
         row.classList.add("verified");
         row.querySelector("i").textContent = result;
+        followTerminalOutput({smooth:true});
 
         progress.style.width =
           (((index + 1) / steps.length) * 100) + "%";
@@ -2262,6 +2297,7 @@
       requestAnimationFrame(() => enter.classList.add("visible"));
 
       log("GATE/" + randomHex(4) + " SESSION ACCESS GRANTED","grant");
+      followTerminalOutput({smooth:true,delay:60});
 
       play("compatibility_ok",.38,0);
       setTimeout(() => play("confirm",.24,0),140);
@@ -2286,6 +2322,8 @@
       }
 
       sequence++;
+      cancelAnimationFrame(followFrame);
+      followFrame = 0;
 
       for (const timer of timers) clearTimeout(timer);
       timers.clear();
