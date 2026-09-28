@@ -15302,3 +15302,320 @@ body #adk-market-15#adk-market-15 #top-directory {
   --eg-success-local:var(--eg-success)!important;
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.94 CYBERPUNK YELLOW LINK SEQUENCE
+   Color/art-direction pass for the post-JACK-IN cinematic only.
+   Motion, phase order, waits, split timing, and video timing remain unchanged.
+   ========================================================================== */
+
+#feha-link-start.feha-linkstart {
+  --eg-yellow:#fcee0a!important;
+  --eg-cyan:#39e6ff!important;
+  --eg-red:#ff3b5c!important;
+  --eg-white:#f8ffff!important;
+  --eg-green:#fcee0a!important;
+  --eg-dim:#78888c!important;
+
+  color:var(--eg-white)!important;
+  background:
+    radial-gradient(circle at 50% 48%,rgba(252,238,10,.095),transparent 27%),
+    radial-gradient(circle at 18% 18%,rgba(255,59,92,.050),transparent 25%),
+    radial-gradient(circle at 83% 22%,rgba(57,230,255,.055),transparent 26%),
+    linear-gradient(180deg,#050600 0%,#020304 52%,#000 100%)!important;
+}
+
+/* Small industrial signal bands make the transition feel tied to the Gateway
+   instead of becoming a generic blue tunnel. */
+#feha-link-start .feha-linkstart-shell::before {
+  content:""!important;
+  position:absolute!important;
+  left:3.4vw!important;
+  top:3.4vh!important;
+  z-index:8!important;
+  width:min(280px,26vw)!important;
+  height:6px!important;
+  pointer-events:none!important;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      var(--eg-yellow) 0 16px,
+      #080900 16px 26px
+    )!important;
+  clip-path:polygon(0 0,100% 0,96% 100%,0 100%)!important;
+  opacity:.64!important;
+}
+
+#feha-link-start .feha-linkstart-shell::after {
+  content:""!important;
+  position:absolute!important;
+  right:3.4vw!important;
+  bottom:3.6vh!important;
+  z-index:8!important;
+  width:min(300px,28vw)!important;
+  height:4px!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0 14%,
+      transparent 14% 18%,
+      var(--eg-yellow) 18% 49%,
+      transparent 49% 54%,
+      var(--eg-cyan) 54% 100%)!important;
+  opacity:.62!important;
+}
+
+/* 3D tunnel now uses the actual Gateway triad instead of almost-all cyan. */
+#feha-link-start .feha-linkstart-ring {
+  border-color:rgba(252,238,10,.36)!important;
+  box-shadow:
+    0 0 18px rgba(252,238,10,.12),
+    inset 0 0 12px rgba(252,238,10,.055)!important;
+}
+
+#feha-link-start .feha-linkstart-ring:nth-child(3n + 2) {
+  border-color:rgba(57,230,255,.32)!important;
+  box-shadow:
+    0 0 18px rgba(57,230,255,.10),
+    inset 0 0 12px rgba(57,230,255,.05)!important;
+}
+
+#feha-link-start .feha-linkstart-ring:nth-child(3n) {
+  border-color:rgba(255,59,92,.28)!important;
+  box-shadow:
+    0 0 18px rgba(255,59,92,.09),
+    inset 0 0 12px rgba(255,59,92,.04)!important;
+}
+
+#feha-link-start .feha-linkstart-ring::before {
+  border-top-color:rgba(252,238,10,.80)!important;
+  border-bottom-color:rgba(57,230,255,.20)!important;
+}
+
+#feha-link-start .feha-linkstart-ring::after {
+  border-top-color:rgba(255,255,255,.46)!important;
+  border-bottom-color:rgba(255,59,92,.17)!important;
+}
+
+#feha-link-start .feha-linkstart-rail {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(252,238,10,.76),
+      rgba(252,238,10,.11) 34%,
+      transparent 78%
+    )!important;
+  box-shadow:0 0 10px rgba(252,238,10,.20)!important;
+}
+
+#feha-link-start .feha-linkstart-rail:nth-child(3n + 2) {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(57,230,255,.64),
+      rgba(57,230,255,.10) 34%,
+      transparent 78%
+    )!important;
+  box-shadow:0 0 10px rgba(57,230,255,.18)!important;
+}
+
+#feha-link-start .feha-linkstart-rail:nth-child(5n) {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,59,92,.58),
+      rgba(255,59,92,.08) 34%,
+      transparent 78%
+    )!important;
+  box-shadow:0 0 10px rgba(255,59,92,.15)!important;
+}
+
+#feha-link-start .feha-linkstart-particle {
+  background:#fcee0a!important;
+  box-shadow:0 0 8px rgba(252,238,10,.72)!important;
+}
+
+#feha-link-start .feha-linkstart-particle:nth-child(3n) {
+  background:#39e6ff!important;
+  box-shadow:0 0 8px rgba(57,230,255,.68)!important;
+}
+
+#feha-link-start .feha-linkstart-particle:nth-child(5n) {
+  background:#ff3b5c!important;
+  box-shadow:0 0 8px rgba(255,59,92,.56)!important;
+}
+
+#feha-link-start .feha-linkstart-reticle > i {
+  border-color:rgba(252,238,10,.28)!important;
+}
+
+#feha-link-start .feha-linkstart-reticle > i:nth-child(2) {
+  border-color:rgba(57,230,255,.26)!important;
+}
+
+#feha-link-start .feha-linkstart-reticle > i:nth-child(3) {
+  border-color:rgba(255,59,92,.30)!important;
+}
+
+#feha-link-start .feha-linkstart-top > span {
+  color:rgba(252,238,10,.78)!important;
+}
+
+#feha-link-start .feha-linkstart-subject i {
+  background:
+    linear-gradient(90deg,transparent,var(--eg-yellow),transparent)!important;
+}
+
+#feha-link-start .feha-linkstart-route {
+  color:#8b999d!important;
+}
+
+#feha-link-start .feha-linkstart-route b {
+  color:var(--eg-yellow)!important;
+}
+
+#feha-link-start .feha-linkstart-progress {
+  background:rgba(252,238,10,.065)!important;
+  border-color:rgba(252,238,10,.25)!important;
+}
+
+#feha-link-start .feha-linkstart-progress > div {
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0%,
+      var(--eg-yellow) 48%,
+      var(--eg-cyan) 100%)!important;
+  box-shadow:
+    0 0 18px rgba(252,238,10,.23),
+    0 0 8px rgba(57,230,255,.14)!important;
+}
+
+#feha-link-start .feha-linkstart-status {
+  color:#e8e7c6!important;
+}
+
+#feha-link-start .feha-linkstart-footer > b {
+  color:rgba(252,238,10,.72)!important;
+}
+
+/* The video reveal keeps a faint yellow industrial cast instead of blue haze. */
+#feha-link-start.feha-linkstart.is-video-reveal {
+  background:
+    radial-gradient(circle at 50% 48%,rgba(252,238,10,.11),transparent 31%),
+    radial-gradient(circle at 18% 28%,rgba(255,59,92,.035),transparent 28%),
+    linear-gradient(180deg,rgba(15,15,2,.94),rgba(1,4,6,.84))!important;
+}
+
+#feha-link-start.is-video-reveal.is-live {
+  background:
+    radial-gradient(circle at 50% 48%,rgba(252,238,10,.075),transparent 34%),
+    linear-gradient(180deg,rgba(10,10,1,.78),rgba(0,2,4,.66))!important;
+}
+
+/* ==========================================================================
+   CONNECTION ESTABLISHED // BLACK + YELLOW PULSE
+   Keep the exact existing pulse timing; only the visual language changes.
+   ========================================================================== */
+
+#feha-link-start.is-live .feha-linkstart-title-main {
+  color:var(--eg-yellow)!important;
+  text-shadow:
+    2px 2px 0 #000,
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+    0 0 16px rgba(252,238,10,.20),
+    0 0 42px rgba(252,238,10,.10)!important;
+  animation:
+    feha-link-confirm-title-084 .72s cubic-bezier(.12,.88,.16,1) both,
+    feha-link-confirm-breathe-094 1.7s .72s ease-in-out infinite alternate!important;
+}
+
+@keyframes feha-link-confirm-breathe-094 {
+  from {
+    text-shadow:
+      2px 2px 0 #000,
+      -2px -2px 0 #000,
+      2px -2px 0 #000,
+      -2px 2px 0 #000,
+      0 0 10px rgba(252,238,10,.14),
+      0 0 28px rgba(252,238,10,.07);
+  }
+  to {
+    text-shadow:
+      3px 3px 0 #000,
+      -3px -3px 0 #000,
+      3px -3px 0 #000,
+      -3px 3px 0 #000,
+      0 0 18px rgba(252,238,10,.38),
+      0 0 54px rgba(252,238,10,.18);
+  }
+}
+
+#feha-link-start.is-live .feha-linkstart-title-lock::before {
+  background:
+    radial-gradient(ellipse at center,
+      rgba(0,0,0,.98) 0 17%,
+      rgba(252,238,10,.26) 18% 21%,
+      rgba(0,0,0,.78) 22% 31%,
+      rgba(252,238,10,.12) 32% 42%,
+      rgba(0,0,0,.18) 43% 53%,
+      transparent 70%)!important;
+  filter:none!important;
+}
+
+#feha-link-start.is-live .feha-linkstart-title-lock::after {
+  background:
+    linear-gradient(90deg,
+      transparent 0 8%,
+      #090900 8% 16%,
+      var(--eg-yellow) 16% 42%,
+      #090900 42% 58%,
+      var(--eg-yellow) 58% 84%,
+      #090900 84% 92%,
+      transparent 92% 100%)!important;
+  box-shadow:
+    0 0 12px rgba(252,238,10,.38),
+    0 0 28px rgba(252,238,10,.14)!important;
+}
+
+/* The confirmation flash is a black core with a yellow energy ring. */
+#feha-link-start.is-live .feha-linkstart-flash {
+  background:
+    radial-gradient(circle at center,
+      #000 0 8%,
+      rgba(8,8,0,.98) 9% 14%,
+      #fcee0a 15% 23%,
+      rgba(252,238,10,.54) 24% 37%,
+      rgba(0,0,0,.42) 38% 49%,
+      transparent 70%)!important;
+}
+
+/* The split-charge seam also changes from white/cyan to black/yellow. */
+#feha-link-start.is-video-preopen.is-video-impact .feha-linkstart-flash {
+  background:
+    linear-gradient(180deg,
+      transparent 0 47.8%,
+      rgba(0,0,0,.80) 48.5%,
+      #fcee0a 49.45%,
+      #070700 50%,
+      #fcee0a 50.55%,
+      rgba(0,0,0,.80) 51.5%,
+      transparent 52.2%),
+    radial-gradient(ellipse at center,
+      rgba(252,238,10,.26),
+      rgba(0,0,0,.14) 35%,
+      transparent 68%)!important;
+}
+
+/* During pre-open, leave only a whisper of yellow around the exposed video. */
+#feha-link-start.is-video-preopen {
+  background:
+    radial-gradient(circle at 50% 48%,rgba(252,238,10,.028),transparent 54%),
+    linear-gradient(180deg,rgba(8,8,0,.075),rgba(0,2,4,.045))!important;
+}
+
+#feha-link-start.is-video-preopen.is-video-impact,
+#feha-link-start.is-video-preopen.is-video-handoff {
+  background:rgba(3,3,0,.022)!important;
+}
+
