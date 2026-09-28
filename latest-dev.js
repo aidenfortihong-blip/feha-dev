@@ -1680,6 +1680,8 @@
     let root = null;
     let linkOverlay = null;
     let linkAudioContext = null;
+    let matchMusic = null;
+    let matchMusicStarted = false;
     let selected = null;
     let busy = false;
     let sequence = 0;
@@ -1755,6 +1757,252 @@
       }
 
       return applied > 0;
+    };
+
+    const GATEWAY_MODULE_ID = "flesh-enshrouded-heart-ablaze";
+    const MATCH_MUSIC_KEY = "gatewayMatchMusic";
+
+    const ensureMatchMusicSetting = () => {
+      const id = GATEWAY_MODULE_ID + "." + MATCH_MUSIC_KEY;
+
+      try {
+        if (!game.settings?.settings?.has?.(id)) {
+          game.settings.register(
+            GATEWAY_MODULE_ID,
+            MATCH_MUSIC_KEY,
+            {
+              name:"Gateway Match Music",
+              hint:"Private world audio path played when a typed identity exactly matches the registry.",
+              scope:"world",
+              config:false,
+              type:String,
+              default:""
+            }
+          );
+        }
+        return true;
+      } catch (err) {
+        console.warn("FEHA DEV // could not register Gateway match-music setting",err);
+        return false;
+      }
+    };
+
+    const getMatchMusicPath = () => {
+      try {
+        ensureMatchMusicSetting();
+        return String(
+          game.settings.get(
+            GATEWAY_MODULE_ID,
+            MATCH_MUSIC_KEY
+          ) ?? ""
+        ).trim();
+      } catch {
+        return "";
+      }
+    };
+
+    const setMatchMusicPath = async path => {
+      ensureMatchMusicSetting();
+
+      return game.settings.set(
+        GATEWAY_MODULE_ID,
+        MATCH_MUSIC_KEY,
+        String(path ?? "").trim()
+      );
+    };
+
+    const fadeMatchMusicTo = (
+      audio,
+      target,
+      duration = 650
+    ) => {
+      if (!audio) return;
+
+      const from = Number(audio.volume) || 0;
+      const to = Math.max(0,Math.min(1,Number(target) || 0));
+      const started = performance.now();
+
+      const tick = now => {
+        if (!audio || audio.paused && to > 0) return;
+
+        const t = Math.min(
+          1,
+          Math.max(0,(now - started) / Math.max(1,duration))
+        );
+
+        const eased = 1 - Math.pow(1 - t,3);
+        audio.volume = from + (to - from) * eased;
+
+        if (t < 1) requestAnimationFrame(tick);
+      };
+
+      requestAnimationFrame(tick);
+    };
+
+    const startMatchMusic = async candidate => {
+      if (matchMusicStarted) return true;
+
+      const src = getMatchMusicPath();
+
+      if (!src) {
+        if (game.user?.isGM) {
+          log(
+            "AUDIO/" + randomHex(4) +
+            " MATCH TRACK NOT CONFIGURED // USE SET MATCH TRACK",
+            "normal"
+          );
+        }
+        return false;
+      }
+
+      try {
+        const current =
+          globalThis.__FEHA_GATEWAY_MATCH_MUSIC instanceof HTMLAudioElement
+            ? globalThis.__FEHA_GATEWAY_MATCH_MUSIC
+            : null;
+
+        if (current) {
+          try {
+            current.pause();
+            current.currentTime = 0;
+          } catch {}
+        }
+
+        const audio = new Audio(src);
+        audio.preload = "auto";
+        audio.loop = false;
+        audio.volume = 0;
+
+        audio.dataset.fehaGatewayMusic = "1";
+        audio.dataset.fehaCandidate = candidate?.key ?? "";
+
+        globalThis.__FEHA_GATEWAY_MATCH_MUSIC = audio;
+        matchMusic = audio;
+        matchMusicStarted = true;
+
+        const cleanup = () => {
+          if (globalThis.__FEHA_GATEWAY_MATCH_MUSIC === audio) {
+            delete globalThis.__FEHA_GATEWAY_MATCH_MUSIC;
+          }
+          if (matchMusic === audio) matchMusic = null;
+        };
+
+        audio.addEventListener("ended",cleanup,{once:true});
+        audio.addEventListener("error",() => {
+          cleanup();
+          matchMusicStarted = false;
+          console.warn(
+            "FEHA DEV // Gateway match music failed to load",
+            src
+          );
+        },{once:true});
+
+        await audio.play();
+        fadeMatchMusicTo(audio,.31,720);
+
+        log(
+          "AUDIO/" + randomHex(4) +
+          " IDENTITY MATCH TRACK ACTIVE // " +
+          candidate.name.toUpperCase(),
+          "good"
+        );
+
+        return true;
+      } catch (err) {
+        matchMusicStarted = false;
+        console.warn("FEHA DEV // Gateway match music playback failed",err);
+        return false;
+      }
+    };
+
+    const importMatchMusic = async () => {
+      if (!game.user?.isGM) return false;
+
+      const picker = document.createElement("input");
+      picker.type = "file";
+      picker.accept = "audio/mpeg,audio/mp3,audio/*";
+      picker.style.display = "none";
+      document.body.appendChild(picker);
+
+      const file = await new Promise(resolve => {
+        picker.addEventListener(
+          "change",
+          () => resolve(picker.files?.[0] ?? null),
+          {once:true}
+        );
+        picker.click();
+      });
+
+      picker.remove();
+      if (!file) return false;
+
+      const button = root?.querySelector("[data-eg-music-import]");
+      if (button) {
+        button.disabled = true;
+        button.textContent = "UPLOADING...";
+      }
+
+      try {
+        if (!globalThis.FilePicker?.upload) {
+          throw new Error("Foundry FilePicker.upload is unavailable.");
+        }
+
+        // Forge-hosted worlds route Data uploads through their private asset
+        // storage. Keep the copyrighted track private; never publish it in repo.
+        const result = await FilePicker.upload(
+          "data",
+          "FEHA",
+          file,
+          {},
+          {notify:true}
+        );
+
+        const path = String(
+          result?.path ??
+          result?.url ??
+          result?.src ??
+          ""
+        ).trim();
+
+        if (!path) {
+          throw new Error("Upload completed but returned no playable path.");
+        }
+
+        await setMatchMusicPath(path);
+
+        ui.notifications?.info?.(
+          "Gateway match track configured for this world."
+        );
+
+        log(
+          "AUDIO/" + randomHex(4) +
+          " MATCH TRACK CONFIGURED // " +
+          file.name.toUpperCase(),
+          "good"
+        );
+
+        if (button) button.textContent = "MATCH TRACK SET";
+        return true;
+      } catch (err) {
+        console.error("FEHA DEV // match-track upload failed",err);
+        ui.notifications?.error?.(
+          "Could not upload the Gateway match track."
+        );
+
+        if (button) button.textContent = "SET MATCH TRACK";
+        return false;
+      } finally {
+        if (button) {
+          button.disabled = false;
+          setTimeout(() => {
+            if (button?.isConnected) {
+              button.textContent = getMatchMusicPath()
+                ? "REPLACE MATCH TRACK"
+                : "SET MATCH TRACK";
+            }
+          },1100);
+        }
+      }
     };
 
     const actorKey = actor => {
@@ -1963,6 +2211,14 @@
               </button>
 
               ${game.user?.isGM ? `
+                <button
+                  type="button"
+                  class="feha-eg-music-import"
+                  data-eg-music-import
+                >
+                  ${getMatchMusicPath() ? "REPLACE MATCH TRACK" : "SET MATCH TRACK"}
+                </button>
+
                 <button
                   type="button"
                   class="feha-eg-bypass"
@@ -3030,8 +3286,16 @@
         const candidate = candidateForInput(input.value);
 
         if (candidate) {
+          const wasSameExact =
+            selected?.key === candidate.key &&
+            norm(input.value) === candidate.key;
+
           selectCandidate(candidate,{fillInput:false,sound:false});
           play("confirm",.18,0);
+
+          if (!wasSameExact) {
+            void startMatchMusic(candidate);
+          }
         } else if (norm(input.value)) {
           clearSelection();
         } else {
@@ -3057,6 +3321,9 @@
 
       root.querySelector("[data-eg-enter]")
         ?.addEventListener("click",() => void establishLink());
+
+      root.querySelector("[data-eg-music-import]")
+        ?.addEventListener("click",() => void importMatchMusic());
 
       root.querySelector("[data-eg-bypass]")
         ?.addEventListener("click",() => {
@@ -3092,6 +3359,9 @@
 
       selected = null;
       busy = false;
+      matchMusicStarted =
+        globalThis.__FEHA_GATEWAY_MATCH_MUSIC instanceof HTMLAudioElement &&
+        !globalThis.__FEHA_GATEWAY_MATCH_MUSIC.paused;
       sequence++;
 
       bind();
@@ -3144,6 +3414,22 @@
           linkAudioContext?.close?.();
         } catch {}
         linkAudioContext = null;
+
+        try {
+          const liveMusic = globalThis.__FEHA_GATEWAY_MATCH_MUSIC;
+          if (liveMusic instanceof HTMLAudioElement) {
+            fadeMatchMusicTo(liveMusic,0,220);
+            setTimeout(() => {
+              try {
+                liveMusic.pause();
+                liveMusic.currentTime = 0;
+              } catch {}
+            },240);
+          }
+          delete globalThis.__FEHA_GATEWAY_MATCH_MUSIC;
+        } catch {}
+        matchMusic = null;
+        matchMusicStarted = false;
 
         gateway.open = original.open;
         gateway.reopen = original.reopen;
