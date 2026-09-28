@@ -4,7 +4,7 @@
 (() => {
   try { globalThis.FEHA_CYBER_CORE?.destroy?.(); } catch {}
 
-  const VERSION = "0.9.0";
+  const VERSION = "0.9.1";
   const modules = new Map();
   const listeners = new Map();
   let initialized = false;
@@ -75,12 +75,30 @@
       if (initialized) return api;
       initialized = true;
 
+      const failures = [];
+
       for (const [name,module] of modules) {
         try {
           await module?.init?.(api);
         } catch (err) {
           console.error("FEHA CYBER CORE // module init failed",name,err);
+          failures.push({
+            name,
+            error:err
+          });
         }
+      }
+
+      if (failures.length) {
+        initialized = false;
+
+        const error = new Error(
+          "Cyberdeck module init failed: " +
+          failures.map(entry => entry.name).join(", ")
+        );
+
+        error.failures = failures;
+        throw error;
       }
 
       return api;
