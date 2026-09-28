@@ -1,8 +1,14 @@
 {
-  "version": "0.10.66",
+  "version": "0.10.67",
   "updated": "2026-09-27",
-  "scope": "custom-cyberpunk-entry-gateway-rebuild",
+  "scope": "gateway-cp2077-private-assets-readability",
   "notes": [
+    "Wired the custom Entry Gateway into the existing private CP2077 UI asset bridge without committing proprietary media to GitHub.",
+    "Gateway now maps the user's private CP2077 frame, HUD patch, linework, highlights, button holders, reward frame, barcode/code flourishes, glow frames, bars, and buffer assets into scoped CSS variables when available.",
+    "Added CP2077 asset-aware header strip, authentication frame, biometric buffer bar, selected-candidate highlight, profile HUD/frame, footer barcode, and establish-link treatment with clean non-asset fallbacks.",
+    "Substantially increased text size and weight across every Gateway region: title, node/state, section headers, boot log, auth labels/input/status/button, biometric rows, console, candidate list, profile metadata, and footer controls.",
+    "Shifted Gateway color semantics harder toward CP2077-inspired yellow/red/cyan/green functional accents while keeping per-character candidate colors.",
+    "Private assets are applied only from the existing Forge-only localStorage bridge; repository remains free of proprietary CP2077 files.",
     "Replaced the legacy Entry Gateway patch stack with a fully custom repo-owned Cyberpunk gateway while preserving the public ADKEntryGateway open/reopen/close/reset API.",
     "Gateway now has exactly four first-class candidates: Ponyboy, Derke, Sasha, Zach. Jing is removed entirely from the custom data model and authentication flow.",
     "Added immediate candidate profile selection, typed exact-name matching, real Derke profile support, actor-derived BIO-ID when available, and per-candidate visual accents.",
