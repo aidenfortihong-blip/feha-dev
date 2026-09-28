@@ -1,8 +1,12 @@
 {
-  "version": "0.10.107",
+  "version": "0.10.108",
   "updated": "2026-09-28",
-  "scope": "rollback-chrome-identity-pass-remove-duplicate-eject",
+  "scope": "definitive-remove-top-hardware-eject",
   "notes": [
+    "Fixed the redundant top EJECT button with the exact data-feha-rerun=040 selector needed to override the older installed-port display:flex!important rule.",
+    "The filled hardware port now uses only thumbnail plus item text; the third action column is removed.",
+    "The large bottom EJECT AUGMENT control remains unchanged as the single uninstall action.",
+    "No Chrome Manager logic, Gateway behavior, or cinematic timing changed.",
     "Rolled back the entire 0.10.106 Chrome Manager cyberpunk identity CSS pass, restoring the prior Chrome Manager visual state.",
     "Removed the redundant small EJECT control from filled hardware ports; the large bottom EJECT AUGMENT action remains the single uninstall control.",
     "Collapsed the now-unused action row space on filled ports.",
