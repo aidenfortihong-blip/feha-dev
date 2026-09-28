@@ -13710,3 +13710,94 @@ body #adk-market-15#adk-market-15 #top-directory {
   translate:0 0 0!important;
 }
 
+/* ==========================================================================
+   FEHA ENTRY GATEWAY // 0.10.88 FULL-BLEED SUBJECT PORTRAIT
+   Selected subject card is literally just the picture filling the entire box
+   plus the character name at the bottom. No biometric label, IDs, sync, HUD,
+   scanline, waveform, or separate information panel.
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  position:relative!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  background:#020607!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live {
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  background:#020607!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live[hidden] {
+  display:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-image {
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:100%!important;
+  min-height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center 24%!important;
+  filter:none!important;
+  transform:none!important;
+}
+
+/* Name sits directly over the image at the bottom; nothing else survives. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-name {
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  z-index:4!important;
+  padding:30px 18px 17px!important;
+  color:#fff!important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(1,5,7,0) 0%,
+      rgba(1,5,7,.20) 18%,
+      rgba(1,5,7,.74) 58%,
+      rgba(1,5,7,.94) 100%
+    )!important;
+  font-family:"Rajdhani","Agency FB","Arial Narrow","Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(30px,2.7vw,46px)!important;
+  font-weight:950!important;
+  line-height:.9!important;
+  letter-spacing:.035em!important;
+  text-transform:uppercase!important;
+  text-shadow:
+    0 2px 8px rgba(0,0,0,.78),
+    0 0 20px rgba(0,0,0,.38)!important;
+  pointer-events:none!important;
+}
+
+/* Hard kill all legacy profile furniture in case stale markup ever leaks in. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live .feha-eg-profile-art,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live .feha-eg-profile-copy,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live .feha-eg-profile-hud,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live .feha-eg-profile-scan,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live .feha-eg-profile-grid,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live .feha-eg-wave {
+  display:none!important;
+}
+
+@media(max-height:820px) and (min-width:1001px) {
+  #adk-entry-gateway.feha-eg-custom .feha-eg-profile-name {
+    padding:24px 15px 14px!important;
+    font-size:clamp(27px,2.4vw,38px)!important;
+  }
+}
+
