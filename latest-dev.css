@@ -13573,3 +13573,140 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.87 TRANSITION PERFORMANCE / ZERO-TIMING CHANGE
+   Smoothness-only pass. No sequence waits, animation durations, or phase timing
+   are changed. Expensive full-screen blur/backdrop/filter interpolation is
+   replaced with compositor-friendly opacity/transform work.
+   ========================================================================== */
+
+/* Promote the major moving layers once instead of making the browser repeatedly
+   create/destroy compositing surfaces while a YouTube iframe is decoding. */
+#feha-link-start,
+#feha-link-start .feha-linkstart-shell,
+#feha-link-start .feha-linkstart-space,
+#feha-link-start .feha-linkstart-title-wrap,
+#feha-link-start .feha-linkstart-title-main,
+#feha-link-start .feha-linkstart-title-main > span,
+#feha-link-start .feha-linkstart-flash,
+#feha-link-start .feha-linkstart-vignette,
+#feha-gateway-intro-stage,
+#feha-gateway-intro-stage .feha-gateway-intro-media,
+#feha-gateway-intro-stage .feha-gateway-intro-shade {
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+}
+
+#feha-link-start,
+#feha-gateway-intro-stage {
+  contain:layout paint style!important;
+}
+
+#feha-link-start .feha-linkstart-space,
+#feha-link-start .feha-linkstart-title-wrap,
+#feha-link-start .feha-linkstart-title-main > span,
+#feha-link-start .feha-linkstart-flash,
+#feha-gateway-intro-stage,
+#feha-gateway-intro-stage .feha-gateway-intro-media,
+#feha-gateway-intro-stage .feha-gateway-intro-shade {
+  will-change:transform,opacity!important;
+}
+
+/* Full-screen backdrop-filter over an actively decoding iframe is one of the
+   biggest hitch sources. Keep the same blue glass look through the authored
+   gradients/shade layer instead of live pixel filtering. */
+#feha-link-start.feha-linkstart,
+#feha-link-start.feha-linkstart.is-video-reveal,
+#feha-link-start.is-video-reveal.is-live,
+#feha-link-start.is-video-preopen,
+#feha-link-start.is-video-preopen.is-video-impact,
+#feha-link-start.is-video-preopen.is-video-handoff,
+#feha-link-start.is-video-handoff {
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Do not interpolate a full-screen video blur/saturation/contrast matrix.
+   The existing stage opacity + shade opacity transitions preserve the exact
+   reveal timing while keeping the moving iframe on the compositor path. */
+#feha-gateway-intro-stage .feha-gateway-intro-media,
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-media {
+  filter:none!important;
+  transition:
+    transform 5.6s cubic-bezier(.16,.72,.18,1)!important;
+}
+
+/* Preserve the same dim-to-clear reveal using the cheap overlay itself. */
+#feha-gateway-intro-stage .feha-gateway-intro-shade {
+  background:
+    radial-gradient(circle at 50% 50%,
+      transparent 18%,
+      rgba(0,10,18,.12) 60%,
+      rgba(0,3,7,.48) 100%),
+    linear-gradient(180deg,
+      rgba(5,78,120,.24),
+      rgba(0,12,22,.10) 42%,
+      rgba(0,0,0,.22))!important;
+}
+
+/* Remove animated blur and letter-spacing from the two departing words.
+   Their direction, distance, duration, delay and easing remain EXACTLY the
+   same as 0.10.86; only compositor-hostile properties are dropped. */
+#feha-link-start .feha-linkstart-title-main > span {
+  will-change:transform,opacity!important;
+}
+
+#feha-link-start.is-video-preopen.is-video-handoff .feha-linkstart-title-main > span:first-child {
+  filter:none!important;
+  letter-spacing:-.05em!important;
+  transition:
+    transform .80s cubic-bezier(.14,.82,.10,1),
+    opacity .56s .04s ease!important;
+}
+
+#feha-link-start.is-video-preopen.is-video-handoff .feha-linkstart-title-main > span:last-child {
+  filter:none!important;
+  letter-spacing:-.05em!important;
+  transition:
+    transform .80s cubic-bezier(.14,.82,.10,1),
+    opacity .56s .04s ease!important;
+}
+
+/* Same seam timing, but no animated blur filter on the full-screen flash. */
+#feha-link-start.is-video-preopen.is-video-impact .feha-linkstart-flash {
+  filter:none!important;
+}
+
+@keyframes feha-link-split-charge-086 {
+  0%   {opacity:0; transform:scaleX(.22)}
+  36%  {opacity:.70; transform:scaleX(.88)}
+  100% {opacity:0; transform:scaleX(1.14)}
+}
+
+/* Same pre-open movement and duration; remove the blur interpolation from the
+   giant 3D layer so it remains a pure transform+opacity composite. */
+#feha-link-start.is-video-preopen .feha-linkstart-space {
+  filter:none!important;
+  transition:
+    opacity .64s cubic-bezier(.18,.72,.18,1),
+    transform .72s cubic-bezier(.16,.76,.16,1)!important;
+}
+
+/* Halo blur is decorative and large. Use opacity only during pre-open to avoid
+   another costly raster pass while the video is moving underneath. */
+#feha-link-start.is-video-preopen .feha-linkstart-title-lock::before {
+  filter:none!important;
+  transition:opacity .58s ease!important;
+}
+
+/* Force iframe/media transforms onto their own compositor surface. */
+#feha-gateway-intro-stage .feha-gateway-intro-media,
+#feha-gateway-intro-stage iframe,
+#feha-gateway-intro-stage #feha-gateway-intro-player {
+  transform-style:preserve-3d!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-media {
+  translate:0 0 0!important;
+}
+
