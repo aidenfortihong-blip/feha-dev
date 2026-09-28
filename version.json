@@ -1,8 +1,14 @@
 {
-  "version": "0.10.98",
+  "version": "0.10.99",
   "updated": "2026-09-28",
-  "scope": "cyberpunk-branding-glitch-expand-confirmation",
+  "scope": "real-logo-and-in-place-confirmation-morph",
   "notes": [
+    "Replaced the fake CYBERPUNK header text treatment with an actual Cyberpunk logo image layer referenced externally, without embedding proprietary image bytes in the public repo.",
+    "Removed the remaining palette widgets / utility-tag clutter and kept only restrained structural asymmetry.",
+    "Fixed CONNECTION ESTABLISHED so the final black/yellow state uses the exact same layout position and same DOM words as the preceding cyan title instead of relocating to a separate fixed-screen lockup.",
+    "The cyan words now glitch-expand and color-morph in place into CONNECTION black with yellow outline and ESTABLISHED yellow with black outline.",
+    "The ultra-thin cyan pulse is born between the two title lines during the morph and remains part of the final split language.",
+    "No JS phase order, waits, fullscreen behavior, split timing, loading timing, or video handoff timing changed.",
     "Removed the small palette widgets from the header and ID-candidate side, removed the ROUTE/AUTH utility tab, and simplified remaining decorative rails so the Gateway reads as one authored Cyberpunk terminal rather than a collection of UI ornaments.",
     "Reworked the top-left CYBERPUNK lockup into a larger italic/skewed brand treatment with one cyan blade and one yellow slash, while retaining the asymmetrical top-middle structural wedge.",
     "CONNECTION ESTABLISHED no longer appears as a separate larger black/yellow title. The existing cyan title itself now glitch-expands and color-morphs into the final state.",
