@@ -10788,3 +10788,789 @@ body #adk-market-15#adk-market-15 #top-directory {
     transition:none!important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA CUSTOM ENTRY GATEWAY // 0.10.67 CP2077 ASSET + READABILITY PASS
+   Uses the user's private CP2077 Forge asset bridge when installed.
+   Repo contains only logical references / CSS grammar, never proprietary media.
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom {
+  --eg-cp-frame:none;
+  --eg-cp-hud:none;
+  --eg-cp-highlight:none;
+  --eg-cp-lines:none;
+  --eg-cp-crossline:none;
+  --eg-cp-outerline:none;
+  --eg-cp-button:none;
+  --eg-cp-button-2:none;
+  --eg-cp-reward:none;
+  --eg-cp-glow:none;
+  --eg-cp-glow-small:none;
+  --eg-cp-barcode1:none;
+  --eg-cp-barcode3:none;
+  --eg-cp-barcode4:none;
+  --eg-cp-code1:none;
+  --eg-cp-bar:none;
+  --eg-cp-bar-long:none;
+  --eg-cp-counter:none;
+  --eg-cp-counter-stroke:none;
+  --eg-cp-buffer-empty:none;
+  --eg-cp-buffer-active:none;
+
+  --eg-yellow:#ffd34d;
+  --eg-red:#ff4f64;
+  --eg-cyan:#39e6ff;
+  --eg-green:#7cff9f;
+
+  font-family:
+    "Rajdhani",
+    "Agency FB",
+    "Arial Narrow",
+    "Segoe UI",
+    Arial,
+    sans-serif!important;
+
+  background:
+    radial-gradient(circle at 78% -8%,rgba(57,230,255,.075),transparent 34%),
+    radial-gradient(circle at 12% 92%,rgba(255,79,100,.045),transparent 30%),
+    linear-gradient(rgba(57,230,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(57,230,255,.014) 1px,transparent 1px),
+    #010507!important;
+  background-size:auto,auto,32px 32px,32px 32px,auto!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+  width:min(1640px,99vw)!important;
+  height:min(960px,98.5vh)!important;
+  min-width:1000px!important;
+  min-height:680px!important;
+  grid-template-rows:112px minmax(0,1fr) 64px!important;
+  position:relative!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent 15%),
+    linear-gradient(135deg,rgba(57,230,255,.035),transparent 28%),
+    #03090c!important;
+  border-color:rgba(57,230,255,.34)!important;
+  border-top-color:var(--eg-yellow)!important;
+  box-shadow:
+    0 34px 130px rgba(0,0,0,.9),
+    0 0 0 1px rgba(57,230,255,.045),
+    0 0 70px rgba(57,230,255,.055)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-shell::before {
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:40!important;
+  pointer-events:none!important;
+  opacity:.10!important;
+  background-image:
+    var(--eg-cp-outerline),
+    var(--eg-cp-lines),
+    var(--eg-cp-crossline)!important;
+  background-repeat:no-repeat!important;
+  background-position:center,center,center!important;
+  background-size:100% 100%,100% 100%,100% 100%!important;
+  mix-blend-mode:screen!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+  min-height:112px!important;
+  padding:18px 30px 16px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(90deg,rgba(255,79,100,.075),transparent 19%),
+    linear-gradient(90deg,rgba(57,230,255,.052),transparent 58%),
+    #071217!important;
+  border-bottom-color:rgba(57,230,255,.20)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-header::after {
+  content:""!important;
+  position:absolute!important;
+  right:24px!important;
+  bottom:8px!important;
+  width:280px!important;
+  height:34px!important;
+  opacity:.22!important;
+  background-image:var(--eg-cp-bar-long)!important;
+  background-repeat:no-repeat!important;
+  background-position:right center!important;
+  background-size:contain!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-node {
+  color:var(--eg-red)!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  letter-spacing:2.7px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+  margin-top:8px!important;
+  color:#fff!important;
+  font-size:56px!important;
+  line-height:.88!important;
+  font-weight:950!important;
+  letter-spacing:5px!important;
+  text-transform:uppercase!important;
+  text-shadow:0 0 22px rgba(57,230,255,.07)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-cp-header-strip {
+  width:240px;
+  height:9px;
+  margin-top:12px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--eg-yellow) 0 23%,
+      transparent 23% 27%,
+      var(--eg-red) 27% 46%,
+      transparent 46% 51%,
+      var(--eg-cyan) 51% 100%
+    );
+  clip-path:polygon(0 0,100% 0,94% 100%,0 100%);
+  opacity:.86;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-cp-header-strip {
+  height:18px!important;
+  opacity:.50!important;
+  background-image:
+    var(--eg-cp-highlight),
+    var(--eg-cp-bar)!important;
+  background-repeat:no-repeat!important;
+  background-position:left center!important;
+  background-size:contain!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state {
+  min-width:205px!important;
+  height:46px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  letter-spacing:2px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state i {
+  width:10px!important;
+  height:10px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-body {
+  grid-template-columns:minmax(0,1.72fr) minmax(410px,.86fr)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  padding:26px 30px 28px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-side {
+  padding:22px!important;
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.018),transparent 24%),
+    #02080b!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title {
+  margin-bottom:16px!important;
+  color:var(--eg-red)!important;
+  font-size:13px!important;
+  font-weight:950!important;
+  letter-spacing:2.25px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::after {
+  height:2px!important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,79,100,.88),
+      rgba(57,230,255,.42),
+      transparent
+    )!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot {
+  min-height:184px!important;
+  padding:20px 22px!important;
+  position:relative!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent 35%),
+    #020608!important;
+  border-color:rgba(57,230,255,.16)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-boot::after {
+  content:""!important;
+  position:absolute!important;
+  right:12px!important;
+  top:12px!important;
+  width:112px!important;
+  height:46px!important;
+  opacity:.16!important;
+  background-image:var(--eg-cp-code1)!important;
+  background-repeat:no-repeat!important;
+  background-size:contain!important;
+  background-position:right top!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot > div {
+  grid-template-columns:76px minmax(0,1fr)!important;
+  gap:12px!important;
+  margin-bottom:11px!important;
+  font-size:13px!important;
+  line-height:1.15!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot span {
+  color:var(--eg-yellow)!important;
+  font-size:12px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot b {
+  color:#dceef2!important;
+  font-size:13px!important;
+  font-weight:850!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+  margin-top:20px!important;
+  padding:20px!important;
+  position:relative!important;
+  background:
+    linear-gradient(135deg,rgba(57,230,255,.04),transparent 46%),
+    linear-gradient(180deg,rgba(255,255,255,.014),transparent 24%),
+    #071015!important;
+  border-color:rgba(57,230,255,.28)!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    0 100%
+  )!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-auth-card::before {
+  content:""!important;
+  position:absolute!important;
+  inset:4px!important;
+  opacity:.08!important;
+  background-image:var(--eg-cp-frame)!important;
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card label {
+  margin-bottom:12px!important;
+  color:#9fb6bd!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  letter-spacing:2px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell {
+  height:66px!important;
+  grid-template-columns:48px minmax(0,1fr) 14px!important;
+  background:#010507!important;
+  border-color:rgba(57,230,255,.54)!important;
+  border-left-width:5px!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 9px) 0,
+    100% 9px,
+    100% 100%,
+    0 100%
+  )!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell > span {
+  font-size:34px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom #feha-eg-input {
+  font-size:30px!important;
+  font-weight:950!important;
+  letter-spacing:1.8px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom #feha-eg-input::placeholder {
+  color:#536a73!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match {
+  margin:12px 0 16px!important;
+  min-height:20px!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  letter-spacing:1.8px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match[data-state="match"] {
+  color:var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match[data-state="locked"] {
+  color:var(--eg-yellow)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match[data-state="granted"] {
+  color:var(--eg-green)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth {
+  height:52px!important;
+  color:#141307!important;
+  background:var(--eg-yellow)!important;
+  border-color:var(--eg-yellow)!important;
+  font-size:13px!important;
+  font-weight:950!important;
+  letter-spacing:1.5px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-auth:not(:disabled) {
+  background-image:var(--eg-cp-button)!important;
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  background-color:var(--eg-yellow)!important;
+  background-blend-mode:multiply!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth:disabled {
+  color:#71858c!important;
+  background:#111b20!important;
+  border-color:#33454c!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list {
+  gap:8px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div {
+  min-height:43px!important;
+  grid-template-columns:54px minmax(0,1fr) auto!important;
+  gap:12px!important;
+  padding:0 14px!important;
+  background:#061014!important;
+  font-size:11px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list span {
+  color:#71868e!important;
+  font-size:10px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list b {
+  color:#dcecf0!important;
+  font-size:11px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list i {
+  font-size:11px!important;
+  font-weight:950!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .scanning i {
+  color:var(--eg-yellow)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified {
+  border-left-color:var(--eg-green)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified i {
+  color:var(--eg-green)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-progress {
+  height:7px!important;
+  margin-top:12px!important;
+  background:#0a1317!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-progress > div {
+  background:
+    linear-gradient(90deg,var(--eg-red),var(--eg-yellow),var(--eg-green))!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-progress {
+  background-image:var(--eg-cp-buffer-empty)!important;
+  background-size:100% 100%!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-progress > div {
+  background-image:
+    var(--eg-cp-buffer-active),
+    linear-gradient(90deg,var(--eg-red),var(--eg-yellow),var(--eg-green))!important;
+  background-size:100% 100%,100% 100%!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console {
+  min-height:104px!important;
+  max-height:142px!important;
+  padding:10px 12px!important;
+  color:#667b82!important;
+  font-size:9px!important;
+  line-height:1.55!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console > div {
+  grid-template-columns:76px minmax(0,1fr)!important;
+  gap:10px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console b {
+  font-size:9px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel {
+  position:relative!important;
+  overflow:hidden!important;
+  border-color:rgba(57,230,255,.24)!important;
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.018),transparent 26%),
+    #02080b!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-candidates-panel::after {
+  content:""!important;
+  position:absolute!important;
+  right:10px!important;
+  bottom:8px!important;
+  width:72px!important;
+  height:36px!important;
+  opacity:.13!important;
+  background-image:var(--eg-cp-barcode3)!important;
+  background-size:contain!important;
+  background-repeat:no-repeat!important;
+  background-position:right bottom!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  height:48px!important;
+  padding:0 15px!important;
+  color:var(--eg-cyan)!important;
+  font-size:11px!important;
+  font-weight:950!important;
+  letter-spacing:1.8px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header b {
+  color:#7b9097!important;
+  font-size:9px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+  min-height:78px!important;
+  grid-template-columns:44px minmax(0,1fr) auto!important;
+  gap:12px!important;
+  padding:11px 14px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.012),transparent 25%),
+    #02080b!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% 100%,
+    0 100%
+  )!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate:hover {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb,var(--candidate) 13%,transparent),
+      transparent 44%
+    ),
+    #071015!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate.active {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb,var(--candidate) 20%,transparent),
+      transparent 48%
+    ),
+    color-mix(in srgb,var(--candidate) 6%,#071015)!important;
+  box-shadow:
+    inset 4px 0 var(--candidate),
+    inset 0 0 0 1px color-mix(in srgb,var(--candidate) 48%,transparent)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-candidate.active::after {
+  content:""!important;
+  position:absolute!important;
+  right:-4px!important;
+  top:7px!important;
+  width:110px!important;
+  height:58px!important;
+  opacity:.10!important;
+  background-image:var(--eg-cp-highlight)!important;
+  background-repeat:no-repeat!important;
+  background-position:right center!important;
+  background-size:contain!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate > span {
+  color:#61777f!important;
+  font-size:10px!important;
+  font-weight:950!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate b {
+  color:inherit!important;
+  font-size:20px!important;
+  font-weight:950!important;
+  letter-spacing:.2px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate small {
+  margin-top:6px!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:1.25px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate em {
+  color:#71838a!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  letter-spacing:1.2px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  min-height:485px!important;
+  margin-top:16px!important;
+  position:relative!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.014),transparent 18%),
+    #02070a!important;
+  border-color:color-mix(in srgb,var(--subject) 34%,rgba(57,230,255,.16))!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 11px) 0,
+    100% 11px,
+    100% 100%,
+    0 100%
+  )!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-profile::before {
+  content:""!important;
+  position:absolute!important;
+  inset:3px!important;
+  z-index:8!important;
+  opacity:.10!important;
+  background-image:
+    var(--eg-cp-hud),
+    var(--eg-cp-frame)!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:100% 100%!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty span,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art > span {
+  padding:6px 8px!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  letter-spacing:1.25px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty b {
+  font-size:32px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty small {
+  font-size:10px!important;
+  letter-spacing:1.2px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live {
+  min-height:485px!important;
+  grid-template-rows:280px minmax(0,1fr)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art {
+  background:
+    radial-gradient(
+      circle at 50% 44%,
+      color-mix(in srgb,var(--subject) 15%,transparent),
+      transparent 58%
+    ),
+    #010506!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art img {
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  transform:scale(1.025)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-hud {
+  position:absolute;
+  inset:0;
+  z-index:4;
+  pointer-events:none;
+  opacity:.75;
+  background:
+    linear-gradient(90deg,var(--subject) 0 2px,transparent 2px),
+    linear-gradient(180deg,transparent 0 86%,color-mix(in srgb,var(--subject) 34%,transparent) 86% 87%,transparent 87%);
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-profile-hud {
+  opacity:.18!important;
+  background-image:
+    var(--eg-cp-crossline),
+    var(--eg-cp-glow-small)!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%,100% 100%!important;
+  background-position:center!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-copy {
+  padding:17px 17px 19px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-copy small,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid span {
+  color:#71858d!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:1.35px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-copy h2 {
+  margin:8px 0 16px!important;
+  color:#fff!important;
+  font-size:42px!important;
+  font-weight:950!important;
+  line-height:.92!important;
+  letter-spacing:1.3px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid {
+  gap:10px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid > div {
+  min-height:52px!important;
+  padding:10px 11px!important;
+  background:#061014!important;
+  border-left-width:3px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid b {
+  margin-top:7px!important;
+  color:#d7e8ec!important;
+  font-size:11px!important;
+  line-height:1.1!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-wave {
+  height:36px!important;
+  margin-top:14px!important;
+  gap:4px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-wave i {
+  width:3px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-footer {
+  min-height:64px!important;
+  padding:0 20px!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:1.2px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-footer-copy {
+  position:relative!important;
+  min-height:36px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-footer-code {
+  display:inline-block;
+  width:92px;
+  height:22px;
+  margin-left:8px;
+  opacity:.38;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--eg-yellow) 0 2px,
+      transparent 2px 5px
+    );
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-footer-code {
+  background-image:var(--eg-cp-barcode1)!important;
+  background-repeat:no-repeat!important;
+  background-size:contain!important;
+  background-position:left center!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-footer button {
+  height:40px!important;
+  padding:0 17px!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:1px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-establish {
+  color:#081108!important;
+  background:var(--eg-green)!important;
+  border-color:var(--eg-green)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-establish {
+  background-image:var(--eg-cp-reward)!important;
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  background-color:var(--eg-green)!important;
+  background-blend-mode:multiply!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bypass {
+  color:#ff9dac!important;
+  border-color:rgba(255,79,100,.40)!important;
+}
+
+@media(max-width:1200px) {
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+    font-size:46px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-body {
+    grid-template-columns:minmax(0,1.5fr) minmax(360px,.9fr)!important;
+  }
+}
+
+@media(max-width:1000px) {
+  #adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+    min-width:0!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-body {
+    grid-template-columns:1fr!important;
+  }
+}
