@@ -1,8 +1,11 @@
 {
-  "version": "0.10.77",
+  "version": "0.10.78",
   "updated": "2026-09-28",
-  "scope": "remove-session-init-ai-voice",
+  "scope": "transition-title-activated-connection-established",
   "notes": [
+    "Changed the 3D transition centerpiece from SESSION INIT to ACTIVATED // CONNECTION ESTABLISHED.",
+    "Existing final connection status remains consistent with the new centerpiece wording.",
+    "Music, 3D motion, and transition timing are unchanged.",
     "Removed the browser speech-synthesis AI voice from the SESSION INIT transition.",
     "The final on-screen text remains ACTIVATED // CONNECTION ESTABLISHED.",
     "Music, custom transition sound effects, 3D animation, and scene handoff remain unchanged.",
