@@ -1687,6 +1687,7 @@
     let introPendingPlay = false;
     let introStarted = false;
     let introFinishing = false;
+    let introOwnsFullscreen = false;
     let introWaiters = [];
     let selected = null;
     let busy = false;
@@ -1888,6 +1889,72 @@
       requestAnimationFrame(tick);
     };
 
+    const suppressIntroCaptions = player => {
+      if (!player) return;
+
+      // cc_load_policy=0 handles the initial embed state. These runtime calls
+      // also clear a caption track if the viewer/account preference tries to
+      // restore one after the iframe becomes ready.
+      try {
+        player.setOption?.("captions","track",{});
+      } catch {}
+
+      try {
+        player.setOption?.("cc","track",{});
+      } catch {}
+    };
+
+    const requestIntroFullscreen = () => {
+      // Fullscreen must be requested from the ESTABLISH LINK click's user
+      // activation. Use the document root so BOTH the blue transition and the
+      // video stage remain visible while fullscreen is active.
+      if (document.fullscreenElement) return false;
+
+      const target = document.documentElement;
+      if (!target?.requestFullscreen) return false;
+
+      try {
+        const pending = target.requestFullscreen({navigationUI:"hide"});
+        introOwnsFullscreen = true;
+
+        Promise.resolve(pending).catch(err => {
+          introOwnsFullscreen = false;
+          console.warn(
+            "FEHA DEV // browser refused intro fullscreen",
+            err
+          );
+        });
+
+        return true;
+      } catch (err) {
+        introOwnsFullscreen = false;
+        console.warn(
+          "FEHA DEV // intro fullscreen request failed",
+          err
+        );
+        return false;
+      }
+    };
+
+    const exitIntroFullscreen = async () => {
+      if (!introOwnsFullscreen) return;
+
+      introOwnsFullscreen = false;
+
+      if (!document.fullscreenElement || !document.exitFullscreen) {
+        return;
+      }
+
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.warn(
+          "FEHA DEV // could not exit intro fullscreen",
+          err
+        );
+      }
+    };
+
     const resolveIntroWaiters = value => {
       const waiters = introWaiters.splice(0);
 
@@ -1915,16 +1982,20 @@
       const stage = introStage;
 
       if (!stage?.isConnected) {
+        await exitIntroFullscreen();
         resolveIntroWaiters(reason);
         introFinishing = false;
         return;
       }
 
       stage.classList.add("is-finishing");
-      fadeIntroVolume(0,immediate ? 40 : 360);
+
+      // SKIP / natural-end exits should feel like the song is dissolving out,
+      // not being hard-cut. Immediate dev/gateway teardown stays fast.
+      fadeIntroVolume(0,immediate ? 40 : 1650);
 
       await new Promise(resolve =>
-        setTimeout(resolve,immediate ? 50 : 430)
+        setTimeout(resolve,immediate ? 50 : 1750)
       );
 
       try {
@@ -1941,6 +2012,7 @@
       introPendingPlay = false;
       introStarted = false;
 
+      await exitIntroFullscreen();
       stage.remove();
 
       if (introStage === stage) {
@@ -2004,6 +2076,7 @@
                   controls:0,
                   disablekb:1,
                   fs:0,
+                  cc_load_policy:0,
                   iv_load_policy:3,
                   playsinline:1,
                   rel:0,
@@ -2017,6 +2090,7 @@
                       event.target.setVolume(0);
                     } catch {}
 
+                    suppressIntroCaptions(event.target);
                     resolve(event.target);
 
                     if (introPendingPlay) {
@@ -2085,6 +2159,7 @@
           introPlayer.seekTo?.(0,true);
         }
 
+        suppressIntroCaptions(introPlayer);
         introPlayer.unMute?.();
         introPlayer.setVolume?.(0);
         introPlayer.playVideo?.();
@@ -2122,6 +2197,7 @@
           introPlayer.seekTo?.(0,true);
         }
 
+        suppressIntroCaptions(introPlayer);
         introPlayer.unMute?.();
         introPlayer.playVideo?.();
         introStarted = true;
@@ -3188,6 +3264,11 @@
 
       document.body.appendChild(linkOverlay);
       applyEntryGatewayPrivateAssets(linkOverlay);
+
+      // Request browser fullscreen NOW while the ESTABLISH LINK click still
+      // carries user activation. If the browser refuses, the fixed overlay
+      // still behaves exactly as before.
+      requestIntroFullscreen();
 
       // Button click is a fresh user gesture, so make a second play attempt
       // here in case the browser blocked playback on the typed-name match.
