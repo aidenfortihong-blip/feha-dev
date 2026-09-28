@@ -17050,7 +17050,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://www.pngkey.com/png/detail/218-2187752_file-cp2077-cyberpunk-2077-logo-png.png")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/e/e6/Cyberpunk_2077_logo.svg")!important;
 }
 
 /* --------------------------------------------------------------------------
@@ -17461,7 +17461,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://www.pngkey.com/png/detail/218-2187752_file-cp2077-cyberpunk-2077-logo-png.png")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/e/e6/Cyberpunk_2077_logo.svg")!important;
 }
 
 /* Remove the little palette/totem widgets and utility tag. */
@@ -17645,3 +17645,36 @@ body #adk-market-15#adk-market-15 #top-directory {
   #adk-entry-gateway.feha-eg-custom .feha-eg-header h1{width:min(360px,36vw)!important;height:62px!important}
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.100 LOGO SOURCE + FINAL SPLIT REPAIR
+   - stable external logo source, no proprietary media bytes committed
+   - release 0.10.99 morph animation ownership at final handoff so the existing
+     0.10.86 CONNECTION-left / ESTABLISHED-right split can run again
+   - cinematic JS timing intentionally unchanged
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom {
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/e/e6/Cyberpunk_2077_logo.svg")!important;
+}
+
+/* The 0.10.99 in-place morph uses !important animation on both words.
+   At final handoff, explicitly release that animation so the existing
+   is-video-handoff transform/opacity transitions regain control. */
+#feha-link-start.is-live.is-video-preopen.is-video-handoff
+.feha-linkstart-title-main > span:first-child,
+#feha-link-start.is-live.is-video-preopen.is-video-handoff
+.feha-linkstart-title-main > span:last-child {
+  animation:none!important;
+}
+
+/* Same issue on the cyan center pulse: release its 0.10.99 keyframe at the
+   handoff so the already-authored width/opacity split transition can finish. */
+#feha-link-start.is-live.is-video-preopen.is-video-handoff
+.feha-linkstart-title-lock::after {
+  animation:none!important;
+  width:min(92vw,1320px)!important;
+  opacity:0!important;
+  transition:
+    width .72s cubic-bezier(.10,.84,.14,1),
+    opacity .74s .18s ease!important;
+}
