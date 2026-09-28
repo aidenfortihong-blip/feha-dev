@@ -13189,3 +13189,246 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.85 SPLIT-SCREEN VIDEO REVEAL
+   Video begins fading in the instant ESTABLISH LINK is pressed.
+   Final CONNECTION / ESTABLISHED lockup tears open horizontally:
+   CONNECTION exits left, ESTABLISHED exits right, revealing the video.
+   ========================================================================== */
+
+/* From the first frame of ESTABLISH LINK, let the video breathe underneath.
+   The blue system still dominates at first; the footage simply becomes an
+   increasingly legible moving layer behind it instead of appearing late. */
+#feha-gateway-intro-stage.feha-gateway-intro-stage {
+  transition:opacity 3.15s cubic-bezier(.16,.70,.18,1)!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-media {
+  transform:scale(1.055)!important;
+  filter:
+    saturate(.78)
+    contrast(1.10)
+    brightness(.54)
+    blur(1.2px)!important;
+  transition:
+    filter 3.7s cubic-bezier(.16,.72,.18,1),
+    transform 5.6s cubic-bezier(.16,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-media {
+  transform:scale(1)!important;
+  filter:
+    saturate(1)
+    contrast(1.025)
+    brightness(.99)
+    blur(0)!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-shade {
+  opacity:.97!important;
+  transition:opacity 3.0s cubic-bezier(.16,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-shade {
+  opacity:.20!important;
+}
+
+/* The blue UI starts fairly opaque, then slowly becomes glassier while the
+   video resolves underneath throughout the whole link sequence. */
+#feha-link-start.feha-linkstart.is-video-reveal {
+  background:
+    radial-gradient(circle at 50% 48%,
+      rgba(57,230,255,.18),
+      rgba(0,32,52,.28) 30%,
+      transparent 55%),
+    linear-gradient(180deg,
+      rgba(0,22,39,.965),
+      rgba(0,7,14,.88))!important;
+  backdrop-filter:
+    saturate(.76)
+    brightness(.68)
+    blur(.5px)!important;
+  transition:
+    opacity .14s ease,
+    background 3.4s cubic-bezier(.16,.72,.18,1),
+    backdrop-filter 3.1s cubic-bezier(.16,.72,.18,1)!important;
+}
+
+/* By SESSION LIVE, the blue field is visibly translucent but still owns the
+   composition; the moving footage can already be seen through it. */
+#feha-link-start.is-video-reveal.is-live {
+  background:
+    radial-gradient(circle at 50% 48%,
+      rgba(57,230,255,.12),
+      rgba(0,24,42,.17) 34%,
+      transparent 60%),
+    linear-gradient(180deg,
+      rgba(0,20,35,.84),
+      rgba(0,6,12,.71))!important;
+  backdrop-filter:
+    saturate(.86)
+    brightness(.80)
+    blur(.18px)!important;
+}
+
+/* Make the two words independently animatable. */
+#feha-link-start .feha-linkstart-title-main > span {
+  display:block!important;
+  will-change:transform,opacity,filter,letter-spacing!important;
+  transform:translateX(0) skewX(0deg) scaleX(1)!important;
+  opacity:1!important;
+}
+
+/* The impact is now a narrow centerline burst: it feels like the system
+   physically "opens" the frame rather than merely flashing white. */
+#feha-link-start.is-video-impact .feha-linkstart-flash {
+  opacity:1!important;
+  background:
+    linear-gradient(180deg,
+      transparent 0 47.5%,
+      rgba(217,252,255,.08) 48.5%,
+      rgba(230,254,255,.92) 49.65%,
+      #ffffff 50%,
+      rgba(230,254,255,.92) 50.35%,
+      rgba(217,252,255,.08) 51.5%,
+      transparent 52.5%),
+    radial-gradient(ellipse at center,
+      rgba(120,241,255,.36),
+      rgba(57,230,255,.08) 32%,
+      transparent 68%)!important;
+  animation:feha-link-split-charge-085 .46s cubic-bezier(.10,.82,.16,1) forwards!important;
+}
+
+@keyframes feha-link-split-charge-085 {
+  0% {
+    opacity:0;
+    transform:scaleX(.18) scaleY(.72);
+    filter:blur(2px) brightness(1.1);
+  }
+  34% {
+    opacity:.82;
+    transform:scaleX(.78) scaleY(.95);
+    filter:blur(.3px) brightness(1.5);
+  }
+  100% {
+    opacity:.18;
+    transform:scaleX(1.12) scaleY(1.05);
+    filter:blur(3px) brightness(1.15);
+  }
+}
+
+/* The confirmation rail becomes the "seam" the words launch away from. */
+#feha-link-start.is-video-handoff .feha-linkstart-title-lock::after {
+  width:min(68vw,940px)!important;
+  opacity:.95!important;
+  height:2px!important;
+  box-shadow:
+    0 0 12px rgba(220,253,255,.65),
+    0 0 34px rgba(57,230,255,.46),
+    0 0 68px rgba(57,230,255,.17)!important;
+  transition:
+    width .52s cubic-bezier(.10,.86,.16,1),
+    opacity .72s ease!important;
+}
+
+/* Do NOT fade the wrapper first; the words themselves perform the handoff. */
+#feha-link-start.is-video-handoff .feha-linkstart-title-wrap {
+  opacity:1!important;
+  transform:none!important;
+  filter:none!important;
+  transition:none!important;
+}
+
+/* CONNECTION rockets left. */
+#feha-link-start.is-video-handoff .feha-linkstart-title-main > span:first-child {
+  transform:
+    translateX(-72vw)
+    skewX(-11deg)
+    scaleX(1.08)!important;
+  opacity:0!important;
+  filter:blur(5px) brightness(1.28)!important;
+  letter-spacing:.02em!important;
+  transition:
+    transform .88s cubic-bezier(.16,.78,.12,1),
+    opacity .62s .08s ease,
+    filter .72s ease,
+    letter-spacing .78s ease!important;
+}
+
+/* ESTABLISHED rockets right. */
+#feha-link-start.is-video-handoff .feha-linkstart-title-main > span:last-child {
+  transform:
+    translateX(72vw)
+    skewX(11deg)
+    scaleX(1.08)!important;
+  opacity:0!important;
+  filter:blur(5px) brightness(1.28)!important;
+  letter-spacing:.02em!important;
+  transition:
+    transform .88s cubic-bezier(.16,.78,.12,1),
+    opacity .62s .08s ease,
+    filter .72s ease,
+    letter-spacing .78s ease!important;
+}
+
+/* The halo expands behind the separating words, like the image is breaking
+   through the connection field. */
+#feha-link-start.is-video-handoff .feha-linkstart-title-lock::before {
+  opacity:0!important;
+  transform:translate(-50%,-50%) scale(1.34)!important;
+  filter:blur(16px)!important;
+  transition:
+    opacity .92s ease,
+    transform 1.16s cubic-bezier(.12,.76,.16,1),
+    filter 1.0s ease!important;
+}
+
+/* The blue environment releases AFTER the words begin moving, so the split
+   remains readable and feels causally connected to revealing the footage. */
+#feha-link-start.is-video-handoff {
+  opacity:0!important;
+  background:rgba(0,8,14,0)!important;
+  backdrop-filter:none!important;
+  transition:
+    opacity 1.22s .18s cubic-bezier(.18,.72,.18,1),
+    background 1.34s .10s cubic-bezier(.18,.72,.18,1),
+    backdrop-filter 1.16s .10s ease!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-space {
+  opacity:0!important;
+  transform:translateZ(560px) scale(1.11)!important;
+  filter:blur(2px)!important;
+  transition:
+    opacity 1.15s .10s cubic-bezier(.18,.72,.18,1),
+    transform 1.28s cubic-bezier(.12,.78,.16,1),
+    filter 1.0s ease!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-vignette {
+  opacity:0!important;
+  transition:opacity 1.20s .12s ease!important;
+}
+
+/* Let the raw video "pop" into full clarity right as the words separate. */
+#feha-link-start.is-video-handoff + #feha-gateway-intro-stage {
+  filter:none!important;
+}
+
+@media(max-width:900px) {
+  #feha-link-start.is-video-handoff .feha-linkstart-title-main > span:first-child {
+    transform:translateX(-88vw) skewX(-9deg) scaleX(1.05)!important;
+  }
+
+  #feha-link-start.is-video-handoff .feha-linkstart-title-main > span:last-child {
+    transform:translateX(88vw) skewX(9deg) scaleX(1.05)!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #feha-link-start.is-video-handoff .feha-linkstart-title-main > span:first-child,
+  #feha-link-start.is-video-handoff .feha-linkstart-title-main > span:last-child {
+    transition:none!important;
+  }
+}
+
