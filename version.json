@@ -1,8 +1,12 @@
 {
-  "version": "0.10.69",
+  "version": "0.10.70",
   "updated": "2026-09-27",
-  "scope": "gateway-left-scroll-compact-right",
+  "scope": "gateway-auto-follow-left-output",
   "notes": [
+    "Gateway left authentication column now automatically follows incoming output instead of requiring manual scrolling.",
+    "Boot lines, console messages, biometric section reveal, each new biometric scan row, each verification result, and final access-granted output all scroll the left terminal toward the newest content.",
+    "Auto-follow uses requestAnimationFrame and smooth scrolling to avoid scroll spam during rapid output.",
+    "Right-side candidate/profile rail remains fixed and non-scrollable.",
     "Changed the custom Entry Gateway so only the left authentication/work column scrolls vertically; the right candidate/profile rail is fixed and non-scrollable.",
     "Removed candidate role/archetype subtitles such as STREET / ADAPTIVE, COMBAT / KINETIC, NET / COGNITIVE, and FIELD / DISCIPLINED from the right-side roster.",
     "Removed right-side SIGNATURE and CLEARANCE profile filler; the profile now keeps only BIO-ID and SYNC beneath the subject name.",
