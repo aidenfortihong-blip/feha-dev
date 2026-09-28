@@ -12469,3 +12469,197 @@ body #adk-market-15#adk-market-15 #top-directory {
   opacity:.55!important;
   cursor:wait!important;
 }
+/* ==========================================================================
+   FEHA GATEWAY INTRO // 0.10.79 YOUTUBE VIDEO HANDOFF
+   Exact name match starts the soundtrack invisibly. ESTABLISH LINK reveals
+   the already-running Edgerunners video from behind the blue 3D session field.
+   ========================================================================== */
+
+#feha-gateway-intro-stage.feha-gateway-intro-stage {
+  position:fixed!important;
+  inset:0!important;
+  z-index:1000004!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+  opacity:0;
+  background:#000;
+  transition:opacity 2.15s cubic-bezier(.18,.72,.18,1);
+}
+
+#feha-gateway-intro-stage.is-revealing,
+#feha-gateway-intro-stage.is-visible {
+  opacity:1;
+}
+
+#feha-gateway-intro-stage.can-skip {
+  pointer-events:auto!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-media {
+  position:absolute;
+  inset:-3%;
+  overflow:hidden;
+  background:#000;
+  transform:scale(1.035);
+  filter:
+    saturate(.92)
+    contrast(1.06)
+    brightness(.78);
+  transition:
+    filter 2.2s ease,
+    transform 5s cubic-bezier(.18,.72,.18,1);
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-media {
+  filter:
+    saturate(1)
+    contrast(1.03)
+    brightness(.94);
+  transform:scale(1);
+}
+
+#feha-gateway-intro-stage iframe,
+#feha-gateway-intro-stage #feha-gateway-intro-player {
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:177.77777778vh!important;
+  height:56.25vw!important;
+  min-width:100%!important;
+  min-height:100%!important;
+  transform:translate(-50%,-50%)!important;
+  border:0!important;
+  pointer-events:none!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-shade {
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 50%,transparent 20%,rgba(0,9,16,.10) 62%,rgba(0,4,8,.42) 100%),
+    linear-gradient(180deg,rgba(10,103,159,.16),transparent 38%,rgba(0,0,0,.18));
+  mix-blend-mode:normal;
+  opacity:.88;
+  transition:opacity 1.6s ease;
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-shade {
+  opacity:.34;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-meta {
+  position:absolute;
+  left:4vw;
+  bottom:4.5vh;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:rgba(224,250,255,.52);
+  font:900 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.8px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:
+    opacity .45s ease,
+    transform .45s ease;
+}
+
+#feha-gateway-intro-stage.can-skip .feha-gateway-intro-meta {
+  opacity:.8;
+  transform:none;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-meta b {
+  color:rgba(255,255,255,.88);
+  font-size:12px;
+  letter-spacing:2.6px;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-skip {
+  position:absolute;
+  right:4vw;
+  bottom:4.5vh;
+  z-index:8;
+  min-width:148px;
+  height:42px;
+  padding:0 20px;
+  border:1px solid rgba(132,233,255,.55);
+  background:rgba(0,11,17,.68);
+  color:#e8fcff;
+  font:950 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:1.8px;
+  cursor:pointer;
+  opacity:0;
+  transform:translateY(10px);
+  transition:
+    opacity .32s ease,
+    transform .32s ease,
+    background .18s ease,
+    border-color .18s ease;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+}
+
+#feha-gateway-intro-stage.can-skip .feha-gateway-intro-skip {
+  opacity:1;
+  transform:none;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-skip:hover {
+  background:rgba(25,168,205,.24);
+  border-color:#a6f3ff;
+}
+
+#feha-gateway-intro-stage.is-finishing {
+  opacity:0!important;
+  transition-duration:.42s!important;
+}
+
+/* During the blue system sequence the running video slowly resolves behind it. */
+#feha-link-start.feha-linkstart {
+  transition:
+    opacity .12s ease,
+    background 2.05s cubic-bezier(.18,.72,.18,1),
+    backdrop-filter 1.7s ease!important;
+}
+
+#feha-link-start.feha-linkstart.is-video-reveal {
+  background:
+    radial-gradient(circle at 50% 50%,rgba(45,196,255,.17),transparent 30%),
+    linear-gradient(180deg,rgba(0,22,38,.91),rgba(0,7,14,.76))!important;
+  backdrop-filter:saturate(.82) brightness(.78)!important;
+}
+
+#feha-link-start.is-video-reveal .feha-linkstart-vignette {
+  background:
+    radial-gradient(circle at center,transparent 0 34%,rgba(0,28,48,.20) 65%,rgba(0,4,9,.70) 100%)!important;
+}
+
+#feha-link-start.is-video-handoff {
+  opacity:0!important;
+  background:rgba(0,11,18,0)!important;
+  backdrop-filter:none!important;
+  transition:
+    opacity .78s ease,
+    background .78s ease,
+    backdrop-filter .78s ease!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-core,
+#feha-link-start.is-video-handoff .feha-linkstart-top,
+#feha-link-start.is-video-handoff .feha-linkstart-footer,
+#feha-link-start.is-video-handoff .feha-linkstart-space {
+  opacity:0!important;
+  transition:opacity .55s ease!important;
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #feha-gateway-intro-stage,
+  #feha-gateway-intro-stage *,
+  #feha-link-start.is-video-reveal,
+  #feha-link-start.is-video-handoff {
+    transition:none!important;
+  }
+}
