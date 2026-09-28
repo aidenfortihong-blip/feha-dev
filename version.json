@@ -1,8 +1,12 @@
 {
-  "version": "0.10.100",
+  "version": "0.10.101",
   "updated": "2026-09-28",
-  "scope": "gateway-logo-source-and-final-split-repair",
+  "scope": "verified-logo-url-and-visible-final-split",
   "notes": [
+    "Corrected the Gateway logo source to the exact Wikimedia yellow/turquoise Cyberpunk 2077 SVG matching the supplied reference image.",
+    "Kept the handoff overlay visible while CONNECTION and ESTABLISHED split, because the prior whole-overlay fade hid the movement before it could be seen.",
+    "Added explicit final split keyframes: CONNECTION exits left, ESTABLISHED exits right, and the cyan center pulse expands/fades between them.",
+    "latest-dev.js remains untouched; all existing cinematic wait timings are preserved.",
     "Replaced the unreliable pngkey Cyberpunk logo hotlink with the stable Wikimedia Commons Cyberpunk 2077 logo SVG reference, matching the supplied yellow/cyan logo while keeping logo bytes out of the public repo.",
     "Fixed the final CONNECTION ESTABLISHED handoff regression by releasing the 0.10.99 in-place morph animations when is-video-handoff begins, allowing the existing CONNECTION-left / ESTABLISHED-right split transforms to run again.",
     "The thin cyan center pulse now releases with the final split instead of remaining owned by the 0.10.99 centerline keyframe.",
