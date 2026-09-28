@@ -1,8 +1,11 @@
 {
-  "version": "0.10.70",
+  "version": "0.10.71",
   "updated": "2026-09-27",
-  "scope": "gateway-auto-follow-left-output",
+  "scope": "gateway-session-join-sound",
   "notes": [
+    "Added a dedicated session_join event to the FEHA sound engine with a restrained fallback connection hit.",
+    "ESTABLISH LINK now plays a unique two-stage join cue: muted metallic connection hit followed by a soft confirmation chirp.",
+    "Removed the previous door-open cue from the ESTABLISH LINK pointer press so join audio fires once at the actual connection moment instead of stacking.",
     "Gateway left authentication column now automatically follows incoming output instead of requiring manual scrolling.",
     "Boot lines, console messages, biometric section reveal, each new biometric scan row, each verification result, and final access-granted output all scroll the left terminal toward the newest content.",
     "Auto-follow uses requestAnimationFrame and smooth scrolling to avoid scroll spam during rapid output.",
