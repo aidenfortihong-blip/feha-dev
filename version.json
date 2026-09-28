@@ -1,8 +1,13 @@
 {
-  "version": "0.10.75",
-  "updated": "2026-09-27",
-  "scope": "custom-3d-transition-soundscape",
+  "version": "0.10.76",
+  "updated": "2026-09-28",
+  "scope": "gateway-exact-match-private-music",
   "notes": [
+    "Added exact typed-name music trigger to the custom Entry Gateway: the configured match track begins the first time the typed identifier exactly matches Ponyboy, Derke, Sasha, or Zach.",
+    "Match music starts with a short fade-in at restrained volume and continues through authentication, SESSION INIT, Gateway close, and into live play rather than restarting between phases.",
+    "Added a GM-only SET MATCH TRACK / REPLACE MATCH TRACK button that imports a local audio file through Foundry FilePicker into private world data storage and saves its path as a FEHA world setting.",
+    "The uploaded Franz Ferdinand instrumental is intentionally not committed to the public GitHub repository; the private-world importer keeps copyrighted music outside public source control.",
+    "DEV patch teardown stops and clears any active Gateway match music.",
     "Built a dedicated original Web Audio soundscape for the 3D SESSION INIT transition instead of recycling ordinary UI SFX.",
     "Opening cue now combines a stereo-filtered noise rush, low rising neural tone, and high spatial sweep to match the rings and particles flying toward the viewer.",
     "Added unique route-lock, three-note neural-handshake, session-transfer whoosh, and final connection impact/shimmer cues.",
