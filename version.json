@@ -1,8 +1,15 @@
 {
-  "version": "0.10.118",
+  "version": "0.10.119",
   "updated": "2026-09-28",
-  "scope": "deep-stability-audit-hardening",
+  "scope": "deep-stability-audit-gameplay-transaction-hardening",
   "notes": [
+    "Deep-pass follow-up: Network Device specialized adapters now execute only on the GM-authoritative path; player callers cannot self-promote remote/skip-breach context.",
+    "Quickhack damage now commits RAM before mutating target HP, closing the free-damage race when RAM changes after preview; if HP mutation fails, a guarded RAM refund is attempted.",
+    "Quickhack RAM commits/refunds hold an action lock while actor flags update, preventing the visible Cyberdeck from rerendering mid-transaction.",
+    "Chat-message failures are now non-fatal after a Quickhack gameplay mutation succeeds, so a failed chat log can no longer re-enable an already-applied action.",
+    "Non-damage Quickhacks that are resisted now show COMMIT ATTEMPT / RESISTED // RAM SPENT instead of falsely claiming EFFECT APPLIED.",
+    "Legacy actor identity normalization now maps Raiden to Zach and Sasha Bogdanov to Sasha consistently in Chrome subject theming and the V3 roster.",
+    "GM-created Network Probes now settle locally even if the socket transport does not echo to the sender; probe approval timeout increased to ten minutes.",
     "Deep stability audit: ADK DEV LOADER now fetches and preflights all JS/CSS plus version.json before destroying the currently working runtime, so network failures, syntax failures, and partial multi-file commits no longer take down a good build.",
     "Loader now rejects V3/version.json mismatches before swap and verifies the loaded V3 version after evaluation; failed post-swap loads attempt a clean V2 fallback.",
     "Cyber Core now propagates module initialization failures instead of logging them and falsely reporting a successful load.",
