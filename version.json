@@ -1,8 +1,12 @@
 {
-  "version": "0.10.114",
+  "version": "0.10.115",
   "updated": "2026-09-28",
-  "scope": "remove-inspector-microheader-center-bus-label",
+  "scope": "remove-selected-augmentation-bus-restore-right-status",
   "notes": [
+    "Removed SELECTED AUGMENTATION BUS using the correct nested span selector.",
+    "Restored the inspector header to a two-sided layout: selected subsystem label on the left and VACANT / READY on the far right.",
+    "Vertically centered both remaining header elements without changing their font metrics.",
+    "Preserved Sasha's purple-led palette, larger readability typography, duplicate-EJECT removal, Chrome logic, Gateway behavior, and cinematic timing.",
     "Removed the SELECTED AUGMENTATION BUS line from the Chrome Manager inspector header.",
     "Centered the remaining selected subsystem label vertically inside the existing inspector-header footprint.",
     "Preserved subject color palettes including Sasha's purple-led theme, larger readability typography, duplicate-EJECT removal, Chrome logic, Gateway behavior, and cinematic timing.",
