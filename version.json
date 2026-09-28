@@ -1,8 +1,15 @@
 {
-  "version": "0.10.74",
+  "version": "0.10.75",
   "updated": "2026-09-27",
-  "scope": "session-init-copy-cleanup",
+  "scope": "custom-3d-transition-soundscape",
   "notes": [
+    "Built a dedicated original Web Audio soundscape for the 3D SESSION INIT transition instead of recycling ordinary UI SFX.",
+    "Opening cue now combines a stereo-filtered noise rush, low rising neural tone, and high spatial sweep to match the rings and particles flying toward the viewer.",
+    "Added unique route-lock, three-note neural-handshake, session-transfer whoosh, and final connection impact/shimmer cues.",
+    "SESSION LIVE now displays ACTIVATED // CONNECTION ESTABLISHED and attempts to speak 'Activated. Connection established.' using the browser's available English system voice.",
+    "The final live state now holds long enough for the spoken connection cue to land before the 3D cut back into the Foundry scene.",
+    "Custom transition audio gracefully falls back to existing FEHA sounds if Web Audio is unavailable.",
+    "Internet reference research used Pixabay's Futuristic Transition by DRAGON-STUDIO and AI Interface Activation by wings_of_freedom as motion/style references; no third-party audio was hotlinked or committed.",
     "Renamed the 3D transition centerpiece from LINK START to SESSION INIT.",
     "Removed remaining FullDive/anime-style copy in favor of more grounded system language: INITIALIZING SESSION, NEURAL HANDSHAKE, NEURAL BRIDGE SYNCHRONIZED, SESSION TRANSFER, and SESSION CHANNEL OPENING.",
     "3D fly-through motion, timing, sounds, and scene handoff are unchanged.",
