@@ -1,8 +1,15 @@
 {
-  "version": "0.10.65",
+  "version": "0.10.66",
   "updated": "2026-09-27",
-  "scope": "entry-gateway-full-audio",
+  "scope": "custom-cyberpunk-entry-gateway-rebuild",
   "notes": [
+    "Replaced the legacy Entry Gateway patch stack with a fully custom repo-owned Cyberpunk gateway while preserving the public ADKEntryGateway open/reopen/close/reset API.",
+    "Gateway now has exactly four first-class candidates: Ponyboy, Derke, Sasha, Zach. Jing is removed entirely from the custom data model and authentication flow.",
+    "Added immediate candidate profile selection, typed exact-name matching, real Derke profile support, actor-derived BIO-ID when available, and per-candidate visual accents.",
+    "Added a fully custom boot sequence, authentication state machine, seven-step biometric verification stack, progress bar, access-granted state, establish-link exit, and GM bypass.",
+    "Built sound feedback into the custom flow from the start: boot ticks, ready cue, hover/select, typing, registry match, authenticate, scan/verify pulses, access granted, establish link, and bypass, all at restrained gain.",
+    "Added a complete FEHA-family visual rebuild with dense black/cyan shell, candidate list, portrait-centered biometric subject card, live waveform, diagnostic console, clipped controls, and restrained motion.",
+    "On dev reload, any visible legacy gateway is closed/replaced immediately with the custom gateway and original public Gateway methods are restored cleanly on teardown.",
     "Added a full restrained Entry Gateway sound layer using the existing FEHA sound engine and per-call gain.",
     "Boot subsystem lines tick softly; ID REQUIRED, AUTHENTICATING, ACCESS GRANTED, and LINK ESTABLISHED have distinct state cues.",
     "Candidate hover/select, typing, exact registry match, AUTHENTICATE, ESTABLISH LINK, and GM BYPASS now have audio feedback.",
