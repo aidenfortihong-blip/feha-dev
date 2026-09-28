@@ -1,8 +1,12 @@
 {
-  "version": "0.10.87",
+  "version": "0.10.88",
   "updated": "2026-09-28",
-  "scope": "gateway-transition-performance-no-timing-change",
+  "scope": "entry-gateway-full-bleed-subject-portrait",
   "notes": [
+    "Rebuilt the Entry Gateway live subject card markup itself so it contains only the subject image and the subject name.",
+    "The portrait now fills the entire subject box with object-fit: cover; the character name overlays the bottom on a subtle dark gradient.",
+    "Removed BIOMETRIC SUBJECT, SUBJECT, BIO-ID, SYNC, profile HUD, scan sweep, waveform, and the separate lower information panel from the live card.",
+    "This pass does not modify any Entry Gateway / intro cinematic timing; the 0.10.87 transition timing remains unchanged.",
     "Performance-only smoothing pass for the Entry Gateway/video transition. No JS sleeps, phase order, animation durations, delays, or easing timings were changed.",
     "Removed live full-screen backdrop-filter processing over the playing YouTube iframe and replaced it with the existing gradient/shade layers.",
     "Removed animated blur/filter and letter-spacing work from the departing CONNECTION / ESTABLISHED words while preserving their exact movement duration, delay, distance, and easing.",
