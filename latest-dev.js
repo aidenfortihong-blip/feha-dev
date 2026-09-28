@@ -1618,447 +1618,839 @@
     }
 
     const ROOT_ID = "adk-entry-gateway";
-    const DERKE_ART =
-      "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png";
+    const SESSION_KEY = "adk-entry-gateway:passed:v1";
 
-    const ORDER = ["Ponyboy","Derke","Sasha","Zach"];
+    const CANDIDATES = Object.freeze([
+      {
+        key:"ponyboy",
+        name:"Ponyboy",
+        code:"PB-01",
+        art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/Ponyboy.png",
+        primary:"#63e7f5",
+        secondary:"#55b8ff",
+        signature:"STREET / ADAPTIVE",
+        clearance:"FIELD ACCESS"
+      },
+      {
+        key:"derke",
+        name:"Derke",
+        code:"DK-02",
+        art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
+        primary:"#ff5b70",
+        secondary:"#ff9a66",
+        signature:"COMBAT / KINETIC",
+        clearance:"FIELD ACCESS"
+      },
+      {
+        key:"sasha",
+        name:"Sasha",
+        code:"SH-03",
+        art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/Sasha.png",
+        primary:"#d778ff",
+        secondary:"#79e8ff",
+        signature:"NET / COGNITIVE",
+        clearance:"NETWORK ACCESS"
+      },
+      {
+        key:"zach",
+        name:"Zach",
+        code:"ZH-04",
+        art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/ea2ba918-d53f-43d8-b03e-da556fd27862.png",
+        primary:"#f0c75e",
+        secondary:"#74b6ff",
+        signature:"FIELD / DISCIPLINED",
+        clearance:"FIELD ACCESS"
+      }
+    ]);
+
     const original = {
       open:gateway.open,
       reopen:gateway.reopen,
+      close:gateway.close,
+      reset:gateway.reset,
       candidates:Array.isArray(gateway.candidates)
         ? [...gateway.candidates]
         : gateway.candidates
     };
 
-    let boundRoot = null;
-    let derkeProxy = false;
-    let restoringInput = false;
-    let derkeAuthInterval = null;
-    let derkeIdentityObserver = null;
-    let gatewaySoundCleanup = null;
+    let root = null;
+    let selected = null;
+    let busy = false;
+    let sequence = 0;
     let timers = new Set();
 
-    const schedule = (fn,delay = 0) => {
-      const id = setTimeout(() => {
-        timers.delete(id);
-        try { fn(); } catch (err) {
-          console.warn("FEHA DEV // gateway one-shot patch warning",err);
-        }
-      },delay);
+    const safe = value =>
+      String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
 
-      timers.add(id);
-      return id;
+    const sleep = ms =>
+      new Promise(resolve => {
+        const id = setTimeout(() => {
+          timers.delete(id);
+          resolve();
+        },ms);
+        timers.add(id);
+      });
+
+    const play = (kind,gain = .25,cooldown = 0) =>
+      globalThis.FEHA_SOUNDS?.play?.(kind,{gain,cooldown});
+
+    const actorKey = actor => {
+      const raw =
+        actor?.flags?.fleshEnshrouded?.adkCharacter ??
+        actor?.name ??
+        "";
+
+      const key = norm(raw);
+
+      if (key === "sasha bogdanov" || key.startsWith("sasha ")) {
+        return "sasha";
+      }
+
+      if (key === "raiden") return "zach";
+      return key;
     };
 
-    const displayFor = value => {
+    const actorFor = candidate =>
+      game.actors?.find?.(
+        actor => actorKey(actor) === candidate.key
+      ) ?? null;
+
+    const assignedKey = () =>
+      actorKey(game.user?.character);
+
+    const candidateForInput = value => {
       const key = norm(value);
 
-      if (key === "ponyboy") return "Ponyboy";
-      if (key === "jing" || key === "derke") return "Derke";
-      if (key === "sasha" || key.startsWith("sasha ")) return "Sasha";
-      if (key === "zach" || key === "raiden") return "Zach";
-
-      return null;
+      return CANDIDATES.find(candidate =>
+        key === candidate.key ||
+        key === norm(candidate.name)
+      ) ?? null;
     };
 
-    const assignedName = () => {
-      const key = norm(game.user?.character?.name);
+    const randomHex = length =>
+      Array.from(
+        {length},
+        () => Math.floor(Math.random() * 16).toString(16).toUpperCase()
+      ).join("");
 
-      if (key === "ponyboy") return "Ponyboy";
-      if (key === "derke") return "Derke";
-      if (key === "sasha" || key.startsWith("sasha ")) return "Sasha";
-      if (key === "zach" || key === "raiden") return "Zach";
+    const rootHtml = () => {
+      const assigned = assignedKey();
 
-      return null;
+      return `
+        <main class="feha-eg-shell">
+          <header class="feha-eg-header">
+            <div>
+              <div class="feha-eg-node">SESSION ACCESS NODE // ADK</div>
+              <h1>CYBERPUNK</h1>
+            </div>
+
+            <div class="feha-eg-state" data-eg-state>
+              <i></i>
+              <span>BOOTING</span>
+            </div>
+          </header>
+
+          <section class="feha-eg-body">
+            <section class="feha-eg-terminal">
+              <div class="feha-eg-section-title">
+                <span>// IDENTITY AUTHENTICATION</span>
+              </div>
+
+              <div class="feha-eg-boot" data-eg-boot></div>
+
+              <div class="feha-eg-auth-card">
+                <label>ENTER ID</label>
+
+                <div class="feha-eg-input-shell">
+                  <span>&gt;</span>
+                  <input
+                    id="feha-eg-input"
+                    type="text"
+                    autocomplete="off"
+                    spellcheck="false"
+                    disabled
+                    placeholder="AWAITING REGISTRY..."
+                  >
+                  <i></i>
+                </div>
+
+                <div class="feha-eg-match" data-eg-match>
+                  REGISTRY LOCKED
+                </div>
+
+                <button
+                  type="button"
+                  class="feha-eg-auth"
+                  data-eg-auth
+                  disabled
+                >
+                  AUTHENTICATE ID
+                </button>
+              </div>
+
+              <section class="feha-eg-biometrics" data-eg-biometrics hidden>
+                <div class="feha-eg-section-title">
+                  <span>// BIOMETRIC VERIFICATION STACK</span>
+                </div>
+
+                <div class="feha-eg-bio-list" data-eg-bio-list></div>
+
+                <div class="feha-eg-progress">
+                  <div data-eg-progress></div>
+                </div>
+              </section>
+
+              <div class="feha-eg-console" data-eg-console></div>
+            </section>
+
+            <aside class="feha-eg-side">
+              <section class="feha-eg-candidates-panel">
+                <header>
+                  <span>ID CANDIDATES</span>
+                  <b>04 RECORDS</b>
+                </header>
+
+                <div class="feha-eg-candidates">
+                  ${CANDIDATES.map((candidate,index) => `
+                    <button
+                      type="button"
+                      class="feha-eg-candidate"
+                      data-eg-candidate="${candidate.key}"
+                      style="
+                        --candidate:${candidate.primary};
+                        --candidate2:${candidate.secondary};
+                      "
+                    >
+                      <span>${String(index + 1).padStart(2,"0")}</span>
+
+                      <div>
+                        <b>${safe(candidate.name)}</b>
+                        <small>${safe(candidate.signature)}</small>
+                      </div>
+
+                      <em>
+                        ${assigned === candidate.key ? "ASSIGNED" : "STANDBY"}
+                      </em>
+                    </button>
+                  `).join("")}
+                </div>
+              </section>
+
+              <section class="feha-eg-profile" data-eg-profile>
+                <div class="feha-eg-profile-empty" data-eg-profile-empty>
+                  <span>BIOMETRIC SUBJECT</span>
+                  <b>NO SUBJECT</b>
+                  <small>SELECT OR TYPE A VALID ID</small>
+                </div>
+
+                <div class="feha-eg-profile-live" data-eg-profile-live hidden>
+                  <div class="feha-eg-profile-art">
+                    <img data-eg-profile-art alt="">
+                    <div class="feha-eg-profile-scan"></div>
+                    <span>BIOMETRIC SUBJECT</span>
+                  </div>
+
+                  <div class="feha-eg-profile-copy">
+                    <div>
+                      <small>SUBJECT</small>
+                      <h2 data-eg-profile-name></h2>
+                    </div>
+
+                    <div class="feha-eg-profile-grid">
+                      <div>
+                        <span>BIO-ID</span>
+                        <b data-eg-profile-id></b>
+                      </div>
+
+                      <div>
+                        <span>SIGNATURE</span>
+                        <b data-eg-profile-signature></b>
+                      </div>
+
+                      <div>
+                        <span>CLEARANCE</span>
+                        <b data-eg-profile-clearance></b>
+                      </div>
+
+                      <div>
+                        <span>SYNC</span>
+                        <b data-eg-profile-sync>--</b>
+                      </div>
+                    </div>
+
+                    <div class="feha-eg-wave">
+                      ${Array.from({length:28},(_,i) =>
+                        `<i style="--i:${i}"></i>`
+                      ).join("")}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </section>
+
+          <footer class="feha-eg-footer">
+            <div>
+              <span>ENCRYPTION</span>
+              AES-ADK/4096
+              <span>NODE</span>
+              0x${randomHex(4)}:${randomHex(4)}:${randomHex(4)}
+            </div>
+
+            <div>
+              <button
+                type="button"
+                class="feha-eg-establish"
+                data-eg-enter
+                hidden
+              >
+                ESTABLISH LINK
+              </button>
+
+              ${game.user?.isGM ? `
+                <button
+                  type="button"
+                  class="feha-eg-bypass"
+                  data-eg-bypass
+                >
+                  GM BYPASS
+                </button>
+              ` : ""}
+            </div>
+          </footer>
+        </main>
+      `;
     };
 
-    const syncDerkeIdentity = root => {
-      if (!root || !derkeProxy) return false;
+    const setState = (text,tone = "idle") => {
+      if (!root) return;
 
-      const input = root.querySelector("#adk-eg-id-input");
-      if (input && input.value !== "Derke") {
-        restoringInput = true;
-        input.value = "Derke";
-        restoringInput = false;
+      const el = root.querySelector("[data-eg-state]");
+      if (!el) return;
+
+      el.dataset.tone = tone;
+      el.querySelector("span").textContent = text;
+    };
+
+    const log = (message,tone = "normal") => {
+      if (!root) return;
+
+      const consoleEl = root.querySelector("[data-eg-console]");
+      if (!consoleEl) return;
+
+      const row = document.createElement("div");
+      row.dataset.tone = tone;
+      row.innerHTML =
+        "<span>" +
+        new Date().toLocaleTimeString([],{hour12:false}) +
+        "</span><b>" +
+        safe(message) +
+        "</b>";
+
+      consoleEl.appendChild(row);
+
+      while (consoleEl.children.length > 10) {
+        consoleEl.firstElementChild.remove();
       }
 
-      const matchState = root.querySelector("[data-match-state]");
-      if (matchState) {
-        const current = String(matchState.textContent ?? "");
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    };
 
-        if (/\bJING\b/i.test(current)) {
-          matchState.textContent =
-            current.replace(/\bJING\b/gi,"DERKE");
-        }
-      }
+    const renderProfile = candidate => {
+      if (!root || !candidate) return;
 
-      const profileId = root.querySelector("[data-profile-id]");
-      if (profileId) {
-        profileId.textContent = String(profileId.textContent ?? "")
-          .replace(/\bJING\b/gi,"DERKE");
+      const actor = actorFor(candidate);
+      const profile = root.querySelector("[data-eg-profile]");
+      const empty = root.querySelector("[data-eg-profile-empty]");
+      const live = root.querySelector("[data-eg-profile-live]");
 
-        if (
-          root.classList.contains("is-authenticating") ||
-          root.classList.contains("is-granted")
-        ) {
-          profileId.textContent = "DERKE";
-        }
-      }
+      empty.hidden = true;
+      live.hidden = false;
+      profile.style.setProperty("--subject",candidate.primary);
+      profile.style.setProperty("--subject2",candidate.secondary);
 
-      const art = root.querySelector("[data-profile-art]");
-      if (art) {
-        if (art.src !== DERKE_ART) art.src = DERKE_ART;
-        art.alt = "Derke";
-      }
+      const art = root.querySelector("[data-eg-profile-art]");
+      art.src = candidate.art;
+      art.alt = candidate.name;
 
-      const authButton = root.querySelector("[data-auth]");
-      if (authButton && /\bJING\b/i.test(authButton.textContent ?? "")) {
-        authButton.textContent =
-          String(authButton.textContent ?? "")
-            .replace(/\bJING\b/gi,"DERKE");
-      }
+      root.querySelector("[data-eg-profile-name]").textContent =
+        candidate.name.toUpperCase();
 
-      // Keep any native auth console line from visibly leaking the legacy key.
-      root.querySelectorAll("[data-console] b").forEach(line => {
-        const before = line.textContent ?? "";
-        if (/\bJING\b/i.test(before)) {
-          line.textContent = before.replace(/\bJING\b/gi,"DERKE");
-        }
+      root.querySelector("[data-eg-profile-id]").textContent =
+        (actor?.id ?? candidate.code)
+          .slice(-8)
+          .toUpperCase();
+
+      root.querySelector("[data-eg-profile-signature]").textContent =
+        candidate.signature;
+
+      root.querySelector("[data-eg-profile-clearance]").textContent =
+        candidate.clearance;
+
+      root.querySelector("[data-eg-profile-sync]").textContent =
+        String(94 + Math.floor(Math.random() * 6)) + "%";
+    };
+
+    const highlightCandidate = key => {
+      if (!root) return;
+
+      root.querySelectorAll("[data-eg-candidate]").forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.egCandidate === key
+        );
       });
+    };
+
+    const selectCandidate = (candidate,{fillInput = true,sound = true} = {}) => {
+      if (!root || busy || !candidate) return false;
+
+      selected = candidate;
+      highlightCandidate(candidate.key);
+      renderProfile(candidate);
+
+      root.style.setProperty("--eg-primary",candidate.primary);
+      root.style.setProperty("--eg-secondary",candidate.secondary);
+
+      const input = root.querySelector("#feha-eg-input");
+      if (fillInput) input.value = candidate.name;
+
+      const match = root.querySelector("[data-eg-match]");
+      match.textContent =
+        "REGISTRY MATCH // " +
+        candidate.name.toUpperCase();
+
+      match.dataset.state = "match";
+
+      const auth = root.querySelector("[data-eg-auth]");
+      auth.disabled = false;
+      auth.textContent =
+        "AUTHENTICATE // " +
+        candidate.name.toUpperCase();
+
+      log(
+        "ID/" +
+        randomHex(5) +
+        " CIVIL REGISTRY MATCH: " +
+        candidate.name.toUpperCase(),
+        "good"
+      );
+
+      if (sound) {
+        play("cyberware_select",.26,0);
+        setTimeout(() => play("confirm",.20,0),65);
+      }
 
       return true;
     };
 
-    const stopDerkeAuthSync = () => {
-      if (derkeAuthInterval != null) {
-        clearInterval(derkeAuthInterval);
-        derkeAuthInterval = null;
+    const clearSelection = () => {
+      selected = null;
+      highlightCandidate("");
+
+      const match = root?.querySelector("[data-eg-match]");
+      const auth = root?.querySelector("[data-eg-auth]");
+
+      if (match) {
+        match.textContent = "SEARCHING CIVIL REGISTRY...";
+        match.dataset.state = "search";
       }
 
-      derkeIdentityObserver?.disconnect?.();
-      derkeIdentityObserver = null;
+      if (auth) {
+        auth.disabled = true;
+        auth.textContent = "AUTHENTICATE ID";
+      }
     };
 
-    const startDerkeAuthSync = root => {
-      stopDerkeAuthSync();
-      if (!root || !derkeProxy) return;
+    const boot = async token => {
+      const bootEl = root?.querySelector("[data-eg-boot]");
+      const input = root?.querySelector("#feha-eg-input");
 
-      const matchState = root.querySelector("[data-match-state]");
-      const profileId = root.querySelector("[data-profile-id]");
-      const profileArt = root.querySelector("[data-profile-art]");
-      const consoleEl = root.querySelector("[data-console]");
+      if (!bootEl || !input) return;
 
-      const targets = [
-        matchState,
-        profileId,
-        profileArt,
-        consoleEl
-      ].filter(Boolean);
+      const lines = [
+        "POWER BUS ................. ONLINE",
+        "SESSION NODE .............. CONNECTED",
+        "CIVIL ID REGISTRY ......... MOUNTED",
+        "BIOMETRIC SERVICES ........ STANDBY",
+        "NEURAL HANDSHAKE .......... ARMED",
+        "IDENTITY GATE ............. READY"
+      ];
 
-      if (targets.length) {
-        derkeIdentityObserver = new MutationObserver(() => {
-          if (!derkeProxy || !root.isConnected) return;
-          syncDerkeIdentity(root);
-        });
+      await sleep(160);
 
-        for (const target of targets) {
-          derkeIdentityObserver.observe(target,{
-            childList:true,
-            subtree:true,
-            characterData:true,
-            attributes:target === profileArt,
-            attributeFilter:target === profileArt ? ["src","alt"] : undefined
-          });
-        }
+      for (const line of lines) {
+        if (!root?.isConnected || sequence !== token) return;
+
+        const row = document.createElement("div");
+        row.innerHTML =
+          "<span>" +
+          randomHex(4) +
+          "</span><b>" +
+          safe(line) +
+          "</b>";
+
+        bootEl.appendChild(row);
+        requestAnimationFrame(() => row.classList.add("visible"));
+
+        log("SYS/" + randomHex(3) + " " + line);
+        play("select",.15,55);
+
+        await sleep(145);
       }
 
-      const started = performance.now();
+      if (!root?.isConnected || sequence !== token) return;
 
-      const tick = () => {
-        if (
-          !root.isConnected ||
-          !derkeProxy ||
-          performance.now() - started > 8000
-        ) {
-          stopDerkeAuthSync();
-          return;
-        }
+      input.disabled = false;
+      input.placeholder = "TYPE CANDIDATE NAME";
 
-        syncDerkeIdentity(root);
+      root.querySelector("[data-eg-match]").textContent =
+        "AWAITING IDENTIFIER";
 
-        const state =
-          String(
-            root.querySelector("[data-node-state]")?.textContent ??
-            ""
-          ).toUpperCase();
+      setState("ID REQUIRED","ready");
+      play("confirm",.22,0);
 
-        if (
-          state.includes("ACCESS GRANTED") ||
-          root.classList.contains("is-granted")
-        ) {
-          // One final pass after the native function writes PROFILE ACCEPTED.
-          schedule(() => syncDerkeIdentity(root),0);
-          schedule(() => syncDerkeIdentity(root),120);
-          stopDerkeAuthSync();
-        }
-      };
-
-      tick();
-      derkeAuthInterval = setInterval(tick,90);
+      setTimeout(() => input.focus(),80);
     };
 
-    const rewriteVisible = root => {
-      if (!root) return;
+    const authenticate = async () => {
+      if (!root || busy || !selected) return;
 
-      const title = root.querySelector(".adk-eg-header h1");
-      if (title) title.textContent = "CYBERPUNK";
+      busy = true;
+      const token = ++sequence;
+      const candidate = selected;
 
-      const panel = root.querySelector(".adk-eg-candidates");
-      if (panel) {
-        const kept = new Map();
+      const input = root.querySelector("#feha-eg-input");
+      const auth = root.querySelector("[data-eg-auth]");
+      const match = root.querySelector("[data-eg-match]");
+      const bio = root.querySelector("[data-eg-biometrics]");
+      const list = root.querySelector("[data-eg-bio-list]");
+      const progress = root.querySelector("[data-eg-progress]");
 
-        for (const button of [...panel.querySelectorAll("[data-candidate]")]) {
-          const underlying = String(button.dataset.candidate ?? "");
-          const display = displayFor(underlying);
+      input.disabled = true;
+      auth.disabled = true;
+      auth.textContent = "AUTHENTICATING...";
 
-          if (!display) {
-            button.remove();
-            continue;
-          }
+      match.textContent =
+        "IDENTITY LOCKED // " +
+        candidate.name.toUpperCase();
 
-          button.dataset.fehaDisplayCandidate = display;
+      match.dataset.state = "locked";
+      bio.hidden = false;
+      list.innerHTML = "";
+      progress.style.width = "0%";
 
-          const name = button.querySelector(".adk-eg-candidate-name");
-          if (name) name.textContent = display.toUpperCase();
+      root.classList.add("is-authenticating");
+      setState("AUTHENTICATING","auth");
 
-          kept.set(display,button);
-        }
+      renderProfile(candidate);
 
-        for (const display of ORDER) {
-          const button = kept.get(display);
-          if (button) panel.appendChild(button);
-        }
-
-        const assigned = assignedName();
-
-        [...panel.querySelectorAll("[data-candidate]")]
-          .forEach((button,index) => {
-            const display =
-              button.dataset.fehaDisplayCandidate ??
-              displayFor(button.dataset.candidate);
-
-            const indexEl =
-              button.querySelector(".adk-eg-candidate-index");
-
-            const stateEl =
-              button.querySelector(".adk-eg-candidate-state");
-
-            if (indexEl) {
-              indexEl.textContent =
-                String(index + 1).padStart(2,"0");
-            }
-
-            if (stateEl) {
-              stateEl.textContent =
-                display === assigned
-                  ? "ASSIGNED"
-                  : "STANDBY";
-            }
-          });
-      }
-
-      const heading = root.querySelector(".adk-eg-panel-heading");
-      const headingParts =
-        heading
-          ? [...heading.querySelectorAll("span")]
-          : [];
-
-      if (headingParts[1]) {
-        headingParts[1].textContent = "04 RECORDS";
-      }
-
-      const walker = document.createTreeWalker(
-        root,
-        NodeFilter.SHOW_TEXT
+      log(
+        "ID/" +
+        randomHex(6) +
+        " MATCH FOUND: " +
+        candidate.name.toUpperCase(),
+        "good"
       );
 
-      const nodes = [];
-      while (walker.nextNode()) nodes.push(walker.currentNode);
+      play("scan",.32,0);
 
-      for (const node of nodes) {
-        const before = node.nodeValue ?? "";
-        const after = before
-          .replace(
-            /FLESH\s+ENSHROUDED\s*\/\/\s*HEART\s+ABLAZE/gi,
-            "CYBERPUNK"
-          )
-          .replace(/\bJING\b/g,"DERKE")
-          .replace(/\bJing\b/g,"Derke")
-          .replace(/\bSASHA\s+BOGDANOV\b/gi,"SASHA");
+      const steps = [
+        ["CIVIL REGISTRY HASH","MATCH " + randomHex(6)],
+        ["VOICEPRINT",(97 + Math.random() * 2.7).toFixed(1) + "%"],
+        ["RETINAL SIGNATURE","VERIFIED"],
+        ["BIOMETRIC MESH","VERIFIED"],
+        ["NEURAL LATENCY",(7 + Math.floor(Math.random() * 11)) + "ms / NOMINAL"],
+        ["CORTICAL SIGNATURE","STABLE"],
+        ["SESSION CLEARANCE","GRANTED"]
+      ];
 
-        if (after !== before) node.nodeValue = after;
+      for (let index = 0; index < steps.length; index++) {
+        if (!root?.isConnected || sequence !== token) return;
+
+        const [label,result] = steps[index];
+        const row = document.createElement("div");
+        row.className = "scanning";
+        row.innerHTML =
+          "<span>" +
+          String(index + 1).padStart(2,"0") +
+          "</span><b>" +
+          safe(label) +
+          "</b><i>SCANNING...</i>";
+
+        list.appendChild(row);
+        log("BIO/" + randomHex(4) + " " + label + " :: SCANNING");
+        play("scan",.18,70);
+
+        await sleep(260 + Math.floor(Math.random() * 120));
+
+        if (!root?.isConnected || sequence !== token) return;
+
+        row.classList.remove("scanning");
+        row.classList.add("verified");
+        row.querySelector("i").textContent = result;
+
+        progress.style.width =
+          (((index + 1) / steps.length) * 100) + "%";
+
+        log("BIO/" + randomHex(4) + " " + label + " :: " + result,"good");
+        play("confirm",.21,70);
+
+        await sleep(105);
       }
 
-      if (derkeProxy) {
-        syncDerkeIdentity(root);
-      }
+      if (!root?.isConnected || sequence !== token) return;
+
+      busy = false;
+      root.classList.remove("is-authenticating");
+      root.classList.add("is-granted");
+
+      auth.textContent = "IDENTITY VERIFIED";
+      match.textContent =
+        "PROFILE ACCEPTED // " +
+        candidate.name.toUpperCase();
+
+      match.dataset.state = "granted";
+
+      setState("ACCESS GRANTED","granted");
+
+      const enter = root.querySelector("[data-eg-enter]");
+      enter.hidden = false;
+      requestAnimationFrame(() => enter.classList.add("visible"));
+
+      log("GATE/" + randomHex(4) + " SESSION ACCESS GRANTED","grant");
+
+      play("compatibility_ok",.38,0);
+      setTimeout(() => play("confirm",.24,0),140);
     };
 
-    const bindRoot = root => {
-      if (!root) return false;
+    const establishLink = async () => {
+      if (!root || root.classList.contains("is-exiting")) return;
 
-      rewriteVisible(root);
+      root.classList.add("is-exiting");
+      setState("LINK ESTABLISHED","granted");
+      log("LINK/" + randomHex(5) + " CLIENT SESSION ESTABLISHED","grant");
 
-      if (boundRoot === root) return true;
+      play("drawer_open",.30,0);
 
-      bindGatewaySounds(root);
-      boundRoot = root;
+      await sleep(560);
+      close(true);
+    };
 
-      const input = root.querySelector("#adk-eg-id-input");
+    const close = (markPassed = false) => {
+      if (markPassed) {
+        sessionStorage.setItem(SESSION_KEY,"1");
+      }
+
+      sequence++;
+
+      for (const timer of timers) clearTimeout(timer);
+      timers.clear();
+
+      root?.remove();
+      root = null;
+      selected = null;
+      busy = false;
+    };
+
+    const bind = () => {
+      const input = root.querySelector("#feha-eg-input");
+      const auth = root.querySelector("[data-eg-auth]");
 
       root.addEventListener(
-        "input",
+        "pointerover",
         event => {
-          if (restoringInput || event.target !== input) return;
+          const candidate =
+            event.target?.closest?.("[data-eg-candidate]") ??
+            null;
 
-          const typed = String(input.value ?? "");
-          const key = norm(typed);
+          if (!candidate || !root.contains(candidate)) return;
 
-          if (!key || !"derke".startsWith(key)) {
-            derkeProxy = false;
-            stopDerkeAuthSync();
+          const related = event.relatedTarget;
+          if (related && candidate.contains?.(related)) return;
+
+          play("hover",.16,65);
+        },
+        true
+      );
+
+      root.addEventListener(
+        "pointerdown",
+        event => {
+          if (event.button != null && event.button !== 0) return;
+
+          const candidate =
+            event.target?.closest?.("[data-eg-candidate]") ??
+            null;
+
+          if (candidate) {
+            play("select",.20,0);
             return;
           }
 
-          // Feed the legacy gateway's native matcher "Jing" during the same
-          // input event, then restore Derke visually afterward.
-          derkeProxy = key === "derke";
-          input.value =
-            "jing".slice(
-              0,
-              Math.min(key.length,4)
+          if (event.target?.closest?.("[data-eg-auth]")) {
+            play("scan",.28,0);
+            return;
+          }
+
+          if (event.target?.closest?.("[data-eg-enter]")) {
+            play("drawer_open",.26,0);
+            return;
+          }
+
+          if (event.target?.closest?.("[data-eg-bypass]")) {
+            play("drawer_close",.24,0);
+          }
+        },
+        true
+      );
+
+      root.querySelectorAll("[data-eg-candidate]").forEach(button => {
+        button.addEventListener("click",() => {
+          if (busy) return;
+
+          const candidate =
+            CANDIDATES.find(
+              item => item.key === button.dataset.egCandidate
             );
 
-          schedule(() => {
-            restoringInput = true;
-            input.value = typed;
-            restoringInput = false;
-            rewriteVisible(root);
-          },0);
-        },
-        true
-      );
+          selectCandidate(candidate,{fillInput:true,sound:true});
+          input.focus();
+        });
+      });
 
-      root.addEventListener(
-        "click",
-        event => {
-          const candidate =
-            event.target?.closest?.("[data-candidate]") ??
-            null;
+      input.addEventListener("input",() => {
+        if (busy) return;
 
-          if (
-            candidate &&
-            root.contains(candidate) &&
-            norm(candidate.dataset.candidate) === "jing"
-          ) {
-            derkeProxy = true;
+        play("hover",.11,45);
 
-            schedule(() => {
-              if (input) input.value = "Derke";
-              rewriteVisible(root);
-            },0);
+        const candidate = candidateForInput(input.value);
 
-            schedule(() => rewriteVisible(root),250);
-            schedule(() => rewriteVisible(root),700);
-            schedule(() => rewriteVisible(root),1500);
-            startDerkeAuthSync(root);
-          }
+        if (candidate) {
+          selectCandidate(candidate,{fillInput:false,sound:false});
+          play("confirm",.18,0);
+        } else if (norm(input.value)) {
+          clearSelection();
+        } else {
+          selected = null;
+          highlightCandidate("");
 
-          const auth =
-            event.target?.closest?.("[data-auth]") ??
-            null;
+          const match = root.querySelector("[data-eg-match]");
+          match.textContent = "AWAITING IDENTIFIER";
+          match.dataset.state = "idle";
 
-          if (auth && derkeProxy) {
-            startDerkeAuthSync(root);
-            schedule(() => syncDerkeIdentity(root),0);
-            schedule(() => syncDerkeIdentity(root),350);
-            schedule(() => syncDerkeIdentity(root),900);
-            schedule(() => syncDerkeIdentity(root),1800);
-            schedule(() => syncDerkeIdentity(root),3000);
-            schedule(() => syncDerkeIdentity(root),5000);
-          }
-        },
-        true
-      );
+          auth.disabled = true;
+          auth.textContent = "AUTHENTICATE ID";
+        }
+      });
 
-      return true;
+      input.addEventListener("keydown",event => {
+        if (event.key !== "Enter" || auth.disabled) return;
+        event.preventDefault();
+        void authenticate();
+      });
+
+      auth.addEventListener("click",() => void authenticate());
+
+      root.querySelector("[data-eg-enter]")
+        ?.addEventListener("click",() => void establishLink());
+
+      root.querySelector("[data-eg-bypass]")
+        ?.addEventListener("click",() => {
+          play("drawer_close",.24,0);
+          close(true);
+        });
     };
 
-    const patchCurrent = () =>
-      bindRoot(document.getElementById(ROOT_ID));
+    const open = async ({force = true} = {}) => {
+      if (root?.isConnected) return root;
 
-    const patchDuringBoot = () => {
-      patchCurrent();
-
-      for (const delay of [50,150,350,700,1200,1800]) {
-        schedule(patchCurrent,delay);
+      if (
+        !force &&
+        sessionStorage.getItem(SESSION_KEY) === "1"
+      ) {
+        return null;
       }
+
+      // Stop/remove the native gateway cleanly before mounting ours.
+      try {
+        original.close?.(false);
+      } catch {}
+
+      document.getElementById(ROOT_ID)?.remove();
+
+      root = document.createElement("div");
+      root.id = ROOT_ID;
+      root.className = "feha-eg-custom";
+      root.innerHTML = rootHtml();
+
+      document.body.appendChild(root);
+
+      selected = null;
+      busy = false;
+      sequence++;
+
+      bind();
+      play("drawer_open",.18,0);
+
+      const token = sequence;
+      void boot(token);
+
+      return root;
     };
 
-    gateway.open = async (...args) => {
-      // Start native gateway boot, but DO NOT wait for it before patching.
-      const pending = original.open?.(...args);
-
-      patchDuringBoot();
-
-      const result = await pending;
-
-      patchCurrent();
-      schedule(patchCurrent,80);
-
-      return result;
+    const reopen = async () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      close(false);
+      return open({force:true});
     };
 
-    gateway.reopen = async (...args) => {
-      const pending = original.reopen?.(...args);
-
-      patchDuringBoot();
-
-      const result = await pending;
-
-      patchCurrent();
-      schedule(patchCurrent,80);
-
-      return result;
+    const reset = async () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      close(false);
+      return open({force:true});
     };
 
-    gateway.candidates = [...ORDER];
+    // Replace the public Gateway API completely.
+    gateway.open = open;
+    gateway.reopen = reopen;
+    gateway.close = close;
+    gateway.reset = reset;
+    gateway.candidates = CANDIDATES.map(candidate => candidate.name);
 
-    // Patch a gateway already on screen, including one currently mid-boot.
-    patchDuringBoot();
+    // If the legacy gateway is currently visible, replace it immediately.
+    if (document.getElementById(ROOT_ID)) {
+      try {
+        original.close?.(false);
+      } catch {}
+
+      document.getElementById(ROOT_ID)?.remove();
+      void open({force:true});
+    }
 
     globalThis.__FEHA_ENTRY_GATEWAY_NORMALIZER = {
-      refresh:patchCurrent,
+      refresh() {
+        if (root?.isConnected) return root;
+        return open({force:true});
+      },
       destroy() {
-        stopDerkeAuthSync();
-
-        gatewaySoundCleanup?.();
-        gatewaySoundCleanup = null;
-
-        for (const timer of timers) clearTimeout(timer);
-        timers.clear();
+        close(false);
 
         gateway.open = original.open;
         gateway.reopen = original.reopen;
+        gateway.close = original.close;
+        gateway.reset = original.reset;
         gateway.candidates = original.candidates;
-
-        boundRoot = null;
       }
     };
 
     console.info(
-      "FEHA DEV // safe Entry Gateway patch active:",
-      ORDER.join(", ")
+      "FEHA DEV // custom CYBERPUNK Entry Gateway active:",
+      CANDIDATES.map(candidate => candidate.name).join(", ")
     );
 
     return true;
