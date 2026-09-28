@@ -1,8 +1,12 @@
 {
-  "version": "0.10.99",
+  "version": "0.10.100",
   "updated": "2026-09-28",
-  "scope": "real-logo-and-in-place-confirmation-morph",
+  "scope": "gateway-logo-source-and-final-split-repair",
   "notes": [
+    "Replaced the unreliable pngkey Cyberpunk logo hotlink with the stable Wikimedia Commons Cyberpunk 2077 logo SVG reference, matching the supplied yellow/cyan logo while keeping logo bytes out of the public repo.",
+    "Fixed the final CONNECTION ESTABLISHED handoff regression by releasing the 0.10.99 in-place morph animations when is-video-handoff begins, allowing the existing CONNECTION-left / ESTABLISHED-right split transforms to run again.",
+    "The thin cyan center pulse now releases with the final split instead of remaining owned by the 0.10.99 centerline keyframe.",
+    "latest-dev.js was intentionally left untouched; the established 700 / 850 / 850 / 1350 / 900 / 720 / 140 / 1080 ms cinematic waits remain unchanged.",
     "Replaced the fake CYBERPUNK header text treatment with an actual Cyberpunk logo image layer referenced externally, without embedding proprietary image bytes in the public repo.",
     "Removed the remaining palette widgets / utility-tag clutter and kept only restrained structural asymmetry.",
     "Fixed CONNECTION ESTABLISHED so the final black/yellow state uses the exact same layout position and same DOM words as the preceding cyan title instead of relocating to a separate fixed-screen lockup.",
