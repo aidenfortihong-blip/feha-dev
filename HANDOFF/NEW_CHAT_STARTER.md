@@ -1,4 +1,4 @@
-# FEHA / ADK NEW CHAT STARTER — 2026-09-27
+# FEHA / ADK NEW CHAT STARTER — 2026-09-28
 
 Continue the FEHA / ADK Foundry project from:
 
@@ -8,52 +8,57 @@ Continue the FEHA / ADK Foundry project from:
 
 Read:
 
-`HANDOFF/FEHA_MASTER_HANDOFF_2026-09-27.md`
+`HANDOFF/FEHA_MASTER_HANDOFF_2026-09-28.md`
 
 Then inspect the current repo before making any changes.
 
 ## Current build
 
-**0.10.38**
+**0.10.79**
 
-## Working rules
+## Non-negotiable working rules
 
-- Patch GitHub directly. Do not ask me to paste repo code into Foundry.
-- One conceptual change per pass. Test it, then move on.
-- Preserve working functionality.
+- Patch GitHub directly. Do not ask me to paste normal repo code into Foundry.
+- One conceptual change per pass unless I explicitly ask for a bundle.
+- Current repo/main and version.json beat older handoffs/README.
 - V3 is primary. V2 is fallback only.
-- Real Scene Token positions are authoritative in JACK IN.
-- Current JACK IN uses direct trace lines only; do not restore relays unless I ask.
-- Do not spend Quickhack RAM until APPLY DAMAGE / APPLY EFFECT.
-- Target repeat-click deselects.
-- Do not rerender JACK IN on simple target-state changes.
-- Camera tokens are not normal actor targets.
+- Playable roster is Ponyboy, Derke, Sasha, Zach only.
+- Do not surface Jing.
+- Preserve working Market / Wallet / Cyberdeck / JACK IN behavior unless I ask to change it.
 
-## Current task
+## Current task / Gateway state
 
-We are working on Cameras.
+Current focus is the Entry Gateway cinematic handoff.
 
-Camera placement foundation is already implemented in 0.10.38:
-- Actor folder named `Camera`
-- per-operator/per-user Camera actor
-- user OWNER permission
-- JACK IN CAMERA placement mode
-- placement ghost
-- normalized JACK IN position -> matching real active Scene Camera token
-- existing Camera tokens mirror back into JACK IN
-- FOV metadata already stored on Camera token flags
+Current 0.10.79 flow:
 
-**Next pass: FOV only.**
+1. Gateway preloads YouTube video id `mH2wmyeiIpA`.
+2. Exact typed valid name attempts to start the YouTube audio.
+3. Player authenticates.
+4. ESTABLISH LINK retries/resumes playback from the button gesture if autoplay blocked it.
+5. Longer blue 3D fly-through runs.
+6. The already-running video fades in from behind the blue field.
+7. Main transition centerpiece says **ACTIVATED // CONNECTION ESTABLISHED**.
+8. Blue UI fades away.
+9. Video owns the screen.
+10. Player gets **SKIP INTRO**.
+11. Skip or natural video end returns to the live scene.
 
-Build:
-- selectable FOV presets
-- directional cone
-- rotation control
-- persist angle/rotation through `FEHA_CAMERAS.js`
+AI/browser speech voice is removed.
+Old private MP3 match-track importer is removed.
 
-Do not rebuild placement.
-Do not add camera range/movement in the same pass unless I explicitly ask.
-Do not add relays.
-Do not refactor unrelated CSS.
+## Important regressions to avoid
 
-If I say “continue cameras,” start from the current 0.10.38 repo and patch the FOV pass directly.
+- no gray Gateway wash
+- no strip under CYBERPUNK
+- left side scrolls and auto-follows
+- right side never scrolls
+- no role/archetype subtitle
+- no SIGNATURE/CLEARANCE filler
+- no AI voice
+- no Jing
+- no relays in JACK IN
+- RUN preview does not spend RAM
+- Credits/CR remains canonical
+
+If I send a screenshot with one problem, patch that one problem directly.
