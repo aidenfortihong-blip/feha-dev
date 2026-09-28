@@ -12727,3 +12727,306 @@ body #adk-market-15#adk-market-15 #top-directory {
     transition:none!important;
   }
 }
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.83 CONNECTION ESTABLISHED CINEMATIC POLISH
+   Final blue state is one centered message only. The surrounding diagnostic
+   HUD dissolves away, the confirmation lands cleanly, then the blue system
+   crossfades slowly into the already-running intro video.
+   ========================================================================== */
+
+/* Slow the underlying video reveal so it resolves behind the blue field rather
+   than popping into view before the connection lockup has landed. */
+#feha-gateway-intro-stage.feha-gateway-intro-stage {
+  transition:opacity 2.85s cubic-bezier(.16,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-media {
+  transform:scale(1.045)!important;
+  filter:
+    saturate(.88)
+    contrast(1.08)
+    brightness(.68)!important;
+  transition:
+    filter 3.0s cubic-bezier(.18,.72,.18,1),
+    transform 5.8s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-media {
+  filter:
+    saturate(1)
+    contrast(1.025)
+    brightness(.97)!important;
+  transform:scale(1)!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-shade {
+  opacity:.94!important;
+  transition:opacity 2.45s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-shade {
+  opacity:.24!important;
+}
+
+/* The old media label is intentionally gone; the intro itself should be clean. */
+#feha-gateway-intro-stage .feha-gateway-intro-meta {
+  display:none!important;
+}
+
+/* Keep the blue system substantial while the video first appears beneath it. */
+#feha-link-start.feha-linkstart {
+  transition:
+    opacity .14s ease,
+    background 2.65s cubic-bezier(.18,.72,.18,1),
+    backdrop-filter 2.35s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-link-start.feha-linkstart.is-video-reveal {
+  background:
+    radial-gradient(circle at 50% 48%,rgba(57,230,255,.14),transparent 31%),
+    linear-gradient(180deg,rgba(0,24,42,.955),rgba(0,8,16,.86))!important;
+  backdrop-filter:saturate(.78) brightness(.70) blur(.35px)!important;
+}
+
+#feha-link-start.is-video-reveal .feha-linkstart-vignette {
+  background:
+    radial-gradient(circle at center,transparent 0 30%,rgba(0,24,42,.25) 62%,rgba(0,3,8,.78) 100%)!important;
+  transition:background 2.4s ease!important;
+}
+
+/* FINAL STATE: every textual readout except CONNECTION ESTABLISHED goes away. */
+#feha-link-start.is-live .feha-linkstart-top,
+#feha-link-start.is-live .feha-linkstart-subject,
+#feha-link-start.is-live .feha-linkstart-route,
+#feha-link-start.is-live .feha-linkstart-progress,
+#feha-link-start.is-live .feha-linkstart-status,
+#feha-link-start.is-live .feha-linkstart-footer {
+  opacity:0!important;
+  transform:translateY(5px) translateZ(20px)!important;
+  transition:
+    opacity .58s ease,
+    transform .72s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+/* True optical center: the title no longer shares layout space with the
+   diagnostics above and below it once the connection is established. */
+#feha-link-start.is-live .feha-linkstart-title-wrap {
+  position:fixed!important;
+  inset:0!important;
+  z-index:24!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  perspective:900px!important;
+  pointer-events:none!important;
+}
+
+#feha-link-start .feha-linkstart-title-lock {
+  position:relative!important;
+  width:min(900px,82vw)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  transform:translateX(0)!important;
+  transform-style:preserve-3d!important;
+}
+
+/* Soft halo + a thin confirmation rail are visual punctuation, not extra copy. */
+#feha-link-start.is-live .feha-linkstart-title-lock::before {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:min(78vw,980px)!important;
+  height:min(42vh,390px)!important;
+  transform:translate(-50%,-50%) scale(.78)!important;
+  border-radius:50%!important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(119,242,255,.15) 0%,
+      rgba(57,230,255,.065) 28%,
+      rgba(57,230,255,.018) 48%,
+      transparent 70%)!important;
+  opacity:0!important;
+  filter:blur(5px)!important;
+  animation:feha-link-confirm-halo 1.45s cubic-bezier(.18,.72,.18,1) forwards!important;
+}
+
+#feha-link-start.is-live .feha-linkstart-title-lock::after {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:calc(50% + clamp(86px,10vh,120px))!important;
+  width:0!important;
+  height:1px!important;
+  transform:translateX(-50%)!important;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(121,239,255,.18) 14%,
+      rgba(121,239,255,.88) 50%,
+      rgba(121,239,255,.18) 86%,
+      transparent)!important;
+  box-shadow:0 0 14px rgba(57,230,255,.32)!important;
+  opacity:0!important;
+  animation:feha-link-confirm-rail 1.15s .18s cubic-bezier(.16,.78,.18,1) forwards!important;
+}
+
+#feha-link-start .feha-linkstart-title-main {
+  margin:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:var(--eg-cyan,#43ecff)!important;
+  font-size:clamp(66px,9.2vw,146px)!important;
+  font-weight:950!important;
+  line-height:.74!important;
+  letter-spacing:-.05em!important;
+  text-transform:uppercase!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  text-shadow:
+    0 0 10px rgba(226,253,255,.18),
+    0 0 28px rgba(57,230,255,.18),
+    0 0 64px rgba(57,230,255,.07)!important;
+}
+
+#feha-link-start.is-live .feha-linkstart-title-main {
+  color:var(--eg-cyan,#43ecff)!important;
+  animation:
+    feha-link-confirm-title 1.15s cubic-bezier(.16,.8,.18,1) both,
+    feha-link-confirm-breathe 2.8s 1.15s ease-in-out infinite alternate!important;
+}
+
+@keyframes feha-link-confirm-title {
+  0% {
+    opacity:0;
+    transform:translateZ(-180px) scale(.84);
+    filter:blur(9px) brightness(1.65);
+    letter-spacing:-.085em;
+  }
+  38% {
+    opacity:1;
+    filter:blur(1px) brightness(1.24);
+  }
+  72% {
+    transform:translateZ(22px) scale(1.025);
+    filter:blur(0) brightness(1.08);
+  }
+  100% {
+    opacity:1;
+    transform:translateZ(0) scale(1);
+    filter:blur(0) brightness(1);
+    letter-spacing:-.05em;
+  }
+}
+
+@keyframes feha-link-confirm-breathe {
+  from {
+    text-shadow:
+      0 0 10px rgba(226,253,255,.16),
+      0 0 26px rgba(57,230,255,.15),
+      0 0 58px rgba(57,230,255,.055);
+  }
+  to {
+    text-shadow:
+      0 0 12px rgba(226,253,255,.22),
+      0 0 34px rgba(57,230,255,.24),
+      0 0 78px rgba(57,230,255,.09);
+  }
+}
+
+@keyframes feha-link-confirm-halo {
+  0%   {opacity:0; transform:translate(-50%,-50%) scale(.72)}
+  42%  {opacity:.9}
+  100% {opacity:.62; transform:translate(-50%,-50%) scale(1)}
+}
+
+@keyframes feha-link-confirm-rail {
+  0%   {width:0; opacity:0}
+  35%  {opacity:1}
+  100% {width:min(46vw,640px); opacity:.72}
+}
+
+/* Replace the old short white punch with a slower cyan confirmation bloom. */
+#feha-link-start.is-live .feha-linkstart-flash {
+  animation:feha-link-confirm-flash 1.18s cubic-bezier(.16,.75,.18,1) forwards!important;
+}
+
+@keyframes feha-link-confirm-flash {
+  0%   {opacity:0; transform:scale(.84)}
+  24%  {opacity:.42}
+  52%  {opacity:.16; transform:scale(1.04)}
+  100% {opacity:0; transform:scale(1.28)}
+}
+
+/* The depth field eases forward instead of abruptly lunging at the viewer. */
+#feha-link-start.is-live .feha-linkstart-space {
+  animation:
+    feha-link-camera-drift 3.15s cubic-bezier(.18,.7,.25,1) both,
+    feha-link-final-glide 1.45s cubic-bezier(.16,.72,.18,1) forwards!important;
+}
+
+@keyframes feha-link-final-glide {
+  from {
+    transform:translateZ(0) scale(1);
+  }
+  to {
+    transform:translateZ(300px) scale(1.045);
+  }
+}
+
+/* Long, satisfying crossfade into the video. The title floats away a fraction
+   more slowly than the background so the eye has a clean handoff target. */
+#feha-link-start.is-video-handoff {
+  opacity:0!important;
+  background:rgba(0,11,18,0)!important;
+  backdrop-filter:none!important;
+  transition:
+    opacity 1.62s cubic-bezier(.18,.72,.18,1),
+    background 1.72s cubic-bezier(.18,.72,.18,1),
+    backdrop-filter 1.55s ease!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-title-wrap {
+  opacity:0!important;
+  transform:scale(1.045)!important;
+  filter:blur(3px)!important;
+  transition:
+    opacity 1.28s cubic-bezier(.18,.72,.18,1),
+    transform 1.62s cubic-bezier(.18,.72,.18,1),
+    filter 1.28s ease!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-core,
+#feha-link-start.is-video-handoff .feha-linkstart-top,
+#feha-link-start.is-video-handoff .feha-linkstart-footer,
+#feha-link-start.is-video-handoff .feha-linkstart-space {
+  opacity:0!important;
+  transition:opacity 1.42s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+@media(max-width:900px) {
+  #feha-link-start .feha-linkstart-title-main {
+    font-size:clamp(54px,12.8vw,112px)!important;
+  }
+
+  #feha-link-start .feha-linkstart-title-lock {
+    width:90vw!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #feha-link-start.is-live .feha-linkstart-title-main,
+  #feha-link-start.is-live .feha-linkstart-title-lock::before,
+  #feha-link-start.is-live .feha-linkstart-title-lock::after,
+  #feha-link-start.is-live .feha-linkstart-flash,
+  #feha-link-start.is-live .feha-linkstart-space {
+    animation:none!important;
+  }
+}
+
