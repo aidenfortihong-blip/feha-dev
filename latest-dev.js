@@ -1842,6 +1842,10 @@
         .querySelector("[data-feha-intro-skip]")
         ?.addEventListener("click",() => {
           play("select",.18,0);
+
+          // User asked for SKIP to eject from browser fullscreen immediately,
+          // not after the audiovisual fade finishes.
+          void exitIntroFullscreen();
           void finishIntroMedia({reason:"skip"});
         });
 
@@ -3341,23 +3345,26 @@
 
       playLinkSceneCue("live");
 
-      // Let CONNECTION ESTABLISHED land long enough to read, then split it
-      // apart as the video takes the frame.
-      await sleep(1125);
+      // Let CONNECTION ESTABLISHED land, then peel the blue environment away
+      // FIRST. By the time the words split, the viewer should already be
+      // looking at almost pure video with only the title floating over it.
+      await sleep(900);
 
-      // Commit while the blue layer still fully owns the frame.
+      linkOverlay?.classList.add("is-video-preopen");
+      await sleep(720);
+
+      // Commit once the blue field is nearly gone but the title is still held.
       close(true,{
         keepLinkOverlay:true,
         keepIntroStage:true
       });
 
-      // A short confirmation impact gives the eye a satisfying punctuation
-      // before the blue field releases into the already-running video.
+      // Tiny seam-charge, then the two words rip apart over the exposed video.
       linkOverlay?.classList.add("is-video-impact");
-      await sleep(180);
+      await sleep(140);
 
       linkOverlay?.classList.add("is-video-handoff");
-      await sleep(1450);
+      await sleep(1080);
 
       linkOverlay?.remove?.();
       linkOverlay = null;
