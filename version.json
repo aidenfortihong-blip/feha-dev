@@ -1,8 +1,13 @@
 {
-  "version": "0.10.108",
+  "version": "0.10.109",
   "updated": "2026-09-28",
-  "scope": "definitive-remove-top-hardware-eject",
+  "scope": "chrome-manager-large-readable-type",
   "notes": [
+    "Substantially increased Chrome Manager typography across the top bar, system index, subject telemetry, inspector, hardware dossier, cache drawer, buttons, metrics, and footer.",
+    "Raised formerly 6-9px microtext into roughly 10-12px territory and increased normal labels/body copy into roughly 14-16px territory.",
+    "Increased major system and hardware titles while keeping the existing layout and visual style intact.",
+    "Preserved the 0.10.108 removal of the redundant small top EJECT button.",
+    "No Chrome Manager logic, Gateway behavior, or cinematic timing changed.",
     "Fixed the redundant top EJECT button with the exact data-feha-rerun=040 selector needed to override the older installed-port display:flex!important rule.",
     "The filled hardware port now uses only thumbnail plus item text; the third action column is removed.",
     "The large bottom EJECT AUGMENT control remains unchanged as the single uninstall action.",
