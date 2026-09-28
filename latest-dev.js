@@ -2276,7 +2276,16 @@
           <header class="feha-eg-header">
             <div>
               <div class="feha-eg-node">SESSION ACCESS NODE // ADK</div>
-              <h1>CYBERPUNK</h1>
+              <h1 class="feha-eg-brand-lockup">
+                <img
+                  class="feha-eg-brand-logo"
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg/960px-Cyberpunk_2077_logo_yellow-turquoise.svg.png"
+                  alt="Cyberpunk 2077"
+                  referrerpolicy="no-referrer"
+                  decoding="async"
+                >
+                <span>CYBERPUNK</span>
+              </h1>
               <div class="feha-eg-cp-header-strip" aria-hidden="true"></div>
             </div>
 
