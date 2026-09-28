@@ -18006,3 +18006,50 @@ body #adk-market-15#adk-market-15 #top-directory {
     min-height:110px!important;
   }
 }
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.105 RESTORE FULL LOGO + CLEAR SESSION LABEL
+   User clarification:
+   - KEEP the full 2077 subline
+   - remove the tiny yellow/cyan logo tip intruding into SESSION ACCESS NODE // ADK
+   - retain 0.10.104 deadspace/progress cleanup
+   ========================================================================== */
+
+/* Restore the complete logo artwork, including 2077. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-logo {
+  clip-path:none!important;
+  top:0!important;
+  height:82px!important;
+  width:min(470px,42vw)!important;
+  object-fit:contain!important;
+  object-position:left top!important;
+}
+
+/* Keep the logo entirely below the session-access microcopy. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup {
+  margin-top:5px!important;
+  height:82px!important;
+  overflow:visible!important;
+}
+
+/* Ensure the small red session label always sits cleanly above the logo art. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-node {
+  position:relative!important;
+  z-index:12!important;
+  background:#061015!important;
+  width:max-content!important;
+  padding-right:8px!important;
+}
+
+@media(max-height:820px) and (min-width:1001px){
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-logo{
+    top:0!important;
+    height:70px!important;
+    width:min(400px,38vw)!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup{
+    margin-top:3px!important;
+    height:70px!important;
+  }
+}
