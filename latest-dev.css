@@ -13432,3 +13432,144 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.86 VIDEO-FIRST SPLIT + INSTANT SKIP EJECT
+   Before CONNECTION / ESTABLISHED split apart, the blue system has already
+   faded to a whisper so the viewer is essentially looking at the raw video.
+   ========================================================================== */
+
+/* PRE-OPEN: keep the title fully readable, but dissolve the environment until
+   it is barely there. This is the missing beat from 0.10.85. */
+#feha-link-start.is-video-preopen {
+  background:
+    radial-gradient(circle at 50% 48%,
+      rgba(57,230,255,.032),
+      rgba(0,16,28,.018) 36%,
+      transparent 68%),
+    linear-gradient(180deg,
+      rgba(0,10,18,.095),
+      rgba(0,3,7,.055))!important;
+  backdrop-filter:
+    saturate(.98)
+    brightness(.98)
+    blur(0)!important;
+  transition:
+    background .64s cubic-bezier(.18,.72,.18,1),
+    backdrop-filter .64s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-link-start.is-video-preopen .feha-linkstart-space {
+  opacity:.055!important;
+  transform:translateZ(430px) scale(1.075)!important;
+  filter:blur(1.2px)!important;
+  transition:
+    opacity .64s cubic-bezier(.18,.72,.18,1),
+    transform .72s cubic-bezier(.16,.76,.16,1),
+    filter .64s ease!important;
+}
+
+#feha-link-start.is-video-preopen .feha-linkstart-vignette {
+  opacity:.08!important;
+  transition:opacity .58s ease!important;
+}
+
+#feha-link-start.is-video-preopen .feha-linkstart-flash {
+  opacity:0!important;
+}
+
+#feha-link-start.is-video-preopen .feha-linkstart-title-wrap {
+  opacity:1!important;
+}
+
+#feha-link-start.is-video-preopen .feha-linkstart-title-lock::before {
+  opacity:.18!important;
+  filter:blur(10px)!important;
+  transition:
+    opacity .58s ease,
+    filter .58s ease!important;
+}
+
+#feha-link-start.is-video-preopen .feha-linkstart-title-lock::after {
+  opacity:.36!important;
+  transition:opacity .58s ease!important;
+}
+
+/* At the instant of the split, the background should already read as video,
+   not "blue UI with video under it". */
+#feha-link-start.is-video-preopen.is-video-impact,
+#feha-link-start.is-video-preopen.is-video-handoff {
+  background:rgba(0,4,8,.025)!important;
+  backdrop-filter:none!important;
+}
+
+#feha-link-start.is-video-preopen.is-video-impact .feha-linkstart-space,
+#feha-link-start.is-video-preopen.is-video-handoff .feha-linkstart-space {
+  opacity:.025!important;
+}
+
+/* Keep the seam hit tight. It should punctuate the split, not put a blue veil
+   back over the footage we just exposed. */
+#feha-link-start.is-video-preopen.is-video-impact .feha-linkstart-flash {
+  opacity:1!important;
+  background:
+    linear-gradient(180deg,
+      transparent 0 48.5%,
+      rgba(220,252,255,.05) 49.1%,
+      rgba(238,255,255,.82) 49.8%,
+      #fff 50%,
+      rgba(238,255,255,.82) 50.2%,
+      rgba(220,252,255,.05) 50.9%,
+      transparent 51.5%)!important;
+  animation:feha-link-split-charge-086 .34s cubic-bezier(.10,.84,.16,1) forwards!important;
+}
+
+@keyframes feha-link-split-charge-086 {
+  0%   {opacity:0; transform:scaleX(.22); filter:blur(1.4px)}
+  36%  {opacity:.70; transform:scaleX(.88); filter:blur(.2px)}
+  100% {opacity:0; transform:scaleX(1.14); filter:blur(2.5px)}
+}
+
+/* Split slightly faster now that the video is already fully exposed. */
+#feha-link-start.is-video-preopen.is-video-handoff .feha-linkstart-title-main > span:first-child {
+  transform:
+    translateX(-78vw)
+    skewX(-12deg)
+    scaleX(1.09)!important;
+  opacity:0!important;
+  filter:blur(4px) brightness(1.20)!important;
+  transition:
+    transform .80s cubic-bezier(.14,.82,.10,1),
+    opacity .56s .04s ease,
+    filter .64s ease!important;
+}
+
+#feha-link-start.is-video-preopen.is-video-handoff .feha-linkstart-title-main > span:last-child {
+  transform:
+    translateX(78vw)
+    skewX(12deg)
+    scaleX(1.09)!important;
+  opacity:0!important;
+  filter:blur(4px) brightness(1.20)!important;
+  transition:
+    transform .80s cubic-bezier(.14,.82,.10,1),
+    opacity .56s .04s ease,
+    filter .64s ease!important;
+}
+
+/* The root itself is nearly invisible before the split; the final handoff just
+   removes the last few percent of interface residue. */
+#feha-link-start.is-video-preopen.is-video-handoff {
+  opacity:0!important;
+  transition:opacity .96s .08s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+@media(max-width:900px) {
+  #feha-link-start.is-video-preopen.is-video-handoff .feha-linkstart-title-main > span:first-child {
+    transform:translateX(-94vw) skewX(-10deg) scaleX(1.06)!important;
+  }
+
+  #feha-link-start.is-video-preopen.is-video-handoff .feha-linkstart-title-main > span:last-child {
+    transform:translateX(94vw) skewX(10deg) scaleX(1.06)!important;
+  }
+}
+
