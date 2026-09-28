@@ -19478,3 +19478,38 @@ body #adk-market-15#adk-market-15 #top-directory {
     inset 14px 0 28px rgba(207,115,255,.035),
     inset 0 0 0 1px rgba(207,115,255,.022)!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.113 CRISP INSPECTOR MICROHEADER
+   Screenshot-driven fix for SELECTED AUGMENTATION BUS:
+   - keep the same font size, line-height and letter spacing
+   - make the top label substantially crisper/heavier
+   - move both header lines down another 2px without changing total vertical
+     padding (6px top + 2px bottom = same 8px footprint)
+   ========================================================================== */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header {
+  transform:none!important;
+  padding:6px 0 2px!important;
+  overflow:visible!important;
+}
+
+/* Top line: remove the washed-out/thin look. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header > span {
+  color:rgba(var(--cm-user-primary-rgb),.78)!important;
+  opacity:1!important;
+  font-weight:900!important;
+  text-shadow:none!important;
+  filter:none!important;
+  -webkit-font-smoothing:auto!important;
+  text-rendering:geometricPrecision!important;
+}
+
+/* Keep the selected bus value vivid, but remove any soft blur from it too. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header > small {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  opacity:1!important;
+  font-weight:900!important;
+  text-shadow:0 0 5px rgba(var(--cm-user-primary-rgb),.10)!important;
+  filter:none!important;
+}
