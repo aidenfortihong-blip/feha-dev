@@ -20067,3 +20067,35 @@ body #adk-market-15#adk-market-15 #top-directory {
   82%{transform:translateX(138px) skewX(12deg);opacity:.8}
   100%{transform:translateX(190px);opacity:0}
 }
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.120 REDUCED-MOTION GLITCH GUARD
+   Preserve the huge 0.10.117 glitch normally, but do not override an OS-level
+   reduced-motion request with the later high-intensity glitch rules.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  #feha-link-start .feha-link-glitch-strip {
+    display:none!important;
+    animation:none!important;
+    opacity:0!important;
+  }
+
+  #feha-link-start.is-video-glitch
+  .feha-linkstart-title-main > span[data-feha-glitch]::before,
+  #feha-link-start.is-video-glitch
+  .feha-linkstart-title-main > span[data-feha-glitch]::after,
+  #feha-link-start.is-video-handoff
+  .feha-linkstart-title-main > span[data-feha-glitch]::before,
+  #feha-link-start.is-video-handoff
+  .feha-linkstart-title-main > span[data-feha-glitch]::after {
+    content:none!important;
+    display:none!important;
+    animation:none!important;
+    opacity:0!important;
+  }
+
+  #feha-link-start.is-video-glitch .feha-linkstart-title-main > span,
+  #feha-link-start.is-video-handoff .feha-linkstart-title-main > span {
+    text-shadow:none!important;
+  }
+}
