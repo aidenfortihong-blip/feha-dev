@@ -1,8 +1,12 @@
 {
-  "version": "0.10.104",
+  "version": "0.10.105",
   "updated": "2026-09-28",
-  "scope": "gateway-clean-logo-boot-space-no-rainbow",
+  "scope": "restore-full-logo-clear-session-label",
   "notes": [
+    "Restored the full Cyberpunk logo including the 2077 subline; the previous crop was reverted.",
+    "Moved the real logo image down into its own header slot so the yellow/turquoise upper-right stroke no longer intrudes into SESSION ACCESS NODE // ADK.",
+    "Kept the 0.10.104 full-height left terminal and cyan-only biometric progress bar unchanged.",
+    "Kept the working forced final CONNECTION-left / ESTABLISHED-right split and all cinematic waits unchanged.",
     "Cleaned the Gateway logo lockup by clipping away the separate 2077 subline while preserving the lower-left Cyberpunk descender.",
     "Expanded the left Gateway terminal into a full-height flex column so the event console fills the large dead area beneath the boot/auth stack.",
     "Replaced the biometric red/yellow/green progress fill with a single cyan signal gradient and cyan glow.",
