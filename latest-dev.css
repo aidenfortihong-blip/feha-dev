@@ -14599,3 +14599,510 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA ENTRY GATEWAY // 0.10.91 INDUSTRIAL CYBERPUNK IDENTITY PASS
+   Fixes the "dark sci-fi dashboard" feeling by adding stronger hierarchy,
+   asymmetry, clipped geometry, chunky signal colors, and intentional dead-space
+   treatment. No cinematic timing or Gateway behavior changes.
+   ========================================================================== */
+
+/* The shell needs physical-looking construction, not one thin rectangle. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+  position:relative!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 22px) 0,
+    100% 22px,
+    100% calc(100% - 18px),
+    calc(100% - 18px) 100%,
+    18px 100%,
+    0 calc(100% - 18px)
+  )!important;
+  box-shadow:
+    0 34px 130px rgba(0,0,0,.92),
+    0 0 0 1px rgba(57,230,255,.055),
+    0 0 76px rgba(57,230,255,.055)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell::after {
+  content:""!important;
+  position:absolute!important;
+  left:18px!important;
+  right:18px!important;
+  bottom:0!important;
+  height:4px!important;
+  z-index:45!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0 7%,
+      transparent 7% 9%,
+      var(--eg-yellow) 9% 24%,
+      transparent 24% 26%,
+      var(--eg-cyan) 26% 61%,
+      transparent 61% 64%,
+      rgba(57,230,255,.18) 64% 82%,
+      transparent 82% 86%,
+      var(--eg-green) 86% 100%)!important;
+  opacity:.78!important;
+}
+
+/* HEADER // more branded, less office-dashboard. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+  position:relative!important;
+  background:
+    linear-gradient(90deg,rgba(255,80,104,.10),transparent 22%),
+    linear-gradient(105deg,transparent 0 68%,rgba(57,230,255,.035) 68% 72%,transparent 72%),
+    #061015!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header::before {
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:7px!important;
+  background:
+    linear-gradient(180deg,
+      var(--eg-red) 0 28%,
+      transparent 28% 36%,
+      var(--eg-yellow) 36% 58%,
+      transparent 58% 66%,
+      var(--eg-cyan) 66% 100%)!important;
+  opacity:.96!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-node {
+  position:relative!important;
+  padding-left:16px!important;
+  color:var(--eg-red)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-node::before {
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:50%!important;
+  width:8px!important;
+  height:8px!important;
+  transform:translateY(-50%) rotate(45deg)!important;
+  background:var(--eg-red)!important;
+  box-shadow:0 0 14px rgba(255,80,104,.28)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+  position:relative!important;
+  width:max-content!important;
+  padding-right:28px!important;
+  color:#f8feff!important;
+  text-shadow:
+    2px 0 0 rgba(255,80,104,.16),
+    -2px 0 0 rgba(57,230,255,.13),
+    0 0 22px rgba(57,230,255,.06)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1::after {
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  right:-28px!important;
+  bottom:-10px!important;
+  height:3px!important;
+  background:
+    linear-gradient(90deg,
+      var(--eg-yellow) 0 18%,
+      transparent 18% 22%,
+      var(--eg-red) 22% 34%,
+      transparent 34% 39%,
+      var(--eg-cyan) 39% 100%)!important;
+  clip-path:polygon(0 0,100% 0,96% 100%,0 100%)!important;
+  opacity:.82!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state {
+  position:relative!important;
+  justify-content:center!important;
+  min-width:178px!important;
+  padding:0 18px!important;
+  background:#02080b!important;
+  border:1px solid rgba(57,230,255,.13)!important;
+  border-left:3px solid var(--eg-cyan)!important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)!important;
+}
+
+/* BODY // make the empty space feel engineered rather than unfinished. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  position:relative!important;
+  background:
+    linear-gradient(90deg,rgba(255,80,104,.025),transparent 11%),
+    linear-gradient(180deg,rgba(57,230,255,.016),transparent 18%),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 44px,
+      rgba(57,230,255,.012) 44px 45px,
+      transparent 45px 90px
+    ),
+    #02080b!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::after {
+  content:""!important;
+  position:absolute!important;
+  left:22px!important;
+  right:22px!important;
+  bottom:18px!important;
+  height:1px!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0 8%,
+      transparent 8% 11%,
+      rgba(57,230,255,.17) 11% 69%,
+      transparent 69% 74%,
+      var(--eg-yellow) 74% 86%,
+      transparent 86%)!important;
+  opacity:.44!important;
+}
+
+/* Section titles need a stronger signature. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title {
+  position:relative!important;
+  min-height:20px!important;
+  padding-left:15px!important;
+  color:var(--eg-cyan)!important;
+  letter-spacing:2px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::before {
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:2px!important;
+  width:5px!important;
+  height:15px!important;
+  background:var(--eg-yellow)!important;
+  clip-path:polygon(0 0,100% 0,65% 100%,0 100%)!important;
+}
+
+/* BOOT block gets a red identity spine and harder corners. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot {
+  position:relative!important;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)!important;
+  border-left:3px solid var(--eg-red)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(57,230,255,.035),
+    inset 14px 0 28px rgba(255,80,104,.022)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot::after {
+  content:"SYSTEM / IDENTITY GATE"!important;
+  position:absolute!important;
+  right:12px!important;
+  top:9px!important;
+  color:rgba(255,216,92,.46)!important;
+  font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:1.6px!important;
+  pointer-events:none!important;
+}
+
+/* AUTH block becomes a proper interactive slab rather than a bordered card. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+  position:relative!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 15px) 0,
+    100% 15px,
+    100% 100%,
+    11px 100%,
+    0 calc(100% - 11px)
+  )!important;
+  border-top:2px solid rgba(255,216,92,.58)!important;
+  border-left:1px solid rgba(57,230,255,.34)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(57,230,255,.035),
+    inset -38px 0 60px rgba(255,216,92,.018)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card::after {
+  content:"AUTH / CIVIL-ID"!important;
+  position:absolute!important;
+  right:14px!important;
+  top:10px!important;
+  color:rgba(57,230,255,.30)!important;
+  font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:1.5px!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell {
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)!important;
+  box-shadow:
+    inset 0 0 18px rgba(57,230,255,.024),
+    0 0 0 1px rgba(57,230,255,.025)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell > span {
+  color:#031014!important;
+  background:var(--eg-cyan)!important;
+  height:100%!important;
+  clip-path:polygon(0 0,100% 0,82% 100%,0 100%)!important;
+}
+
+/* Turn the disabled auth action into an obvious dormant machine control. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth {
+  position:relative!important;
+  clip-path:polygon(0 0,calc(100% - 13px) 0,100% 13px,100% 100%,13px 100%,0 calc(100% - 13px))!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth:disabled {
+  color:#697b80!important;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,.015) 0 7px,
+      transparent 7px 14px
+    ),
+    #0b1519!important;
+}
+
+/* Biometrics get alternating technical bars instead of identical rows. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div {
+  position:relative!important;
+  overflow:hidden!important;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div:nth-child(odd) {
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.035),transparent 42%),
+    #061116!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div:nth-child(even) {
+  background:
+    linear-gradient(90deg,rgba(255,216,92,.025),transparent 38%),
+    #061116!important;
+}
+
+/* RIGHT RAIL // stop looking like a spreadsheet. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-side {
+  position:relative!important;
+  border-left:1px solid rgba(57,230,255,.10)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  position:relative!important;
+  clip-path:polygon(
+    0 0,
+    calc(100% - 13px) 0,
+    100% 13px,
+    100% 100%,
+    13px 100%,
+    0 calc(100% - 13px)
+  )!important;
+  border-color:rgba(57,230,255,.24)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel {
+  border-top:2px solid var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  position:relative!important;
+  color:#eaffff!important;
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.075),transparent 64%),
+    #071319!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header::after {
+  content:""!important;
+  position:absolute!important;
+  right:0!important;
+  top:0!important;
+  width:58px!important;
+  height:100%!important;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,216,92,.22) 0 2px,
+      transparent 2px 7px
+    )!important;
+  opacity:.22!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+  position:relative!important;
+  grid-template-columns:34px minmax(0,1fr) auto!important;
+  border-left:0!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate::before {
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:8px!important;
+  bottom:8px!important;
+  width:3px!important;
+  background:var(--candidate)!important;
+  opacity:.26!important;
+  transition:opacity .16s ease,width .16s ease!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate:hover::before {
+  opacity:.62!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate.active::before {
+  width:7px!important;
+  opacity:1!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate.active {
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb,var(--candidate) 18%,transparent),
+      rgba(57,230,255,.03) 55%,
+      transparent),
+    #041015!important;
+}
+
+/* Empty profile should look like a deliberate scanner bay, not a blank box. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  border-top:2px solid rgba(255,80,104,.72)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty {
+  justify-content:center!important;
+  align-items:flex-start!important;
+  padding:24px!important;
+  background:
+    linear-gradient(135deg,transparent 0 67%,rgba(255,80,104,.025) 67% 68%,transparent 68%),
+    radial-gradient(circle at 50% 45%,rgba(57,230,255,.045),transparent 34%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 23px,
+      rgba(57,230,255,.012) 23px 24px
+    ),
+    #010608!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty::after {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:43%!important;
+  pointer-events:none!important;
+  transform:translate(-50%,-50%)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty::before {
+  width:96px!important;
+  height:96px!important;
+  border:1px solid rgba(57,230,255,.11)!important;
+  border-left-color:rgba(255,80,104,.32)!important;
+  border-right-color:rgba(255,216,92,.22)!important;
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty::after {
+  width:150px!important;
+  height:1px!important;
+  background:
+    linear-gradient(90deg,transparent,rgba(57,230,255,.18),transparent)!important;
+  box-shadow:0 28px 0 rgba(255,80,104,.09),0 -28px 0 rgba(255,216,92,.07)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty span {
+  top:14px!important;
+  left:14px!important;
+  color:rgba(255,80,104,.78)!important;
+  border-color:rgba(255,80,104,.32)!important;
+  background:#05090bd9!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty b {
+  position:absolute!important;
+  left:22px!important;
+  bottom:42px!important;
+  color:#6f858c!important;
+  font-size:28px!important;
+  letter-spacing:.04em!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty small {
+  position:absolute!important;
+  left:22px!important;
+  bottom:22px!important;
+  color:#4f666d!important;
+}
+
+/* Live portrait keeps the clean full-bleed image, but gets one hard identity rail. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live::after {
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:4px!important;
+  z-index:5!important;
+  background:
+    linear-gradient(180deg,var(--subject),var(--eg-red))!important;
+  opacity:.86!important;
+  pointer-events:none!important;
+}
+
+/* PRE-AUTH FOOTER gets enough punctuation to feel like hardware status. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-footer {
+  position:relative!important;
+}
+
+#adk-entry-gateway.feha-eg-custom:not(.is-granted) .feha-eg-footer::before {
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:100%!important;
+  height:2px!important;
+  background:
+    linear-gradient(90deg,
+      var(--eg-yellow) 0 11%,
+      transparent 11% 14%,
+      rgba(57,230,255,.34) 14% 72%,
+      transparent 72% 76%,
+      var(--eg-red) 76% 82%,
+      transparent 82%)!important;
+  opacity:.66!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bypass {
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)!important;
+}
+
+/* Keep the tall JACK IN exactly as the dominant post-auth payoff, but make it
+   visually related to the rest of the Gateway rather than a separate app. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin {
+  border-left:6px solid var(--eg-red)!important;
+  border-right:6px solid var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center b {
+  text-shadow:1px 1px 0 rgba(255,255,255,.18)!important;
+}
+
+@media(max-height:820px) and (min-width:1001px) {
+  #adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty::before {
+    width:76px!important;
+    height:76px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty b {
+    font-size:24px!important;
+  }
+}
+
