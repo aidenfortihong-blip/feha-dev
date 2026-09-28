@@ -2379,37 +2379,8 @@
                 </div>
 
                 <div class="feha-eg-profile-live" data-eg-profile-live hidden>
-                  <div class="feha-eg-profile-art">
-                    <img data-eg-profile-art alt="">
-                    <div class="feha-eg-profile-hud" aria-hidden="true"></div>
-                    <div class="feha-eg-profile-scan"></div>
-                    <span>BIOMETRIC SUBJECT</span>
-                  </div>
-
-                  <div class="feha-eg-profile-copy">
-                    <div>
-                      <small>SUBJECT</small>
-                      <h2 data-eg-profile-name></h2>
-                    </div>
-
-                    <div class="feha-eg-profile-grid">
-                      <div>
-                        <span>BIO-ID</span>
-                        <b data-eg-profile-id></b>
-                      </div>
-
-                      <div>
-                        <span>SYNC</span>
-                        <b data-eg-profile-sync>--</b>
-                      </div>
-                    </div>
-
-                    <div class="feha-eg-wave">
-                      ${Array.from({length:28},(_,i) =>
-                        `<i style="--i:${i}"></i>`
-                      ).join("")}
-                    </div>
-                  </div>
+                  <img class="feha-eg-profile-image" data-eg-profile-art alt="">
+                  <div class="feha-eg-profile-name" data-eg-profile-name></div>
                 </div>
               </section>
             </aside>
@@ -2517,7 +2488,6 @@
     const renderProfile = candidate => {
       if (!root || !candidate) return;
 
-      const actor = actorFor(candidate);
       const profile = root.querySelector("[data-eg-profile]");
       const empty = root.querySelector("[data-eg-profile-empty]");
       const live = root.querySelector("[data-eg-profile-live]");
@@ -2533,14 +2503,6 @@
 
       root.querySelector("[data-eg-profile-name]").textContent =
         candidate.name.toUpperCase();
-
-      root.querySelector("[data-eg-profile-id]").textContent =
-        (actor?.id ?? candidate.code)
-          .slice(-8)
-          .toUpperCase();
-
-      root.querySelector("[data-eg-profile-sync]").textContent =
-        String(94 + Math.floor(Math.random() * 6)) + "%";
     };
 
     const highlightCandidate = key => {
