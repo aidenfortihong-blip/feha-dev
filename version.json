@@ -1,8 +1,13 @@
 {
-  "version": "0.10.82",
+  "version": "0.10.83",
   "updated": "2026-09-28",
-  "scope": "connection-established-title-lockup",
+  "scope": "connection-established-cinematic-polish",
   "notes": [
+    "Rebuilt the final blue handoff state so its only message is centered CONNECTION ESTABLISHED; removed ACTIVATED, //, and the extra intro media label.",
+    "At the final state all surrounding diagnostic text, subject readout, route/progress/status, header, and footer dissolve away so the confirmation title owns the screen.",
+    "Added a restrained cyan confirmation halo, rail, softer bloom, centered title lock-in, and slower depth glide for a more polished final beat.",
+    "Lengthened the CONNECTION ESTABLISHED hold to about 1.55 seconds and the blue-to-video crossfade to about 1.7 seconds, with a slower underlying video reveal.",
+    "SKIP INTRO now appears only after the blue transition has completely handed off to the video, keeping the connection screen visually clean.",
     "Recomposed the blue transition centerpiece into one unified title lockup instead of the previous split left/right headline.",
     "ACTIVATED is now a smaller white kicker with a cyan // accent directly above the dominant stacked CONNECTION / ESTABLISHED title.",
     "Kept the existing 3D title punch animation, transition timing, route/progress HUD, fullscreen lifecycle, YouTube intro, and skip behavior unchanged.",
