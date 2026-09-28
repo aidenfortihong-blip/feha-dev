@@ -3383,39 +3383,43 @@
       primeSplitWord(splitConnection);
       primeSplitWord(splitEstablished);
 
-      // Glitch copies use the exact live text, so the effect stays tied to the
-      // two real title words instead of introducing a separate replacement.
-      if (splitConnection) {
-        splitConnection.dataset.fehaGlitch =
-          String(splitConnection.textContent ?? "").trim();
-      }
-      if (splitEstablished) {
-        splitEstablished.dataset.fehaGlitch =
-          String(splitEstablished.textContent ?? "").trim();
-      }
+      // 0.10.117 // use real overlay strips so the glitch is obvious in Forge.
+      const buildGlitchStrips = (element,direction) => {
+        if (!element) return;
+        const label = String(element.dataset.fehaGlitch ?? element.textContent ?? "").trim();
+        element.dataset.fehaGlitch = label;
+        element.dataset.fehaGlitchDir = direction;
+        element.querySelectorAll(":scope > .feha-link-glitch-strip").forEach(node => node.remove());
 
-      // Commit the clean black/yellow lockup first.
+        for (let index = 1; index <= 3; index++) {
+          const strip = document.createElement("span");
+          strip.className = "feha-link-glitch-strip";
+          strip.dataset.strip = String(index);
+          strip.setAttribute("aria-hidden","true");
+          strip.textContent = label;
+          element.appendChild(strip);
+        }
+      };
+
+      buildGlitchStrips(splitConnection,"left");
+      buildGlitchStrips(splitEstablished,"right");
+
       void splitTitle?.getBoundingClientRect();
 
-      // 0.10.116 // short directional signal failure before the physical split.
-      // The total handoff window remains the same 1080ms; the actual flight
-      // begins 220ms into that window and completes before the overlay is removed.
+      // Big 300ms corruption beat, still inside the existing 1080ms handoff.
       linkOverlay?.classList.add("is-video-glitch");
 
       const splitLaunchTimer = setTimeout(() => {
         timers.delete(splitLaunchTimer);
-
         if (!linkOverlay?.isConnected) return;
 
         linkOverlay.classList.add("is-video-handoff");
-
-        // Force one committed start frame after the handoff class lands.
         void splitTitle?.getBoundingClientRect();
 
         if (splitConnection) {
           splitConnection.style.setProperty(
             "transition",
-            "transform .80s cubic-bezier(.12,.84,.10,1)",
+            "transform .78s cubic-bezier(.12,.84,.10,1)",
             "important"
           );
           splitConnection.style.setProperty(
@@ -3428,7 +3432,7 @@
         if (splitEstablished) {
           splitEstablished.style.setProperty(
             "transition",
-            "transform .80s cubic-bezier(.12,.84,.10,1)",
+            "transform .78s cubic-bezier(.12,.84,.10,1)",
             "important"
           );
           splitEstablished.style.setProperty(
@@ -3437,7 +3441,7 @@
             "important"
           );
         }
-      },220);
+      },300);
 
       timers.add(splitLaunchTimer);
 
