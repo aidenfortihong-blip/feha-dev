@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.8.7";
+  const BUILD = "0.8.8";
   let lifecycleActive = true;
   let observer = null;
   let walletGuard = null;
@@ -222,7 +222,7 @@
       cacheRepairBusy = true;
       Promise.resolve(repairCacheMetadata(api))
         .catch(err => {
-          console.warn("FEHA DEV 0.8.7 // cache repair attach failed", err);
+          console.warn("FEHA DEV 0.8.8 // cache repair attach failed", err);
         })
         .finally(() => {
           cacheRepairBusy = false;
@@ -547,7 +547,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.8.7 // preload failed", event, err);
+          console.warn("FEHA DEV 0.8.8 // preload failed", event, err);
         }
       }
     }
@@ -612,11 +612,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.8.7 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.8.8 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.8.7 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.8.8 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -639,7 +639,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.8.7 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.8.8 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -1005,12 +1005,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.8.7 // sound source: ${source}`
+      `FEHA DEV 0.8.8 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.8.7 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.8.8 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1697,6 +1697,7 @@
     let selected = null;
     let busy = false;
     let sequence = 0;
+    let legacyGatewayObserver = null;
 
     // Tracked timeout registry. Cancelling the Gateway now settles outstanding
     // sleep Promises instead of clearing their timeout and stranding the async
@@ -3691,7 +3692,12 @@
         original.close?.(false);
       } catch {}
 
-      document.getElementById(ROOT_ID)?.remove();
+      // Multiple legacy gateway modules can race on Foundry ready and create
+      // duplicate roots with the same ID. Clear every legacy instance before
+      // mounting the FEHA custom gateway.
+      for (const node of document.querySelectorAll("#"+ROOT_ID)) {
+        node.remove();
+      }
 
       root = document.createElement("div");
       root.id = ROOT_ID;
@@ -3748,13 +3754,82 @@
     gateway.reset = reset;
     gateway.candidates = installedCandidates;
 
-    // If the legacy gateway is currently visible, replace it immediately.
-    if (document.getElementById(ROOT_ID)) {
+    // A second legacy Entry Gateway module may still fire its own ready hook
+    // after this patch attaches. Remove any later legacy root immediately so
+    // the player never gets the old screen underneath/on top of the new one.
+    legacyGatewayObserver?.disconnect?.();
+
+    legacyGatewayObserver = new MutationObserver(mutations => {
+      let removedLegacy = false;
+
+      const inspect = node => {
+        if (!(node instanceof Element)) return;
+
+        const candidates = [];
+
+        if (node.matches?.("#"+ROOT_ID)) {
+          candidates.push(node);
+        }
+
+        candidates.push(
+          ...(
+            node.querySelectorAll?.("#"+ROOT_ID) ??
+            []
+          )
+        );
+
+        for (const candidate of candidates) {
+          if (
+            candidate === root ||
+            candidate.classList?.contains?.("feha-eg-custom")
+          ) {
+            continue;
+          }
+
+          candidate.remove();
+          removedLegacy = true;
+        }
+      };
+
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes ?? []) {
+          inspect(node);
+        }
+      }
+
+      if (
+        removedLegacy &&
+        !root?.isConnected &&
+        sessionStorage.getItem(SESSION_KEY) !== "1"
+      ) {
+        void open({force:false});
+      }
+    });
+
+    legacyGatewayObserver.observe(
+      document.body,
+      {
+        childList:true,
+        subtree:true
+      }
+    );
+
+    // If one or more legacy gateways are already visible, replace all of them
+    // immediately. querySelectorAll matters here because duplicate IDs are
+    // exactly the failure mode this guard is fixing.
+    const visibleGatewayRoots = [
+      ...document.querySelectorAll("#"+ROOT_ID)
+    ];
+
+    if (visibleGatewayRoots.length) {
       try {
         original.close?.(false);
       } catch {}
 
-      document.getElementById(ROOT_ID)?.remove();
+      for (const node of visibleGatewayRoots) {
+        node.remove();
+      }
+
       void open({force:true});
     }
 
@@ -3764,6 +3839,9 @@
         return open({force:true});
       },
       destroy() {
+        legacyGatewayObserver?.disconnect?.();
+        legacyGatewayObserver = null;
+
         close(false);
 
         try {

@@ -1,8 +1,13 @@
 {
-  "version": "0.10.120",
+  "version": "0.10.121",
   "updated": "2026-09-28",
-  "scope": "deep-stability-audit-async-and-cleanup-ownership",
+  "scope": "player-join-live-bridge-and-legacy-gateway-suppression",
   "notes": [
+    "Added FEHA Live Dev Bridge: a Foundry module bootstrap that runs on every connected client and loads the same validated GitHub dev runtime for players and GM on world join.",
+    "ADK_DEV_LOADER is now client-safe instead of GM-only; player clients use the same immutable-commit preflight/swap path while world mutations remain protected by the existing GM-authority modules.",
+    "Player join temporarily hides the legacy Entry Gateway while the current build attaches, with a timed fallback that restores the installed gateway if the live bridge cannot load.",
+    "Entry Gateway normalization now watches for late legacy gateway roots from duplicate/older gateway modules and removes them immediately, preventing the old gateway from rendering underneath or on top of the new one.",
+    "Gateway replacement now removes every duplicate #adk-entry-gateway root rather than only the first matching element.",
     "Gateway cancellation now settles tracked sleep Promises and stops each cinematic/boot/auth async flow cleanly instead of leaving unresolved closures after close, reopen, bypass, or hot reload.",
     "Gateway delayed terminal scrolling and the final glitch/split launch timer now share the tracked timeout registry and are cancelled consistently.",
     "Entry Gateway teardown restores only API methods/candidate data still owned by FEHA, so later module overrides are not overwritten.",
@@ -530,8 +535,7 @@
     "Camera placement is implemented in 0.10.38; FOV preset selection, rotation, range visualization, and post-placement camera editing are the next camera pass.",
     "Turret ROTATE/FIRE still require a future turret adapter",
     "Status effects and non-damage Quickhack secondary effects are still not yet Active Effects",
-    "Quickhack rules still use effectText parsing as a legacy bridge pending explicit schema migration",
-    "The dev loader remains GM-only; player-client multiplayer device testing requires the modular runtime to be loaded through the actual FEHA module or an equivalent player-safe dev bootstrap"
+    "Quickhack rules still use effectText parsing as a legacy bridge pending explicit schema migration"
   ],
   "architecture": "HANDOFF/CYBERDECK_ARCHITECTURE_0.9.md"
 }

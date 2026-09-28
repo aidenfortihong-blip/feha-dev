@@ -3,14 +3,11 @@
 // Deep-pass hardening: fetch + validate first, then swap the live runtime.
 
 (async () => {
-  if (!game.user?.isGM) {
-    return ui.notifications.error("ADK DEV LOADER is GM only.");
-  }
-
   const OWNER = "aidenfortihong-blip";
   const REPO = "feha-dev";
   const API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
   const bust = Date.now();
+  const isGM = Boolean(game.user?.isGM);
 
   const files = {
     baseCss:"latest-dev.css",
@@ -113,7 +110,11 @@
   };
 
   try {
-    ui.notifications.info("FEHA DEV // resolving latest modular build...");
+    if (isGM) {
+      ui.notifications.info("FEHA DEV // resolving latest modular build...");
+    } else {
+      console.info("FEHA DEV // resolving latest modular build for player client...");
+    }
 
     const commitRes = await fetch(
       API + "/commits/main?t=" + bust,
@@ -288,13 +289,23 @@
       );
     }
 
-    ui.notifications.info(
-      "FEHA DEV // " +
-      loadedVersion +
-      " loaded [" +
-      sha.slice(0,7) +
-      "]"
-    );
+    if (isGM) {
+      ui.notifications.info(
+        "FEHA DEV // " +
+        loadedVersion +
+        " loaded [" +
+        sha.slice(0,7) +
+        "]"
+      );
+    } else {
+      console.info(
+        "FEHA DEV // player client loaded " +
+        loadedVersion +
+        " [" +
+        sha.slice(0,7) +
+        "]"
+      );
+    }
 
     console.log(
       "FEHA DEV integrity pass:",

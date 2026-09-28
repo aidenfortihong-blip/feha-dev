@@ -6,9 +6,23 @@ Private Cyberpunk UI/audio assets stay in the user's Forge/browser asset map and
 
 ## Current dev build
 
-**0.9.1 — Modular Network Devices + Camera Feeds**
+**0.10.121 — Player Join Bridge + Deep Stability**
 
 Cyberdeck V3 is active. V2 remains recovery fallback only.
+
+## Player join bridge
+
+Players were previously seeing the installed/legacy Entry Gateway because the repo hot-loader only ran on the GM client. The repo now ships an installable **FEHA Live Dev Bridge** that runs on every Foundry client at world join.
+
+Manifest URL:
+
+`https://raw.githubusercontent.com/aidenfortihong-blip/feha-dev/main/module.json`
+
+Once the bridge module is installed and enabled for the world, GM and players both load the same current repo build automatically. During startup it temporarily shields the old gateway, loads the validated build, replaces any already-visible legacy gateway, and suppresses late legacy gateway roots from older duplicate gateway modules.
+
+The bridge package itself is:
+
+`https://raw.githubusercontent.com/aidenfortihong-blip/feha-dev/main/dist/feha-live-dev-bridge.zip`
 
 ## Cyberdeck architecture
 
@@ -109,6 +123,9 @@ Current:
 - `latest-dev.js` — shared FEHA patch services + V2 fallback
 - `latest-dev.css`
 - `cyberdeck-v3.css`
+- `module.json` — installable FEHA Live Dev Bridge manifest
+- `foundry/FEHA_CLIENT_BOOTSTRAP.js` — automatic all-client join bootstrap
+- `dist/feha-live-dev-bridge.zip` — install/update package
 - `foundry/ADK_DEV_LOADER.js`
 - `foundry/FEHA_TABLETOP_UI_V3.js`
 - `foundry/cyberdeck/*`
@@ -128,7 +145,7 @@ Current:
 7. initialize Cyber Core
 8. Cyberdeck V3 UI
 
-The loader resolves `main` to an immutable commit SHA before executing sources.
+The loader resolves `main` to an immutable commit SHA before executing sources. It is client-safe; the Live Dev Bridge invokes it automatically for both GM and player clients.
 
 ## Locked rules
 
