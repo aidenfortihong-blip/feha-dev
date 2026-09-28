@@ -1,8 +1,15 @@
 {
-  "version": "0.10.94",
+  "version": "0.10.95",
   "updated": "2026-09-28",
-  "scope": "cyberpunk-yellow-link-animation",
+  "scope": "gateway-asymmetry-font-final-split",
   "notes": [
+    "Removed the post-JACK-IN cinematic loading/progress bar entirely; the link sequence now relies on motion and phase copy rather than a multicolor fill bar.",
+    "Forced the Entry Gateway, JACK IN control, link cinematic, technical readouts, buttons, and intro skip control into one Rajdhani/Agency-style cyberpunk type family.",
+    "Applied the requested asymmetry pass: angled header plate, top-middle body wedge, yellow ROUTE/AUTH utility slab, broken section rails, auth signal rail, right-column bridge, candidate corner striping, and broken portrait rail.",
+    "Final CONNECTION ESTABLISHED is now two literal fill colors: CONNECTION pure black with a yellow outline; ESTABLISHED pure Cyberpunk yellow with a black outline.",
+    "The final pulse uses opposing black/yellow word pulses while keeping the established animation timing.",
+    "Thinned the word-separation line into a narrow black/yellow incision and reduced its vertical scale while preserving the exact existing split timing.",
+    "No JS behavior, fullscreen behavior, video handoff timing, or cinematic waits changed.",
     "Re-art-directed the post-JACK-IN link animation around Cyberpunk yellow, cyan, red, and black instead of the previous mostly-cyan/blue tunnel.",
     "Rings, rails, particles, reticle, route data, progress bar, and industrial signal bands now use the Gateway's red/yellow/cyan visual language.",
     "CONNECTION ESTABLISHED now pulses in black and yellow: yellow title, black hard shadow, black/yellow halo rings, black/yellow confirmation rail, and a black-core yellow energy flash.",
