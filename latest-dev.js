@@ -3274,6 +3274,12 @@
       // here in case the browser blocked playback on the typed-name match.
       resumeIntroMedia(candidate);
 
+      // Start revealing the already-running video the instant ESTABLISH LINK
+      // is pressed. The blue system remains on top and carries the sequence,
+      // but the footage now visibly resolves underneath from frame one.
+      revealIntroMedia();
+      linkOverlay.classList.add("is-video-reveal");
+
       requestAnimationFrame(() => {
         linkOverlay?.classList.add("is-active");
       });
@@ -3311,11 +3317,8 @@
 
       await sleep(850);
 
-      // The video has already been playing invisibly from the exact-name
-      // match. Bring its current frame up from BEHIND the blue link field.
-      revealIntroMedia();
-      linkOverlay.classList.add("is-video-reveal");
-
+      // The video has been resolving beneath the blue system since the
+      // ESTABLISH LINK click. SESSION TRANSFER now advances the HUD only.
       setLinkPhase({
         phase:"SESSION TRANSFER",
         route:"NEURAL BRIDGE STABLE",
@@ -3338,8 +3341,9 @@
 
       playLinkSceneCue("live");
 
-      // Let CONNECTION ESTABLISHED land, but do not let the beat go soft.
-      await sleep(1250);
+      // Let CONNECTION ESTABLISHED land long enough to read, then split it
+      // apart as the video takes the frame.
+      await sleep(1125);
 
       // Commit while the blue layer still fully owns the frame.
       close(true,{
@@ -3350,10 +3354,10 @@
       // A short confirmation impact gives the eye a satisfying punctuation
       // before the blue field releases into the already-running video.
       linkOverlay?.classList.add("is-video-impact");
-      await sleep(220);
+      await sleep(180);
 
       linkOverlay?.classList.add("is-video-handoff");
-      await sleep(1180);
+      await sleep(1450);
 
       linkOverlay?.remove?.();
       linkOverlay = null;
