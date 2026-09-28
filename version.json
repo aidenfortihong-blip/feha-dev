@@ -1,8 +1,14 @@
 {
-  "version": "0.10.96",
+  "version": "0.10.97",
   "updated": "2026-09-28",
-  "scope": "gateway-fullscreen-composition-cyan-split-pulse",
+  "scope": "quieter-link-sequence-visible-cyber-load-bar",
   "notes": [
+    "Reduced post-JACK-IN visual noise: the 3D tunnel is now mostly black/cyan with sparse yellow accents and no red tunnel elements.",
+    "Dimmed rings and rails, reduced visible particle density, and simplified the reticle and decorative signal bands so the sequence is easier to read.",
+    "Restored the post-JACK-IN loading bar as a single prominent cyber bar: dark track, yellow progress fill, subtle segmented grid, and a thin cyan leading pulse instead of a rainbow gradient.",
+    "Route/status copy is quieter so the loading bar becomes the primary progress indicator.",
+    "The loading bar fades out when CONNECTION ESTABLISHED takes over; the final black/yellow words and cyan center-split pulse from 0.10.96 remain intact.",
+    "No JS behavior, phase order, waits, fullscreen behavior, or video handoff timing changed.",
     "Reduced the Entry Gateway's windowed/modular feeling by visually merging boot, auth, biometric, candidate, portrait, and footer regions into broader continuous terminal surfaces with fewer enclosing borders.",
     "Reduced adjacent micro-colors: cyan now handles most structure/data, yellow is reserved mainly for JACK IN and the single utility tab, and red is sparse identity emphasis.",
     "Kept asymmetry through the dark top-middle wedge, off-axis header plate, yellow utility tab, right-rail bridge, clipped portrait edge, and uneven structural rails without stacking red/yellow/cyan together everywhere.",
