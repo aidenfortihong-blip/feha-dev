@@ -3341,7 +3341,76 @@
       linkOverlay?.classList.add("is-video-impact");
       await sleep(140);
 
+      // FINAL SPLIT: drive the two title words with inline !important
+      // transforms so no older CSS animation/transition can swallow the motion.
+      // Timing is unchanged: the handoff still owns the same 1080ms window.
+      const splitTitle =
+        linkOverlay?.querySelector(".feha-linkstart-title-main") ??
+        null;
+
+      const splitConnection =
+        splitTitle?.querySelector("span:first-child") ??
+        null;
+
+      const splitEstablished =
+        splitTitle?.querySelector("span:last-child") ??
+        null;
+
+      const primeSplitWord = element => {
+        if (!element) return;
+
+        element.style.setProperty("animation","none","important");
+        element.style.setProperty("transition","none","important");
+        element.style.setProperty("opacity","1","important");
+        element.style.setProperty("filter","none","important");
+        element.style.setProperty("will-change","transform","important");
+        element.style.setProperty(
+          "transform",
+          "translate3d(0,0,0) scaleX(1.045) scaleY(1.045)",
+          "important"
+        );
+      };
+
+      primeSplitWord(splitConnection);
+      primeSplitWord(splitEstablished);
+
+      // Commit the visible center position before switching into handoff state.
+      // This gives the browser an explicit start frame instead of allowing the
+      // older .is-video-handoff opacity:0 rule to make the words disappear.
+      void splitTitle?.getBoundingClientRect();
+
       linkOverlay?.classList.add("is-video-handoff");
+
+      // Keep the same centered start state through the class change, then force
+      // the actual left/right departure with inline-important transforms.
+      void splitTitle?.getBoundingClientRect();
+
+      if (splitConnection) {
+        splitConnection.style.setProperty(
+          "transition",
+          "transform .88s cubic-bezier(.12,.84,.10,1)",
+          "important"
+        );
+        splitConnection.style.setProperty(
+          "transform",
+          "translate3d(-115vw,0,0) skewX(-13deg) scaleX(1.16) scaleY(.98)",
+          "important"
+        );
+      }
+
+      if (splitEstablished) {
+        splitEstablished.style.setProperty(
+          "transition",
+          "transform .88s cubic-bezier(.12,.84,.10,1)",
+          "important"
+        );
+        splitEstablished.style.setProperty(
+          "transform",
+          "translate3d(115vw,0,0) skewX(13deg) scaleX(1.16) scaleY(.98)",
+          "important"
+        );
+      }
+
       await sleep(1080);
 
       linkOverlay?.remove?.();
