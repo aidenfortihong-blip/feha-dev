@@ -9,7 +9,7 @@
     throw new Error("FEHA_DEVICE_ACTIONS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.10.0";
+  const VERSION = "0.10.1";
   const FLAG_SCOPE = "fleshEnshrouded";
   const DEVICE_FLAG = "networkDevice";
   const sessionAccess = new Set();
@@ -291,6 +291,20 @@
   async function executeCapability(actor,device,capability,context={}) {
     const cap = String(capability ?? "").trim().toUpperCase();
 
+    // Only the GM authority path may mark an execution as remote/skip-breach.
+    // A player calling this API directly cannot promote their own context.
+    if (
+      !game.user?.isGM &&
+      (
+        context?.remote === true ||
+        context?.skipBreach === true
+      )
+    ) {
+      throw new Error(
+        "Remote Network Device execution requires GM authority."
+      );
+    }
+
     if (!devices.capabilities[cap]) {
       throw new Error("Unknown Network Device capability: "+cap);
     }
@@ -321,29 +335,10 @@
       };
     }
 
-    // Specialized adapters get first refusal.
-    const delegated = await core.emit(
-      "device:execute:"+cap,
-      {actor,device,capability:cap,context,access}
-    );
-
-    const handled = delegated.find(
-      result => result?.handled === true
-    );
-
-    if (handled) {
-      return {
-        ok:true,
-        access,
-        capability:cap,
-        ...handled
-      };
-    }
-
-    if (
-      !game.user?.isGM &&
-      context?.remote !== true
-    ) {
+    // Player clients may resolve their local breach roll, but every actual
+    // device mutation — including future specialized adapters — is executed by
+    // the selected GM authority.
+    if (!game.user?.isGM) {
       const approvals = core.module("deviceApprovals");
 
       if (!approvals?.requestDeviceCommand) {
@@ -363,6 +358,25 @@
         capability:cap,
         remote:true,
         ...(remoteResult ?? {})
+      };
+    }
+
+    // Specialized adapters run only on the GM-authoritative execution path.
+    const delegated = await core.emit(
+      "device:execute:"+cap,
+      {actor,device,capability:cap,context,access}
+    );
+
+    const handled = delegated.find(
+      result => result?.handled === true
+    );
+
+    if (handled) {
+      return {
+        ok:true,
+        access,
+        capability:cap,
+        ...handled
       };
     }
 
