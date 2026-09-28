@@ -1,8 +1,12 @@
 {
-  "version": "0.10.80",
+  "version": "0.10.81",
   "updated": "2026-09-28",
-  "scope": "youtube-intro-fullscreen-caption-fade-fix",
+  "scope": "entry-gateway-fullscreen-lifecycle",
   "notes": [
+    "Entry Gateway fullscreen is now a whole-Gateway behavior rather than something that begins only at ESTABLISH LINK.",
+    "Gateway open() attempts fullscreen immediately when the screen mounts; if browser user-activation policy blocks that automatic request, the first pointer or keyboard gesture inside the Gateway retries synchronously.",
+    "While the Gateway remains visible, subsequent pointer/key gestures retry fullscreen if the user has exited it, so the next interaction restores fullscreen.",
+    "The existing blue 3D handoff and YouTube intro remain inside the same fullscreen session, and SKIP INTRO/natural intro completion still release fullscreen.",
     "Disabled YouTube closed captions/subtitles for the Gateway intro through both cc_load_policy=0 and runtime caption-track clearing when the iframe becomes ready or resumes.",
     "ESTABLISH LINK now requests browser fullscreen while the click still has user activation, keeping both the blue 3D connection sequence and the YouTube intro inside the fullscreen document.",
     "SKIP INTRO, natural video end, and intro teardown now exit fullscreen only when the Gateway itself requested that fullscreen session; an already-fullscreen Foundry session is left alone.",
