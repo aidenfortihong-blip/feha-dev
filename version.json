@@ -1,8 +1,13 @@
 {
-  "version": "0.10.92",
+  "version": "0.10.93",
   "updated": "2026-09-28",
-  "scope": "gateway-pure-yellow-jack-in",
+  "scope": "gateway-red-cyan-yellow-palette",
   "notes": [
+    "Removed green from the Entry Gateway visual language because it was clashing with character red accents and weakening the palette.",
+    "Success, verified, ACCESS GRANTED, and grant-log states now use cyan/pale-cyan instead of green.",
+    "The biometric progress bar now resolves red -> yellow -> cyan, and the shell accent rail uses only red/yellow/cyan.",
+    "Forced JACK IN to a warmer Cyberpunk yellow gradient with no lime/green endpoint or green cast.",
+    "No layout, Gateway behavior, or cinematic/video timing changed.",
     "Made the post-auth JACK IN bar fully Cyberpunk yellow with black text and black technical rail accents.",
     "Removed the previous green tint and red/cyan side-border treatment from JACK IN so the action reads as one unmistakable yellow launch control.",
     "No layout, functionality, or cinematic/video timing was changed.",
