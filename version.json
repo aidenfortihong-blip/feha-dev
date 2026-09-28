@@ -1,8 +1,13 @@
 {
-  "version": "0.10.85",
+  "version": "0.10.86",
   "updated": "2026-09-28",
-  "scope": "split-title-immediate-video-reveal",
+  "scope": "video-first-split-and-instant-skip-exit",
   "notes": [
+    "Added a 720ms pre-open phase before the title split: the blue environment, vignette, depth field, and overlay background fade to near-zero while CONNECTION ESTABLISHED stays fully visible over the video.",
+    "By the time CONNECTION exits left and ESTABLISHED exits right, the screen is effectively the video with only a faint residual interface layer.",
+    "Tightened the split seam pulse so it no longer reintroduces a heavy blue veil over the exposed footage.",
+    "SKIP INTRO now calls fullscreen exit immediately on click; the audiovisual fade/cleanup continues afterward instead of keeping the user trapped in fullscreen during the fade.",
+    "Retimed the ending to roughly 0.9s title hold, 0.72s blue pre-open, 0.14s seam charge, then about 1.08s split/release.",
     "The intro video now begins visibly fading in immediately when ESTABLISH LINK is pressed instead of waiting until SESSION TRANSFER.",
     "The blue 3D link sequence remains on top while becoming progressively glassier, so the moving footage can be seen resolving underneath throughout the entire connection sequence.",
     "At handoff, CONNECTION exits hard to the left and ESTABLISHED exits hard to the right with directional skew, blur, stretch, a center seam burst, and expanding halo.",
