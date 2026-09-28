@@ -17050,7 +17050,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg/960px-Cyberpunk_2077_logo_yellow-turquoise.svg.png")!important;
 }
 
 /* --------------------------------------------------------------------------
@@ -17461,7 +17461,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg/960px-Cyberpunk_2077_logo_yellow-turquoise.svg.png")!important;
 }
 
 /* Remove the little palette/totem widgets and utility tag. */
@@ -17654,7 +17654,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg/960px-Cyberpunk_2077_logo_yellow-turquoise.svg.png")!important;
 }
 
 /* The 0.10.99 in-place morph uses !important animation on both words.
@@ -17689,7 +17689,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg/960px-Cyberpunk_2077_logo_yellow-turquoise.svg.png")!important;
 }
 
 /* Make sure the real logo actually occupies the existing header title slot. */
@@ -17804,5 +17804,84 @@ body #adk-market-15#adk-market-15 #top-directory {
   @keyframes feha-final-established-right-0101 {
     0% {transform:scaleX(1.045);opacity:1}
     100% {transform:translateX(118vw) skewX(11deg) scaleX(1.10);opacity:0}
+  }
+}
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.103 REAL IMG LOGO
+   Use an actual IMG element in the Gateway header instead of relying on a
+   pseudo-element background-image. Text remains as a fallback if the image
+   cannot render. Final split logic is untouched.
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup {
+  position:relative!important;
+  display:block!important;
+  width:min(470px,42vw)!important;
+  height:82px!important;
+  margin:1px 0 0!important;
+  padding:0!important;
+  overflow:visible!important;
+  transform:none!important;
+  color:transparent!important;
+  font-size:0!important;
+  line-height:0!important;
+  text-shadow:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup::after {
+  content:none!important;
+  display:none!important;
+  background:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-logo {
+  position:absolute!important;
+  left:-8px!important;
+  top:-8px!important;
+  width:min(470px,42vw)!important;
+  height:96px!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  filter:
+    saturate(1.02)
+    contrast(1.04)
+    drop-shadow(0 0 6px rgba(57,230,255,.06))!important;
+  pointer-events:none!important;
+  user-select:none!important;
+  z-index:4!important;
+}
+
+/* Text is a real fallback, but stays hidden while the image exists. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup > span {
+  position:absolute!important;
+  left:0!important;
+  top:20px!important;
+  z-index:1!important;
+  color:#fcee0a!important;
+  font-size:54px!important;
+  font-weight:950!important;
+  font-style:italic!important;
+  line-height:.82!important;
+  letter-spacing:.03em!important;
+  opacity:.01!important;
+}
+
+/* If the browser suppresses the image entirely, the alt image box still
+   occupies the correct header space instead of collapsing the layout. */
+@media(max-height:820px) and (min-width:1001px){
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-lockup{
+    width:min(400px,38vw)!important;
+    height:70px!important;
+  }
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header .feha-eg-brand-logo{
+    width:min(400px,38vw)!important;
+    height:82px!important;
+    top:-7px!important;
   }
 }
