@@ -1,8 +1,13 @@
 {
-  "version": "0.10.68",
+  "version": "0.10.69",
   "updated": "2026-09-27",
-  "scope": "gateway-clean-color-pass",
+  "scope": "gateway-left-scroll-compact-right",
   "notes": [
+    "Changed the custom Entry Gateway so only the left authentication/work column scrolls vertically; the right candidate/profile rail is fixed and non-scrollable.",
+    "Removed candidate role/archetype subtitles such as STREET / ADAPTIVE, COMBAT / KINETIC, NET / COGNITIVE, and FIELD / DISCIPLINED from the right-side roster.",
+    "Removed right-side SIGNATURE and CLEARANCE profile filler; the profile now keeps only BIO-ID and SYNC beneath the subject name.",
+    "Compressed candidate rows and profile spacing/portrait sizing so all four candidates and the biometric subject card fit in the right rail without a scrollbar.",
+    "Added short-display compression rules that shrink the fixed right rail before ever allowing it to scroll.",
     "Removed the gray CP2077 overlay haze from the custom Entry Gateway while preserving the working layout and functional asset bridge.",
     "Removed the decorative strip beneath the CYBERPUNK title.",
     "Disabled broad frame/HUD/line overlay pseudo-elements and the portrait HUD film that were dulling the entire screen.",
