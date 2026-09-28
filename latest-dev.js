@@ -1678,6 +1678,7 @@
     };
 
     let root = null;
+    let linkOverlay = null;
     let selected = null;
     let busy = false;
     let sequence = 0;
@@ -2307,22 +2308,228 @@
       setTimeout(() => play("confirm",.24,0),140);
     };
 
-    const establishLink = async () => {
-      if (!root || root.classList.contains("is-exiting")) return;
+    const linkStartHtml = candidate => {
+      const actor = actorFor(candidate);
+      const bioId =
+        (actor?.id ?? candidate?.code ?? "UNKNOWN")
+          .slice(-8)
+          .toUpperCase();
 
-      root.classList.add("is-exiting");
+      const codeLines = Array.from(
+        {length:18},
+        (_,index) =>
+          '<i style="--row:'+index+'">' +
+          randomHex(4) + '::' +
+          randomHex(8) + ' / ' +
+          randomHex(12) +
+          '</i>'
+      ).join("");
+
+      const segments = Array.from(
+        {length:24},
+        (_,index) => '<i style="--seg:'+index+'"></i>'
+      ).join("");
+
+      return `
+        <div class="feha-linkstart-shell">
+          <div class="feha-linkstart-noise" aria-hidden="true"></div>
+          <div class="feha-linkstart-scan" aria-hidden="true"></div>
+
+          <div class="feha-linkstart-code feha-linkstart-code-a" aria-hidden="true">
+            ${codeLines}
+          </div>
+
+          <div class="feha-linkstart-code feha-linkstart-code-b" aria-hidden="true">
+            ${codeLines}
+          </div>
+
+          <div class="feha-linkstart-character" aria-hidden="true">
+            <img src="${safe(candidate?.art ?? "")}" alt="">
+          </div>
+
+          <header class="feha-linkstart-top">
+            <div>
+              <span>ADK // SESSION LINK</span>
+              <b data-link-phase>ESTABLISHING NEURAL LINK</b>
+            </div>
+
+            <div class="feha-linkstart-node">
+              <span>SUBJECT</span>
+              <b>${safe(candidate?.name?.toUpperCase?.() ?? "UNKNOWN")}</b>
+              <span>BIO-ID</span>
+              <b>${safe(bioId)}</b>
+            </div>
+          </header>
+
+          <main class="feha-linkstart-core">
+            <div class="feha-linkstart-kicker">NETWORK HANDSHAKE // ACTIVE</div>
+
+            <h1>
+              <span>LINK</span>
+              <b>START</b>
+            </h1>
+
+            <div class="feha-linkstart-route">
+              <span data-link-route>ROUTE ACQUISITION</span>
+              <b data-link-percent>08%</b>
+            </div>
+
+            <div class="feha-linkstart-progress" aria-hidden="true">
+              <div data-link-progress></div>
+            </div>
+
+            <div class="feha-linkstart-segments" aria-hidden="true">
+              ${segments}
+            </div>
+
+            <div class="feha-linkstart-status" data-link-status>
+              SYNCING CLIENT SESSION
+            </div>
+          </main>
+
+          <footer class="feha-linkstart-footer">
+            <div>
+              <span>ROUTE</span>
+              0x${randomHex(4)}:${randomHex(4)}
+              <span>ENCRYPTION</span>
+              AES-ADK/4096
+            </div>
+
+            <b data-link-live>LINK PENDING</b>
+          </footer>
+        </div>
+      `;
+    };
+
+    const setLinkPhase = ({
+      phase,
+      route,
+      percent,
+      status,
+      progress,
+      live = false
+    }) => {
+      if (!linkOverlay?.isConnected) return;
+
+      const phaseEl = linkOverlay.querySelector("[data-link-phase]");
+      const routeEl = linkOverlay.querySelector("[data-link-route]");
+      const percentEl = linkOverlay.querySelector("[data-link-percent]");
+      const statusEl = linkOverlay.querySelector("[data-link-status]");
+      const progressEl = linkOverlay.querySelector("[data-link-progress]");
+      const liveEl = linkOverlay.querySelector("[data-link-live]");
+
+      if (phaseEl) phaseEl.textContent = phase;
+      if (routeEl) routeEl.textContent = route;
+      if (percentEl) percentEl.textContent = percent;
+      if (statusEl) statusEl.textContent = status;
+      if (progressEl) progressEl.style.width = progress;
+
+      linkOverlay.classList.toggle("is-live",live);
+
+      if (liveEl) {
+        liveEl.textContent = live ? "SESSION LIVE" : "LINK PENDING";
+      }
+    };
+
+    const runLinkStart = async candidate => {
+      linkOverlay?.remove?.();
+      linkOverlay = document.createElement("div");
+      linkOverlay.id = "feha-link-start";
+      linkOverlay.className = "feha-linkstart";
+      linkOverlay.innerHTML = linkStartHtml(candidate);
+
+      document.body.appendChild(linkOverlay);
+      applyEntryGatewayPrivateAssets(linkOverlay);
+
+      requestAnimationFrame(() => {
+        linkOverlay?.classList.add("is-active");
+      });
+
+      setLinkPhase({
+        phase:"ESTABLISHING NEURAL LINK",
+        route:"ROUTE ACQUISITION",
+        percent:"08%",
+        status:"SYNCING CLIENT SESSION",
+        progress:"8%"
+      });
+
+      play("session_join",.34,0);
+      await sleep(420);
+
+      setLinkPhase({
+        phase:"NEURAL ROUTE VERIFIED",
+        route:"ROUTE VERIFIED",
+        percent:"34%",
+        status:"UPLINK CHANNEL LOCKED",
+        progress:"34%"
+      });
+      play("scan",.16,0);
+
+      await sleep(520);
+
+      setLinkPhase({
+        phase:"SESSION HANDSHAKE",
+        route:"HANDSHAKE ACCEPTED",
+        percent:"68%",
+        status:"CLIENT IDENTITY SYNCHRONIZED",
+        progress:"68%"
+      });
+      play("confirm",.17,0);
+
+      await sleep(560);
+
+      setLinkPhase({
+        phase:"FINALIZING SESSION",
+        route:"NEURAL BRIDGE STABLE",
+        percent:"92%",
+        status:"ROUTING LIVE FEED",
+        progress:"92%"
+      });
+      play("scan",.14,0);
+
+      await sleep(480);
+
+      setLinkPhase({
+        phase:"SESSION LIVE",
+        route:"LINK COMPLETE",
+        percent:"100%",
+        status:"WELCOME // " + candidate.name.toUpperCase(),
+        progress:"100%",
+        live:true
+      });
+
+      play("compatibility_ok",.30,0);
+      setTimeout(() => play("confirm",.18,0),110);
+
+      await sleep(430);
+
+      // Remove the Gateway while the Link Start overlay still owns the screen.
+      close(true,{keepLinkOverlay:true});
+
+      linkOverlay?.classList.add("is-complete");
+      await sleep(360);
+
+      linkOverlay?.remove?.();
+      linkOverlay = null;
+    };
+
+    const establishLink = async () => {
+      if (
+        !root ||
+        !selected ||
+        root.classList.contains("is-linking")
+      ) {
+        return;
+      }
+
+      root.classList.add("is-linking");
       setState("LINK ESTABLISHED","granted");
       log("LINK/" + randomHex(5) + " CLIENT SESSION ESTABLISHED","grant");
 
-      // Dedicated session-join cue: connection hit + soft confirmation.
-      play("session_join",.34,0);
-      setTimeout(() => play("confirm",.20,0),95);
-
-      await sleep(620);
-      close(true);
+      await runLinkStart(selected);
     };
 
-    const close = (markPassed = false) => {
+    const close = (markPassed = false,{keepLinkOverlay = false} = {}) => {
       if (markPassed) {
         sessionStorage.setItem(SESSION_KEY,"1");
       }
@@ -2338,6 +2545,11 @@
       root = null;
       selected = null;
       busy = false;
+
+      if (!keepLinkOverlay) {
+        linkOverlay?.remove?.();
+        linkOverlay = null;
+      }
     };
 
     const bind = () => {
