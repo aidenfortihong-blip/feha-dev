@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.118";
+  const VERSION = "0.10.119";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -394,6 +394,62 @@
     };
   }
 
+  function syncQuickhackRamUI(actor,resolution=null) {
+    const next = model(actor);
+
+    if (resolution) {
+      const ramLabel =
+        resolution.querySelector("[data-qh-ram-state]");
+
+      if (ramLabel) {
+        const item =
+          actor.items?.get?.(
+            resolution.dataset.qhItem ?? ""
+          ) ?? null;
+
+        const cost = item ? hackCost(item) : 0;
+
+        ramLabel.textContent =
+          resolution.dataset.qhRamCommitted === "1"
+            ? "RAM SPENT // "+cost
+            : "RAM COST // "+cost;
+      }
+    }
+
+    const headerRam =
+      document.querySelector(
+        "#"+JACK_ID+" [data-jack-ram-readout]"
+      );
+
+    if (headerRam) {
+      headerRam.textContent =
+        next.currentRam+" / "+next.maxRam;
+    }
+
+    const liveRoot =
+      document.getElementById(JACK_ID);
+
+    for (
+      const runButton of
+      liveRoot?.querySelectorAll?.(
+        '.jack-hack[data-jack-action="run"]'
+      ) ?? []
+    ) {
+      const runItem =
+        actor.items?.get?.(
+          runButton.dataset.itemId
+        );
+
+      const runCost =
+        runItem ? hackCost(runItem) : Infinity;
+
+      runButton.disabled =
+        next.currentRam < runCost;
+    }
+
+    return next;
+  }
+
   async function commitQuickhackRam(actor,resolution) {
     if (!actor || !resolution) return false;
 
@@ -421,7 +477,17 @@
       return false;
     }
 
+    const lock = beginAction("ram-commit",actor.id);
+    if (!lock) {
+      ui?.notifications?.warn?.(
+        "RAM bus is busy. Try the action again."
+      );
+      return false;
+    }
+
     resolution.dataset.qhRamCommitted = "1";
+    resolution.dataset.qhRamBefore = String(m.currentRam);
+    resolution.dataset.qhRamAfter = String(m.currentRam-cost);
 
     try {
       await actor.update({
@@ -429,58 +495,98 @@
           m.currentRam-cost
       });
 
-      const ramLabel =
-        resolution.querySelector("[data-qh-ram-state]");
-
-      if (ramLabel) {
-        ramLabel.textContent =
-          "RAM SPENT // "+cost;
-      }
-
-      const next = model(actor);
-
-      const headerRam =
-        document.querySelector(
-          "#"+JACK_ID+" [data-jack-ram-readout]"
-        );
-
-      if (headerRam) {
-        headerRam.textContent =
-          next.currentRam+" / "+next.maxRam;
-      }
-
-      const liveRoot =
-        document.getElementById(JACK_ID);
-
-      for (
-        const runButton of
-        liveRoot?.querySelectorAll?.(
-          '.jack-hack[data-jack-action="run"]'
-        ) ?? []
-      ) {
-        const runItem =
-          actor.items?.get?.(
-            runButton.dataset.itemId
-          );
-
-        const runCost =
-          runItem ? hackCost(runItem) : Infinity;
-
-        runButton.disabled =
-          next.currentRam < runCost;
-      }
-
+      syncQuickhackRamUI(actor,resolution);
       return true;
     } catch (err) {
       delete resolution.dataset.qhRamCommitted;
+      delete resolution.dataset.qhRamBefore;
+      delete resolution.dataset.qhRamAfter;
+
       console.error(
         "FEHA V3 RAM commit failed",
         err
       );
+
       ui?.notifications?.error?.(
         "Could not spend Quickhack RAM."
       );
+
       return false;
+    } finally {
+      endAction(lock);
+    }
+  }
+
+  async function refundQuickhackRam(actor,resolution) {
+    if (!actor || !resolution) return false;
+
+    if (resolution.dataset.qhRamCommitted !== "1") {
+      return true;
+    }
+
+    const before =
+      Number(resolution.dataset.qhRamBefore);
+
+    const expectedAfter =
+      Number(resolution.dataset.qhRamAfter);
+
+    const live = model(actor);
+
+    // Never guess through a concurrent RAM change. If another operation touched
+    // RAM after our commit, stop and ask for manual verification instead of
+    // silently overwriting the newer state.
+    if (
+      Number.isFinite(expectedAfter) &&
+      live.currentRam !== expectedAfter
+    ) {
+      console.error(
+        "FEHA V3 RAM refund blocked by concurrent state change",
+        {
+          expectedAfter,
+          current:live.currentRam
+        }
+      );
+
+      ui?.notifications?.error?.(
+        "Damage failed and RAM changed concurrently. Verify RAM manually."
+      );
+
+      return false;
+    }
+
+    const restoreTo =
+      Number.isFinite(before)
+        ? Math.max(0,Math.min(live.maxRam,before))
+        : live.currentRam;
+
+    const lock = beginAction("ram-refund",actor.id);
+    if (!lock) return false;
+
+    try {
+      await actor.update({
+        [`flags.${FLAG}.ramCurrent`]:
+          restoreTo
+      });
+
+      delete resolution.dataset.qhRamCommitted;
+      delete resolution.dataset.qhRamBefore;
+      delete resolution.dataset.qhRamAfter;
+
+      syncQuickhackRamUI(actor,resolution);
+      return true;
+    } catch (err) {
+      console.error(
+        "FEHA V3 RAM refund failed",
+        err
+      );
+
+      ui?.notifications?.error?.(
+        "Damage failed and RAM could not be refunded automatically."
+      );
+
+      return false;
+    } finally {
+      endAction(lock);
     }
   }
 
@@ -597,7 +703,9 @@
             '<span data-qh-ram-state>RAM COST // '+hackCost(item)+'</span>'+
             '<div class="qh-resolution-actions">'+
               (!damage
-                ? '<button type="button" class="qh-apply-effect" data-qh-action="apply-effect">APPLY EFFECT</button>'
+                ? '<button type="button" class="qh-apply-effect" data-qh-action="apply-effect" data-qh-outcome="'+(effectLands?"landed":"resisted")+'">'+
+                    (effectLands?"APPLY EFFECT":"COMMIT ATTEMPT")+
+                  '</button>'
                 : '')+
               '<button type="button" data-qh-action="return-net">RETURN TO NET</button>'+
               '<button type="button" class="is-danger" data-qh-action="close-cyberdeck">CLOSE CYBERDECK</button>'+
@@ -678,11 +786,45 @@
   }
 
   function roster() {
-    const order = new Map([["ponyboy",0],["derke",1],["sasha",2],["zach",3]]);
-    const key = actor => norm(actor?.flags?.[FLAG]?.adkCharacter || actor?.name);
+    const order = new Map([
+      ["ponyboy",0],
+      ["derke",1],
+      ["sasha",2],
+      ["zach",3]
+    ]);
+
+    const key = actor => {
+      const value =
+        norm(
+          actor?.flags?.[FLAG]?.adkCharacter ||
+          actor?.name
+        );
+
+      if (
+        value === "sasha bogdanov" ||
+        value.startsWith("sasha ")
+      ) {
+        return "sasha";
+      }
+
+      if (value === "raiden") {
+        return "zach";
+      }
+
+      return value;
+    };
+
     return [...(game.actors ?? [])]
-      .filter(actor => order.has(key(actor)) && (game.user?.isGM || actor.isOwner))
-      .sort((a,b) => (order.get(key(a)) ?? 99) - (order.get(key(b)) ?? 99));
+      .filter(
+        actor =>
+          order.has(key(actor)) &&
+          (game.user?.isGM || actor.isOwner)
+      )
+      .sort(
+        (a,b) =>
+          (order.get(key(a)) ?? 99) -
+          (order.get(key(b)) ?? 99)
+      );
   }
 
   function actorById(id) {
@@ -3418,18 +3560,37 @@
               return;
             }
 
-            qhButton.textContent = "EFFECT APPLIED";
+            const landed =
+              qhButton.dataset.qhOutcome !== "resisted";
 
-            await ChatMessage.create({
-              speaker:ChatMessage.getSpeaker({actor}),
-              content:
-                "<p><strong>QUICKHACK EFFECT APPLIED</strong></p>"+
-                "<p>"+esc(
-                  actor.items?.get?.(
-                    resolution.dataset.qhItem ?? ""
-                  )?.name ?? "Quickhack"
-                )+"</p>"
-            });
+            qhButton.textContent =
+              landed
+                ? "EFFECT APPLIED"
+                : "RESISTED // RAM SPENT";
+
+            try {
+              await ChatMessage.create({
+                speaker:ChatMessage.getSpeaker({actor}),
+                content:
+                  (
+                    landed
+                      ? "<p><strong>QUICKHACK EFFECT APPLIED</strong></p>"
+                      : "<p><strong>QUICKHACK RESISTED // RAM SPENT</strong></p>"
+                  )+
+                  "<p>"+esc(
+                    actor.items?.get?.(
+                      resolution.dataset.qhItem ?? ""
+                    )?.name ?? "Quickhack"
+                  )+"</p>"
+              });
+            } catch (chatErr) {
+              // Chat logging is secondary. Do not undo/re-enable an already
+              // committed gameplay action just because chat failed.
+              console.warn(
+                "FEHA V3 effect chat log failed",
+                chatErr
+              );
+            }
 
             globalThis.FEHA_SOUNDS?.play?.(
               "confirm",
@@ -3459,31 +3620,62 @@
           const tokenId = resolution?.dataset?.qhTarget ?? "";
           const token =
             canvas?.tokens?.get?.(tokenId) ??
-            canvas?.tokens?.placeables?.find?.(candidate => candidate.id === tokenId) ??
+            canvas?.tokens?.placeables?.find?.(
+              candidate => candidate.id === tokenId
+            ) ??
             null;
-          const targetActor = token?.actor ?? token?.document?.actor ?? null;
+
+          const targetActor =
+            token?.actor ??
+            token?.document?.actor ??
+            null;
 
           if (!targetActor) {
-            return ui?.notifications?.warn?.("Resolved target is no longer available.");
+            return ui?.notifications?.warn?.(
+              "Resolved target is no longer available."
+            );
           }
 
           if (!(game.user?.isGM || targetActor.isOwner)) {
-            return ui?.notifications?.warn?.("You do not have permission to modify that target's HP.");
+            return ui?.notifications?.warn?.(
+              "You do not have permission to modify that target's HP."
+            );
           }
 
           qhButton.dataset.busy = "1";
           qhButton.disabled = true;
 
           try {
-            const result = await applyResolvedDamage(targetActor,input.value);
-
+            // Spend RAM FIRST. The old order applied HP damage before checking
+            // whether RAM could still be committed, allowing free damage if RAM
+            // changed after preview.
             const ramCommitted =
-              await commitQuickhackRam(actor,resolution);
+              await commitQuickhackRam(
+                actor,
+                resolution
+              );
 
             if (!ramCommitted) {
-              throw new Error(
-                "Quickhack RAM commit failed after damage application."
+              qhButton.disabled = false;
+              delete qhButton.dataset.busy;
+              return;
+            }
+
+            let result = null;
+
+            try {
+              result =
+                await applyResolvedDamage(
+                  targetActor,
+                  input.value
+                );
+            } catch (damageErr) {
+              await refundQuickhackRam(
+                actor,
+                resolution
               );
+
+              throw damageErr;
             }
 
             qhButton.textContent =
@@ -3491,34 +3683,73 @@
 
             input.disabled = true;
 
-            const hpReadout = resolution?.querySelector?.("[data-qh-hp]");
+            const hpReadout =
+              resolution?.querySelector?.(
+                "[data-qh-hp]"
+              );
+
             if (hpReadout) {
               hpReadout.textContent =
                 "HP "+result.after.value+
-                (result.after.temp ? " + "+result.after.temp+" TEMP" : "")+
+                (
+                  result.after.temp
+                    ? " + "+result.after.temp+" TEMP"
+                    : ""
+                )+
                 " / "+result.after.max;
             }
 
-            for (const adjuster of resolution?.querySelectorAll?.(
-              '[data-qh-action="minus-damage"],[data-qh-action="plus-damage"]'
-            ) ?? []) {
+            for (
+              const adjuster of
+              resolution?.querySelectorAll?.(
+                '[data-qh-action="minus-damage"],[data-qh-action="plus-damage"]'
+              ) ?? []
+            ) {
               adjuster.disabled = true;
             }
 
-            await ChatMessage.create({
-              speaker:ChatMessage.getSpeaker({actor}),
-              content:
-                "<p><strong>QUICKHACK DAMAGE APPLIED</strong></p>"+
-                "<p>"+esc(targetActor.name)+": "+
-                result.before.value+" → <strong>"+result.after.value+"</strong> HP"+
-                (result.before.temp ? " (TEMP "+result.before.temp+" → "+result.after.temp+")" : "")+
-                "</p>"
-            });
+            try {
+              await ChatMessage.create({
+                speaker:ChatMessage.getSpeaker({actor}),
+                content:
+                  "<p><strong>QUICKHACK DAMAGE APPLIED</strong></p>"+
+                  "<p>"+esc(targetActor.name)+": "+
+                  result.before.value+
+                  " → <strong>"+
+                  result.after.value+
+                  "</strong> HP"+
+                  (
+                    result.before.temp
+                      ? " (TEMP "+
+                        result.before.temp+
+                        " → "+
+                        result.after.temp+
+                        ")"
+                      : ""
+                  )+
+                  "</p>"
+              });
+            } catch (chatErr) {
+              console.warn(
+                "FEHA V3 damage chat log failed",
+                chatErr
+              );
+            }
 
-            globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
+            globalThis.FEHA_SOUNDS?.play?.(
+              "confirm",
+              {cooldown:0}
+            );
           } catch (err) {
-            console.error("FEHA V3 damage application failed",err);
-            ui?.notifications?.error?.("Could not apply Quickhack damage.");
+            console.error(
+              "FEHA V3 damage application failed",
+              err
+            );
+
+            ui?.notifications?.error?.(
+              "Could not apply Quickhack damage."
+            );
+
             qhButton.disabled = false;
             delete qhButton.dataset.busy;
           }
