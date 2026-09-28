@@ -1827,11 +1827,6 @@
 
         <div class="feha-gateway-intro-shade" aria-hidden="true"></div>
 
-        <div class="feha-gateway-intro-meta">
-          <span>SESSION MEDIA // EXTERNAL FEED</span>
-          <b>EDGERUNNERS</b>
-        </div>
-
         <button
           type="button"
           class="feha-gateway-intro-skip"
@@ -3201,11 +3196,6 @@
 
             <div class="feha-linkstart-title-wrap">
               <div class="feha-linkstart-title-lock">
-                <div class="feha-linkstart-kicker">
-                  <span>ACTIVATED</span>
-                  <b>//</b>
-                </div>
-
                 <h1 class="feha-linkstart-title-main">
                   <span>CONNECTION</span>
                   <span>ESTABLISHED</span>
@@ -3335,21 +3325,22 @@
       });
       playLinkSceneCue("transfer");
 
-      await sleep(1150);
+      await sleep(1350);
 
       setLinkPhase({
         phase:"SESSION LIVE",
         route:"CONNECTION ESTABLISHED",
         percent:"100%",
-        status:"ACTIVATED // CONNECTION ESTABLISHED",
+        status:"CONNECTION ESTABLISHED",
         progress:"100%",
         live:true
       });
 
       playLinkSceneCue("live");
-      showIntroSkip();
 
-      await sleep(900);
+      // Let the final CONNECTION ESTABLISHED lockup actually land before the
+      // video takes over. Keep the screen clean: no SKIP button yet.
+      await sleep(1550);
 
       // Commit the session while the blue overlay is still covering the scene.
       close(true,{
@@ -3357,12 +3348,16 @@
         keepIntroStage:true
       });
 
-      // Let the moving video fully replace the blue 3D system.
+      // Crossfade the blue system into the already-running video slowly enough
+      // to feel intentional instead of like the overlay simply disappeared.
       linkOverlay?.classList.add("is-video-handoff");
-      await sleep(800);
+      await sleep(1700);
 
       linkOverlay?.remove?.();
       linkOverlay = null;
+
+      // Only reveal the control after the cinematic handoff is complete.
+      showIntroSkip();
 
       // Player now owns the screen. It exits on video end or SKIP INTRO.
       await waitForIntroExit();
