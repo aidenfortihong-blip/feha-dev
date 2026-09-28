@@ -1,8 +1,13 @@
 {
-  "version": "0.10.115",
+  "version": "0.10.116",
   "updated": "2026-09-28",
-  "scope": "remove-selected-augmentation-bus-restore-right-status",
+  "scope": "gateway-directional-glitch-tear-handoff",
   "notes": [
+    "Added a brief directional cyberpunk glitch-tear to the final black/yellow CONNECTION ESTABLISHED lockup immediately before the proven left/right title flight.",
+    "The glitch uses cyan/red chromatic ghost slices and a thin center signal rupture; the main title remains readable and there is no full-screen rainbow/static treatment.",
+    "CONNECTION ghost corruption biases left and ESTABLISHED biases right, then the existing JS-driven split launches them 115vw in opposite directions.",
+    "The total final handoff window remains 1080ms: the split now launches 220ms into that same window and travels for 0.80s.",
+    "Chrome Manager 0.10.115 layout/color/header fixes, duplicate-EJECT removal, Gateway logo, and all other cinematic waits remain unchanged.",
     "Removed SELECTED AUGMENTATION BUS using the correct nested span selector.",
     "Restored the inspector header to a two-sided layout: selected subsystem label on the left and VACANT / READY on the far right.",
     "Vertically centered both remaining header elements without changing their font metrics.",
