@@ -1,8 +1,14 @@
 {
-  "version": "0.10.97",
+  "version": "0.10.98",
   "updated": "2026-09-28",
-  "scope": "quieter-link-sequence-visible-cyber-load-bar",
+  "scope": "cyberpunk-branding-glitch-expand-confirmation",
   "notes": [
+    "Removed the small palette widgets from the header and ID-candidate side, removed the ROUTE/AUTH utility tab, and simplified remaining decorative rails so the Gateway reads as one authored Cyberpunk terminal rather than a collection of UI ornaments.",
+    "Reworked the top-left CYBERPUNK lockup into a larger italic/skewed brand treatment with one cyan blade and one yellow slash, while retaining the asymmetrical top-middle structural wedge.",
+    "CONNECTION ESTABLISHED no longer appears as a separate larger black/yellow title. The existing cyan title itself now glitch-expands and color-morphs into the final state.",
+    "CONNECTION morphs from cyan into literal black with a yellow outline; ESTABLISHED morphs from cyan into literal Cyberpunk yellow with a black outline, with opposing horizontal glitch jitter and overshoot during expansion.",
+    "The ultra-thin cyan center pulse now begins with the morph and remains the bridge between the words before extending outward during the final split.",
+    "No JS behavior, phase order, fullscreen behavior, cinematic waits, or video handoff timing changed.",
     "Reduced post-JACK-IN visual noise: the 3D tunnel is now mostly black/cyan with sparse yellow accents and no red tunnel elements.",
     "Dimmed rings and rails, reduced visible particle density, and simplified the reticle and decorative signal bands so the sequence is easier to read.",
     "Restored the post-JACK-IN loading bar as a single prominent cyber bar: dark track, yellow progress fill, subtle segmented grid, and a thin cyan leading pulse instead of a rainbow gradient.",
