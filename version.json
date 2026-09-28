@@ -1,8 +1,13 @@
 {
-  "version": "0.10.106",
+  "version": "0.10.107",
   "updated": "2026-09-28",
-  "scope": "chrome-manager-cyberpunk-identity-pass",
+  "scope": "rollback-chrome-identity-pass-remove-duplicate-eject",
   "notes": [
+    "Rolled back the entire 0.10.106 Chrome Manager cyberpunk identity CSS pass, restoring the prior Chrome Manager visual state.",
+    "Removed the redundant small EJECT control from filled hardware ports; the large bottom EJECT AUGMENT action remains the single uninstall control.",
+    "Collapsed the now-unused action row space on filled ports.",
+    "No Chrome Manager logic or event handlers changed.",
+    "Gateway logo fixes, cyan progress bar, full-height boot terminal, final CONNECTION-left / ESTABLISHED-right split, and cinematic timing remain unchanged.",
     "Applied a visual-only Cyberpunk identity pass to Chrome Manager while preserving its current layout, readability, and behavior.",
     "Strengthened the app header, cyberware capacity bus, system index, portrait telemetry, hardware inspector, ports, cache drawer, and action buttons with cyan/yellow/red functional hierarchy and sharper industrial geometry.",
     "Added deliberately slow ambient motion: capacity scans, grid drift, signal breathing, and hover sweeps; no high-frequency always-on glitch noise was added.",
