@@ -1,8 +1,12 @@
 {
-  "version": "0.10.110",
+  "version": "0.10.111",
   "updated": "2026-09-28",
-  "scope": "chrome-manager-cyberpunk-skin-zero-spacing-change",
+  "scope": "chrome-manager-subject-palette-and-header-nudge",
   "notes": [
+    "Chrome Manager accent colors now follow the selected subject: Ponyboy yellow/cyan, Derke pink-red/yellow, Sasha cyan/purple, Zach blue/yellow.",
+    "Recolored the existing 0.10.110 Cyberpunk skin through subject palette variables without changing typography, spacing, sizing, grid, or panel geometry.",
+    "Moved the selected-augmentation inspector header down 4px as one intact block; internal word spacing and the surrounding layout remain unchanged.",
+    "Preserved the 0.10.108 duplicate top EJECT removal, Chrome Manager logic, Gateway behavior, and cinematic timing.",
     "Applied a Cyberpunk 2077-inspired paint-only skin to Chrome Manager using dark navy/black panels, cyan active hardware language, red system accents, subtle scan texture, glows, and technical panel contrast.",
     "Explicitly preserved all 0.10.109 text metrics and spacing: no font-size, line-height, letter-spacing, padding, margin, gap, width, height, grid, flex-direction, transform, or content-position changes were introduced in this pass.",
     "Kept the current Chrome Manager layout and every word in the same physical spacing/placement to avoid clipping and overlap regressions.",
