@@ -19771,3 +19771,154 @@ body #adk-market-15#adk-market-15 #top-directory {
     opacity:0!important;
   }
 }
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.117 BIG GLITCH STRIPS THROUGH FLIGHT
+   Large visible letter-strip corruption before and during the final split.
+   ========================================================================== */
+
+#feha-link-start.is-video-glitch .feha-linkstart-title-main > span,
+#feha-link-start.is-video-handoff .feha-linkstart-title-main > span {
+  position:relative!important;
+  overflow:visible!important;
+}
+
+#feha-link-start .feha-link-glitch-strip {
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  pointer-events:none!important;
+  white-space:nowrap!important;
+  font:inherit!important;
+  line-height:inherit!important;
+  letter-spacing:inherit!important;
+  text-align:inherit!important;
+  opacity:0!important;
+  z-index:8!important;
+  will-change:transform,opacity!important;
+}
+
+#feha-link-start .feha-link-glitch-strip[data-strip="1"] {
+  clip-path:inset(4% 0 64% 0)!important;
+  color:#53efff!important;
+  text-shadow:0 0 10px rgba(57,230,255,.55)!important;
+}
+#feha-link-start .feha-link-glitch-strip[data-strip="2"] {
+  clip-path:inset(36% 0 34% 0)!important;
+  color:#ff315d!important;
+  text-shadow:0 0 10px rgba(255,49,93,.48)!important;
+}
+#feha-link-start .feha-link-glitch-strip[data-strip="3"] {
+  clip-path:inset(68% 0 3% 0)!important;
+  color:#ffffff!important;
+  text-shadow:0 0 10px rgba(252,238,10,.42)!important;
+}
+
+/* BEFORE launch: large snap offsets. */
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span[data-feha-glitch-dir="left"]
+.feha-link-glitch-strip {
+  animation:feha-g117-pre-left .30s steps(1,end) both!important;
+}
+
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span[data-feha-glitch-dir="right"]
+.feha-link-glitch-strip {
+  animation:feha-g117-pre-right .30s steps(1,end) both!important;
+}
+
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:first-child {
+  text-shadow:
+    -10px 0 0 rgba(57,230,255,.48),
+    8px 0 0 rgba(255,49,93,.38),
+    0 0 18px rgba(252,238,10,.28)!important;
+}
+#feha-link-start.is-video-glitch
+.feha-linkstart-title-main > span:last-child {
+  text-shadow:
+    10px 0 0 rgba(57,230,255,.46),
+    -8px 0 0 rgba(255,49,93,.36),
+    0 0 18px rgba(252,238,10,.30)!important;
+}
+
+/* DURING flight: the strips stay active and keep snapping around the moving word. */
+#feha-link-start.is-video-handoff
+.feha-linkstart-title-main > span[data-feha-glitch-dir="left"]
+.feha-link-glitch-strip {
+  animation:feha-g117-flight-left .78s steps(2,end) both!important;
+}
+
+#feha-link-start.is-video-handoff
+.feha-linkstart-title-main > span[data-feha-glitch-dir="right"]
+.feha-link-glitch-strip {
+  animation:feha-g117-flight-right .78s steps(2,end) both!important;
+}
+
+#feha-link-start.is-video-handoff .feha-link-glitch-strip[data-strip="2"] {
+  animation-delay:.035s!important;
+}
+#feha-link-start.is-video-handoff .feha-link-glitch-strip[data-strip="3"] {
+  animation-delay:.065s!important;
+}
+
+/* Strong center signal break before the launch. */
+#feha-link-start.is-video-glitch .feha-linkstart-flash {
+  opacity:1!important;
+  background:
+    linear-gradient(90deg,
+      transparent 0 46%,
+      rgba(57,230,255,.08) 47%,
+      #53efff 49.25%,
+      #ffffff 49.80% 49.92%,
+      #000 49.92% 50.08%,
+      #fcee0a 50.08% 50.20%,
+      #ff315d 50.75%,
+      rgba(255,49,93,.08) 53%,
+      transparent 54% 100%)!important;
+  animation:feha-g117-seam .30s steps(2,end) both!important;
+}
+
+@keyframes feha-g117-pre-left {
+  0%{opacity:0;transform:translate3d(0,0,0)}
+  18%{opacity:.96;transform:translate3d(-22px,-2px,0)}
+  34%{opacity:.30;transform:translate3d(14px,1px,0)}
+  50%{opacity:1;transform:translate3d(-48px,0,0) skewX(-7deg)}
+  68%{opacity:.34;transform:translate3d(22px,2px,0)}
+  84%{opacity:.94;transform:translate3d(-78px,-1px,0) skewX(-11deg)}
+  100%{opacity:.22;transform:translate3d(-36px,0,0)}
+}
+@keyframes feha-g117-pre-right {
+  0%{opacity:0;transform:translate3d(0,0,0)}
+  18%{opacity:.96;transform:translate3d(22px,-2px,0)}
+  34%{opacity:.30;transform:translate3d(-14px,1px,0)}
+  50%{opacity:1;transform:translate3d(48px,0,0) skewX(7deg)}
+  68%{opacity:.34;transform:translate3d(-22px,2px,0)}
+  84%{opacity:.94;transform:translate3d(78px,-1px,0) skewX(11deg)}
+  100%{opacity:.22;transform:translate3d(36px,0,0)}
+}
+@keyframes feha-g117-flight-left {
+  0%{opacity:.94;transform:translate3d(-28px,0,0)}
+  18%{opacity:.34;transform:translate3d(32px,-2px,0)}
+  36%{opacity:.98;transform:translate3d(-64px,1px,0)}
+  54%{opacity:.28;transform:translate3d(18px,2px,0)}
+  72%{opacity:.88;transform:translate3d(-104px,-1px,0) skewX(-10deg)}
+  100%{opacity:0;transform:translate3d(-150px,0,0) skewX(-14deg)}
+}
+@keyframes feha-g117-flight-right {
+  0%{opacity:.94;transform:translate3d(28px,0,0)}
+  18%{opacity:.34;transform:translate3d(-32px,-2px,0)}
+  36%{opacity:.98;transform:translate3d(64px,1px,0)}
+  54%{opacity:.28;transform:translate3d(-18px,2px,0)}
+  72%{opacity:.88;transform:translate3d(104px,-1px,0) skewX(10deg)}
+  100%{opacity:0;transform:translate3d(150px,0,0) skewX(14deg)}
+}
+@keyframes feha-g117-seam {
+  0%{opacity:0;transform:scaleX(.10)}
+  18%{opacity:1;transform:scaleX(.74)}
+  34%{opacity:.22;transform:scaleX(.28)}
+  52%{opacity:1;transform:scaleX(1.08)}
+  70%{opacity:.24;transform:scaleX(.54)}
+  86%{opacity:.94;transform:scaleX(1.20)}
+  100%{opacity:0;transform:scaleX(1.34)}
+}
