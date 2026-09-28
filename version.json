@@ -1,8 +1,11 @@
 {
-  "version": "0.10.113",
+  "version": "0.10.114",
   "updated": "2026-09-28",
-  "scope": "crisp-inspector-microheader",
+  "scope": "remove-inspector-microheader-center-bus-label",
   "notes": [
+    "Removed the SELECTED AUGMENTATION BUS line from the Chrome Manager inspector header.",
+    "Centered the remaining selected subsystem label vertically inside the existing inspector-header footprint.",
+    "Preserved subject color palettes including Sasha's purple-led theme, larger readability typography, duplicate-EJECT removal, Chrome logic, Gateway behavior, and cinematic timing.",
     "Made the SELECTED AUGMENTATION BUS microheader crisp and legible with full opacity, 900 font weight, no soft text shadow/filter, and user-palette coloring.",
     "Moved the two-line inspector header content down another 2px by redistributing the same total 8px vertical padding to 6px top / 2px bottom, preserving its overall footprint.",
     "Kept font size, line-height, letter-spacing, surrounding panel geometry, Sasha purple palette, duplicate-EJECT fix, Chrome logic, Gateway behavior, and cinematic timing unchanged.",
