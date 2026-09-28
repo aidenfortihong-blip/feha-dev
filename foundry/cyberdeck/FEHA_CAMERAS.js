@@ -9,7 +9,7 @@
     throw new Error("FEHA_CAMERAS requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "0.1.0";
+  const VERSION = "0.1.1";
   const FLAG_SCOPE = "fleshEnshrouded";
   const ACTOR_FLAG = "cameraActor";
   const TOKEN_FLAG = "cameraToken";
@@ -452,8 +452,42 @@
   }
 
   function createPending(requestId) {
+    let timer = null;
+    let settled = false;
+
     return new Promise((resolve,reject) => {
-      const timer = setTimeout(() => {
+      const resolver = payload => {
+        if (settled) return;
+        settled = true;
+
+        if (timer) clearTimeout(timer);
+
+        if (pending.get(requestId) === resolver) {
+          pending.delete(requestId);
+        }
+
+        resolve(payload);
+      };
+
+      resolver.cancel = (
+        message="Camera authority service reloaded."
+      ) => resolver({
+        requestId,
+        cancelled:true,
+        error:message
+      });
+
+      pending.set(requestId,resolver);
+
+      timer = setTimeout(() => {
+        if (
+          settled ||
+          pending.get(requestId) !== resolver
+        ) {
+          return;
+        }
+
+        settled = true;
         pending.delete(requestId);
         reject(
           new Error(
@@ -461,16 +495,19 @@
           )
         );
       },REQUEST_TIMEOUT_MS);
-
-      pending.set(
-        requestId,
-        payload => {
-          clearTimeout(timer);
-          pending.delete(requestId);
-          resolve(payload);
-        }
-      );
     });
+  }
+
+  function cancelPending(
+    message="Camera authority service reloaded."
+  ) {
+    for (const resolver of [...pending.values()]) {
+      try {
+        resolver?.cancel?.(message);
+      } catch {}
+    }
+
+    pending.clear();
   }
 
   function emit(kind,payload) {
@@ -690,6 +727,12 @@
     placeCamera,
 
     async init() {
+      if (socketHandler) {
+        try {
+          game.socket?.off?.(CHANNEL,socketHandler);
+        } catch {}
+      }
+
       socketHandler = receive;
       game.socket?.on?.(CHANNEL,socketHandler);
 
@@ -722,7 +765,7 @@
       }
 
       socketHandler = null;
-      pending.clear();
+      cancelPending();
 
       if (globalThis.FEHA_CAMERAS === api) {
         delete globalThis.FEHA_CAMERAS;
