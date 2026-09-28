@@ -3383,42 +3383,63 @@
       primeSplitWord(splitConnection);
       primeSplitWord(splitEstablished);
 
-      // Commit the visible center position before switching into handoff state.
-      // This gives the browser an explicit start frame instead of allowing the
-      // older .is-video-handoff opacity:0 rule to make the words disappear.
-      void splitTitle?.getBoundingClientRect();
-
-      linkOverlay?.classList.add("is-video-handoff");
-
-      // Keep the same centered start state through the class change, then force
-      // the actual left/right departure with inline-important transforms.
-      void splitTitle?.getBoundingClientRect();
-
+      // Glitch copies use the exact live text, so the effect stays tied to the
+      // two real title words instead of introducing a separate replacement.
       if (splitConnection) {
-        splitConnection.style.setProperty(
-          "transition",
-          "transform .88s cubic-bezier(.12,.84,.10,1)",
-          "important"
-        );
-        splitConnection.style.setProperty(
-          "transform",
-          "translate3d(-115vw,0,0) skewX(-13deg) scaleX(1.16) scaleY(.98)",
-          "important"
-        );
+        splitConnection.dataset.fehaGlitch =
+          String(splitConnection.textContent ?? "").trim();
+      }
+      if (splitEstablished) {
+        splitEstablished.dataset.fehaGlitch =
+          String(splitEstablished.textContent ?? "").trim();
       }
 
-      if (splitEstablished) {
-        splitEstablished.style.setProperty(
-          "transition",
-          "transform .88s cubic-bezier(.12,.84,.10,1)",
-          "important"
-        );
-        splitEstablished.style.setProperty(
-          "transform",
-          "translate3d(115vw,0,0) skewX(13deg) scaleX(1.16) scaleY(.98)",
-          "important"
-        );
-      }
+      // Commit the clean black/yellow lockup first.
+      void splitTitle?.getBoundingClientRect();
+
+      // 0.10.116 // short directional signal failure before the physical split.
+      // The total handoff window remains the same 1080ms; the actual flight
+      // begins 220ms into that window and completes before the overlay is removed.
+      linkOverlay?.classList.add("is-video-glitch");
+
+      const splitLaunchTimer = setTimeout(() => {
+        timers.delete(splitLaunchTimer);
+
+        if (!linkOverlay?.isConnected) return;
+
+        linkOverlay.classList.add("is-video-handoff");
+
+        // Force one committed start frame after the handoff class lands.
+        void splitTitle?.getBoundingClientRect();
+
+        if (splitConnection) {
+          splitConnection.style.setProperty(
+            "transition",
+            "transform .80s cubic-bezier(.12,.84,.10,1)",
+            "important"
+          );
+          splitConnection.style.setProperty(
+            "transform",
+            "translate3d(-115vw,0,0) skewX(-13deg) scaleX(1.16) scaleY(.98)",
+            "important"
+          );
+        }
+
+        if (splitEstablished) {
+          splitEstablished.style.setProperty(
+            "transition",
+            "transform .80s cubic-bezier(.12,.84,.10,1)",
+            "important"
+          );
+          splitEstablished.style.setProperty(
+            "transform",
+            "translate3d(115vw,0,0) skewX(13deg) scaleX(1.16) scaleY(.98)",
+            "important"
+          );
+        }
+      },220);
+
+      timers.add(splitLaunchTimer);
 
       await sleep(1080);
 
