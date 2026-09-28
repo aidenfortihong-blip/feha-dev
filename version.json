@@ -1,8 +1,15 @@
 {
-  "version": "0.10.90",
+  "version": "0.10.91",
   "updated": "2026-09-28",
-  "scope": "gateway-cyberpunk-cohesion-tall-jack-in",
+  "scope": "gateway-industrial-cyberpunk-identity-pass",
   "notes": [
+    "Reworked the Entry Gateway from a flat dark sci-fi dashboard into a more authored cyberpunk identity terminal using asymmetry, clipped industrial geometry, stronger color hierarchy, and hardware-style signal rails.",
+    "Added a segmented shell spine, stronger branded header, angular state chip, red/yellow/cyan header accents, clipped boot/auth/candidate/profile panels, and more intentional panel depth without restoring gray haze.",
+    "Turned the large empty terminal/profile areas into deliberate engineered spaces using subtle diagonal construction lines, scanner geometry, rails, and restrained status markings instead of simply adding glow.",
+    "Candidate rows now use character-color identity spines, while the empty profile reads as a scanner bay; selected live portraits remain full-bleed image plus name.",
+    "Kept semantic palette discipline: cyan structure/interaction, red identity/alert, yellow process/action, green verified/success.",
+    "The tall post-auth JACK IN bar remains unchanged in size and function, with only small red/cyan rails added so it visually belongs to the same Gateway.",
+    "No cinematic/video timing or sequencing was changed.",
     "Made the post-auth JACK IN bar substantially taller and more dominant: the granted footer is now about 124px tall with an approximately 108px launch bar.",
     "Compressed noncritical Gateway vertical space above it—header, terminal padding, boot panel, auth card, biometrics, console, candidate rows—without removing information.",
     "Unified the Gateway palette into a semantic cyberpunk system: cyan for structure/interaction, red for identity/alert, yellow for processing and JACK IN action, green for verified/success, all on saturated graphite-black surfaces.",
