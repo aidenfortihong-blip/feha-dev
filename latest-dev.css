@@ -19435,3 +19435,46 @@ body #adk-market-15#adk-market-15 #top-directory {
   display:none!important;
   visibility:hidden!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.112 HEADER CLIP FIX + SASHA PURPLE EMPHASIS
+   - Fix the selected-augmentation header looking clipped at the top.
+   - Keep the header's total footprint the same: redistribute its existing
+     8px vertical padding instead of changing the surrounding panel geometry.
+   - Make Sasha's Chrome Manager palette clearly purple-led, with cyan secondary.
+   ========================================================================== */
+
+/* The old 4px transform moved the whole header paint layer. Keep the exact
+   overall header footprint, but move its CONTENT down inside that footprint:
+   old padding was 0 top / 8 bottom; now 4 top / 4 bottom = same total 8px. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header {
+  transform:none!important;
+  padding:4px 0 4px!important;
+  overflow:visible!important;
+}
+
+/* Sasha should read PURPLE first, cyan second. */
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha"],
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha-bogdanov"] {
+  --cm-user-primary-rgb:207,115,255;
+  --cm-user-secondary-rgb:92,239,255;
+}
+
+/* Slightly deepen Sasha's ambient purple presence without touching geometry. */
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha"] .adk-v6-systems,
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha-bogdanov"] .adk-v6-systems,
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha"] .adk-v6-inspector,
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha-bogdanov"] .adk-v6-inspector {
+  box-shadow:
+    inset 0 0 34px rgba(207,115,255,.030),
+    inset 0 0 0 1px rgba(207,115,255,.020)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha"] .subject-mini,
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha-bogdanov"] .subject-mini,
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha"] .subject-system-title,
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha-bogdanov"] .subject-system-title {
+  box-shadow:
+    inset 14px 0 28px rgba(207,115,255,.035),
+    inset 0 0 0 1px rgba(207,115,255,.022)!important;
+}
