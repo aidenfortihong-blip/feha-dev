@@ -1,8 +1,12 @@
 {
-  "version": "0.10.116",
+  "version": "0.10.117",
   "updated": "2026-09-28",
-  "scope": "gateway-directional-glitch-tear-handoff",
+  "scope": "gateway-big-pre-and-inflight-letter-glitch",
   "notes": [
+    "Made the final CONNECTION ESTABLISHED glitch much larger immediately before the split.",
+    "Cyan and red clipped letter ghosts now jump far outward and remain active during the full left/right flight.",
+    "The real black/yellow words carry stronger channel separation while moving.",
+    "No cinematic wait values or Chrome Manager code changed.",
     "Added a brief directional cyberpunk glitch-tear to the final black/yellow CONNECTION ESTABLISHED lockup immediately before the proven left/right title flight.",
     "The glitch uses cyan/red chromatic ghost slices and a thin center signal rupture; the main title remains readable and there is no full-screen rainbow/static treatment.",
     "CONNECTION ghost corruption biases left and ESTABLISHED biases right, then the existing JS-driven split launches them 115vw in opposite directions.",
