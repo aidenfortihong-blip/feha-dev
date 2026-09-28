@@ -1,8 +1,12 @@
 {
-  "version": "0.10.76",
+  "version": "0.10.77",
   "updated": "2026-09-28",
-  "scope": "gateway-exact-match-private-music",
+  "scope": "remove-session-init-ai-voice",
   "notes": [
+    "Removed the browser speech-synthesis AI voice from the SESSION INIT transition.",
+    "The final on-screen text remains ACTIVATED // CONNECTION ESTABLISHED.",
+    "Music, custom transition sound effects, 3D animation, and scene handoff remain unchanged.",
+    "Reduced the final hold because no spoken line needs time to finish.",
     "Added exact typed-name music trigger to the custom Entry Gateway: the configured match track begins the first time the typed identifier exactly matches Ponyboy, Derke, Sasha, or Zach.",
     "Match music starts with a short fade-in at restrained volume and continues through authentication, SESSION INIT, Gateway close, and into live play rather than restarting between phases.",
     "Added a GM-only SET MATCH TRACK / REPLACE MATCH TRACK button that imports a local audio file through Foundry FilePicker into private world data storage and saves its path as a FEHA world setting.",
