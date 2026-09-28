@@ -1,8 +1,14 @@
 {
-  "version": "0.10.89",
+  "version": "0.10.90",
   "updated": "2026-09-28",
-  "scope": "gateway-auth-jack-in-bar",
+  "scope": "gateway-cyberpunk-cohesion-tall-jack-in",
   "notes": [
+    "Made the post-auth JACK IN bar substantially taller and more dominant: the granted footer is now about 124px tall with an approximately 108px launch bar.",
+    "Compressed noncritical Gateway vertical space above it—header, terminal padding, boot panel, auth card, biometrics, console, candidate rows—without removing information.",
+    "Unified the Gateway palette into a semantic cyberpunk system: cyan for structure/interaction, red for identity/alert, yellow for processing and JACK IN action, green for verified/success, all on saturated graphite-black surfaces.",
+    "Reworked borders, panel fills, candidate states, progress colors, footer treatment, and profile-name overlay so the whole Gateway reads as one application rather than mixed visual subsystems.",
+    "Added a segmented red/cyan/green technical accent rail to the JACK IN bar and scaled its central JACK IN label up substantially.",
+    "No Entry Gateway cinematic/video timing or sequencing changed in this pass.",
     "Replaced the small post-authentication ESTABLISH LINK button with a full-width yellow JACK IN launch bar at the bottom of the Entry Gateway.",
     "The JACK IN bar appears only after authentication succeeds and shows SYSTEM READY on the left, NEURAL SESSION HANDOFF / JACK IN in the center, and the authenticated subject plus ACCESS GRANTED on the right.",
     "Before authentication completes, the existing compact encryption/node footer and GM bypass remain visible; on grant the JACK IN bar takes over the footer.",
