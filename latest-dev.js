@@ -1905,10 +1905,13 @@
     };
 
     const requestIntroFullscreen = () => {
-      // Fullscreen must be requested from the ESTABLISH LINK click's user
-      // activation. Use the document root so BOTH the blue transition and the
-      // video stage remain visible while fullscreen is active.
-      if (document.fullscreenElement) return false;
+      // The Entry Gateway wants to own the whole browser viewport from the
+      // moment it appears, not only after ESTABLISH LINK. Browsers can reject
+      // fullscreen without a user gesture, so open() attempts immediately and
+      // bind() retries on every pointer/key gesture while the Gateway exists.
+      // Use the document root so Gateway + blue handoff + intro all stay inside
+      // the same fullscreen session.
+      if (document.fullscreenElement) return true;
 
       const target = document.documentElement;
       if (!target?.requestFullscreen) return false;
@@ -3414,6 +3417,25 @@
       const input = root.querySelector("#feha-eg-input");
       const auth = root.querySelector("[data-eg-auth]");
 
+      // Keep the Gateway fullscreen for its entire visible lifetime. The first
+      // automatic request may be blocked by browser policy; any click/tap/key
+      // inside the Gateway is a valid user gesture, so retry synchronously.
+      root.addEventListener(
+        "pointerdown",
+        () => {
+          if (!document.fullscreenElement) requestIntroFullscreen();
+        },
+        true
+      );
+
+      root.addEventListener(
+        "keydown",
+        () => {
+          if (!document.fullscreenElement) requestIntroFullscreen();
+        },
+        true
+      );
+
       root.addEventListener(
         "pointerover",
         event => {
@@ -3552,6 +3574,11 @@
 
       document.body.appendChild(root);
       applyEntryGatewayPrivateAssets(root);
+
+      // Try immediately. This succeeds when Gateway was opened from a user
+      // action; if the browser blocks an automatic open, bind() retries on the
+      // very first click/tap/key so the Gateway enters fullscreen immediately.
+      requestIntroFullscreen();
 
       selected = null;
       busy = false;
