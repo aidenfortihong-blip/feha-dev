@@ -2984,8 +2984,8 @@
 
             <div class="feha-linkstart-title-wrap">
               <h1>
-                <span>SESSION</span>
-                <b>INIT</b>
+                <span>ACTIVATED</span>
+                <b>// CONNECTION ESTABLISHED</b>
               </h1>
             </div>
 
