@@ -14015,3 +14015,587 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA ENTRY GATEWAY // 0.10.90 COHESIVE CYBERPUNK + TALL JACK IN
+   Visual-system pass only. Taller JACK IN footer, slightly compressed content
+   above it, and a single disciplined cyberpunk palette across the Gateway.
+   Cinematic timing is untouched.
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom {
+  --eg-cyan:#39e6ff!important;
+  --eg-yellow:#ffd85c!important;
+  --eg-red:#ff5068!important;
+  --eg-green:#80ffa8!important;
+
+  --eg-ink:#020507!important;
+  --eg-ink2:#050b0f!important;
+  --eg-panel:#071116!important;
+  --eg-panel2:#09171d!important;
+  --eg-line:rgba(57,230,255,.22)!important;
+  --eg-line-hot:rgba(57,230,255,.46)!important;
+  --eg-copy:#d8e8ec!important;
+  --eg-dim:#6f848b!important;
+
+  background:
+    radial-gradient(circle at 76% -12%,rgba(57,230,255,.085),transparent 34%),
+    radial-gradient(circle at 8% 106%,rgba(255,80,104,.055),transparent 29%),
+    linear-gradient(rgba(57,230,255,.014) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(57,230,255,.011) 1px,transparent 1px),
+    #010507!important;
+  background-size:auto,auto,30px 30px,30px 30px,auto!important;
+}
+
+/* One unified industrial shell. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+  width:min(1640px,99vw)!important;
+  height:min(960px,98.5vh)!important;
+  grid-template-rows:96px minmax(0,1fr) 62px!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.009),transparent 12%),
+    linear-gradient(135deg,rgba(57,230,255,.026),transparent 30%),
+    #02070a!important;
+  border:1px solid rgba(57,230,255,.30)!important;
+  border-top:3px solid var(--eg-yellow)!important;
+  box-shadow:
+    0 30px 120px rgba(0,0,0,.88),
+    0 0 0 1px rgba(57,230,255,.035),
+    0 0 54px rgba(57,230,255,.045)!important;
+}
+
+/* Auth-complete state reserves substantially more vertical space for JACK IN. */
+#adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-shell {
+  grid-template-rows:92px minmax(0,1fr) 124px!important;
+  border-top-color:var(--eg-yellow)!important;
+}
+
+/* HEADER // cyan structure, red identity marker, white hero text. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+  min-height:0!important;
+  height:96px!important;
+  padding:14px 26px 13px!important;
+  background:
+    linear-gradient(90deg,rgba(255,80,104,.065),transparent 17%),
+    linear-gradient(90deg,rgba(57,230,255,.038),transparent 58%),
+    #061015!important;
+  border-bottom:1px solid rgba(57,230,255,.22)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-header {
+  height:92px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-node {
+  color:var(--eg-red)!important;
+  font-size:10px!important;
+  letter-spacing:2.5px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+  margin-top:6px!important;
+  font-size:48px!important;
+  letter-spacing:4.5px!important;
+  color:#f6fdff!important;
+  text-shadow:
+    0 0 18px rgba(57,230,255,.07),
+    0 2px 0 rgba(0,0,0,.5)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state {
+  min-width:190px!important;
+  height:40px!important;
+  padding:0 10px!important;
+  color:#82969d!important;
+  background:rgba(2,8,11,.54)!important;
+  border-bottom:1px solid rgba(57,230,255,.15)!important;
+  font-size:10px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="ready"] {
+  color:var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="auth"] {
+  color:var(--eg-yellow)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="granted"] {
+  color:var(--eg-green)!important;
+}
+
+/* BODY // compress whitespace, not information. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-body {
+  grid-template-columns:minmax(0,1.78fr) minmax(370px,.78fr)!important;
+  background:#02070a!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  padding:18px 22px 18px!important;
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.015),transparent 18%),
+    #02080b!important;
+  border-right:1px solid rgba(57,230,255,.20)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-side {
+  padding:14px!important;
+  gap:10px!important;
+  background:
+    linear-gradient(180deg,rgba(255,80,104,.018),transparent 18%),
+    #02070a!important;
+}
+
+/* Shared labels/rails all use cyan. Yellow is reserved for action/processing,
+   red for identity/alert, green for verified/success. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  color:var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::after {
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.58),rgba(57,230,255,.08),transparent)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot {
+  min-height:138px!important;
+  margin-top:11px!important;
+  padding:13px 14px!important;
+  background:
+    linear-gradient(180deg,rgba(57,230,255,.014),transparent 40%),
+    #010608!important;
+  border:1px solid rgba(57,230,255,.17)!important;
+  border-left:2px solid rgba(255,80,104,.55)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot > div {
+  margin-bottom:7px!important;
+  font-size:9px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot span {
+  color:var(--eg-red)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-boot b {
+  color:#a9c1c7!important;
+}
+
+/* Authentication panel: cyan interaction language with yellow lock/process state. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+  margin-top:12px!important;
+  padding:14px!important;
+  background:
+    linear-gradient(135deg,rgba(57,230,255,.035),transparent 48%),
+    #061014!important;
+  border:1px solid rgba(57,230,255,.31)!important;
+  border-top-color:rgba(255,216,92,.28)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card label {
+  margin-bottom:8px!important;
+  color:#7f969e!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell {
+  height:50px!important;
+  background:#010608!important;
+  border:1px solid rgba(57,230,255,.50)!important;
+  border-left:4px solid var(--eg-cyan)!important;
+  box-shadow:inset 0 0 24px rgba(57,230,255,.018)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell > span,
+#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell > i {
+  color:var(--eg-cyan)!important;
+  background-color:var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom #feha-eg-input {
+  color:#effcff!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match {
+  margin:7px 0 10px!important;
+  color:#667d84!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match[data-state="match"] {
+  color:var(--eg-cyan)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match[data-state="locked"] {
+  color:var(--eg-yellow)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-match[data-state="granted"] {
+  color:var(--eg-green)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth {
+  height:40px!important;
+  color:#031014!important;
+  background:var(--eg-cyan)!important;
+  border-color:var(--eg-cyan)!important;
+  box-shadow:0 0 18px rgba(57,230,255,.07)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth:hover:not(:disabled) {
+  background:#77efff!important;
+  border-color:#77efff!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-auth:disabled {
+  color:#65767b!important;
+  background:#0b1519!important;
+  border-color:#24363c!important;
+  box-shadow:none!important;
+}
+
+/* Biometrics tighten vertically and use semantic status colors. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-biometrics {
+  margin-top:14px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list {
+  margin-top:9px!important;
+  gap:4px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div {
+  min-height:30px!important;
+  padding:0 10px!important;
+  background:#061116!important;
+  border-left:2px solid rgba(57,230,255,.38)!important;
+  border-bottom:1px solid rgba(57,230,255,.09)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list span {
+  color:#536b72!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list b {
+  color:#bdd0d5!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list i {
+  color:var(--eg-yellow)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified {
+  border-left-color:var(--eg-green)!important;
+  background:
+    linear-gradient(90deg,rgba(128,255,168,.055),transparent 34%),
+    #061116!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list .verified i {
+  color:var(--eg-green)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-progress {
+  height:5px!important;
+  margin-top:8px!important;
+  background:#071116!important;
+  border:1px solid rgba(57,230,255,.14)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-progress > div {
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0%,
+      var(--eg-yellow) 48%,
+      var(--eg-green) 100%)!important;
+  box-shadow:0 0 10px rgba(255,216,92,.18)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console {
+  margin-top:12px!important;
+  min-height:66px!important;
+  max-height:94px!important;
+  padding:7px 9px!important;
+  color:#5f747b!important;
+  border-top:1px solid rgba(57,230,255,.12)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console [data-tone="good"] b {
+  color:#7bcbd2!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-console [data-tone="grant"] b {
+  color:var(--eg-green)!important;
+}
+
+/* Candidate rail + portrait now share the same frame grammar. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  background:#02080b!important;
+  border:1px solid rgba(57,230,255,.20)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.012),
+    inset 3px 0 0 rgba(57,230,255,.045)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  height:36px!important;
+  padding:0 11px!important;
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.045),transparent 62%),
+    #061015!important;
+  border-bottom:1px solid rgba(57,230,255,.18)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header b {
+  color:#667a81!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+  height:48px!important;
+  min-height:48px!important;
+  padding:6px 10px!important;
+  color:#a9bbc0!important;
+  background:#02080b!important;
+  border-bottom:1px solid rgba(57,230,255,.085)!important;
+  transition:
+    background .16s ease,
+    color .16s ease,
+    box-shadow .16s ease!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate:hover {
+  color:#f7ffff!important;
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.055),transparent 58%),
+    #041015!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate.active {
+  color:#fff!important;
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb,var(--candidate) 13%,transparent),
+      rgba(57,230,255,.025) 58%,
+      transparent),
+    #041015!important;
+  box-shadow:
+    inset 3px 0 var(--candidate),
+    inset 0 0 0 1px rgba(57,230,255,.08)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate > span,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate em {
+  color:#60747b!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate.active em {
+  color:var(--eg-yellow)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  background:#020609!important;
+  border-color:rgba(57,230,255,.24)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-name {
+  padding:34px 17px 15px!important;
+  color:#fff!important;
+  background:
+    linear-gradient(180deg,
+      transparent 0%,
+      rgba(2,6,9,.18) 18%,
+      rgba(2,6,9,.80) 64%,
+      rgba(2,6,9,.96) 100%)!important;
+  text-shadow:
+    0 2px 8px rgba(0,0,0,.82),
+    0 0 18px color-mix(in srgb,var(--subject) 16%,transparent)!important;
+}
+
+/* PRE-AUTH FOOTER // low-profile diagnostic strip. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-footer {
+  min-height:62px!important;
+  padding:0 18px!important;
+  background:
+    linear-gradient(90deg,rgba(57,230,255,.025),transparent 35%),
+    #010608!important;
+  border-top:1px solid rgba(57,230,255,.18)!important;
+  color:#61757c!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-footer span {
+  color:var(--eg-yellow)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-bypass {
+  color:#ff8092!important;
+  background:#0b1115!important;
+  border-color:rgba(255,80,104,.36)!important;
+}
+
+/* JACK IN // substantially taller and visually dominant. */
+#adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-footer {
+  min-height:124px!important;
+  padding:0!important;
+  background:
+    linear-gradient(180deg,rgba(255,216,92,.025),transparent 45%),
+    #030606!important;
+  border-top:1px solid rgba(255,216,92,.38)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin {
+  inset:8px!important;
+  min-height:108px!important;
+  padding:0 34px!important;
+  grid-template-columns:minmax(170px,.8fr) minmax(330px,1.3fr) minmax(230px,.9fr)!important;
+
+  background:
+    linear-gradient(90deg,
+      #ffd65a 0%,
+      #ffe078 47%,
+      #f6e986 74%,
+      #d8f29a 100%)!important;
+  background-image:
+    linear-gradient(90deg,
+      #ffd65a 0%,
+      #ffe078 47%,
+      #f6e986 74%,
+      #d8f29a 100%)!important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.54),
+    inset 0 -2px 0 rgba(0,0,0,.13),
+    0 0 0 1px rgba(255,216,92,.10),
+    0 0 34px rgba(255,216,92,.13)!important;
+
+  clip-path:polygon(
+    0 0,
+    calc(100% - 34px) 0,
+    100% 34px,
+    100% 100%,
+    34px 100%,
+    0 calc(100% - 34px)
+  )!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin::after {
+  content:""!important;
+  position:absolute!important;
+  left:26px!important;
+  right:26px!important;
+  bottom:11px!important;
+  height:3px!important;
+  background:
+    linear-gradient(90deg,
+      var(--eg-red) 0 12%,
+      transparent 12% 15%,
+      #0a0c0a 15% 34%,
+      transparent 34% 37%,
+      var(--eg-cyan) 37% 58%,
+      transparent 58% 61%,
+      #0a0c0a 61% 84%,
+      transparent 84% 87%,
+      var(--eg-green) 87% 100%)!important;
+  opacity:.76!important;
+  pointer-events:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-left {
+  font-size:9px!important;
+  letter-spacing:2.4px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center {
+  gap:4px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center small {
+  font-size:8px!important;
+  letter-spacing:2.4px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center b {
+  font-size:clamp(38px,3.35vw,58px)!important;
+  line-height:.82!important;
+  letter-spacing:.16em!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin-right {
+  font-size:8px!important;
+  letter-spacing:1.65px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-jackin:hover {
+  filter:brightness(1.045) saturate(1.03)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.62),
+    inset 0 -2px 0 rgba(0,0,0,.13),
+    0 0 0 1px rgba(255,216,92,.16),
+    0 0 46px rgba(255,216,92,.18)!important;
+}
+
+/* Short displays: preserve the tall JACK IN by squeezing noncritical vertical
+   whitespace further rather than shrinking the launch action back down. */
+@media(max-height:820px) and (min-width:1001px) {
+  #adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+    grid-template-rows:82px minmax(0,1fr) 58px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-shell {
+    grid-template-rows:80px minmax(0,1fr) 110px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header {
+    height:82px!important;
+    padding:10px 22px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-header {
+    height:80px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+    font-size:40px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+    padding:13px 18px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-side {
+    padding:10px!important;
+    gap:8px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-boot {
+    min-height:118px!important;
+    margin-top:8px!important;
+    padding:10px 12px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+    margin-top:8px!important;
+    padding:10px 12px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-biometrics {
+    margin-top:10px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+    height:43px!important;
+    min-height:43px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-footer {
+    min-height:110px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-jackin {
+    inset:7px!important;
+    min-height:96px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-jackin-center b {
+    font-size:clamp(34px,3vw,50px)!important;
+  }
+}
+
