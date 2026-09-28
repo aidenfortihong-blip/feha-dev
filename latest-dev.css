@@ -17050,7 +17050,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/e/e6/Cyberpunk_2077_logo.svg")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
 }
 
 /* --------------------------------------------------------------------------
@@ -17461,7 +17461,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/e/e6/Cyberpunk_2077_logo.svg")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
 }
 
 /* Remove the little palette/totem widgets and utility tag. */
@@ -17654,7 +17654,7 @@ body #adk-market-15#adk-market-15 #top-directory {
    ========================================================================== */
 
 #adk-entry-gateway.feha-eg-custom {
-  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/e/e6/Cyberpunk_2077_logo.svg")!important;
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
 }
 
 /* The 0.10.99 in-place morph uses !important animation on both words.
@@ -17677,4 +17677,132 @@ body #adk-market-15#adk-market-15 #top-directory {
   transition:
     width .72s cubic-bezier(.10,.84,.14,1),
     opacity .74s .18s ease!important;
+}
+
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.101 VERIFIED LOGO URL + VISIBLE FINAL SPLIT
+   Screenshot-driven repair:
+   - exact yellow/turquoise Cyberpunk 2077 logo raw URL
+   - keep overlay visible while the two title words physically leave screen
+   - force final split with keyframes so 0.10.99 morph cannot retain transform
+   - no cinematic JS waits changed
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom {
+  --eg-cyberpunk-logo:url("https://upload.wikimedia.org/wikipedia/commons/8/81/Cyberpunk_2077_logo_yellow-turquoise.svg")!important;
+}
+
+/* Make sure the real logo actually occupies the existing header title slot. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1::before {
+  background-image:var(--eg-cyberpunk-logo)!important;
+  background-repeat:no-repeat!important;
+  background-position:left center!important;
+  background-size:contain!important;
+  opacity:1!important;
+}
+
+/* The prior handoff rule faded the WHOLE overlay while the split began, which
+   made the movement effectively invisible. At handoff the environment is
+   already transparent, so hold the overlay itself visible until JS removes it. */
+#feha-link-start.is-live.is-video-preopen.is-video-handoff {
+  opacity:1!important;
+  background:transparent!important;
+  backdrop-filter:none!important;
+  transition:none!important;
+  pointer-events:none!important;
+}
+
+#feha-link-start.is-live.is-video-preopen.is-video-handoff .feha-linkstart-title-wrap,
+#feha-link-start.is-live.is-video-preopen.is-video-handoff .feha-linkstart-title-lock,
+#feha-link-start.is-live.is-video-preopen.is-video-handoff .feha-linkstart-title-main {
+  overflow:visible!important;
+}
+
+/* Force a real departure animation. This intentionally replaces the infinite
+   0.10.99 pulse/morph animation only after is-video-handoff is added. */
+#feha-link-start.is-live.is-video-preopen.is-video-handoff
+.feha-linkstart-title-main > span:first-child {
+  animation:feha-final-connection-left-0101 .86s cubic-bezier(.12,.84,.10,1) both!important;
+  transform-origin:center center!important;
+  will-change:transform,opacity!important;
+}
+
+#feha-link-start.is-live.is-video-preopen.is-video-handoff
+.feha-linkstart-title-main > span:last-child {
+  animation:feha-final-established-right-0101 .86s cubic-bezier(.12,.84,.10,1) both!important;
+  transform-origin:center center!important;
+  will-change:transform,opacity!important;
+}
+
+@keyframes feha-final-connection-left-0101 {
+  0% {
+    transform:scaleX(1.045) scaleY(1.045) skewX(0deg);
+    opacity:1;
+  }
+  10% {
+    transform:translateX(-1.5vw) scaleX(1.075) scaleY(.99) skewX(-2deg);
+    opacity:1;
+  }
+  28% {
+    transform:translateX(-9vw) scaleX(1.10) scaleY(.985) skewX(-5deg);
+    opacity:1;
+  }
+  100% {
+    transform:translateX(-96vw) scaleX(1.16) scaleY(.98) skewX(-13deg);
+    opacity:0;
+  }
+}
+
+@keyframes feha-final-established-right-0101 {
+  0% {
+    transform:scaleX(1.045) scaleY(1.045) skewX(0deg);
+    opacity:1;
+  }
+  10% {
+    transform:translateX(1.5vw) scaleX(1.075) scaleY(.99) skewX(2deg);
+    opacity:1;
+  }
+  28% {
+    transform:translateX(9vw) scaleX(1.10) scaleY(.985) skewX(5deg);
+    opacity:1;
+  }
+  100% {
+    transform:translateX(96vw) scaleX(1.16) scaleY(.98) skewX(13deg);
+    opacity:0;
+  }
+}
+
+/* Same center pulse expands hard in both directions during the split. */
+#feha-link-start.is-live.is-video-preopen.is-video-handoff
+.feha-linkstart-title-lock::after {
+  animation:feha-final-centerline-release-0101 .82s cubic-bezier(.10,.84,.14,1) both!important;
+}
+
+@keyframes feha-final-centerline-release-0101 {
+  0% {
+    width:min(70vw,980px);
+    opacity:.48;
+    transform:translate(-50%,-50%) scaleX(1);
+  }
+  24% {
+    width:min(82vw,1180px);
+    opacity:.82;
+    transform:translate(-50%,-50%) scaleX(1.03);
+  }
+  100% {
+    width:min(110vw,1600px);
+    opacity:0;
+    transform:translate(-50%,-50%) scaleX(1.10);
+  }
+}
+
+@media(max-width:900px){
+  @keyframes feha-final-connection-left-0101 {
+    0% {transform:scaleX(1.045);opacity:1}
+    100% {transform:translateX(-118vw) skewX(-11deg) scaleX(1.10);opacity:0}
+  }
+  @keyframes feha-final-established-right-0101 {
+    0% {transform:scaleX(1.045);opacity:1}
+    100% {transform:translateX(118vw) skewX(11deg) scaleX(1.10);opacity:0}
+  }
 }
