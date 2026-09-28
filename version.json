@@ -1,8 +1,12 @@
 {
-  "version": "0.10.111",
+  "version": "0.10.112",
   "updated": "2026-09-28",
-  "scope": "chrome-manager-subject-palette-and-header-nudge",
+  "scope": "chrome-header-clip-fix-sasha-purple",
   "notes": [
+    "Fixed the selected-augmentation header's clipped-top appearance by removing the 4px transform and redistributing the same 8px of vertical padding from 0/8 to 4/4, keeping the overall header footprint unchanged.",
+    "Set inspector-header overflow visible so the larger readability typography cannot be visually cropped.",
+    "Changed Sasha's Chrome Manager palette to purple-led (#CF73FF) with cyan secondary, matching her established FEHA identity more strongly.",
+    "Added only subtle Sasha-specific purple inset ambience; no text metrics, panel geometry, Chrome logic, duplicate-EJECT fix, Gateway behavior, or cinematic timing changed.",
     "Chrome Manager accent colors now follow the selected subject: Ponyboy yellow/cyan, Derke pink-red/yellow, Sasha cyan/purple, Zach blue/yellow.",
     "Recolored the existing 0.10.110 Cyberpunk skin through subject palette variables without changing typography, spacing, sizing, grid, or panel geometry.",
     "Moved the selected-augmentation inspector header down 4px as one intact block; internal word spacing and the surrounding layout remain unchanged.",
