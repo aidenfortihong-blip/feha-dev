@@ -1679,6 +1679,7 @@
 
     let root = null;
     let linkOverlay = null;
+    let linkAudioContext = null;
     let selected = null;
     let busy = false;
     let sequence = 0;
@@ -2308,6 +2309,411 @@
       setTimeout(() => play("confirm",.24,0),140);
     };
 
+    const getLinkAudioContext = () => {
+      try {
+        const AudioCtor =
+          globalThis.AudioContext ??
+          globalThis.webkitAudioContext ??
+          null;
+
+        if (!AudioCtor) return null;
+
+        if (
+          !linkAudioContext ||
+          linkAudioContext.state === "closed"
+        ) {
+          linkAudioContext = new AudioCtor();
+        }
+
+        if (linkAudioContext.state === "suspended") {
+          void linkAudioContext.resume?.();
+        }
+
+        return linkAudioContext;
+      } catch (err) {
+        console.warn("FEHA DEV // Link Start AudioContext unavailable",err);
+        return null;
+      }
+    };
+
+    const createLinkPanner = (ctx,fromPan = 0,toPan = fromPan,when = 0,duration = .2) => {
+      if (!ctx?.createStereoPanner) return null;
+
+      const panner = ctx.createStereoPanner();
+
+      panner.pan.setValueAtTime(
+        Math.max(-1,Math.min(1,fromPan)),
+        when
+      );
+
+      panner.pan.linearRampToValueAtTime(
+        Math.max(-1,Math.min(1,toPan)),
+        when + Math.max(.01,duration)
+      );
+
+      return panner;
+    };
+
+    const synthLinkTone = ({
+      startHz = 220,
+      endHz = startHz,
+      duration = .2,
+      gain = .05,
+      delay = 0,
+      type = "sine",
+      fromPan = 0,
+      toPan = fromPan
+    } = {}) => {
+      const ctx = getLinkAudioContext();
+      if (!ctx) return false;
+
+      const when = ctx.currentTime + Math.max(0,delay);
+      const stop = when + Math.max(.03,duration);
+
+      const osc = ctx.createOscillator();
+      const amp = ctx.createGain();
+      const panner = createLinkPanner(
+        ctx,
+        fromPan,
+        toPan,
+        when,
+        duration
+      );
+
+      osc.type = type;
+
+      osc.frequency.setValueAtTime(
+        Math.max(20,startHz),
+        when
+      );
+
+      osc.frequency.exponentialRampToValueAtTime(
+        Math.max(20,endHz),
+        stop
+      );
+
+      amp.gain.setValueAtTime(.0001,when);
+      amp.gain.exponentialRampToValueAtTime(
+        Math.max(.0002,gain),
+        when + Math.min(.045,duration * .25)
+      );
+      amp.gain.exponentialRampToValueAtTime(.0001,stop);
+
+      osc.connect(amp);
+
+      if (panner) {
+        amp.connect(panner);
+        panner.connect(ctx.destination);
+      } else {
+        amp.connect(ctx.destination);
+      }
+
+      osc.start(when);
+      osc.stop(stop + .02);
+
+      return true;
+    };
+
+    const synthLinkNoise = ({
+      duration = .5,
+      gain = .08,
+      delay = 0,
+      startHz = 320,
+      endHz = 4200,
+      fromPan = -.5,
+      toPan = .5,
+      q = .8
+    } = {}) => {
+      const ctx = getLinkAudioContext();
+      if (!ctx) return false;
+
+      const seconds = Math.max(.05,duration);
+      const frames = Math.max(
+        1,
+        Math.floor(ctx.sampleRate * seconds)
+      );
+
+      const buffer = ctx.createBuffer(
+        1,
+        frames,
+        ctx.sampleRate
+      );
+
+      const data = buffer.getChannelData(0);
+
+      for (let i = 0; i < frames; i++) {
+        data[i] = (Math.random() * 2 - 1) * .82;
+      }
+
+      const source = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const amp = ctx.createGain();
+      const when = ctx.currentTime + Math.max(0,delay);
+      const stop = when + seconds;
+      const panner = createLinkPanner(
+        ctx,
+        fromPan,
+        toPan,
+        when,
+        seconds
+      );
+
+      source.buffer = buffer;
+
+      filter.type = "bandpass";
+      filter.Q.setValueAtTime(Math.max(.1,q),when);
+
+      filter.frequency.setValueAtTime(
+        Math.max(40,startHz),
+        when
+      );
+
+      filter.frequency.exponentialRampToValueAtTime(
+        Math.max(40,endHz),
+        stop
+      );
+
+      amp.gain.setValueAtTime(.0001,when);
+      amp.gain.exponentialRampToValueAtTime(
+        Math.max(.0002,gain),
+        when + Math.min(.08,seconds * .20)
+      );
+      amp.gain.setValueAtTime(
+        Math.max(.0002,gain),
+        when + Math.max(.09,seconds * .55)
+      );
+      amp.gain.exponentialRampToValueAtTime(.0001,stop);
+
+      source.connect(filter);
+      filter.connect(amp);
+
+      if (panner) {
+        amp.connect(panner);
+        panner.connect(ctx.destination);
+      } else {
+        amp.connect(ctx.destination);
+      }
+
+      source.start(when);
+      source.stop(stop + .02);
+
+      return true;
+    };
+
+    const playLinkSceneCue = cue => {
+      try {
+        const ctx = getLinkAudioContext();
+
+        if (!ctx) {
+          const fallback = {
+            launch:["session_join",.25],
+            route:["scan",.14],
+            handshake:["confirm",.17],
+            transfer:["scan",.14],
+            live:["compatibility_ok",.26]
+          }[cue] ?? ["select",.14];
+
+          play(fallback[0],fallback[1],0);
+          return false;
+        }
+
+        if (cue === "launch") {
+          synthLinkNoise({
+            duration:1.65,
+            gain:.105,
+            startHz:180,
+            endHz:5200,
+            fromPan:-.85,
+            toPan:.82,
+            q:.62
+          });
+
+          synthLinkTone({
+            startHz:54,
+            endHz:152,
+            duration:1.48,
+            gain:.052,
+            type:"sine",
+            fromPan:-.16,
+            toPan:.16
+          });
+
+          synthLinkTone({
+            startHz:390,
+            endHz:980,
+            duration:.72,
+            delay:.14,
+            gain:.025,
+            type:"triangle",
+            fromPan:.45,
+            toPan:-.28
+          });
+
+          return true;
+        }
+
+        if (cue === "route") {
+          synthLinkTone({
+            startHz:315,
+            endHz:640,
+            duration:.14,
+            gain:.038,
+            type:"sine",
+            fromPan:-.42,
+            toPan:.10
+          });
+
+          synthLinkTone({
+            startHz:690,
+            endHz:1080,
+            duration:.12,
+            delay:.085,
+            gain:.025,
+            type:"triangle",
+            fromPan:.12,
+            toPan:.42
+          });
+
+          return true;
+        }
+
+        if (cue === "handshake") {
+          [
+            [520,690,-.30,0],
+            [650,930,.30,.095],
+            [820,1280,0,.19]
+          ].forEach(([startHz,endHz,pan,delay]) => {
+            synthLinkTone({
+              startHz,
+              endHz,
+              duration:.12,
+              delay,
+              gain:.032,
+              type:"sine",
+              fromPan:pan,
+              toPan:-pan * .35
+            });
+          });
+
+          return true;
+        }
+
+        if (cue === "transfer") {
+          synthLinkNoise({
+            duration:.62,
+            gain:.09,
+            startHz:620,
+            endHz:6800,
+            fromPan:.78,
+            toPan:-.58,
+            q:.74
+          });
+
+          synthLinkTone({
+            startHz:88,
+            endHz:235,
+            duration:.54,
+            gain:.042,
+            type:"sine",
+            fromPan:.08,
+            toPan:-.08
+          });
+
+          return true;
+        }
+
+        if (cue === "live") {
+          synthLinkTone({
+            startHz:74,
+            endHz:38,
+            duration:.58,
+            gain:.10,
+            type:"sine"
+          });
+
+          synthLinkNoise({
+            duration:.42,
+            gain:.095,
+            startHz:340,
+            endHz:7600,
+            fromPan:-.24,
+            toPan:.24,
+            q:.55
+          });
+
+          synthLinkTone({
+            startHz:860,
+            endHz:1520,
+            duration:.52,
+            gain:.033,
+            delay:.045,
+            type:"sine",
+            fromPan:-.15,
+            toPan:.15
+          });
+
+          synthLinkTone({
+            startHz:1280,
+            endHz:1920,
+            duration:.34,
+            gain:.018,
+            delay:.16,
+            type:"triangle",
+            fromPan:.18,
+            toPan:-.10
+          });
+
+          return true;
+        }
+
+        return false;
+      } catch (err) {
+        console.warn("FEHA DEV // custom Link Start cue failed",cue,err);
+        play("select",.12,0);
+        return false;
+      }
+    };
+
+    const speakLinkSystem = text => {
+      try {
+        const synth = globalThis.speechSynthesis;
+        const SpeechCtor = globalThis.SpeechSynthesisUtterance;
+
+        if (!synth || !SpeechCtor) return false;
+
+        synth.cancel();
+
+        const utterance = new SpeechCtor(String(text ?? ""));
+        const voices = synth.getVoices?.() ?? [];
+
+        utterance.voice =
+          voices.find(voice =>
+            /microsoft.*(?:aria|jenny|zira|guy)/i.test(voice.name)
+          ) ??
+          voices.find(voice =>
+            /google.*english/i.test(voice.name)
+          ) ??
+          voices.find(voice =>
+            /samantha|daniel|serena/i.test(voice.name)
+          ) ??
+          voices.find(voice =>
+            /^en(?:-|_)/i.test(voice.lang)
+          ) ??
+          null;
+
+        utterance.lang = utterance.voice?.lang || "en-US";
+        utterance.rate = .83;
+        utterance.pitch = .72;
+        utterance.volume = .46;
+
+        synth.speak(utterance);
+        return true;
+      } catch (err) {
+        console.warn("FEHA DEV // system voice unavailable",err);
+        return false;
+      }
+    };
+
     const linkStartHtml = candidate => {
       const actor = actorFor(candidate);
       const bioId =
@@ -2441,7 +2847,7 @@
         progress:"8%"
       });
 
-      play("session_join",.34,0);
+      playLinkSceneCue("launch");
       await sleep(420);
 
       setLinkPhase({
@@ -2451,7 +2857,7 @@
         status:"DEPTH FIELD CALIBRATED",
         progress:"34%"
       });
-      play("scan",.16,0);
+      playLinkSceneCue("route");
 
       await sleep(520);
 
@@ -2462,7 +2868,7 @@
         status:"NEURAL BRIDGE SYNCHRONIZED",
         progress:"68%"
       });
-      play("confirm",.17,0);
+      playLinkSceneCue("handshake");
 
       await sleep(560);
 
@@ -2473,23 +2879,28 @@
         status:"SESSION CHANNEL OPENING",
         progress:"92%"
       });
-      play("scan",.14,0);
+      playLinkSceneCue("transfer");
 
       await sleep(480);
 
       setLinkPhase({
         phase:"SESSION LIVE",
-        route:"LINK COMPLETE",
+        route:"CONNECTION ESTABLISHED",
         percent:"100%",
-        status:"WELCOME // " + candidate.name.toUpperCase(),
+        status:"ACTIVATED // CONNECTION ESTABLISHED",
         progress:"100%",
         live:true
       });
 
-      play("compatibility_ok",.30,0);
-      setTimeout(() => play("confirm",.18,0),110);
+      playLinkSceneCue("live");
+      setTimeout(
+        () => speakLinkSystem("Activated. Connection established."),
+        120
+      );
 
-      await sleep(430);
+      // Hold the live state long enough for the voice cue to land before
+      // the final camera cut back into the Foundry scene.
+      await sleep(1180);
 
       // Remove the Gateway while the Link Start overlay still owns the screen.
       close(true,{keepLinkOverlay:true});
@@ -2537,6 +2948,10 @@
       if (!keepLinkOverlay) {
         linkOverlay?.remove?.();
         linkOverlay = null;
+
+        try {
+          globalThis.speechSynthesis?.cancel?.();
+        } catch {}
       }
     };
 
@@ -2724,6 +3139,11 @@
       },
       destroy() {
         close(false);
+
+        try {
+          linkAudioContext?.close?.();
+        } catch {}
+        linkAudioContext = null;
 
         gateway.open = original.open;
         gateway.reopen = original.reopen;
