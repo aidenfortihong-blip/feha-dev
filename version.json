@@ -1,8 +1,13 @@
 {
-  "version": "0.10.86",
+  "version": "0.10.87",
   "updated": "2026-09-28",
-  "scope": "video-first-split-and-instant-skip-exit",
+  "scope": "gateway-transition-performance-no-timing-change",
   "notes": [
+    "Performance-only smoothing pass for the Entry Gateway/video transition. No JS sleeps, phase order, animation durations, delays, or easing timings were changed.",
+    "Removed live full-screen backdrop-filter processing over the playing YouTube iframe and replaced it with the existing gradient/shade layers.",
+    "Removed animated blur/filter and letter-spacing work from the departing CONNECTION / ESTABLISHED words while preserving their exact movement duration, delay, distance, and easing.",
+    "Removed animated blur from the giant 3D pre-open layer and seam flash, and promoted major moving layers for compositor-friendly transform/opacity animation.",
+    "The 0.10.86 timing sequence remains exactly 700 / 850 / 850 / 1350 / 900 / 720 / 140 / 1080 ms at its existing waits.",
     "Added a 720ms pre-open phase before the title split: the blue environment, vignette, depth field, and overlay background fade to near-zero while CONNECTION ESTABLISHED stays fully visible over the video.",
     "By the time CONNECTION exits left and ESTABLISHED exits right, the screen is effectively the video with only a faint residual interface layer.",
     "Tightened the split seam pulse so it no longer reintroduces a heavy blue veil over the exposed footage.",
