@@ -1,8 +1,13 @@
 {
-  "version": "0.10.105",
+  "version": "0.10.106",
   "updated": "2026-09-28",
-  "scope": "restore-full-logo-clear-session-label",
+  "scope": "chrome-manager-cyberpunk-identity-pass",
   "notes": [
+    "Applied a visual-only Cyberpunk identity pass to Chrome Manager while preserving its current layout, readability, and behavior.",
+    "Strengthened the app header, cyberware capacity bus, system index, portrait telemetry, hardware inspector, ports, cache drawer, and action buttons with cyan/yellow/red functional hierarchy and sharper industrial geometry.",
+    "Added deliberately slow ambient motion: capacity scans, grid drift, signal breathing, and hover sweeps; no high-frequency always-on glitch noise was added.",
+    "No Chrome Manager business logic, install/remove state handling, actor/item operations, or event handlers were changed.",
+    "The working Gateway logo/boot cleanup, cyan biometric bar, forced final CONNECTION-left / ESTABLISHED-right split, and all cinematic timing remain unchanged.",
     "Restored the full Cyberpunk logo including the 2077 subline; the previous crop was reverted.",
     "Moved the real logo image down into its own header slot so the yellow/turquoise upper-right stroke no longer intrudes into SESSION ACCESS NODE // ADK.",
     "Kept the 0.10.104 full-height left terminal and cyan-only biometric progress bar unchanged.",
