@@ -18937,3 +18937,501 @@ body #adk-market-15#adk-market-15 #top-directory {
   display:none!important;
   visibility:hidden!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.111 SUBJECT PALETTE + HEADER NUDGE
+   Match the Chrome Manager accent palette to the currently selected subject.
+   This reuses the established FEHA character identity colors.
+   Layout/typography stay untouched. Only requested positional edit:
+   move the selected-augmentation header down 4px as one intact block.
+   ========================================================================== */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] {
+  --cm-user-primary-rgb:92,239,255;
+  --cm-user-secondary-rgb:255,79,100;
+}
+
+/* Same character identity colors used elsewhere in FEHA. */
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="ponyboy"] {
+  --cm-user-primary-rgb:255,216,84;
+  --cm-user-secondary-rgb:57,230,255;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="derke"] {
+  --cm-user-primary-rgb:255,70,126;
+  --cm-user-secondary-rgb:255,211,77;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha"],
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="sasha-bogdanov"] {
+  --cm-user-primary-rgb:92,239,255;
+  --cm-user-secondary-rgb:207,115,255;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"][data-feha-subject="zach"] {
+  --cm-user-primary-rgb:116,182,255;
+  --cm-user-secondary-rgb:255,211,77;
+}
+
+/* ROOT / AMBIENT */
+#adk-chrome-manager-34[data-feha-rerun="040"] {
+  background:
+    radial-gradient(circle at 81% 8%,rgba(var(--cm-user-secondary-rgb),.070),transparent 28%),
+    radial-gradient(circle at 18% 108%,rgba(var(--cm-user-primary-rgb),.050),transparent 34%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.009) 0 1px,
+      transparent 1px 4px
+    ),
+    linear-gradient(115deg,#03070a 0%,#020406 47%,#070407 100%)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--cm-user-primary-rgb),.20),
+    inset 0 0 48px rgba(var(--cm-user-secondary-rgb),.022)!important;
+}
+
+/* TOP BAR / CAPACITY */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-command {
+  background:
+    linear-gradient(90deg,
+      rgba(var(--cm-user-primary-rgb),.070) 0%,
+      rgba(3,8,12,.96) 28%,
+      rgba(3,7,10,.98) 64%,
+      rgba(var(--cm-user-secondary-rgb),.070) 100%)!important;
+  border-top-color:rgba(var(--cm-user-primary-rgb),.64)!important;
+  border-bottom-color:rgba(var(--cm-user-secondary-rgb),.42)!important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.018),
+    inset 0 -1px rgba(var(--cm-user-secondary-rgb),.10),
+    0 8px 28px rgba(0,0,0,.24)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand small {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  text-shadow:0 0 10px rgba(var(--cm-user-primary-rgb),.18)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand h1,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand > b {
+  text-shadow:
+    2px 0 rgba(var(--cm-user-primary-rgb),.10),
+    -2px 0 rgba(var(--cm-user-secondary-rgb),.08),
+    0 0 16px rgba(255,255,255,.035)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head {
+  background:
+    linear-gradient(90deg,
+      rgba(var(--cm-user-primary-rgb),.055),
+      rgba(4,9,13,.96) 58%,
+      rgba(var(--cm-user-secondary-rgb),.065)),
+    #03080c!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.34)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.012),
+    inset -24px 0 34px rgba(var(--cm-user-secondary-rgb),.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head b {
+  color:rgb(var(--cm-user-secondary-rgb))!important;
+  text-shadow:0 0 12px rgba(var(--cm-user-secondary-rgb),.22)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 24px,
+      rgba(var(--cm-user-primary-rgb),.040) 24px 25px
+    ),
+    linear-gradient(90deg,rgba(var(--cm-user-secondary-rgb),.040),transparent 34%),
+    #010508!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.27)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.012),
+    inset 0 0 12px rgba(var(--cm-user-secondary-rgb),.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail > i {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.72) 0%,
+      rgb(var(--cm-user-primary-rgb)) 76%,
+      #fff 100%
+    )!important;
+  box-shadow:
+    0 0 7px rgba(var(--cm-user-primary-rgb),.52),
+    0 0 18px rgba(var(--cm-user-primary-rgb),.16)!important;
+}
+
+/* LEFT RAIL / CURRENT SUBJECT */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems {
+  background:
+    linear-gradient(180deg,rgba(var(--cm-user-secondary-rgb),.030),transparent 22%),
+    linear-gradient(90deg,rgba(var(--cm-user-primary-rgb),.022),transparent 18%),
+    #03090c!important;
+  border-right-color:rgba(var(--cm-user-primary-rgb),.18)!important;
+  box-shadow:inset -1px 0 rgba(var(--cm-user-secondary-rgb),.035)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems > header {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  border-bottom-color:rgba(var(--cm-user-primary-rgb),.20)!important;
+  text-shadow:0 0 8px rgba(var(--cm-user-primary-rgb),.12)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-secondary-rgb),.055),
+      rgba(var(--cm-user-primary-rgb),.020) 38%,
+      transparent
+    ),
+    #041016!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.16)!important;
+  border-left-color:rgba(var(--cm-user-secondary-rgb),.78)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.008),
+    inset 14px 0 26px rgba(var(--cm-user-secondary-rgb),.018)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini span {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system {
+  background:
+    linear-gradient(90deg,rgba(var(--cm-user-primary-rgb),.018),transparent 55%),
+    #03090c!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.07)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.060),
+      rgba(var(--cm-user-secondary-rgb),.018) 64%,
+      transparent
+    ),
+    #041015!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.15)!important;
+  box-shadow:inset 0 0 16px rgba(var(--cm-user-primary-rgb),.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.16),
+      rgba(var(--cm-user-primary-rgb),.065) 52%,
+      rgba(var(--cm-user-secondary-rgb),.020)
+    ),
+    #061117!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.30)!important;
+  border-left-color:rgb(var(--cm-user-primary-rgb))!important;
+  box-shadow:
+    inset 3px 0 rgb(var(--cm-user-primary-rgb)),
+    inset 0 0 0 1px rgba(var(--cm-user-primary-rgb),.08),
+    0 0 22px rgba(var(--cm-user-primary-rgb),.045)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-copy b {
+  text-shadow:0 0 9px rgba(var(--cm-user-primary-rgb),.16)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-copy small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .slot-no,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-count {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-count {
+  border-color:rgba(var(--cm-user-primary-rgb),.42)!important;
+  background:rgba(var(--cm-user-primary-rgb),.035)!important;
+}
+
+/* CENTER SUBJECT / ACTIVE SYSTEM */
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id {
+  border-left-color:rgba(var(--cm-user-primary-rgb),.56)!important;
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  box-shadow:inset 8px 0 16px rgba(var(--cm-user-primary-rgb),.018)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-topology-mark {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  text-shadow:0 0 8px rgba(var(--cm-user-primary-rgb),.15)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-corners,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-side-ticks {
+  filter:
+    drop-shadow(0 0 5px rgba(var(--cm-user-primary-rgb),.12))
+    drop-shadow(0 0 8px rgba(var(--cm-user-secondary-rgb),.035))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2,7,10,.985) 0%,
+      rgba(3,9,13,.95) 58%,
+      rgba(7,7,10,.82) 82%,
+      rgba(var(--cm-user-secondary-rgb),.055) 100%
+    )!important;
+  border-left-color:rgb(var(--cm-user-secondary-rgb))!important;
+  border-top-color:rgba(var(--cm-user-primary-rgb),.14)!important;
+  border-bottom-color:rgba(var(--cm-user-primary-rgb),.18)!important;
+  box-shadow:
+    0 -12px 30px rgba(0,0,0,.26),
+    inset 0 0 0 1px rgba(255,255,255,.008),
+    inset 16px 0 30px rgba(var(--cm-user-secondary-rgb),.018)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title small {
+  color:rgb(var(--cm-user-secondary-rgb))!important;
+  text-shadow:0 0 9px rgba(var(--cm-user-secondary-rgb),.16)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title h1 {
+  text-shadow:
+    2px 0 rgba(var(--cm-user-primary-rgb),.08),
+    -2px 0 rgba(var(--cm-user-secondary-rgb),.06),
+    0 8px 24px rgba(0,0,0,.78)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title > span {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  text-shadow:0 0 8px rgba(var(--cm-user-primary-rgb),.12)!important;
+}
+
+/* RIGHT INSPECTOR */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-inspector {
+  background:
+    linear-gradient(180deg,rgba(var(--cm-user-secondary-rgb),.027),transparent 22%),
+    linear-gradient(90deg,rgba(var(--cm-user-primary-rgb),.018),transparent 14%),
+    #03080c!important;
+  border-left-color:rgba(var(--cm-user-primary-rgb),.17)!important;
+  box-shadow:
+    inset 1px 0 rgba(var(--cm-user-secondary-rgb),.025),
+    inset 0 0 42px rgba(0,0,0,.16)!important;
+}
+
+/* Requested tiny visual nudge. Entire header moves together; internal text
+   spacing and following layout measurements remain unchanged. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header {
+  transform:translateY(4px)!important;
+  border-bottom-color:rgba(var(--cm-user-primary-rgb),.17)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header small {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header b {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.30)!important;
+  background:rgba(var(--cm-user-primary-rgb),.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-secondary-rgb),.055),
+      rgba(var(--cm-user-secondary-rgb),.012) 42%,
+      transparent
+    )!important;
+  border-bottom-color:rgba(var(--cm-user-primary-rgb),.13)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title small {
+  color:rgb(var(--cm-user-secondary-rgb))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title h2 {
+  text-shadow:
+    2px 0 rgba(var(--cm-user-primary-rgb),.07),
+    -2px 0 rgba(var(--cm-user-secondary-rgb),.08)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .port-heading {
+  border-color:rgba(var(--cm-user-primary-rgb),.12)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.040),
+      rgba(var(--cm-user-secondary-rgb),.012) 72%,
+      transparent
+    ),
+    #02080b!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.18)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.006),
+    inset 0 0 18px rgba(var(--cm-user-primary-rgb),.014)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.075),
+      rgba(var(--cm-user-secondary-rgb),.022) 70%,
+      transparent
+    ),
+    #031016!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.36)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--cm-user-primary-rgb),.055),
+    0 0 14px rgba(var(--cm-user-primary-rgb),.035)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-filled {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.095),
+      rgba(var(--cm-user-secondary-rgb),.018) 74%,
+      transparent
+    ),
+    #031016!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.30)!important;
+}
+
+/* DOSSIER / SIGNAL */
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-visual {
+  background:
+    radial-gradient(circle at 50% 48%,rgba(var(--cm-user-primary-rgb),.070),transparent 43%),
+    radial-gradient(circle at 78% 20%,rgba(var(--cm-user-secondary-rgb),.025),transparent 27%),
+    linear-gradient(180deg,#02070a,#010406)!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.17)!important;
+  box-shadow:
+    inset 0 0 32px rgba(var(--cm-user-primary-rgb),.018),
+    inset 0 0 0 1px rgba(255,255,255,.005)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy {
+  background:
+    linear-gradient(90deg,rgba(var(--cm-user-secondary-rgb),.038),transparent 76%),
+    #04090d!important;
+  border-left-color:rgb(var(--cm-user-secondary-rgb))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy span {
+  color:rgb(var(--cm-user-secondary-rgb))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics > div {
+  background:
+    linear-gradient(180deg,rgba(var(--cm-user-primary-rgb),.025),transparent),
+    #040a0e!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.12)!important;
+  box-shadow:inset 0 -1px rgba(var(--cm-user-primary-rgb),.30)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout {
+  background:
+    linear-gradient(180deg,rgba(var(--cm-user-primary-rgb),.025),transparent 68%),
+    linear-gradient(90deg,rgba(var(--cm-user-secondary-rgb),.015),transparent 20%),
+    #02080b!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.20)!important;
+  box-shadow:inset 0 0 22px rgba(var(--cm-user-primary-rgb),.012)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout .tech-head b {
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  text-shadow:0 0 8px rgba(var(--cm-user-primary-rgb),.12)!important;
+}
+
+/* ACTIONS / CACHE */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.035),
+      rgba(var(--cm-user-secondary-rgb),.012) 72%,
+      transparent
+    ),
+    #03090d!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.30)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.006),
+    inset 0 0 16px rgba(var(--cm-user-primary-rgb),.014)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse:hover,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary:hover,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.080),
+      rgba(var(--cm-user-secondary-rgb),.025) 70%,
+      transparent
+    ),
+    #041015!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.48)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--cm-user-primary-rgb),.05),
+    0 0 16px rgba(var(--cm-user-primary-rgb),.045)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache {
+  background:
+    radial-gradient(circle at 10% 0%,rgba(var(--cm-user-secondary-rgb),.040),transparent 32%),
+    linear-gradient(180deg,rgba(var(--cm-user-primary-rgb),.020),transparent 26%),
+    #02070a!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.17)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache > header {
+  background:
+    linear-gradient(90deg,rgba(var(--cm-user-secondary-rgb),.050),transparent 44%),
+    #03090d!important;
+  border-bottom-color:rgba(var(--cm-user-primary-rgb),.18)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card {
+  background:
+    linear-gradient(90deg,rgba(var(--cm-user-primary-rgb),.035),transparent 58%),
+    #03090d!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.16)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-primary-rgb),.080),
+      rgba(var(--cm-user-secondary-rgb),.018) 74%,
+      transparent
+    ),
+    #041015!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.34)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-statusbar {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--cm-user-secondary-rgb),.025),
+      transparent 24%,
+      transparent 72%,
+      rgba(var(--cm-user-primary-rgb),.020)
+    ),
+    #010507!important;
+  border-top-color:rgba(var(--cm-user-primary-rgb),.18)!important;
+  box-shadow:inset 0 1px rgba(var(--cm-user-secondary-rgb),.035)!important;
+}
+
+/* Preserve 0.10.108 duplicate top EJECT removal. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-filled .port-actions {
+  display:none!important;
+  visibility:hidden!important;
+}
