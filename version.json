@@ -1,8 +1,14 @@
 {
-  "version": "0.10.71",
+  "version": "0.10.72",
   "updated": "2026-09-27",
-  "scope": "gateway-session-join-sound",
+  "scope": "fullscreen-link-start-transition",
   "notes": [
+    "Added a full-screen LINK START transition after ESTABLISH LINK and before returning to live play.",
+    "Transition is character-aware and displays selected subject name, actor-derived BIO-ID when available, session route data, animated code columns, scan sweep, segmented signal animation, and progress.",
+    "Link Start runs through ESTABLISHING NEURAL LINK, NEURAL ROUTE VERIFIED, SESSION HANDSHAKE, FINALIZING SESSION, and SESSION LIVE phases over roughly 2.6 seconds.",
+    "Timed session_join, scan, confirm, and compatibility_ok sounds are synchronized to the full-screen connection phases.",
+    "The existing Gateway remains underneath until SESSION LIVE; it is then removed while the Link Start overlay owns the screen, followed by a glitch-style hard cut back into the Foundry scene.",
+    "The Link Start overlay reuses the existing private CP2077 asset bridge for frame/line/buffer grammar when available, without committing proprietary media to the repository.",
     "Added a dedicated session_join event to the FEHA sound engine with a restrained fallback connection hit.",
     "ESTABLISH LINK now plays a unique two-stage join cue: muted metallic connection hit followed by a soft confirmation chirp.",
     "Removed the previous door-open cue from the ESTABLISH LINK pointer press so join audio fires once at the actual connection moment instead of stacking.",
