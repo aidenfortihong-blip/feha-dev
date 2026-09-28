@@ -2395,17 +2395,29 @@
               <i class="feha-eg-footer-code" aria-hidden="true"></i>
             </div>
 
-            <div>
-              <button
-                type="button"
-                class="feha-eg-establish"
-                data-eg-enter
-                hidden
-              >
-                ESTABLISH LINK
-              </button>
+            <button
+              type="button"
+              class="feha-eg-establish feha-eg-jackin"
+              data-eg-enter
+              hidden
+            >
+              <span class="feha-eg-jackin-left">
+                SYSTEM READY
+              </span>
 
-              ${game.user?.isGM ? `
+              <span class="feha-eg-jackin-center">
+                <small>NEURAL SESSION HANDOFF</small>
+                <b>JACK IN</b>
+              </span>
+
+              <span class="feha-eg-jackin-right">
+                <i data-eg-jack-subject>SUBJECT</i>
+                <em>// ACCESS GRANTED</em>
+              </span>
+            </button>
+
+            ${game.user?.isGM ? `
+              <div class="feha-eg-footer-actions">
                 <button
                   type="button"
                   class="feha-eg-bypass"
@@ -2413,8 +2425,8 @@
                 >
                   GM BYPASS
                 </button>
-              ` : ""}
-            </div>
+              </div>
+            ` : ""}
           </footer>
         </main>
       `;
@@ -2733,6 +2745,10 @@
       setState("ACCESS GRANTED","granted");
 
       const enter = root.querySelector("[data-eg-enter]");
+      const jackSubject = root.querySelector("[data-eg-jack-subject]");
+      if (jackSubject) {
+        jackSubject.textContent = candidate.name.toUpperCase();
+      }
       enter.hidden = false;
       requestAnimationFrame(() => enter.classList.add("visible"));
 
