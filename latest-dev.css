@@ -11701,3 +11701,198 @@ body #adk-market-15#adk-market-15 #top-directory {
 #adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-establish {
   background-image:var(--eg-cp-reward)!important;
 }
+
+
+/* ==========================================================================
+   FEHA CUSTOM ENTRY GATEWAY // 0.10.69 LEFT-SCROLL COMPACT RIGHT
+   Only the working/authentication side scrolls. The candidate/profile rail is
+   compact, fixed, and contains no role/archetype filler.
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-body {
+  min-height:0!important;
+  overflow:hidden!important;
+  grid-template-columns:minmax(0,1.78fr) minmax(370px,.78fr)!important;
+}
+
+/* LEFT: this is the one and only scrolling work surface. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  min-height:0!important;
+  height:100%!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  scrollbar-gutter:stable!important;
+  overscroll-behavior:contain!important;
+  padding-right:24px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::-webkit-scrollbar {
+  width:7px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::-webkit-scrollbar-track {
+  background:#020608!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::-webkit-scrollbar-thumb {
+  background:linear-gradient(
+    180deg,
+    var(--eg-red),
+    var(--eg-cyan)
+  )!important;
+  border:1px solid #020608!important;
+}
+
+/* RIGHT: fixed rail, no scrollbar, everything must fit. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-side {
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+  padding:18px!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  gap:12px!important;
+  align-content:stretch!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel {
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  height:42px!important;
+  padding:0 13px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+  min-height:56px!important;
+  height:56px!important;
+  grid-template-columns:38px minmax(0,1fr) auto!important;
+  gap:10px!important;
+  padding:7px 12px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate > div {
+  display:flex!important;
+  align-items:center!important;
+  min-width:0!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate b {
+  font-size:18px!important;
+  line-height:1!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate small {
+  display:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate > span,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate em {
+  font-size:8px!important;
+}
+
+/* Profile consumes the remaining right-column height instead of overflowing it. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  min-height:0!important;
+  height:auto!important;
+  margin-top:0!important;
+  overflow:hidden!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live {
+  min-height:0!important;
+  height:100%!important;
+  grid-template-rows:minmax(190px,1fr) auto!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art {
+  min-height:0!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art img {
+  width:100%!important;
+  height:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+}
+
+/* Keep only actual identity information, not RPG-ish role descriptors. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-copy {
+  padding:12px 14px 13px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-copy h2 {
+  margin:6px 0 11px!important;
+  font-size:34px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid {
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid > div {
+  min-height:44px!important;
+  padding:8px 9px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid span {
+  font-size:8px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-grid b {
+  margin-top:5px!important;
+  font-size:10px!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-wave {
+  height:26px!important;
+  margin-top:9px!important;
+}
+
+/* Explicitly prevent accidental nested right-side scrollbars. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-side,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-live,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-art,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile-copy {
+  scrollbar-width:none!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-side::-webkit-scrollbar,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel::-webkit-scrollbar,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates::-webkit-scrollbar,
+#adk-entry-gateway.feha-eg-custom .feha-eg-profile::-webkit-scrollbar {
+  display:none!important;
+  width:0!important;
+}
+
+/* On shorter displays, squeeze the portrait before ever making right rail scroll. */
+@media(max-height:820px) and (min-width:1001px) {
+  #adk-entry-gateway.feha-eg-custom .feha-eg-side {
+    padding:12px!important;
+    gap:9px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+    height:49px!important;
+    min-height:49px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-candidate b {
+    font-size:16px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-profile-copy h2 {
+    font-size:29px!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-wave {
+    display:none!important;
+  }
+}
