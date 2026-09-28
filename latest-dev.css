@@ -13030,3 +13030,162 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.84 SATISFYING VIDEO HANDOFF
+   Restore a stronger sense of punctuation: hold -> impact -> release.
+   Keeps the centered CONNECTION ESTABLISHED lockup and clean final wording.
+   ========================================================================== */
+
+/* The previous 0.10.83 dissolve was intentionally slow, but that made the
+   release feel soft. Keep the hidden video readable without washing out the
+   blue system before the final confirmation lands. */
+#feha-gateway-intro-stage.feha-gateway-intro-stage {
+  transition:opacity 2.25s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-media {
+  transform:scale(1.035)!important;
+  filter:
+    saturate(.91)
+    contrast(1.065)
+    brightness(.74)!important;
+  transition:
+    filter 2.35s cubic-bezier(.18,.72,.18,1),
+    transform 4.6s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-media {
+  filter:
+    saturate(1)
+    contrast(1.025)
+    brightness(.98)!important;
+}
+
+#feha-gateway-intro-stage .feha-gateway-intro-shade {
+  opacity:.91!important;
+  transition:opacity 1.85s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-gateway-intro-stage.is-visible .feha-gateway-intro-shade {
+  opacity:.22!important;
+}
+
+/* Do not let the final CONNECTION ESTABLISHED screen become visually sleepy. */
+#feha-link-start.is-live .feha-linkstart-title-main {
+  animation:
+    feha-link-confirm-title-084 .72s cubic-bezier(.12,.88,.16,1) both,
+    feha-link-confirm-breathe-084 1.7s .72s ease-in-out infinite alternate!important;
+}
+
+@keyframes feha-link-confirm-title-084 {
+  0% {
+    opacity:0;
+    transform:translateZ(-145px) scale(.89);
+    filter:blur(6px) brightness(1.48);
+    letter-spacing:-.075em;
+  }
+  54% {
+    opacity:1;
+    transform:translateZ(18px) scale(1.025);
+    filter:blur(0) brightness(1.13);
+  }
+  100% {
+    opacity:1;
+    transform:translateZ(0) scale(1);
+    filter:blur(0) brightness(1);
+    letter-spacing:-.05em;
+  }
+}
+
+@keyframes feha-link-confirm-breathe-084 {
+  from {
+    text-shadow:
+      0 0 9px rgba(226,253,255,.16),
+      0 0 24px rgba(57,230,255,.15),
+      0 0 52px rgba(57,230,255,.05);
+  }
+  to {
+    text-shadow:
+      0 0 12px rgba(226,253,255,.23),
+      0 0 31px rgba(57,230,255,.25),
+      0 0 68px rgba(57,230,255,.085);
+  }
+}
+
+/* IMPACT BEAT: a brief clean cyan-white pulse, slight title compression and
+   depth snap. This creates punctuation without reintroducing extra text. */
+#feha-link-start.is-video-impact .feha-linkstart-flash {
+  animation:feha-link-video-impact-flash .56s cubic-bezier(.10,.82,.18,1) forwards!important;
+}
+
+#feha-link-start.is-video-impact .feha-linkstart-title-wrap {
+  animation:feha-link-video-impact-title .50s cubic-bezier(.12,.82,.18,1) forwards!important;
+}
+
+#feha-link-start.is-video-impact .feha-linkstart-space {
+  animation:feha-link-video-impact-space .52s cubic-bezier(.10,.86,.16,1) forwards!important;
+}
+
+@keyframes feha-link-video-impact-flash {
+  0%   {opacity:0; transform:scale(.94); filter:blur(0)}
+  20%  {opacity:.66; transform:scale(1); filter:blur(1px)}
+  48%  {opacity:.24; transform:scale(1.06); filter:blur(2px)}
+  100% {opacity:0; transform:scale(1.12); filter:blur(4px)}
+}
+
+@keyframes feha-link-video-impact-title {
+  0%   {transform:scale(1); filter:brightness(1)}
+  34%  {transform:scale(.985); filter:brightness(1.28)}
+  100% {transform:scale(1.018); filter:brightness(1.08)}
+}
+
+@keyframes feha-link-video-impact-space {
+  0%   {transform:translateZ(300px) scale(1.045)}
+  100% {transform:translateZ(390px) scale(1.065)}
+}
+
+/* RELEASE: quicker than 0.10.83, but still graceful. The title leaves just
+   ahead of the blue field so the video feels revealed rather than cut in. */
+#feha-link-start.is-video-handoff {
+  opacity:0!important;
+  background:rgba(0,11,18,0)!important;
+  backdrop-filter:none!important;
+  transition:
+    opacity 1.08s cubic-bezier(.20,.72,.18,1),
+    background 1.14s cubic-bezier(.20,.72,.18,1),
+    backdrop-filter 1.00s ease!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-title-wrap {
+  opacity:0!important;
+  transform:scale(1.055)!important;
+  filter:blur(2.2px)!important;
+  transition:
+    opacity .72s cubic-bezier(.22,.74,.18,1),
+    transform 1.02s cubic-bezier(.18,.72,.18,1),
+    filter .82s ease!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-space {
+  opacity:0!important;
+  transform:translateZ(470px) scale(1.085)!important;
+  transition:
+    opacity 1.02s cubic-bezier(.20,.72,.18,1),
+    transform 1.10s cubic-bezier(.18,.72,.18,1)!important;
+}
+
+#feha-link-start.is-video-handoff .feha-linkstart-core,
+#feha-link-start.is-video-handoff .feha-linkstart-top,
+#feha-link-start.is-video-handoff .feha-linkstart-footer {
+  opacity:0!important;
+  transition:opacity .92s cubic-bezier(.20,.72,.18,1)!important;
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #feha-link-start.is-video-impact .feha-linkstart-flash,
+  #feha-link-start.is-video-impact .feha-linkstart-title-wrap,
+  #feha-link-start.is-video-impact .feha-linkstart-space {
+    animation:none!important;
+  }
+}
+
