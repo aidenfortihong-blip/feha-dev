@@ -3338,25 +3338,27 @@
 
       playLinkSceneCue("live");
 
-      // Let the final CONNECTION ESTABLISHED lockup actually land before the
-      // video takes over. Keep the screen clean: no SKIP button yet.
-      await sleep(1550);
+      // Let CONNECTION ESTABLISHED land, but do not let the beat go soft.
+      await sleep(1250);
 
-      // Commit the session while the blue overlay is still covering the scene.
+      // Commit while the blue layer still fully owns the frame.
       close(true,{
         keepLinkOverlay:true,
         keepIntroStage:true
       });
 
-      // Crossfade the blue system into the already-running video slowly enough
-      // to feel intentional instead of like the overlay simply disappeared.
+      // A short confirmation impact gives the eye a satisfying punctuation
+      // before the blue field releases into the already-running video.
+      linkOverlay?.classList.add("is-video-impact");
+      await sleep(220);
+
       linkOverlay?.classList.add("is-video-handoff");
-      await sleep(1700);
+      await sleep(1180);
 
       linkOverlay?.remove?.();
       linkOverlay = null;
 
-      // Only reveal the control after the cinematic handoff is complete.
+      // Reveal controls only after the cinematic handoff has completed.
       showIntroSkip();
 
       // Player now owns the screen. It exits on video end or SKIP INTRO.
