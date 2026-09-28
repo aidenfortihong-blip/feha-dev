@@ -19544,3 +19544,57 @@ body #adk-market-15#adk-market-15 #top-directory {
   text-shadow:0 0 5px rgba(var(--cm-user-primary-rgb),.10)!important;
   filter:none!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.115 REMOVE BUS LABEL / RESTORE RIGHT STATUS
+   Screenshot-driven correction:
+   - remove SELECTED AUGMENTATION BUS for real (it is nested, not a direct child)
+   - keep only FACE / ... on the left
+   - restore VACANT / READY to the far right
+   - vertically center both inside the existing header strip
+   ========================================================================== */
+
+/* The unwanted micro-label is the nested span inside the left header group. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header span {
+  display:none!important;
+  visibility:hidden!important;
+}
+
+/* Restore the two-sided header composition. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header {
+  transform:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  min-height:34px!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+
+/* Left group keeps only the selected subsystem line, centered vertically. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header > div {
+  display:flex!important;
+  align-items:center!important;
+  min-width:0!important;
+  height:100%!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header small {
+  display:block!important;
+  margin:0!important;
+  opacity:1!important;
+  font-weight:900!important;
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  text-shadow:0 0 5px rgba(var(--cm-user-primary-rgb),.10)!important;
+  filter:none!important;
+}
+
+/* VACANT / READY belongs on the far right, independent of the left group. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header > b {
+  display:block!important;
+  margin-left:auto!important;
+  flex:0 0 auto!important;
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  border-color:rgba(var(--cm-user-primary-rgb),.30)!important;
+  background:rgba(var(--cm-user-primary-rgb),.025)!important;
+}
