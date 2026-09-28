@@ -1,8 +1,15 @@
 {
-  "version": "0.10.95",
+  "version": "0.10.96",
   "updated": "2026-09-28",
-  "scope": "gateway-asymmetry-font-final-split",
+  "scope": "gateway-fullscreen-composition-cyan-split-pulse",
   "notes": [
+    "Reduced the Entry Gateway's windowed/modular feeling by visually merging boot, auth, biometric, candidate, portrait, and footer regions into broader continuous terminal surfaces with fewer enclosing borders.",
+    "Reduced adjacent micro-colors: cyan now handles most structure/data, yellow is reserved mainly for JACK IN and the single utility tab, and red is sparse identity emphasis.",
+    "Kept asymmetry through the dark top-middle wedge, off-axis header plate, yellow utility tab, right-rail bridge, clipped portrait edge, and uneven structural rails without stacking red/yellow/cyan together everywhere.",
+    "Replaced the segmented/rainbow shell accents with quieter cyan rails.",
+    "Final CONNECTION ESTABLISHED keeps CONNECTION black and ESTABLISHED yellow, but its separator is now an ultra-thin cyan cyber pulse born exactly between the two words and expanding equally left and right.",
+    "During the word split, the cyan center pulse extends farther in both directions and fades while the old broad split flash is reduced to a nearly invisible hairline charge.",
+    "No JS behavior, fullscreen behavior, or cinematic/video timing changed.",
     "Removed the post-JACK-IN cinematic loading/progress bar entirely; the link sequence now relies on motion and phase copy rather than a multicolor fill bar.",
     "Forced the Entry Gateway, JACK IN control, link cinematic, technical readouts, buttons, and intro skip control into one Rajdhani/Agency-style cyberpunk type family.",
     "Applied the requested asymmetry pass: angled header plate, top-middle body wedge, yellow ROUTE/AUTH utility slab, broken section rails, auth signal rail, right-column bridge, candidate corner striping, and broken portrait rail.",
