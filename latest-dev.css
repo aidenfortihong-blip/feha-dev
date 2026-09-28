@@ -17456,3 +17456,192 @@ body #adk-market-15#adk-market-15 #top-directory {
   }
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.99 REAL LOGO + TRUE IN-PLACE MORPH
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom {
+  --eg-cyberpunk-logo:url("https://www.pngkey.com/png/detail/218-2187752_file-cp2077-cyberpunk-2077-logo-png.png")!important;
+}
+
+/* Remove the little palette/totem widgets and utility tag. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-node::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-side::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel::before {
+  content:none!important;
+  display:none!important;
+}
+
+/* Give the actual logo room. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+  grid-template-rows:108px minmax(0,1fr) 62px!important;
+}
+#adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-shell {
+  grid-template-rows:104px minmax(0,1fr) 124px!important;
+}
+#adk-entry-gateway.feha-eg-custom .feha-eg-header,
+#adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-header {
+  height:auto!important;
+  padding:11px 26px 8px!important;
+  overflow:hidden!important;
+}
+#adk-entry-gateway.feha-eg-custom .feha-eg-node {
+  padding-left:0!important;
+  color:rgba(255,59,92,.78)!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  letter-spacing:.23em!important;
+}
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+  position:relative!important;
+  display:block!important;
+  width:min(430px,39vw)!important;
+  height:78px!important;
+  margin:2px 0 0!important;
+  padding:0!important;
+  color:transparent!important;
+  font-size:0!important;
+  line-height:0!important;
+  text-shadow:none!important;
+  transform:none!important;
+}
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1::before {
+  content:""!important;
+  position:absolute!important;
+  inset:-4px -10px -6px -6px!important;
+  display:block!important;
+  background-image:var(--eg-cyberpunk-logo)!important;
+  background-repeat:no-repeat!important;
+  background-position:left center!important;
+  background-size:contain!important;
+  opacity:1!important;
+  filter:saturate(1.06) contrast(1.04) drop-shadow(0 0 8px rgba(57,230,255,.055))!important;
+  transform:none!important;
+}
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Keep asymmetry structural and quiet. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header::after,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-header::after {
+  content:""!important;
+  display:block!important;
+  top:0!important;
+  right:17.2%!important;
+  width:88px!important;
+  height:100%!important;
+  opacity:.20!important;
+  background:linear-gradient(180deg,rgba(57,230,255,.038),rgba(57,230,255,.005))!important;
+  background-image:none!important;
+  clip-path:polygon(31% 0,100% 0,67% 100%,0 100%)!important;
+}
+#adk-entry-gateway.feha-eg-custom .feha-eg-body::before {
+  right:27.2%!important;
+  width:148px!important;
+  height:86px!important;
+  background:linear-gradient(180deg,#091116,#03080b)!important;
+  border-left:1px solid rgba(57,230,255,.12)!important;
+  border-right:0!important;
+  clip-path:polygon(32% 0,100% 0,67% 100%,0 100%)!important;
+}
+
+/* CRITICAL: SESSION LIVE no longer relocates the title. The black/yellow state
+   occupies the exact same slot as the preceding cyan title. */
+#feha-link-start.is-live .feha-linkstart-title-wrap {
+  position:relative!important;
+  inset:auto!important;
+  z-index:auto!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:initial!important;
+  margin:0 0 32px!important;
+  perspective:700px!important;
+}
+#feha-link-start.is-live .feha-linkstart-title-lock {
+  width:min(700px,68vw)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  transform:none!important;
+}
+#feha-link-start.is-live .feha-linkstart-title-main {
+  margin:0!important;
+  animation:none!important;
+  transform:none!important;
+  font-size:clamp(58px,8.15vw,126px)!important;
+  line-height:.72!important;
+  gap:clamp(3px,.40vh,6px)!important;
+}
+
+/* Same spans morph in place from cyan -> black/yellow. No translate. */
+#feha-link-start.is-live .feha-linkstart-title-main > span:first-child {
+  transform-origin:center!important;
+  animation:feha-inplace-black-099 .92s cubic-bezier(.12,.86,.16,1) both,
+            feha-black-pulse-099 1.7s .92s ease-in-out infinite alternate!important;
+}
+#feha-link-start.is-live .feha-linkstart-title-main > span:last-child {
+  transform-origin:center!important;
+  animation:feha-inplace-yellow-099 .92s cubic-bezier(.12,.86,.16,1) both,
+            feha-yellow-pulse-099 1.7s .92s ease-in-out infinite alternate!important;
+}
+@keyframes feha-inplace-black-099 {
+  0%{color:#5cecff;-webkit-text-stroke:0 transparent;transform:scale(1);text-shadow:0 0 11px rgba(57,230,255,.28)}
+  12%{transform:scaleX(1.04) scaleY(.97) skewX(-3deg);text-shadow:5px 0 rgba(57,230,255,.18),-4px 0 rgba(252,238,10,.08)}
+  24%{transform:scaleX(.985) scaleY(1.025) skewX(5deg)}
+  36%{transform:scaleX(1.095) scaleY(.985) skewX(-6deg);color:#a4f7ff;text-shadow:-6px 0 rgba(57,230,255,.15),6px 0 rgba(252,238,10,.09)}
+  50%{transform:scaleX(1.075) scaleY(.995) skewX(-2deg);color:#000;-webkit-text-stroke:2px #fcee0a}
+  68%{transform:scaleX(1.035) scaleY(1.015) skewX(1deg)}
+  100%{color:#000;-webkit-text-stroke:2px #fcee0a;transform:scale(1.045);text-shadow:0 0 12px rgba(252,238,10,.18),0 0 28px rgba(252,238,10,.08)}
+}
+@keyframes feha-inplace-yellow-099 {
+  0%{color:#5cecff;-webkit-text-stroke:0 transparent;transform:scale(1);text-shadow:0 0 11px rgba(57,230,255,.28)}
+  12%{transform:scaleX(1.04) scaleY(.97) skewX(3deg);text-shadow:-5px 0 rgba(57,230,255,.18),4px 0 rgba(252,238,10,.08)}
+  24%{transform:scaleX(.985) scaleY(1.025) skewX(-5deg)}
+  36%{transform:scaleX(1.095) scaleY(.985) skewX(6deg);color:#a4f7ff;text-shadow:6px 0 rgba(57,230,255,.15),-6px 0 rgba(252,238,10,.09)}
+  50%{transform:scaleX(1.075) scaleY(.995) skewX(2deg);color:#fcee0a;-webkit-text-stroke:2px #000}
+  68%{transform:scaleX(1.035) scaleY(1.015) skewX(-1deg)}
+  100%{color:#fcee0a;-webkit-text-stroke:2px #000;transform:scale(1.045);text-shadow:3px 3px 0 #000,-3px -3px 0 #000,0 0 15px rgba(252,238,10,.23)}
+}
+@keyframes feha-black-pulse-099 {
+  from{-webkit-text-stroke-color:rgba(252,238,10,.72);text-shadow:0 0 8px rgba(252,238,10,.10)}
+  to{-webkit-text-stroke-color:#fcee0a;text-shadow:0 0 15px rgba(252,238,10,.29),0 0 32px rgba(252,238,10,.11)}
+}
+@keyframes feha-yellow-pulse-099 {
+  from{text-shadow:2px 2px 0 #000,-2px -2px 0 #000,0 0 8px rgba(252,238,10,.10)}
+  to{text-shadow:4px 4px 0 #000,-4px -4px 0 #000,0 0 18px rgba(252,238,10,.31)}
+}
+
+/* Thin cyan line is born between the two lines while the morph happens. */
+#feha-link-start.is-live .feha-linkstart-title-lock::after {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:0!important;
+  height:1px!important;
+  transform:translate(-50%,-50%)!important;
+  background:linear-gradient(90deg,transparent,rgba(57,230,255,.14) 9%,#8ef3ff 47%,#ecffff 50%,#8ef3ff 53%,rgba(57,230,255,.14) 91%,transparent)!important;
+  box-shadow:0 0 4px rgba(57,230,255,.46),0 0 10px rgba(57,230,255,.14)!important;
+  opacity:0!important;
+  animation:feha-centerline-099 1.10s .02s cubic-bezier(.12,.82,.16,1) forwards!important;
+}
+@keyframes feha-centerline-099 {
+  0%{width:0;opacity:0}
+  12%{width:4vw;opacity:1}
+  34%{width:min(28vw,400px);opacity:.96}
+  68%{width:min(58vw,820px);opacity:.76}
+  100%{width:min(70vw,980px);opacity:.48}
+}
+
+@media(max-height:820px) and (min-width:1001px){
+  #adk-entry-gateway.feha-eg-custom .feha-eg-shell{grid-template-rows:92px minmax(0,1fr) 58px!important}
+  #adk-entry-gateway.feha-eg-custom.is-granted .feha-eg-shell{grid-template-rows:90px minmax(0,1fr) 110px!important}
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header h1{width:min(360px,36vw)!important;height:62px!important}
+}
+
