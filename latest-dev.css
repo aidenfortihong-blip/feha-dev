@@ -12441,3 +12441,31 @@ body #adk-market-15#adk-market-15 #top-directory {
     transition:none!important;
   }
 }
+
+
+/* ==========================================================================
+   FEHA ENTRY GATEWAY // 0.10.76 MATCH MUSIC IMPORT
+   GM-only private music importer. Kept visually subordinate to ESTABLISH LINK.
+   ========================================================================== */
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-music-import {
+  min-height:34px!important;
+  padding:0 12px!important;
+  border:1px solid rgba(57,230,255,.28)!important;
+  background:#041015!important;
+  color:#86cbd5!important;
+  font:900 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  letter-spacing:1.1px!important;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-music-import:hover {
+  border-color:rgba(57,230,255,.62)!important;
+  color:#d8fbff!important;
+  background:#07191f!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-music-import:disabled {
+  opacity:.55!important;
+  cursor:wait!important;
+}
