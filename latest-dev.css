@@ -19513,3 +19513,34 @@ body #adk-market-15#adk-market-15 #top-directory {
   text-shadow:0 0 5px rgba(var(--cm-user-primary-rgb),.10)!important;
   filter:none!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.114 REMOVE MICROHEADER / CENTER BUS LABEL
+   Remove SELECTED AUGMENTATION BUS entirely.
+   Keep only the selected subsystem label and center it vertically in the
+   existing inspector-header footprint.
+   ========================================================================== */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header > span {
+  display:none!important;
+  visibility:hidden!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header {
+  transform:none!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header > small {
+  display:block!important;
+  margin:0!important;
+  opacity:1!important;
+  font-weight:900!important;
+  color:rgb(var(--cm-user-primary-rgb))!important;
+  text-shadow:0 0 5px rgba(var(--cm-user-primary-rgb),.10)!important;
+  filter:none!important;
+}
