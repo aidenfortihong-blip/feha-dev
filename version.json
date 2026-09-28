@@ -1,8 +1,12 @@
 {
-  "version": "0.10.103",
+  "version": "0.10.104",
   "updated": "2026-09-28",
-  "scope": "gateway-real-img-logo",
+  "scope": "gateway-clean-logo-boot-space-no-rainbow",
   "notes": [
+    "Cleaned the Gateway logo lockup by clipping away the separate 2077 subline while preserving the lower-left Cyberpunk descender.",
+    "Expanded the left Gateway terminal into a full-height flex column so the event console fills the large dead area beneath the boot/auth stack.",
+    "Replaced the biometric red/yellow/green progress fill with a single cyan signal gradient and cyan glow.",
+    "The working 0.10.102 CONNECTION-left / ESTABLISHED-right forced split and all cinematic waits remain unchanged.",
     "Replaced the Gateway logo pseudo-element/background-image approach with a real IMG element in the header so the yellow/turquoise Cyberpunk 2077 logo actually renders in Forge/Foundry.",
     "Switched the logo source to the 960px Wikimedia PNG thumbnail instead of the SVG, avoiding the SVG/background rendering failure seen in the Gateway screenshot.",
     "The 0.10.102 forced CONNECTION-left / ESTABLISHED-right JS split is unchanged.",
