@@ -1626,8 +1626,8 @@
         name:"Ponyboy",
         code:"PB-01",
         art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/Ponyboy.png",
-        primary:"#63e7f5",
-        secondary:"#55b8ff",
+        primary:"#39e6ff",
+        secondary:"#ff4f64",
         signature:"STREET / ADAPTIVE",
         clearance:"FIELD ACCESS"
       },
@@ -1636,8 +1636,8 @@
         name:"Derke",
         code:"DK-02",
         art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
-        primary:"#ff5b70",
-        secondary:"#ff9a66",
+        primary:"#ff4f64",
+        secondary:"#ffd34d",
         signature:"COMBAT / KINETIC",
         clearance:"FIELD ACCESS"
       },
@@ -1646,8 +1646,8 @@
         name:"Sasha",
         code:"SH-03",
         art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/Sasha.png",
-        primary:"#d778ff",
-        secondary:"#79e8ff",
+        primary:"#cf73ff",
+        secondary:"#39e6ff",
         signature:"NET / COGNITIVE",
         clearance:"NETWORK ACCESS"
       },
@@ -1656,8 +1656,8 @@
         name:"Zach",
         code:"ZH-04",
         art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/ea2ba918-d53f-43d8-b03e-da556fd27862.png",
-        primary:"#f0c75e",
-        secondary:"#74b6ff",
+        primary:"#ffd34d",
+        secondary:"#56c6ff",
         signature:"FIELD / DISCIPLINED",
         clearance:"FIELD ACCESS"
       }
@@ -1697,6 +1697,59 @@
 
     const play = (kind,gain = .25,cooldown = 0) =>
       globalThis.FEHA_SOUNDS?.play?.(kind,{gain,cooldown});
+
+    const applyEntryGatewayPrivateAssets = root => {
+      if (!root) return false;
+
+      const ui = readPrivateAssets()?.ui ?? {};
+
+      const map = {
+        "--eg-cp-frame":"ffe5273fdf_frame_bg",
+        "--eg-cp-hud":"6691702ad7_hud_patch_frame",
+        "--eg-cp-highlight":"2ae8c588ae_fluff_highlight",
+        "--eg-cp-lines":"ef56f53fa5_fluff_lines",
+        "--eg-cp-crossline":"d4e7518fde_crossLine",
+        "--eg-cp-outerline":"9674e9d0b8_outerLine",
+        "--eg-cp-button":"5c8f822dbf_gog_button_holder",
+        "--eg-cp-button-2":"ac81a43116_gog_button_holder_02",
+        "--eg-cp-reward":"a13706adc6_gog_frame_reward",
+        "--eg-cp-glow":"59feb7cd32_frame_glow",
+        "--eg-cp-glow-small":"8cd8de72f8_frame_glow_small",
+        "--eg-cp-barcode1":"7c16fcece5_fluff_barcode1",
+        "--eg-cp-barcode3":"2bead2d3f6_fluff_barcode3",
+        "--eg-cp-barcode4":"88ab2fcdee_fluff_barcode4",
+        "--eg-cp-code1":"1a0c3eb3ee_fluff_code1",
+        "--eg-cp-bar":"a2ad0aec28_bar",
+        "--eg-cp-bar-long":"38888b05f0_bar_long2",
+        "--eg-cp-counter":"3ec9bd29f0_counterLabel",
+        "--eg-cp-counter-stroke":"83986e3d27_counterLabel_stroke",
+        "--eg-cp-buffer-empty":"697dae4bde_buffer_empty",
+        "--eg-cp-buffer-active":"4416a73d89_buffer_activated"
+      };
+
+      let applied = 0;
+
+      for (const [cssName,key] of Object.entries(map)) {
+        const url = ui[key];
+
+        if (url) {
+          root.style.setProperty(cssName,'url("'+url+'")');
+          applied++;
+        } else {
+          root.style.removeProperty(cssName);
+        }
+      }
+
+      if (applied) {
+        root.dataset.cpAssets = "1";
+        root.dataset.fehaCp2077Assets = "1";
+      } else {
+        delete root.dataset.cpAssets;
+        delete root.dataset.fehaCp2077Assets;
+      }
+
+      return applied > 0;
+    };
 
     const actorKey = actor => {
       const raw =
@@ -1746,6 +1799,7 @@
             <div>
               <div class="feha-eg-node">SESSION ACCESS NODE // ADK</div>
               <h1>CYBERPUNK</h1>
+              <div class="feha-eg-cp-header-strip" aria-hidden="true"></div>
             </div>
 
             <div class="feha-eg-state" data-eg-state>
@@ -1850,6 +1904,7 @@
                 <div class="feha-eg-profile-live" data-eg-profile-live hidden>
                   <div class="feha-eg-profile-art">
                     <img data-eg-profile-art alt="">
+                    <div class="feha-eg-profile-hud" aria-hidden="true"></div>
                     <div class="feha-eg-profile-scan"></div>
                     <span>BIOMETRIC SUBJECT</span>
                   </div>
@@ -1894,11 +1949,12 @@
           </section>
 
           <footer class="feha-eg-footer">
-            <div>
+            <div class="feha-eg-footer-copy">
               <span>ENCRYPTION</span>
               AES-ADK/4096
               <span>NODE</span>
               0x${randomHex(4)}:${randomHex(4)}:${randomHex(4)}
+              <i class="feha-eg-footer-code" aria-hidden="true"></i>
             </div>
 
             <div>
@@ -2389,6 +2445,7 @@
       root.innerHTML = rootHtml();
 
       document.body.appendChild(root);
+      applyEntryGatewayPrivateAssets(root);
 
       selected = null;
       busy = false;
