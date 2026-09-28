@@ -18443,3 +18443,497 @@ body #adk-market-15#adk-market-15 #top-directory {
   display:none!important;
   visibility:hidden!important;
 }
+
+/* ==========================================================================
+   FEHA CHROME MANAGER // 0.10.110 CYBERPUNK SKIN ONLY / ZERO SPACING CHANGE
+   IMPORTANT CONTRACT:
+   - NO font-size changes
+   - NO line-height changes
+   - NO letter-spacing changes
+   - NO padding/margin/gap changes
+   - NO width/height/grid/flex changes
+   - NO transform/position changes to real UI content
+   This pass is paint only: color, border, background, glow, inset treatment,
+   and non-layout decorative overlays. 0.10.109 spacing stays exactly intact.
+   ========================================================================== */
+
+#adk-chrome-manager-34[data-feha-rerun="040"] {
+  --cp77-red:#ff3b4f;
+  --cp77-red-soft:rgba(255,59,79,.16);
+  --cp77-cyan:#42e9ff;
+  --cp77-cyan-soft:rgba(66,233,255,.16);
+  --cp77-yellow:#f3d43f;
+  --cp77-ink:#020407;
+  --cp77-panel:#05090d;
+
+  background:
+    radial-gradient(circle at 81% 8%,rgba(255,59,79,.085),transparent 28%),
+    radial-gradient(circle at 18% 108%,rgba(66,233,255,.045),transparent 34%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.009) 0 1px,
+      transparent 1px 4px
+    ),
+    linear-gradient(115deg,#03070a 0%,#020406 47%,#070407 100%)!important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(66,233,255,.20),
+    inset 0 0 48px rgba(255,59,79,.022)!important;
+}
+
+/* TOP COMMAND STRIP ------------------------------------------------------- */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-command {
+  background:
+    linear-gradient(90deg,
+      rgba(66,233,255,.065) 0%,
+      rgba(3,8,12,.96) 28%,
+      rgba(3,7,10,.98) 64%,
+      rgba(255,59,79,.075) 100%)!important;
+  border-top-color:rgba(66,233,255,.68)!important;
+  border-bottom-color:rgba(255,59,79,.48)!important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.018),
+    inset 0 -1px rgba(255,59,79,.11),
+    0 8px 28px rgba(0,0,0,.24)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand small {
+  color:#74efff!important;
+  text-shadow:0 0 10px rgba(66,233,255,.18)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand h1,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-brand > b {
+  color:#f8fbfc!important;
+  text-shadow:
+    2px 0 rgba(66,233,255,.10),
+    -2px 0 rgba(255,59,79,.08),
+    0 0 16px rgba(255,255,255,.035)!important;
+}
+
+/* Capacity keeps exact geometry, but gains CP2077 red/cyan bus language. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.055),rgba(4,9,13,.96) 58%,rgba(255,59,79,.07)),
+    #03080c!important;
+  border-color:rgba(66,233,255,.34)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.012),
+    inset -24px 0 34px rgba(255,59,79,.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head span {
+  color:#9fb7bd!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-capacity-head b {
+  color:#ff5369!important;
+  text-shadow:0 0 12px rgba(255,59,79,.22)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail {
+  background:
+    repeating-linear-gradient(90deg,transparent 0 24px,rgba(66,233,255,.040) 24px 25px),
+    linear-gradient(90deg,rgba(255,59,79,.040),transparent 34%),
+    #010508!important;
+  border-color:rgba(66,233,255,.27)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.012),
+    inset 0 0 12px rgba(255,59,79,.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .cap-rail > i {
+  background:
+    linear-gradient(90deg,#1abed9 0%,#42e9ff 76%,#c1fbff 100%)!important;
+  box-shadow:
+    0 0 7px rgba(66,233,255,.52),
+    0 0 18px rgba(66,233,255,.16)!important;
+}
+
+/* LEFT SUBJECT + SYSTEM INDEX -------------------------------------------- */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems {
+  background:
+    linear-gradient(180deg,rgba(255,59,79,.030),transparent 22%),
+    linear-gradient(90deg,rgba(66,233,255,.022),transparent 18%),
+    #03090c!important;
+  border-right-color:rgba(66,233,255,.18)!important;
+  box-shadow:inset -1px 0 rgba(255,59,79,.035)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-systems > header {
+  color:#6eeeff!important;
+  border-bottom-color:rgba(66,233,255,.20)!important;
+  text-shadow:0 0 8px rgba(66,233,255,.12)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini {
+  background:
+    linear-gradient(90deg,rgba(255,59,79,.055),rgba(66,233,255,.020) 38%,transparent),
+    #041016!important;
+  border-color:rgba(66,233,255,.16)!important;
+  border-left-color:rgba(255,59,79,.78)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.008),
+    inset 14px 0 26px rgba(255,59,79,.018)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini small {
+  color:#6f8c93!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini b {
+  color:#fff!important;
+  text-shadow:
+    1px 0 rgba(66,233,255,.10),
+    -1px 0 rgba(255,59,79,.08)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-mini span {
+  color:#62e7ff!important;
+}
+
+/* System rows: geometry untouched; selected state gets the classic cyan plate
+   with a thin red counter-accent like CP2077's cyberware navigation. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.018),transparent 55%),
+    #03090c!important;
+  border-color:rgba(66,233,255,.07)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.004)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system:hover {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.060),rgba(255,59,79,.018) 64%,transparent),
+    #041015!important;
+  border-color:rgba(66,233,255,.15)!important;
+  box-shadow:inset 0 0 16px rgba(66,233,255,.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.16),rgba(66,233,255,.065) 52%,rgba(255,59,79,.020)),
+    #061117!important;
+  border-color:rgba(66,233,255,.30)!important;
+  border-left-color:#42e9ff!important;
+  box-shadow:
+    inset 3px 0 #42e9ff,
+    inset 0 0 0 1px rgba(66,233,255,.08),
+    0 0 22px rgba(66,233,255,.045)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-copy b {
+  color:#fff!important;
+  text-shadow:0 0 9px rgba(66,233,255,.16)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-copy small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .slot-no {
+  color:#5feaff!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-system.is-active .system-count {
+  color:#82f3ff!important;
+  border-color:rgba(66,233,255,.42)!important;
+  background:rgba(66,233,255,.035)!important;
+}
+
+/* CENTER SUBJECT STAGE ---------------------------------------------------- */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-subject,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-subject-stage {
+  background:
+    radial-gradient(circle at 50% 38%,rgba(66,233,255,.028),transparent 32%),
+    radial-gradient(circle at 86% 56%,rgba(255,59,79,.022),transparent 30%),
+    linear-gradient(180deg,#010406,#020406)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-background {
+  filter:
+    drop-shadow(0 0 16px rgba(66,233,255,.055))
+    drop-shadow(0 0 26px rgba(255,59,79,.018))!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-id {
+  background:
+    linear-gradient(90deg,rgba(2,7,10,.88),rgba(2,7,10,.30),transparent)!important;
+  border-left-color:rgba(66,233,255,.56)!important;
+  color:#66ebff!important;
+  box-shadow:inset 8px 0 16px rgba(66,233,255,.018)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-topology-mark {
+  color:#7ef1ff!important;
+  text-shadow:0 0 8px rgba(66,233,255,.15)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-corners,
+#adk-chrome-manager-34[data-feha-rerun="040"] .portrait-side-ticks {
+  filter:
+    drop-shadow(0 0 5px rgba(66,233,255,.12))
+    drop-shadow(0 0 8px rgba(255,59,79,.035))!important;
+}
+
+/* Keep current title dock exactly where it is; paint only. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title {
+  background:
+    linear-gradient(90deg,
+      rgba(2,7,10,.985) 0%,
+      rgba(3,9,13,.95) 58%,
+      rgba(7,7,10,.82) 82%,
+      rgba(255,59,79,.055) 100%)!important;
+  border-left-color:#ff3b4f!important;
+  border-top-color:rgba(66,233,255,.14)!important;
+  border-bottom-color:rgba(66,233,255,.18)!important;
+  box-shadow:
+    0 -12px 30px rgba(0,0,0,.26),
+    inset 0 0 0 1px rgba(255,255,255,.008),
+    inset 16px 0 30px rgba(255,59,79,.018)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title small {
+  color:#ff4e64!important;
+  text-shadow:0 0 9px rgba(255,59,79,.16)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title h1 {
+  color:#fff!important;
+  text-shadow:
+    2px 0 rgba(66,233,255,.08),
+    -2px 0 rgba(255,59,79,.06),
+    0 8px 24px rgba(0,0,0,.78)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .subject-system-title > span {
+  color:#5eeaff!important;
+  text-shadow:0 0 8px rgba(66,233,255,.12)!important;
+}
+
+/* RIGHT INSPECTOR --------------------------------------------------------- */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-inspector {
+  background:
+    linear-gradient(180deg,rgba(255,59,79,.027),transparent 22%),
+    linear-gradient(90deg,rgba(66,233,255,.018),transparent 14%),
+    #03080c!important;
+  border-left-color:rgba(66,233,255,.17)!important;
+  box-shadow:
+    inset 1px 0 rgba(255,59,79,.025),
+    inset 0 0 42px rgba(0,0,0,.16)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header {
+  border-bottom-color:rgba(66,233,255,.17)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header span {
+  color:#637a81!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header small {
+  color:#5de9ff!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-header b {
+  color:#7df2ff!important;
+  border-color:rgba(66,233,255,.30)!important;
+  background:rgba(66,233,255,.025)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title {
+  background:
+    linear-gradient(90deg,rgba(255,59,79,.055),rgba(255,59,79,.012) 42%,transparent)!important;
+  border-bottom-color:rgba(66,233,255,.13)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title small {
+  color:#ff4a61!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .inspector-title h2 {
+  color:#fff!important;
+  text-shadow:
+    2px 0 rgba(66,233,255,.07),
+    -2px 0 rgba(255,59,79,.08)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .port-heading {
+  color:#718b92!important;
+  border-color:rgba(66,233,255,.12)!important;
+}
+
+/* Hardware port geometry untouched. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.040),rgba(255,59,79,.012) 72%,transparent),
+    #02080b!important;
+  border-color:rgba(66,233,255,.18)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.006),
+    inset 0 0 18px rgba(66,233,255,.014)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port:hover {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.075),rgba(255,59,79,.022) 70%,transparent),
+    #031016!important;
+  border-color:rgba(66,233,255,.36)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(66,233,255,.055),
+    0 0 14px rgba(66,233,255,.035)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port.is-filled {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.095),rgba(255,59,79,.018) 74%,transparent),
+    #031016!important;
+  border-color:rgba(66,233,255,.30)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-copy b {
+  color:#fff!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-port .port-copy small {
+  color:#789097!important;
+}
+
+/* Dossier / schematic gets the cyan technical look with red warning traces. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-visual {
+  background:
+    radial-gradient(circle at 50% 48%,rgba(66,233,255,.070),transparent 43%),
+    radial-gradient(circle at 78% 20%,rgba(255,59,79,.025),transparent 27%),
+    linear-gradient(180deg,#02070a,#010406)!important;
+  border-color:rgba(66,233,255,.17)!important;
+  box-shadow:
+    inset 0 0 32px rgba(66,233,255,.018),
+    inset 0 0 0 1px rgba(255,255,255,.005)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy {
+  background:
+    linear-gradient(90deg,rgba(255,59,79,.038),transparent 76%),
+    #04090d!important;
+  border-left-color:#ff3b4f!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy span {
+  color:#ff4d63!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-copy p {
+  color:#c8d3d7!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics > div {
+  background:
+    linear-gradient(180deg,rgba(66,233,255,.025),transparent),
+    #040a0e!important;
+  border-color:rgba(66,233,255,.12)!important;
+  box-shadow:inset 0 -1px rgba(66,233,255,.30)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics span {
+  color:#60777e!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .dossier-metrics b {
+  color:#f7fbfc!important;
+}
+
+/* Signal profile remains exactly the same size/spacing. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout {
+  background:
+    linear-gradient(180deg,rgba(66,233,255,.025),transparent 68%),
+    linear-gradient(90deg,rgba(255,59,79,.015),transparent 20%),
+    #02080b!important;
+  border-color:rgba(66,233,255,.20)!important;
+  box-shadow:inset 0 0 22px rgba(66,233,255,.012)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout .tech-head span {
+  color:#667e85!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-tech-readout .tech-head b {
+  color:#4eeaff!important;
+  text-shadow:0 0 8px rgba(66,233,255,.12)!important;
+}
+
+/* Buttons: same dimensions/text metrics, CP2077 color treatment only. */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger {
+  color:#f7fbfc!important;
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.035),rgba(255,59,79,.012) 72%,transparent),
+    #03090d!important;
+  border-color:rgba(66,233,255,.30)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.006),
+    inset 0 0 16px rgba(66,233,255,.014)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse:hover,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary:hover,
+#adk-chrome-manager-34[data-feha-rerun="040"] .cache-trigger:hover {
+  color:#fff!important;
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.080),rgba(255,59,79,.025) 70%,transparent),
+    #041015!important;
+  border-color:rgba(66,233,255,.48)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(66,233,255,.05),
+    0 0 16px rgba(66,233,255,.045)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-browse small,
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-primary small {
+  color:#667e85!important;
+}
+
+/* CACHE DRAWER ------------------------------------------------------------ */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache {
+  background:
+    radial-gradient(circle at 10% 0%,rgba(255,59,79,.040),transparent 32%),
+    linear-gradient(180deg,rgba(66,233,255,.020),transparent 26%),
+    #02070a!important;
+  border-color:rgba(66,233,255,.17)!important;
+  box-shadow:inset 0 0 32px rgba(0,0,0,.18)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache > header {
+  background:
+    linear-gradient(90deg,rgba(255,59,79,.050),transparent 44%),
+    #03090d!important;
+  border-bottom-color:rgba(66,233,255,.18)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.035),transparent 58%),
+    #03090d!important;
+  border-color:rgba(66,233,255,.16)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.004)!important;
+}
+
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-cache-card:hover {
+  background:
+    linear-gradient(90deg,rgba(66,233,255,.080),rgba(255,59,79,.018) 74%,transparent),
+    #041015!important;
+  border-color:rgba(66,233,255,.34)!important;
+}
+
+/* FOOTER ----------------------------------------------------------------- */
+#adk-chrome-manager-34[data-feha-rerun="040"] .adk-v6-statusbar {
+  background:
+    linear-gradient(90deg,rgba(255,59,79,.025),transparent 24%,transparent 72%,rgba(66,233,255,.020)),
+    #010507!important;
+  border-top-color:rgba(66,233,255,.18)!important;
+  box-shadow:inset 0 1px rgba(255,59,79,.035)!important;
+}
+
+/* Hard guard from 0.10.108: duplicate small installed-port EJECT stays gone. */
+#adk-chrome-manager-34[data-feha-rerun="040"]
+.adk-v6-port.is-filled .port-actions {
+  display:none!important;
+  visibility:hidden!important;
+}
