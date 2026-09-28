@@ -1,8 +1,15 @@
 {
-  "version": "0.10.78",
+  "version": "0.10.79",
   "updated": "2026-09-28",
-  "scope": "transition-title-activated-connection-established",
+  "scope": "youtube-edgerunners-intro-handoff",
   "notes": [
+    "Replaced the private MP3 match-track workflow with the user-provided YouTube source mH2wmyeiIpA (Cyberpunk: Edgerunners / This Fffire video).",
+    "The YouTube iframe API is preloaded during Gateway boot; the video remains visually hidden until the transition but its audio begins on the first exact typed-name registry match.",
+    "ESTABLISH LINK retries/resumes playback from the button user gesture in case the browser blocked autoplay on the typed-name event.",
+    "Extended the blue 3D connection sequence to roughly 4.4 seconds before handoff and made the already-running video fade in from behind the blue field during SESSION TRANSFER.",
+    "After ACTIVATED // CONNECTION ESTABLISHED, the blue system fades away and the YouTube intro owns the screen.",
+    "Added a SKIP INTRO control; skipping fades the video/audio out and returns to the live Foundry scene. Natural video end does the same automatically.",
+    "Removed the obsolete GM SET MATCH TRACK importer and old HTMLAudio match-track state.",
     "Changed the 3D transition centerpiece from SESSION INIT to ACTIVATED // CONNECTION ESTABLISHED.",
     "Existing final connection status remains consistent with the new centerpiece wording.",
     "Music, 3D motion, and transition timing are unchanged.",
