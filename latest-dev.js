@@ -1680,8 +1680,14 @@
     let root = null;
     let linkOverlay = null;
     let linkAudioContext = null;
-    let matchMusic = null;
-    let matchMusicStarted = false;
+    let introStage = null;
+    let introPlayer = null;
+    let introPlayerPromise = null;
+    let introPlayerReady = false;
+    let introPendingPlay = false;
+    let introStarted = false;
+    let introFinishing = false;
+    let introWaiters = [];
     let selected = null;
     let busy = false;
     let sequence = 0;
@@ -1759,71 +1765,107 @@
       return applied > 0;
     };
 
-    const GATEWAY_MODULE_ID = "flesh-enshrouded-heart-ablaze";
-    const MATCH_MUSIC_KEY = "gatewayMatchMusic";
+    const INTRO_VIDEO_ID = "mH2wmyeiIpA";
+    const INTRO_VIDEO_URL =
+      "https://www.youtube.com/watch?v=" + INTRO_VIDEO_ID;
 
-    const ensureMatchMusicSetting = () => {
-      const id = GATEWAY_MODULE_ID + "." + MATCH_MUSIC_KEY;
+    const ensureYouTubeApi = () => {
+      if (globalThis.YT?.Player) {
+        return Promise.resolve(globalThis.YT);
+      }
 
-      try {
-        if (!game.settings?.settings?.has?.(id)) {
-          game.settings.register(
-            GATEWAY_MODULE_ID,
-            MATCH_MUSIC_KEY,
-            {
-              name:"Gateway Match Music",
-              hint:"Private world audio path played when a typed identity exactly matches the registry.",
-              scope:"world",
-              config:false,
-              type:String,
-              default:""
+      if (globalThis.__FEHA_YOUTUBE_API_PROMISE) {
+        return globalThis.__FEHA_YOUTUBE_API_PROMISE;
+      }
+
+      globalThis.__FEHA_YOUTUBE_API_PROMISE =
+        new Promise((resolve,reject) => {
+          const previous = globalThis.onYouTubeIframeAPIReady;
+
+          globalThis.onYouTubeIframeAPIReady = () => {
+            try {
+              previous?.();
+            } catch {}
+
+            if (globalThis.YT?.Player) {
+              resolve(globalThis.YT);
+            } else {
+              reject(new Error("YouTube iframe API loaded without YT.Player."));
             }
-          );
-        }
-        return true;
-      } catch (err) {
-        console.warn("FEHA DEV // could not register Gateway match-music setting",err);
-        return false;
-      }
+          };
+
+          let script =
+            document.querySelector('script[data-feha-youtube-api="1"]');
+
+          if (!script) {
+            script = document.createElement("script");
+            script.src = "https://www.youtube.com/iframe_api";
+            script.async = true;
+            script.dataset.fehaYoutubeApi = "1";
+            script.onerror = () =>
+              reject(new Error("YouTube iframe API failed to load."));
+            document.head.appendChild(script);
+          }
+        });
+
+      return globalThis.__FEHA_YOUTUBE_API_PROMISE;
     };
 
-    const getMatchMusicPath = () => {
+    const ensureIntroStage = () => {
+      if (introStage?.isConnected) return introStage;
+
+      document.getElementById("feha-gateway-intro-stage")?.remove();
+
+      introStage = document.createElement("section");
+      introStage.id = "feha-gateway-intro-stage";
+      introStage.className = "feha-gateway-intro-stage";
+      introStage.innerHTML = `
+        <div class="feha-gateway-intro-media">
+          <div id="feha-gateway-intro-player"></div>
+        </div>
+
+        <div class="feha-gateway-intro-shade" aria-hidden="true"></div>
+
+        <div class="feha-gateway-intro-meta">
+          <span>SESSION MEDIA // EXTERNAL FEED</span>
+          <b>EDGERUNNERS</b>
+        </div>
+
+        <button
+          type="button"
+          class="feha-gateway-intro-skip"
+          data-feha-intro-skip
+        >
+          SKIP INTRO
+        </button>
+      `;
+
+      document.body.appendChild(introStage);
+
+      introStage
+        .querySelector("[data-feha-intro-skip]")
+        ?.addEventListener("click",() => {
+          play("select",.18,0);
+          void finishIntroMedia({reason:"skip"});
+        });
+
+      return introStage;
+    };
+
+    const fadeIntroVolume = (target,duration = 700) => {
+      if (!introPlayerReady || !introPlayer?.setVolume) return;
+
+      let from = 0;
+
       try {
-        ensureMatchMusicSetting();
-        return String(
-          game.settings.get(
-            GATEWAY_MODULE_ID,
-            MATCH_MUSIC_KEY
-          ) ?? ""
-        ).trim();
-      } catch {
-        return "";
-      }
-    };
+        from = Number(introPlayer.getVolume?.()) || 0;
+      } catch {}
 
-    const setMatchMusicPath = async path => {
-      ensureMatchMusicSetting();
-
-      return game.settings.set(
-        GATEWAY_MODULE_ID,
-        MATCH_MUSIC_KEY,
-        String(path ?? "").trim()
-      );
-    };
-
-    const fadeMatchMusicTo = (
-      audio,
-      target,
-      duration = 650
-    ) => {
-      if (!audio) return;
-
-      const from = Number(audio.volume) || 0;
-      const to = Math.max(0,Math.min(1,Number(target) || 0));
+      const to = Math.max(0,Math.min(100,Number(target) || 0));
       const started = performance.now();
 
       const tick = now => {
-        if (!audio || audio.paused && to > 0) return;
+        if (!introPlayerReady || !introPlayer?.setVolume) return;
 
         const t = Math.min(
           1,
@@ -1831,7 +1873,14 @@
         );
 
         const eased = 1 - Math.pow(1 - t,3);
-        audio.volume = from + (to - from) * eased;
+
+        try {
+          introPlayer.setVolume(
+            Math.round(from + (to - from) * eased)
+          );
+        } catch {
+          return;
+        }
 
         if (t < 1) requestAnimationFrame(tick);
       };
@@ -1839,170 +1888,267 @@
       requestAnimationFrame(tick);
     };
 
-    const startMatchMusic = async candidate => {
-      if (matchMusicStarted) return true;
+    const resolveIntroWaiters = value => {
+      const waiters = introWaiters.splice(0);
 
-      const src = getMatchMusicPath();
+      for (const resolve of waiters) {
+        try {
+          resolve(value);
+        } catch {}
+      }
+    };
 
-      if (!src) {
-        if (game.user?.isGM) {
-          log(
-            "AUDIO/" + randomHex(4) +
-            " MATCH TRACK NOT CONFIGURED // USE SET MATCH TRACK",
-            "normal"
-          );
+    const waitForIntroExit = () =>
+      new Promise(resolve => {
+        if (!introStage?.isConnected) {
+          resolve("missing");
+          return;
         }
-        return false;
+
+        introWaiters.push(resolve);
+      });
+
+    const finishIntroMedia = async ({reason = "ended",immediate = false} = {}) => {
+      if (introFinishing) return;
+      introFinishing = true;
+
+      const stage = introStage;
+
+      if (!stage?.isConnected) {
+        resolveIntroWaiters(reason);
+        introFinishing = false;
+        return;
+      }
+
+      stage.classList.add("is-finishing");
+      fadeIntroVolume(0,immediate ? 40 : 360);
+
+      await new Promise(resolve =>
+        setTimeout(resolve,immediate ? 50 : 430)
+      );
+
+      try {
+        introPlayer?.stopVideo?.();
+      } catch {}
+
+      try {
+        introPlayer?.destroy?.();
+      } catch {}
+
+      introPlayer = null;
+      introPlayerPromise = null;
+      introPlayerReady = false;
+      introPendingPlay = false;
+      introStarted = false;
+
+      stage.remove();
+
+      if (introStage === stage) {
+        introStage = null;
+      }
+
+      resolveIntroWaiters(reason);
+      introFinishing = false;
+    };
+
+    const handleIntroPlayerState = event => {
+      const state = Number(event?.data);
+
+      if (
+        globalThis.YT?.PlayerState &&
+        state === globalThis.YT.PlayerState.ENDED
+      ) {
+        // Only dismiss automatically once the intro has actually been
+        // handed off visually. If it ended while the player lingered on
+        // the Gateway, ESTABLISH LINK can restart it.
+        if (
+          introStage?.classList.contains("is-visible") ||
+          introStage?.classList.contains("is-revealing")
+        ) {
+          void finishIntroMedia({reason:"ended"});
+        } else {
+          introStarted = false;
+        }
+      }
+    };
+
+    const ensureIntroPlayer = () => {
+      ensureIntroStage();
+
+      if (introPlayerReady && introPlayer?.playVideo) {
+        return Promise.resolve(introPlayer);
+      }
+
+      if (introPlayerPromise) {
+        return introPlayerPromise;
+      }
+
+      introPlayerPromise =
+        ensureYouTubeApi()
+          .then(YT =>
+            new Promise((resolve,reject) => {
+              const host =
+                document.getElementById("feha-gateway-intro-player");
+
+              if (!host) {
+                reject(new Error("Intro player host is missing."));
+                return;
+              }
+
+              introPlayer = new YT.Player(host,{
+                videoId:INTRO_VIDEO_ID,
+                width:"1920",
+                height:"1080",
+                playerVars:{
+                  autoplay:0,
+                  controls:0,
+                  disablekb:1,
+                  fs:0,
+                  iv_load_policy:3,
+                  playsinline:1,
+                  rel:0,
+                  modestbranding:1
+                },
+                events:{
+                  onReady:event => {
+                    introPlayerReady = true;
+
+                    try {
+                      event.target.setVolume(0);
+                    } catch {}
+
+                    resolve(event.target);
+
+                    if (introPendingPlay) {
+                      introPendingPlay = false;
+
+                      try {
+                        event.target.unMute();
+                        event.target.setVolume(0);
+                        event.target.playVideo();
+                        introStarted = true;
+                        fadeIntroVolume(34,850);
+                      } catch {}
+                    }
+                  },
+                  onStateChange:handleIntroPlayerState,
+                  onError:event => {
+                    console.warn(
+                      "FEHA DEV // YouTube intro player error",
+                      event?.data,
+                      INTRO_VIDEO_URL
+                    );
+                  }
+                }
+              });
+            })
+          )
+          .catch(err => {
+            introPlayerPromise = null;
+            console.warn(
+              "FEHA DEV // YouTube intro unavailable",
+              err
+            );
+            return null;
+          });
+
+      return introPlayerPromise;
+    };
+
+    const startIntroMedia = async candidate => {
+      if (introStarted) return true;
+
+      const stage = ensureIntroStage();
+      void stage;
+
+      if (!introPlayerReady) {
+        introPendingPlay = true;
+        void ensureIntroPlayer();
+
+        log(
+          "MEDIA/" + randomHex(4) +
+          " INTRO FEED ARMED // " +
+          candidate.name.toUpperCase(),
+          "good"
+        );
+
+        return true;
       }
 
       try {
-        const current =
-          globalThis.__FEHA_GATEWAY_MATCH_MUSIC instanceof HTMLAudioElement
-            ? globalThis.__FEHA_GATEWAY_MATCH_MUSIC
-            : null;
+        const state = introPlayer.getPlayerState?.();
 
-        if (current) {
-          try {
-            current.pause();
-            current.currentTime = 0;
-          } catch {}
+        if (
+          globalThis.YT?.PlayerState &&
+          state === globalThis.YT.PlayerState.ENDED
+        ) {
+          introPlayer.seekTo?.(0,true);
         }
 
-        const audio = new Audio(src);
-        audio.preload = "auto";
-        audio.loop = false;
-        audio.volume = 0;
-
-        audio.dataset.fehaGatewayMusic = "1";
-        audio.dataset.fehaCandidate = candidate?.key ?? "";
-
-        globalThis.__FEHA_GATEWAY_MATCH_MUSIC = audio;
-        matchMusic = audio;
-        matchMusicStarted = true;
-
-        const cleanup = () => {
-          if (globalThis.__FEHA_GATEWAY_MATCH_MUSIC === audio) {
-            delete globalThis.__FEHA_GATEWAY_MATCH_MUSIC;
-          }
-          if (matchMusic === audio) matchMusic = null;
-        };
-
-        audio.addEventListener("ended",cleanup,{once:true});
-        audio.addEventListener("error",() => {
-          cleanup();
-          matchMusicStarted = false;
-          console.warn(
-            "FEHA DEV // Gateway match music failed to load",
-            src
-          );
-        },{once:true});
-
-        await audio.play();
-        fadeMatchMusicTo(audio,.31,720);
+        introPlayer.unMute?.();
+        introPlayer.setVolume?.(0);
+        introPlayer.playVideo?.();
+        introStarted = true;
+        fadeIntroVolume(34,850);
 
         log(
-          "AUDIO/" + randomHex(4) +
-          " IDENTITY MATCH TRACK ACTIVE // " +
+          "MEDIA/" + randomHex(4) +
+          " INTRO AUDIO ACTIVE // " +
           candidate.name.toUpperCase(),
           "good"
         );
 
         return true;
       } catch (err) {
-        matchMusicStarted = false;
-        console.warn("FEHA DEV // Gateway match music playback failed",err);
+        console.warn("FEHA DEV // intro playback failed",err);
         return false;
       }
     };
 
-    const importMatchMusic = async () => {
-      if (!game.user?.isGM) return false;
-
-      const picker = document.createElement("input");
-      picker.type = "file";
-      picker.accept = "audio/mpeg,audio/mp3,audio/*";
-      picker.style.display = "none";
-      document.body.appendChild(picker);
-
-      const file = await new Promise(resolve => {
-        picker.addEventListener(
-          "change",
-          () => resolve(picker.files?.[0] ?? null),
-          {once:true}
-        );
-        picker.click();
-      });
-
-      picker.remove();
-      if (!file) return false;
-
-      const button = root?.querySelector("[data-eg-music-import]");
-      if (button) {
-        button.disabled = true;
-        button.textContent = "UPLOADING...";
+    const resumeIntroMedia = candidate => {
+      if (!introPlayerReady) {
+        introPendingPlay = true;
+        void ensureIntroPlayer();
+        return;
       }
 
       try {
-        if (!globalThis.FilePicker?.upload) {
-          throw new Error("Foundry FilePicker.upload is unavailable.");
+        const state = introPlayer.getPlayerState?.();
+
+        if (
+          globalThis.YT?.PlayerState &&
+          state === globalThis.YT.PlayerState.ENDED
+        ) {
+          introPlayer.seekTo?.(0,true);
         }
 
-        // Forge-hosted worlds route Data uploads through their private asset
-        // storage. Keep the copyrighted track private; never publish it in repo.
-        const result = await FilePicker.upload(
-          "data",
-          "FEHA",
-          file,
-          {},
-          {notify:true}
-        );
+        introPlayer.unMute?.();
+        introPlayer.playVideo?.();
+        introStarted = true;
 
-        const path = String(
-          result?.path ??
-          result?.url ??
-          result?.src ??
-          ""
-        ).trim();
-
-        if (!path) {
-          throw new Error("Upload completed but returned no playable path.");
+        if ((introPlayer.getVolume?.() ?? 0) < 20) {
+          fadeIntroVolume(34,500);
         }
-
-        await setMatchMusicPath(path);
-
-        ui.notifications?.info?.(
-          "Gateway match track configured for this world."
-        );
-
-        log(
-          "AUDIO/" + randomHex(4) +
-          " MATCH TRACK CONFIGURED // " +
-          file.name.toUpperCase(),
-          "good"
-        );
-
-        if (button) button.textContent = "MATCH TRACK SET";
-        return true;
       } catch (err) {
-        console.error("FEHA DEV // match-track upload failed",err);
-        ui.notifications?.error?.(
-          "Could not upload the Gateway match track."
+        console.warn(
+          "FEHA DEV // could not resume intro media for",
+          candidate?.name,
+          err
         );
-
-        if (button) button.textContent = "SET MATCH TRACK";
-        return false;
-      } finally {
-        if (button) {
-          button.disabled = false;
-          setTimeout(() => {
-            if (button?.isConnected) {
-              button.textContent = getMatchMusicPath()
-                ? "REPLACE MATCH TRACK"
-                : "SET MATCH TRACK";
-            }
-          },1100);
-        }
       }
+    };
+
+    const revealIntroMedia = () => {
+      const stage = ensureIntroStage();
+      stage.classList.add("is-revealing");
+
+      requestAnimationFrame(() => {
+        stage.classList.add("is-visible");
+      });
+    };
+
+    const showIntroSkip = () => {
+      introStage?.classList.add("can-skip");
     };
 
     const actorKey = actor => {
@@ -2211,14 +2357,6 @@
               </button>
 
               ${game.user?.isGM ? `
-                <button
-                  type="button"
-                  class="feha-eg-music-import"
-                  data-eg-music-import
-                >
-                  ${getMatchMusicPath() ? "REPLACE MATCH TRACK" : "SET MATCH TRACK"}
-                </button>
-
                 <button
                   type="button"
                   class="feha-eg-bypass"
@@ -3051,6 +3189,10 @@
       document.body.appendChild(linkOverlay);
       applyEntryGatewayPrivateAssets(linkOverlay);
 
+      // Button click is a fresh user gesture, so make a second play attempt
+      // here in case the browser blocked playback on the typed-name match.
+      resumeIntroMedia(candidate);
+
       requestAnimationFrame(() => {
         linkOverlay?.classList.add("is-active");
       });
@@ -3064,7 +3206,7 @@
       });
 
       playLinkSceneCue("launch");
-      await sleep(420);
+      await sleep(700);
 
       setLinkPhase({
         phase:"NEURAL ROUTE VERIFIED",
@@ -3075,7 +3217,7 @@
       });
       playLinkSceneCue("route");
 
-      await sleep(520);
+      await sleep(850);
 
       setLinkPhase({
         phase:"NEURAL HANDSHAKE",
@@ -3086,18 +3228,23 @@
       });
       playLinkSceneCue("handshake");
 
-      await sleep(560);
+      await sleep(850);
+
+      // The video has already been playing invisibly from the exact-name
+      // match. Bring its current frame up from BEHIND the blue link field.
+      revealIntroMedia();
+      linkOverlay.classList.add("is-video-reveal");
 
       setLinkPhase({
         phase:"SESSION TRANSFER",
         route:"NEURAL BRIDGE STABLE",
         percent:"92%",
-        status:"SESSION CHANNEL OPENING",
+        status:"EXTERNAL FEED RESOLVING",
         progress:"92%"
       });
       playLinkSceneCue("transfer");
 
-      await sleep(480);
+      await sleep(1150);
 
       setLinkPhase({
         phase:"SESSION LIVE",
@@ -3109,18 +3256,25 @@
       });
 
       playLinkSceneCue("live");
+      showIntroSkip();
 
-      // Hold briefly on the final connection state before the scene cut.
-      await sleep(620);
+      await sleep(900);
 
-      // Remove the Gateway while the Link Start overlay still owns the screen.
-      close(true,{keepLinkOverlay:true});
+      // Commit the session while the blue overlay is still covering the scene.
+      close(true,{
+        keepLinkOverlay:true,
+        keepIntroStage:true
+      });
 
-      linkOverlay?.classList.add("is-complete");
-      await sleep(360);
+      // Let the moving video fully replace the blue 3D system.
+      linkOverlay?.classList.add("is-video-handoff");
+      await sleep(800);
 
       linkOverlay?.remove?.();
       linkOverlay = null;
+
+      // Player now owns the screen. It exits on video end or SKIP INTRO.
+      await waitForIntroExit();
     };
 
     const establishLink = async () => {
@@ -3139,7 +3293,13 @@
       await runLinkStart(selected);
     };
 
-    const close = (markPassed = false,{keepLinkOverlay = false} = {}) => {
+    const close = (
+      markPassed = false,
+      {
+        keepLinkOverlay = false,
+        keepIntroStage = false
+      } = {}
+    ) => {
       if (markPassed) {
         sessionStorage.setItem(SESSION_KEY,"1");
       }
@@ -3159,6 +3319,13 @@
       if (!keepLinkOverlay) {
         linkOverlay?.remove?.();
         linkOverlay = null;
+      }
+
+      if (!keepIntroStage) {
+        void finishIntroMedia({
+          reason:"gateway-close",
+          immediate:true
+        });
       }
     };
 
@@ -3245,7 +3412,7 @@
           play("confirm",.18,0);
 
           if (!wasSameExact) {
-            void startMatchMusic(candidate);
+            void startIntroMedia(candidate);
           }
         } else if (norm(input.value)) {
           clearSelection();
@@ -3272,9 +3439,6 @@
 
       root.querySelector("[data-eg-enter]")
         ?.addEventListener("click",() => void establishLink());
-
-      root.querySelector("[data-eg-music-import]")
-        ?.addEventListener("click",() => void importMatchMusic());
 
       root.querySelector("[data-eg-bypass]")
         ?.addEventListener("click",() => {
@@ -3310,10 +3474,14 @@
 
       selected = null;
       busy = false;
-      matchMusicStarted =
-        globalThis.__FEHA_GATEWAY_MATCH_MUSIC instanceof HTMLAudioElement &&
-        !globalThis.__FEHA_GATEWAY_MATCH_MUSIC.paused;
+      introStarted = false;
+      introPendingPlay = false;
+      introFinishing = false;
       sequence++;
+
+      // Preload/cue the YouTube player while the Gateway boots so the typed
+      // identity match can begin playback immediately.
+      void ensureIntroPlayer();
 
       bind();
       play("drawer_open",.18,0);
@@ -3366,21 +3534,10 @@
         } catch {}
         linkAudioContext = null;
 
-        try {
-          const liveMusic = globalThis.__FEHA_GATEWAY_MATCH_MUSIC;
-          if (liveMusic instanceof HTMLAudioElement) {
-            fadeMatchMusicTo(liveMusic,0,220);
-            setTimeout(() => {
-              try {
-                liveMusic.pause();
-                liveMusic.currentTime = 0;
-              } catch {}
-            },240);
-          }
-          delete globalThis.__FEHA_GATEWAY_MATCH_MUSIC;
-        } catch {}
-        matchMusic = null;
-        matchMusicStarted = false;
+        void finishIntroMedia({
+          reason:"dev-destroy",
+          immediate:true
+        });
 
         gateway.open = original.open;
         gateway.reopen = original.reopen;
