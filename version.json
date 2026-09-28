@@ -1,8 +1,12 @@
 {
-  "version": "0.10.79",
+  "version": "0.10.80",
   "updated": "2026-09-28",
-  "scope": "youtube-edgerunners-intro-handoff",
+  "scope": "youtube-intro-fullscreen-caption-fade-fix",
   "notes": [
+    "Disabled YouTube closed captions/subtitles for the Gateway intro through both cc_load_policy=0 and runtime caption-track clearing when the iframe becomes ready or resumes.",
+    "ESTABLISH LINK now requests browser fullscreen while the click still has user activation, keeping both the blue 3D connection sequence and the YouTube intro inside the fullscreen document.",
+    "SKIP INTRO, natural video end, and intro teardown now exit fullscreen only when the Gateway itself requested that fullscreen session; an already-fullscreen Foundry session is left alone.",
+    "Lengthened the normal intro audio/video fade-out to roughly 1.7 seconds so skipping the intro no longer hard-cuts the song.",
     "Replaced the private MP3 match-track workflow with the user-provided YouTube source mH2wmyeiIpA (Cyberpunk: Edgerunners / This Fffire video).",
     "The YouTube iframe API is preloaded during Gateway boot; the video remains visually hidden until the transition but its audio begins on the first exact typed-name registry match.",
     "ESTABLISH LINK retries/resumes playback from the button user gesture in case the browser blocked autoplay on the typed-name event.",
