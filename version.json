@@ -1,8 +1,16 @@
 {
-  "version": "0.10.117",
+  "version": "0.10.118",
   "updated": "2026-09-28",
-  "scope": "gateway-big-pre-and-inflight-letter-glitch",
+  "scope": "deep-stability-audit-hardening",
   "notes": [
+    "Deep stability audit: ADK DEV LOADER now fetches and preflights all JS/CSS plus version.json before destroying the currently working runtime, so network failures, syntax failures, and partial multi-file commits no longer take down a good build.",
+    "Loader now rejects V3/version.json mismatches before swap and verifies the loaded V3 version after evaluation; failed post-swap loads attempt a clean V2 fallback.",
+    "Cyber Core now propagates module initialization failures instead of logging them and falsely reporting a successful load.",
+    "Network approvals now choose one deterministic active GM for probe, device-command, and reveal requests, preventing duplicate execution in multi-GM sessions.",
+    "Network approval RPCs now time out/cancel cleanly on reload; Network Probes have a two-minute approval timeout instead of an unbounded pending Promise.",
+    "Camera authority RPCs now cancel timers and settle pending requests cleanly on module reload; socket init is idempotent.",
+    "Base cleanup no longer overwrites a later HTMLMediaElement.play, openCyberdeck, or ADKChromeBackend.getOwned patch owned by another module.",
+    "User-approved 0.10.117 Gateway big glitch, final 115vw left/right title split, all cinematic waits, Chrome Manager spacing/colors/header, and duplicate-EJECT fix are unchanged.",
     "Made the final CONNECTION ESTABLISHED glitch much larger immediately before the split.",
     "Cyan and red clipped letter ghosts now jump far outward and remain active during the full left/right flight.",
     "The real black/yellow words carry stronger channel separation while moving.",
