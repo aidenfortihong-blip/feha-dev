@@ -1,5 +1,5 @@
 (() => {
-  const BUILD = "0.8.4";
+  const BUILD = "0.8.5";
   let lifecycleActive = true;
   let observer = null;
   let walletGuard = null;
@@ -103,11 +103,10 @@
 
   function installOwnedBridge(api) {
     if (!api || api.__fehaOwnedBridge021) return;
-    api.__fehaOwnedBridge021 = true;
 
     const originalGetOwned = api.getOwned?.bind(api);
 
-    api.getOwned = (slotName = null) => {
+    const fehaGetOwned = (slotName = null) => {
       const actor = api.getActor?.();
       const cache = findCache(actor);
 
@@ -151,6 +150,8 @@
       return filtered;
     };
 
+    api.getOwned = fehaGetOwned;
+    api.__fehaOwnedBridge021 = fehaGetOwned;
     api.__fehaOriginalGetOwned021 = originalGetOwned;
   }
 
@@ -221,7 +222,7 @@
       cacheRepairBusy = true;
       Promise.resolve(repairCacheMetadata(api))
         .catch(err => {
-          console.warn("FEHA DEV 0.8.4 // cache repair attach failed", err);
+          console.warn("FEHA DEV 0.8.5 // cache repair attach failed", err);
         })
         .finally(() => {
           cacheRepairBusy = false;
@@ -546,7 +547,7 @@
           audio.preload = "auto";
           templates.set(event, audio);
         } catch (err) {
-          console.warn("FEHA DEV 0.8.4 // preload failed", event, err);
+          console.warn("FEHA DEV 0.8.5 // preload failed", event, err);
         }
       }
     }
@@ -611,11 +612,11 @@
           .then(() => true)
           .catch(err => {
             release();
-            console.warn("FEHA DEV 0.8.4 // sound playback failed", event, err);
+            console.warn("FEHA DEV 0.8.5 // sound playback failed", event, err);
             return false;
           });
       } catch (err) {
-        console.warn("FEHA DEV 0.8.4 // sound clone failed", event, err);
+        console.warn("FEHA DEV 0.8.5 // sound clone failed", event, err);
         return Promise.resolve(false);
       }
     }
@@ -638,7 +639,7 @@
           return Promise.resolve();
         }
       } catch (err) {
-        console.warn("FEHA DEV 0.8.4 // legacy sound routing failed", err);
+        console.warn("FEHA DEV 0.8.5 // legacy sound routing failed", err);
       }
 
       return OriginalPlay.apply(this, args);
@@ -1004,12 +1005,12 @@
     globalThis.__FEHA_SOUND_ENGINE_040 = engine;
 
     console.info(
-      `FEHA DEV 0.8.4 // sound source: ${source}`
+      `FEHA DEV 0.8.5 // sound source: ${source}`
     );
 
     if (!localPack) {
       console.info(
-        "FEHA DEV 0.8.4 // Cyberpunk local pack not installed; using CC0 fallback."
+        "FEHA DEV 0.8.5 // Cyberpunk local pack not installed; using CC0 fallback."
       );
     }
   }
@@ -1419,11 +1420,10 @@
 
     if (!engine) return;
 
+    // engine.dispose() restores HTMLMediaElement.prototype.play only if FEHA
+    // still owns that monkey-patch. Do not overwrite a later patch from another
+    // Foundry module during cleanup.
     engine.dispose?.();
-
-    if (HTMLMediaElement.prototype.play !== engine.originalPlay) {
-      HTMLMediaElement.prototype.play = engine.originalPlay;
-    }
 
     delete globalThis.FEHA_SOUNDS;
     delete globalThis.__FEHA_SOUND_ENGINE_040;
@@ -6459,14 +6459,33 @@ if (!game.user?.isGM) {
 
   function removeCyberdeckV2() {
     document.getElementById(CYBERDECK_V2_ID)?.remove();
+
     const adk = globalThis.game?.adk;
-    const original = adk?.__fehaOriginalOpenCyberdeck ?? cyberdeckOriginalOpen;
-    if (adk && original) {
-      adk.openCyberdeck = original;
+    const original =
+      adk?.__fehaOriginalOpenCyberdeck ??
+      cyberdeckOriginalOpen;
+
+    if (adk) {
+      // Restore only if FEHA still owns the launcher. Never clobber a later
+      // override installed by another module after us.
+      if (
+        original &&
+        adk.openCyberdeck === openCyberdeckV2
+      ) {
+        adk.openCyberdeck = original;
+      }
+
       delete adk.__fehaOriginalOpenCyberdeck;
-      delete adk.exportHandoff;
-      delete adk.exportModuleSource;
+
+      if (adk.exportHandoff === exportFehaHandoff) {
+        delete adk.exportHandoff;
+      }
+
+      if (adk.exportModuleSource === exportFehaModuleSource) {
+        delete adk.exportModuleSource;
+      }
     }
+
     removeCyberdeckCombatHooks();
     delete globalThis.FEHA_CYBERDECK_V2;
     cyberdeckOriginalOpen = null;
@@ -6549,7 +6568,12 @@ if (!game.user?.isGM) {
 
       const api = globalThis.ADKChromeBackend;
       if (api?.__fehaOriginalGetOwned021) {
-        api.getOwned = api.__fehaOriginalGetOwned021;
+        // Restore only if our wrapper is still installed. If another module
+        // wrapped getOwned after FEHA, leave that newer owner alone.
+        if (api.getOwned === api.__fehaOwnedBridge021) {
+          api.getOwned = api.__fehaOriginalGetOwned021;
+        }
+
         delete api.__fehaOriginalGetOwned021;
         delete api.__fehaOwnedBridge021;
       }
