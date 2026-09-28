@@ -16640,3 +16640,401 @@ body #adk-market-15#adk-market-15 #top-directory {
   transition:opacity .24s ease!important;
 }
 
+/* ==========================================================================
+   FEHA GATEWAY // 0.10.98 BRANDING CLEANUP + GLITCH EXPAND CONFIRMATION
+   - remove the little palette widgets / utility tab clutter
+   - push the Gateway toward one authored Cyberpunk fullscreen identity
+   - CONNECTION ESTABLISHED morphs from the existing cyan title into the
+     black/yellow final state with a glitch-expand, rather than appearing as
+     a separate larger title
+   - keep the thin cyan split pulse and all existing timing
+   ========================================================================== */
+
+/* ==========================================================================
+   GATEWAY BRANDING CLEANUP
+   ========================================================================== */
+
+/* Remove the little palette/totem pieces that made the screen feel like a UI
+   kit instead of one terminal. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-node::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-side::before,
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel::before {
+  content:none!important;
+  display:none!important;
+}
+
+/* Top-left branding becomes one large asymmetric lockup rather than a logo
+   surrounded by color swatches. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+  overflow:hidden!important;
+  padding-top:17px!important;
+  padding-bottom:13px!important;
+  background:
+    linear-gradient(104deg,rgba(57,230,255,.028),transparent 56%),
+    linear-gradient(180deg,rgba(255,255,255,.008),transparent),
+    #061015!important;
+  border-bottom:1px solid rgba(57,230,255,.11)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-node {
+  padding-left:0!important;
+  color:rgba(255,59,92,.82)!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:.24em!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+  position:relative!important;
+  width:max-content!important;
+  margin-top:4px!important;
+  padding-right:46px!important;
+  color:#f2fdff!important;
+  font-size:clamp(50px,4.6vw,76px)!important;
+  font-weight:950!important;
+  font-style:italic!important;
+  line-height:.88!important;
+  letter-spacing:.075em!important;
+  transform:skewX(-7deg)!important;
+  transform-origin:left center!important;
+  text-shadow:
+    2px 0 0 rgba(57,230,255,.09),
+    -1px 0 0 rgba(255,59,92,.055),
+    0 0 18px rgba(57,230,255,.035)!important;
+}
+
+/* One cyan blade below the wordmark. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1::after {
+  content:""!important;
+  position:absolute!important;
+  left:5px!important;
+  right:-34px!important;
+  bottom:-12px!important;
+  height:3px!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.98) 0 58%,
+      rgba(57,230,255,.20) 58% 82%,
+      transparent 82%)!important;
+  clip-path:polygon(0 0,100% 0,94% 100%,0 100%)!important;
+  opacity:.90!important;
+}
+
+/* One yellow slash above the brand is enough; no multi-color palette. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header h1::before {
+  content:""!important;
+  position:absolute!important;
+  left:-4px!important;
+  top:-11px!important;
+  width:78px!important;
+  height:3px!important;
+  background:#fcee0a!important;
+  clip-path:polygon(0 0,100% 0,88% 100%,0 100%)!important;
+  opacity:.90!important;
+}
+
+/* Keep the asymmetrical header plate, but quiet enough to feel structural. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-header::after,
+#adk-entry-gateway.feha-eg-custom[data-cp-assets="1"] .feha-eg-header::after {
+  content:""!important;
+  display:block!important;
+  top:0!important;
+  right:17.2%!important;
+  bottom:auto!important;
+  width:88px!important;
+  height:100%!important;
+  opacity:.24!important;
+  background:
+    linear-gradient(180deg,
+      rgba(57,230,255,.045),
+      rgba(57,230,255,.006))!important;
+  background-image:none!important;
+  clip-path:polygon(31% 0,100% 0,67% 100%,0 100%)!important;
+}
+
+/* The top-middle still breaks the grid, but without the yellow ROUTE tab. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-body::before {
+  right:27.2%!important;
+  width:150px!important;
+  height:88px!important;
+  background:
+    linear-gradient(180deg,#091116,#03080b)!important;
+  border-left:1px solid rgba(57,230,255,.13)!important;
+  border-right:0!important;
+  clip-path:polygon(32% 0,100% 0,67% 100%,0 100%)!important;
+}
+
+/* Cleaner section grammar: yellow marker + cyan broken line only. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title {
+  color:#57ebff!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::before {
+  width:6px!important;
+  height:16px!important;
+  background:#fcee0a!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::after {
+  height:1px!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.82) 0 38%,
+      transparent 38% 44%,
+      rgba(57,230,255,.20) 44% 72%,
+      transparent 72%)!important;
+  opacity:.88!important;
+}
+
+/* Right rail stays integrated and mostly cyan; candidate identity color is
+   confined to each row instead of a separate palette beside the rail. */
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel {
+  border-top:1px solid rgba(57,230,255,.60)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  background:transparent!important;
+  border-bottom:1px solid rgba(57,230,255,.11)!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate::before {
+  width:2px!important;
+  opacity:.34!important;
+}
+
+#adk-entry-gateway.feha-eg-custom .feha-eg-candidate.active::before {
+  width:4px!important;
+  opacity:.92!important;
+}
+
+/* Quiet remaining decorative rails so the composition feels less "windowed". */
+#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::after {
+  left:22px!important;
+  right:27%!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.24),
+      rgba(57,230,255,.05) 72%,
+      transparent)!important;
+  opacity:.34!important;
+}
+
+#adk-entry-gateway.feha-eg-custom:not(.is-granted) .feha-eg-footer::before {
+  width:50%!important;
+  background:
+    linear-gradient(90deg,
+      rgba(57,230,255,.38),
+      rgba(57,230,255,.07) 72%,
+      transparent)!important;
+  opacity:.48!important;
+}
+
+/* ==========================================================================
+   CONNECTION ESTABLISHED // CYAN -> GLITCH EXPAND -> BLACK/YELLOW
+   The SAME two words morph. Nothing new appears underneath.
+   ========================================================================== */
+
+/* Parent no longer performs the old big title punch once SESSION LIVE lands;
+   the two spans themselves do the transformation from the existing cyan title. */
+#feha-link-start.is-live .feha-linkstart-title-main {
+  animation:none!important;
+  gap:clamp(3px,.45vh,7px)!important;
+  perspective:800px!important;
+}
+
+/* CONNECTION starts as the current cyan word, glitches wider, then resolves
+   into literal black with a yellow outline. */
+#feha-link-start.is-live .feha-linkstart-title-main > span:first-child {
+  transform-origin:center center!important;
+  will-change:transform,opacity!important;
+  animation:
+    feha-link-glitch-expand-black-098 .92s cubic-bezier(.12,.86,.16,1) both,
+    feha-link-word-black-pulse-098 1.7s .92s ease-in-out infinite alternate!important;
+}
+
+/* ESTABLISHED follows the exact same cyan-origin morph, resolving yellow. */
+#feha-link-start.is-live .feha-linkstart-title-main > span:last-child {
+  transform-origin:center center!important;
+  will-change:transform,opacity!important;
+  animation:
+    feha-link-glitch-expand-yellow-098 .92s cubic-bezier(.12,.86,.16,1) both,
+    feha-link-word-yellow-pulse-098 1.7s .92s ease-in-out infinite alternate!important;
+}
+
+@keyframes feha-link-glitch-expand-black-098 {
+  0% {
+    color:#5cecff;
+    -webkit-text-stroke:0 transparent;
+    opacity:1;
+    transform:scaleX(.78) scaleY(.84) translateX(0) skewX(0deg);
+    text-shadow:0 0 11px rgba(57,230,255,.30);
+  }
+  14% {
+    transform:scaleX(.96) scaleY(.91) translateX(-4px) skewX(-4deg);
+    text-shadow:
+      5px 0 0 rgba(57,230,255,.18),
+      -3px 0 0 rgba(252,238,10,.11);
+  }
+  24% {
+    transform:scaleX(1.08) scaleY(.94) translateX(8px) skewX(7deg);
+  }
+  31% {
+    transform:scaleX(.99) scaleY(1.04) translateX(-11px) skewX(-8deg);
+    color:#8df5ff;
+  }
+  39% {
+    transform:scaleX(1.12) scaleY(.97) translateX(5px) skewX(4deg);
+    color:#101300;
+    -webkit-text-stroke:1px rgba(252,238,10,.55);
+  }
+  52% {
+    transform:scaleX(1.055) scaleY(1.03) translateX(-3px) skewX(-2deg);
+    color:#000;
+    -webkit-text-stroke:2px #fcee0a;
+    text-shadow:
+      0 0 14px rgba(57,230,255,.12),
+      0 0 20px rgba(252,238,10,.16);
+  }
+  68% {
+    transform:scaleX(1.025) scaleY(.995) translateX(2px);
+  }
+  78% {
+    transform:scaleX(.995) scaleY(1.01) translateX(-1px);
+  }
+  100% {
+    color:#000;
+    -webkit-text-stroke:2px #fcee0a;
+    opacity:1;
+    transform:scale(1) translateX(0) skewX(0deg);
+    text-shadow:
+      0 0 12px rgba(252,238,10,.18),
+      0 0 30px rgba(252,238,10,.08);
+  }
+}
+
+@keyframes feha-link-glitch-expand-yellow-098 {
+  0% {
+    color:#5cecff;
+    -webkit-text-stroke:0 transparent;
+    opacity:1;
+    transform:scaleX(.78) scaleY(.84) translateX(0) skewX(0deg);
+    text-shadow:0 0 11px rgba(57,230,255,.30);
+  }
+  14% {
+    transform:scaleX(.96) scaleY(.91) translateX(5px) skewX(4deg);
+    text-shadow:
+      -5px 0 0 rgba(57,230,255,.18),
+      3px 0 0 rgba(252,238,10,.11);
+  }
+  24% {
+    transform:scaleX(1.08) scaleY(.94) translateX(-8px) skewX(-7deg);
+  }
+  31% {
+    transform:scaleX(.99) scaleY(1.04) translateX(11px) skewX(8deg);
+    color:#8df5ff;
+  }
+  39% {
+    transform:scaleX(1.12) scaleY(.97) translateX(-5px) skewX(-4deg);
+    color:#d6c900;
+    -webkit-text-stroke:1px rgba(0,0,0,.72);
+  }
+  52% {
+    transform:scaleX(1.055) scaleY(1.03) translateX(3px) skewX(2deg);
+    color:#fcee0a;
+    -webkit-text-stroke:2px #000;
+    text-shadow:
+      0 0 13px rgba(57,230,255,.10),
+      3px 3px 0 #000;
+  }
+  68% {
+    transform:scaleX(1.025) scaleY(.995) translateX(-2px);
+  }
+  78% {
+    transform:scaleX(.995) scaleY(1.01) translateX(1px);
+  }
+  100% {
+    color:#fcee0a;
+    -webkit-text-stroke:2px #000;
+    opacity:1;
+    transform:scale(1) translateX(0) skewX(0deg);
+    text-shadow:
+      3px 3px 0 #000,
+      -3px -3px 0 #000,
+      0 0 16px rgba(252,238,10,.24);
+  }
+}
+
+@keyframes feha-link-word-black-pulse-098 {
+  from {
+    -webkit-text-stroke-color:rgba(252,238,10,.72);
+    text-shadow:0 0 8px rgba(252,238,10,.10);
+  }
+  to {
+    -webkit-text-stroke-color:#fcee0a;
+    text-shadow:
+      0 0 16px rgba(252,238,10,.30),
+      0 0 34px rgba(252,238,10,.12);
+  }
+}
+
+@keyframes feha-link-word-yellow-pulse-098 {
+  from {
+    text-shadow:
+      2px 2px 0 #000,
+      -2px -2px 0 #000,
+      0 0 8px rgba(252,238,10,.10);
+  }
+  to {
+    text-shadow:
+      4px 4px 0 #000,
+      -4px -4px 0 #000,
+      0 0 18px rgba(252,238,10,.32);
+  }
+}
+
+/* The cyan line starts as the exact visual bridge the words morph out of. */
+#feha-link-start.is-live .feha-linkstart-title-lock::after {
+  animation:feha-link-center-pulse-098 1.12s .02s cubic-bezier(.12,.82,.16,1) forwards!important;
+}
+
+@keyframes feha-link-center-pulse-098 {
+  0%   {width:0; opacity:0}
+  12%  {width:4vw; opacity:1}
+  36%  {width:min(30vw,420px); opacity:.96}
+  70%  {width:min(60vw,850px); opacity:.78}
+  100% {width:min(70vw,980px); opacity:.50}
+}
+
+/* Keep the separation behavior from 0.10.96: same cyan hairline continues
+   outward while the black/yellow words leave left/right. */
+#feha-link-start.is-video-handoff .feha-linkstart-title-lock::after {
+  width:min(92vw,1320px)!important;
+  height:1px!important;
+  opacity:0!important;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(57,230,255,.18) 12%,
+      #a9f8ff 49.5%,
+      #ffffff 50%,
+      #a9f8ff 50.5%,
+      rgba(57,230,255,.18) 88%,
+      transparent)!important;
+  box-shadow:
+    0 0 4px rgba(57,230,255,.40),
+    0 0 10px rgba(57,230,255,.12)!important;
+}
+
+@media(max-height:820px) and (min-width:1001px) {
+  #adk-entry-gateway.feha-eg-custom .feha-eg-header h1 {
+    font-size:clamp(42px,4vw,62px)!important;
+  }
+
+  #adk-entry-gateway.feha-eg-custom .feha-eg-body::before {
+    width:118px!important;
+    height:70px!important;
+  }
+}
+
