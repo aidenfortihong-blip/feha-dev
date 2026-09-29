@@ -16,6 +16,7 @@
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
     consumables:"foundry/FEHA_CONSUMABLE_CATALOG.js",
     armor:"foundry/FEHA_ARMOR_CATALOG.js",
+    weapons:"foundry/FEHA_WEAPON_CATALOG.js",
     grenadeRuntime:"foundry/FEHA_GRENADE_RUNTIME.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
@@ -177,7 +178,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","weaponReadiness","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -261,6 +262,7 @@
     evaluate(source.grenades,files.grenades,sha);
     evaluate(source.consumables,files.consumables,sha);
     evaluate(source.armor,files.armor,sha);
+    evaluate(source.weapons,files.weapons,sha);
     evaluate(source.core,files.core,sha);
     evaluate(source.modRetirement,files.modRetirement,sha);
     evaluate(source.specialRetirement,files.specialRetirement,sha);
@@ -348,6 +350,11 @@
       game.adk?.armor ??
       null;
 
+    const weaponCatalog =
+      globalThis.FEHA_WEAPON_CATALOG ??
+      game.adk?.weapons ??
+      null;
+
     const armorRuntime =
       globalThis.FEHA_ARMOR_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("armorRuntime") ??
@@ -409,6 +416,12 @@
     requireMethods(
       "Armor Catalog",
       armorCatalog,
+      ["list","definition","migrateAll","rewriteDescription"]
+    );
+
+    requireMethods(
+      "Weapon Catalog",
+      weaponCatalog,
       ["list","definition","migrateAll","rewriteDescription"]
     );
 
@@ -485,6 +498,9 @@
     const armorDefs =
       armorCatalog.list?.() ?? [];
 
+    const weaponDefs =
+      weaponCatalog.list?.() ?? [];
+
     const quickhackDefs =
       quickhackCatalog.list?.() ?? [];
 
@@ -509,6 +525,13 @@
       );
     }
 
+    if (weaponDefs.length !== 16) {
+      throw new Error(
+        "Weapon integration expected 16 canonical DONE weapons but found "+
+        weaponDefs.length+"."
+      );
+    }
+
     if (quickhackDefs.length !== 20) {
       throw new Error(
         "Quickhack integration expected 20 canonical Quickhacks but found "+
@@ -530,6 +553,7 @@
       grenadeDefs.length+" grenades // "+
       consumableDefs.length+" consumables // "+
       armorDefs.length+" armor // "+
+      weaponDefs.length+" weapons // "+
       quickhackDefs.length+" quickhacks"
     );
 
@@ -578,6 +602,16 @@
         console.info(
           "FEHA DEV // ARMOR CATALOG CANONICALIZED",
           armorMigration
+        );
+      }
+
+      const weaponMigration =
+        await globalThis.FEHA_WEAPON_CATALOG?.migrateAll?.();
+
+      if (weaponMigration) {
+        console.info(
+          "FEHA DEV // WEAPON CATALOG CANONICALIZED",
+          weaponMigration
         );
       }
 
@@ -641,11 +675,18 @@
               globalThis.FEHA_ARMOR_CATALOG?.definition?.(document)
             );
 
+          const isWeapon =
+            document?.documentName === "Item" &&
+            Boolean(
+              globalThis.FEHA_WEAPON_CATALOG?.definition?.(document)
+            );
+
           if (
             isQuickhack ||
             isGrenade ||
             isConsumable ||
             isArmor ||
+            isWeapon ||
             app?.rendered === true
           ) {
             await Promise.resolve(app.render?.(true));
