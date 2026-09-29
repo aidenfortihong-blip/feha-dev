@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.5";
+  const VERSION = "0.11.6";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1248,6 +1248,7 @@
       return {
         scene:null,
         backgroundSrc:"",
+        aspectRatio:1,
         nodes:[],
         devices:[],
         cameras:[],
@@ -1736,6 +1737,7 @@
     return {
       scene,
       backgroundSrc,
+      aspectRatio:rw/rh,
       nodes,
       devices:networkDevices,
       cameras:cameraNodes,
@@ -1754,6 +1756,44 @@
     }).join("");
   }
 
+  function syncJackScenePlane(root) {
+    const space = root?.querySelector?.(".jack-space");
+    const world = root?.querySelector?.(".jack-world");
+    if (!space || !world) return null;
+
+    const spaceWidth = Math.max(1,space.clientWidth);
+    const spaceHeight = Math.max(1,space.clientHeight);
+    const aspect = Math.max(
+      0.01,
+      Number(world.dataset.sceneAspect) || (spaceWidth/spaceHeight)
+    );
+
+    let width = spaceWidth;
+    let height = width/aspect;
+
+    if (height > spaceHeight) {
+      height = spaceHeight;
+      width = height*aspect;
+    }
+
+    const left = (spaceWidth-width)/2;
+    const top = (spaceHeight-height)/2;
+
+    world.style.setProperty("left",left+"px","important");
+    world.style.setProperty("top",top+"px","important");
+    world.style.setProperty("right","auto","important");
+    world.style.setProperty("bottom","auto","important");
+    world.style.setProperty("width",width+"px","important");
+    world.style.setProperty("height",height+"px","important");
+
+    root.dataset.jackPlaneLeft = String(left);
+    root.dataset.jackPlaneTop = String(top);
+    root.dataset.jackPlaneWidth = String(width);
+    root.dataset.jackPlaneHeight = String(height);
+
+    return {left,top,width,height,aspect};
+  }
+
   function jackViewportState(root) {
     const number = (key,fallback) => {
       const value = Number(root?.dataset?.[key]);
@@ -1769,26 +1809,28 @@
 
   function clampJackViewport(root,state) {
     const space = root?.querySelector?.(".jack-space");
-    if (!space) return state;
+    const world = root?.querySelector?.(".jack-world");
+    if (!space || !world) return state;
 
     const width = Math.max(1,space.clientWidth);
     const height = Math.max(1,space.clientHeight);
+    const plane = syncJackScenePlane(root) ?? {
+      left:0,
+      top:0,
+      width,
+      height
+    };
+
     const zoom = Math.max(1,Math.min(3,Number(state.zoom)||1));
 
     let panX = Number(state.panX)||0;
     let panY = Number(state.panY)||0;
 
-    // Always leave real overscan around the transformed world so RMB pan works
-    // even at 100% or when zoomed out. This intentionally permits some empty
-    // margin at the edges; the map should feel like a movable tabletop.
-    const padX = Math.max(260,width*.22);
-    const padY = Math.max(180,height*.24);
+    const padX = Math.max(120,width*.12);
+    const padY = Math.max(90,height*.14);
 
-    const scaledWidth = width*zoom;
-    const scaledHeight = height*zoom;
-
-    const centeredX = (width-scaledWidth)/2;
-    const centeredY = (height-scaledHeight)/2;
+    const scaledWidth = plane.width*zoom;
+    const scaledHeight = plane.height*zoom;
 
     let minX;
     let maxX;
@@ -1796,19 +1838,19 @@
     let maxY;
 
     if (scaledWidth <= width) {
-      minX = centeredX-padX;
-      maxX = centeredX+padX;
-    } else {
-      minX = width-scaledWidth-padX;
+      minX = -padX;
       maxX = padX;
+    } else {
+      minX = width-plane.left-scaledWidth-padX;
+      maxX = -plane.left+padX;
     }
 
     if (scaledHeight <= height) {
-      minY = centeredY-padY;
-      maxY = centeredY+padY;
-    } else {
-      minY = height-scaledHeight-padY;
+      minY = -padY;
       maxY = padY;
+    } else {
+      minY = height-plane.top-scaledHeight-padY;
+      maxY = -plane.top+padY;
     }
 
     panX = Math.max(minX,Math.min(maxX,panX));
@@ -2057,13 +2099,20 @@
         ? rect.height/2
         : Number(clientY)-rect.top;
 
-    const worldX = (focusX-current.panX)/current.zoom;
-    const worldY = (focusY-current.panY)/current.zoom;
+    const world = root.querySelector(".jack-world");
+    const planeLeft = Number(world?.offsetLeft ?? 0);
+    const planeTop = Number(world?.offsetTop ?? 0);
+
+    const worldX =
+      (focusX-planeLeft-current.panX)/current.zoom;
+
+    const worldY =
+      (focusY-planeTop-current.panY)/current.zoom;
 
     setJackViewport(root,{
       zoom,
-      panX:focusX-worldX*zoom,
-      panY:focusY-worldY*zoom
+      panX:focusX-planeLeft-worldX*zoom,
+      panY:focusY-planeTop-worldY*zoom
     });
   }
 
@@ -2077,6 +2126,13 @@
 
     const width = Math.max(1,space.clientWidth);
     const height = Math.max(1,space.clientHeight);
+    const world = root.querySelector(".jack-world");
+    const plane = syncJackScenePlane(root) ?? {
+      left:0,
+      top:0,
+      width,
+      height
+    };
 
     const points = [
       ...space.querySelectorAll("[data-jack-anchor-x][data-jack-anchor-y]")
@@ -2090,8 +2146,8 @@
         Number.isFinite(point.y)
       )
       .map(point => ({
-        x:(point.x/100)*width,
-        y:(point.y/100)*height
+        x:plane.left+(point.x/100)*plane.width,
+        y:plane.top+(point.y/100)*plane.height
       }));
 
     if (!points.length) {
@@ -2129,12 +2185,14 @@
     const rect = space.getBoundingClientRect();
     const state = jackViewportState(root);
     const zoom = Math.max(1,Number(state.zoom)||1);
+    const planeLeft = Number(world.offsetLeft ?? 0);
+    const planeTop = Number(world.offsetTop ?? 0);
 
     const worldX =
-      (Number(clientX)-rect.left-state.panX)/zoom;
+      (Number(clientX)-rect.left-planeLeft-state.panX)/zoom;
 
     const worldY =
-      (Number(clientY)-rect.top-state.panY)/zoom;
+      (Number(clientY)-rect.top-planeTop-state.panY)/zoom;
 
     const clamp = (n,min,max) =>
       Math.max(min,Math.min(max,n));
@@ -2633,6 +2691,7 @@
 
     const refresh = () => {
       if (!root.isConnected) return;
+      syncJackScenePlane(root);
       layoutJackEndpointCards(root);
       setJackViewport(root,jackViewportState(root));
     };
@@ -2968,7 +3027,7 @@
       </header>
 
       <main class="jack-space ${net.nodes.length <= 2 ? "is-sparse" : ""} ${net.backgroundSrc ? "has-scene-map" : ""}" data-node-count="${net.nodes.length}" data-map="${net.backgroundSrc ? "1" : "0"}">
-        <div class="jack-world">
+        <div class="jack-world" data-scene-aspect="${Number(net.aspectRatio || 1).toFixed(8)}">
           ${net.backgroundSrc
             ? '<div class="jack-scene-map"><img draggable="false" src="'+esc(net.backgroundSrc)+'" alt=""></div>'
             : ''
