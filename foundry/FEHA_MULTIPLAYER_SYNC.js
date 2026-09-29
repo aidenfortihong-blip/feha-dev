@@ -2,7 +2,7 @@
 (() => {
   const core=globalThis.FEHA_CYBER_CORE;
   if(!core) throw new Error("FEHA_MULTIPLAYER_SYNC requires FEHA_CYBER_CORE.");
-  const VERSION="0.1.2", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
+  const VERSION="0.1.3", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
   const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000;
   const PLAYABLE=new Set(["ponyboy","derke","sasha","zach"]), pending=new Map(), hooks=[];
   let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, stockChain=Promise.resolve();
@@ -10,6 +10,7 @@
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,Number(n)||0));
   const list=c=>{if(!c)return[];if(Array.isArray(c))return c;if(Array.isArray(c.contents))return c.contents;try{return[...c]}catch{return[]}};
   const authorityGM=()=>game.users?.activeGM??list(game.users).filter(u=>u?.isGM&&u?.active).sort((a,b)=>String(a.id).localeCompare(String(b.id)))[0]??null;
+  const knownGMs=()=>list(game.users).filter(u=>u?.isGM).sort((a,b)=>String(a.id).localeCompare(String(b.id)));
   const ownerLevel=()=>Number(globalThis.CONST?.DOCUMENT_OWNERSHIP_LEVELS?.OWNER??3);
   const owns=(u,a)=>{if(!u||!a)return false;if(u.isGM)return true;try{if(typeof a.testUserPermission==="function")return a.testUserPermission(u,ownerLevel())}catch{}const o=a.ownership??a.permission??{};return Number(o[u.id]??o.default??0)>=ownerLevel()};
   function actorForUser(user,requested=null){
@@ -94,15 +95,16 @@
     }
 
     const gm=authorityGM();
-    if(!gm)throw new Error("No online GM authority is available.");
-
     const id=rid();
     const result=wait(id);
 
+    // Prefer a specifically-known active GM. If the player client's presence
+    // cache does not expose one, broadcast without gmId. Any genuinely-live GM
+    // client can claim the request; no manual approval UI is involved.
     emit("hackReq",{
       requestId:id,
       userId:game.user.id,
-      gmId:gm.id,
+      gmId:gm?.id??null,
       operatorActorId,
       quickhackItemId,
       targetTokenId,
@@ -139,7 +141,38 @@
     const openForUserFn=(u,x,o={})=>openForUser(u,x,o), openMarketForUser=(u,o={})=>openForUser(u,"market",o), openChromeForUser=(u,o={})=>openForUser(u,"chrome",o), openCyberdeckForUser=(u,o={})=>openForUser(u,"cyberdeck",o), openWalletForUser=(u,o={})=>openForUser(u,"wallet",o);
     wrappers={openMarket,openChrome,openCyberdeck,openForUser:openForUserFn,openMarketForUser,openChromeForUser,openCyberdeckForUser,openWalletForUser};if(originals.openMarket)a.openMarket=openMarket;if(originals.openChrome)a.openChrome=openChrome;if(originals.openCyberdeck)a.openCyberdeck=openCyberdeck;Object.assign(a,{openForUser:openForUserFn,openMarketForUser,openChromeForUser,openCyberdeckForUser,openWalletForUser});return true}
   async function receive(m){if(!m?.[MARK])return;const k=m.kind,p=m.payload??{};
-    if(k==="hackReq"){if(!game.user?.isGM||p.gmId!==game.user.id||authorityGM()?.id!==game.user.id)return;try{const v=validateHack(p);emit("hackRes",{requestId:p.requestId,userId:p.userId,result:await damageLocal(v.target,v.damage)})}catch(e){emit("hackRes",{requestId:p.requestId,userId:p.userId,error:String(e?.message??e)})}return}
+    if(k==="hackReq"){
+      if(!game.user?.isGM)return;
+
+      const preferred=authorityGM();
+
+      if(
+        p.gmId &&
+        String(p.gmId)!==String(game.user.id)
+      ) return;
+
+      if(
+        !p.gmId &&
+        preferred &&
+        String(preferred.id)!==String(game.user.id)
+      ) return;
+
+      try{
+        const v=validateHack(p);
+        emit("hackRes",{
+          requestId:p.requestId,
+          userId:p.userId,
+          result:await damageLocal(v.target,v.damage)
+        });
+      }catch(e){
+        emit("hackRes",{
+          requestId:p.requestId,
+          userId:p.userId,
+          error:String(e?.message??e)
+        });
+      }
+      return
+    }
     if(k==="hackRes"){if(String(p.userId??"")===String(game.user?.id??""))pending.get(p.requestId)?.(p);return}
     if(k==="marketSessionReq"){if(!game.user?.isGM||p.gmId!==game.user.id||authorityGM()?.id!==game.user.id)return;const u=game.users?.get?.(p.userId);if(u?.active)try{await writeSession({shop:p.shop,shopTier:p.shopTier,updatedBy:u.id})}catch(e){console.warn("FEHA Market session authority failed",e)}return}
     if(k==="purchaseRejected"){if(String(p.userId??"")===String(game.user?.id??""))ui.notifications?.warn?.("Market stock changed before purchase completed. "+String(p.itemName??"Item")+" was removed and refunded.");return}
@@ -147,6 +180,6 @@
   }
   function installHooks(){if(!globalThis.Hooks?.on)return;hooks.push(["updateActor",globalThis.Hooks.on("updateActor",a=>queueSurface(a?.id))]);hooks.push(["createItem",globalThis.Hooks.on("createItem",(i,_o,u)=>{queueSurface(i?.parent?.id);reconcilePurchase(i,u)})]);hooks.push(["updateItem",globalThis.Hooks.on("updateItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["deleteItem",globalThis.Hooks.on("deleteItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["updateSetting",globalThis.Hooks.on("updateSetting",s=>{const k=String(s?.key??s?._source?.key??"");if(k===NS+"."+STOCK||k.endsWith("."+STOCK))queueMarket();if(k===NS+"."+SESSION||k.endsWith("."+SESSION))void applySession()})]);hooks.push(["updateScene",globalThis.Hooks.on("updateScene",s=>void core.emit("devices:changed",{sceneId:s?.id??null,remote:true}))])}
   function removeHooks(){for(const[e,id]of hooks.splice(0))try{globalThis.Hooks.off(e,id)}catch{}}
-  const api={version:VERSION,canUseAuthority,authorityGM,actorForUser,localActor,attachUiBridges,openForUser,applyQuickhackDamage,async init(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=receive;game.socket?.on?.(CH,socketHandler);ensureSession();installHooks();if(!marketHandler){marketHandler=true;document.addEventListener("click",marketClick,true)}console.log("FEHA MULTIPLAYER SYNC",VERSION,"ready")},async destroy(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=null;for(const d of [...pending.values()])try{d.cancel?.()}catch{}pending.clear();removeHooks();if(marketHandler){marketHandler=false;document.removeEventListener("click",marketClick,true)}restore();clearTimeout(marketTimer);clearTimeout(surfaceTimer);clearTimeout(sessionTimer);if(globalThis.FEHA_MULTIPLAYER_SYNC===api)delete globalThis.FEHA_MULTIPLAYER_SYNC}};
+  const api={version:VERSION,canUseAuthority,authorityGM,knownGMs,actorForUser,localActor,attachUiBridges,openForUser,applyQuickhackDamage,async init(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=receive;game.socket?.on?.(CH,socketHandler);ensureSession();installHooks();if(!marketHandler){marketHandler=true;document.addEventListener("click",marketClick,true)}console.log("FEHA MULTIPLAYER SYNC",VERSION,"ready")},async destroy(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=null;for(const d of [...pending.values()])try{d.cancel?.()}catch{}pending.clear();removeHooks();if(marketHandler){marketHandler=false;document.removeEventListener("click",marketClick,true)}restore();clearTimeout(marketTimer);clearTimeout(surfaceTimer);clearTimeout(sessionTimer);if(globalThis.FEHA_MULTIPLAYER_SYNC===api)delete globalThis.FEHA_MULTIPLAYER_SYNC}};
   core.registerModule("multiplayerSync",api);globalThis.FEHA_MULTIPLAYER_SYNC=api;
 })();
