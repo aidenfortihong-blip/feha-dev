@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const CH = "module.flesh-enshrouded-heart-ablaze";
   const MARK = "fehaGrenadeRuntimeV1";
@@ -193,6 +193,62 @@
       x:Number(token?.x ?? 0) + (width * gridSize / 2),
       y:Number(token?.y ?? 0) + (height * gridSize / 2)
     };
+  }
+
+  function combatForActor(actor) {
+    const combat = game.combat;
+    if (!combat?.started) return null;
+
+    return list(combat.combatants)
+      .find(entry =>
+        String(entry?.actorId ?? entry?.actor?.id ?? "") ===
+        String(actor?.id ?? "")
+      )
+      ? combat
+      : null;
+  }
+
+  function bonusActionStamp(actor) {
+    const combat = combatForActor(actor);
+    if (!combat) return null;
+
+    return [
+      combat.id,
+      Number(combat.round ?? 0),
+      Number(combat.turn ?? -1)
+    ].join(":");
+  }
+
+  function assertBonusActionAvailable(actor) {
+    const stamp = bonusActionStamp(actor);
+    if (!stamp) return true;
+
+    const flags = actor?.flags?.[FLAG] ?? {};
+    const shared =
+      String(flags.bonusActionTurnStamp ?? "");
+    const legacyQuickhack =
+      String(flags.quickhackTurnStamp ?? "");
+
+    if (shared === stamp || legacyQuickhack === stamp) {
+      throw new Error(
+        "You already used your Bonus Action this turn."
+      );
+    }
+
+    return true;
+  }
+
+  async function markBonusActionUsed(actor,source="grenade") {
+    const stamp = bonusActionStamp(actor);
+    if (!stamp) return false;
+
+    await actor.update({
+      ["flags."+FLAG+".bonusActionTurnStamp"]:stamp,
+      ["flags."+FLAG+".bonusActionSource"]:
+        String(source ?? "grenade")
+    });
+
+    return true;
   }
 
   function feetBetween(scene,a,b) {
@@ -2143,6 +2199,8 @@
       throw new Error("Put the grenade on an Actor before using it.");
     }
 
+    assertBonusActionAvailable(actor);
+
     const scene = canvas?.scene ?? null;
 
     if (!scene) {
@@ -2239,8 +2297,13 @@
           center
         });
 
+      await markBonusActionUsed(
+        actor,
+        "grenade"
+      );
+
       ui.notifications?.info?.(
-        "GRENADE // "+def.name+" // DETONATED"
+        "GRENADE // "+def.name+" // DETONATED // BONUS ACTION SPENT"
       );
 
       return result;
@@ -2643,6 +2706,8 @@
     use:useItem,
     detonateCookoff,
     authorityGM,
+    assertBonusActionAvailable,
+    markBonusActionUsed,
 
     async init() {
       if (socketHandler) {
