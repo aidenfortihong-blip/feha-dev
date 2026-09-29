@@ -315,6 +315,121 @@
       );
     }
 
+    // Cross-module contract checks. These intentionally fail the hot reload
+    // before V3 opens if Grenades / Quickhacks are only partially connected.
+    const grenadeCatalog =
+      globalThis.FEHA_GRENADE_CATALOG ??
+      game.adk?.grenades ??
+      null;
+
+    const grenadeRuntime =
+      globalThis.FEHA_GRENADE_RUNTIME ??
+      globalThis.FEHA_CYBER_CORE?.module?.("grenadeRuntime") ??
+      null;
+
+    const quickhackCatalog =
+      globalThis.FEHA_QUICKHACK_CATALOG ??
+      globalThis.FEHA_CYBER_CORE?.module?.("quickhacks") ??
+      null;
+
+    const quickhackRuntime =
+      globalThis.FEHA_QUICKHACK_RUNTIME ??
+      globalThis.FEHA_CYBER_CORE?.module?.("quickhackRuntime") ??
+      null;
+
+    const quickhackAuthority =
+      globalThis.FEHA_QUICKHACK_AUTHORITY ??
+      globalThis.FEHA_CYBER_CORE?.module?.("quickhackAuthority") ??
+      null;
+
+    const requireMethods = (label,object,names) => {
+      if (!object) {
+        throw new Error(label+" is unavailable.");
+      }
+
+      const missing = names.filter(
+        name => typeof object?.[name] !== "function"
+      );
+
+      if (missing.length) {
+        throw new Error(
+          label+" contract missing: "+missing.join(", ")
+        );
+      }
+    };
+
+    requireMethods(
+      "Grenade Catalog",
+      grenadeCatalog,
+      ["list","definition","schema","migrateAll"]
+    );
+
+    requireMethods(
+      "Grenade Runtime",
+      grenadeRuntime,
+      ["isGrenade","use","detonateCookoff"]
+    );
+
+    requireMethods(
+      "Quickhack Catalog",
+      quickhackCatalog,
+      ["list","definition","ramCost","migrateAll"]
+    );
+
+    requireMethods(
+      "Quickhack Runtime",
+      quickhackRuntime,
+      ["handles","requiresTarget","prepare","execute","markTurnUsed"]
+    );
+
+    requireMethods(
+      "Quickhack Authority",
+      quickhackAuthority,
+      [
+        "listTargetItems",
+        "applyStatus",
+        "damageRoll",
+        "areaDamage",
+        "combustion",
+        "useExplosive"
+      ]
+    );
+
+    const grenadeDefs =
+      grenadeCatalog.list?.() ?? [];
+
+    const quickhackDefs =
+      quickhackCatalog.list?.() ?? [];
+
+    if (grenadeDefs.length !== 18) {
+      throw new Error(
+        "Grenade integration expected 18 canonical grenades but found "+
+        grenadeDefs.length+"."
+      );
+    }
+
+    if (quickhackDefs.length !== 20) {
+      throw new Error(
+        "Quickhack integration expected 20 canonical Quickhacks but found "+
+        quickhackDefs.length+"."
+      );
+    }
+
+    if (
+      !quickhackDefs.some(def => def?.key === "cookoff") ||
+      !grenadeDefs.some(def => def?.key === "frag-regular")
+    ) {
+      throw new Error(
+        "Grenade / Quickhack bridge identities failed postflight."
+      );
+    }
+
+    console.info(
+      "FEHA DEV // GRENADE + QUICKHACK CONTRACTS // OK // "+
+      grenadeDefs.length+" grenades // "+
+      quickhackDefs.length+" quickhacks"
+    );
+
     evaluate(source.v3,files.v3,sha);
 
     const loadedVersion =
