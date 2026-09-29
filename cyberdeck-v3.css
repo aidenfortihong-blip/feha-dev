@@ -3779,7 +3779,7 @@ body > #feha-jackin-overlay {
   inset:0;
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:fill;
   object-position:center center;
   opacity:.34;
   filter:
@@ -9583,3 +9583,16 @@ body > #feha-jackin-overlay {
 }
 
 
+
+
+/* FEHA 0.11.6 // FULL SCENE PLANE
+   JACK IN's world is now fitted to the real Foundry scene aspect ratio.
+   Any spare viewport area becomes neutral gutter instead of cropping the map. */
+#feha-jackin-overlay .jack-space {
+  background-color:#010507 !important;
+}
+
+#feha-jackin-overlay .jack-world {
+  max-width:none !important;
+  max-height:none !important;
+}
