@@ -1,8 +1,11 @@
 {
-  "version": "0.10.127",
+  "version": "0.10.128",
   "updated": "2026-09-29",
-  "scope": "quickhack-authority-backward-compat",
+  "scope": "player-safe-hotbar-reloader",
   "notes": [
+    "The existing Foundry hotbar Macro named ADK DEV LOADER / ADK DEV LOADER V3 is now intercepted client-side and redirected to the player-safe local reload function before any stale historical GM-only macro body can run.",
+    "Players no longer need the GM to edit or re-save the old world Macro just to use the reloader; other macros still execute normally.",
+    "This changes only the reloader entry point. It does not grant player clients GM permissions for world-document mutations.",
     "Fixed Quickhack authority timeout when the player client is freshly reloaded but the GM client is still running an older FEHA authority handler: requests now include a concrete known GM user id even when the player's active-GM presence cache is stale.",
     "This preserves compatibility with older handlers that reject gmId:null, avoiding silent socket drops after a player-only ADK reload.",
     "Authority timeouts now explicitly report that no GM client answered the socket request.",
