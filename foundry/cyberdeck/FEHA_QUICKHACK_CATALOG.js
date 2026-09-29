@@ -5,9 +5,9 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.1.0";
+  const VERSION = "4.2.0";
   const FLAG = "fleshEnshrouded";
-  const REWRITE = "4.1";
+  const REWRITE = "4.2";
 
   const definitions = [
     {
@@ -217,12 +217,56 @@
   }
 
   function definition(value) {
-    const name =
-      typeof value === "string"
-        ? value
-        : value?.name;
+    if (typeof value === "string") {
+      return byAlias.get(normalize(value)) ?? null;
+    }
 
-    return byAlias.get(normalize(name)) ?? null;
+    const itemFlags = value?.flags?.[FLAG] ?? {};
+    const sourcePath = String(itemFlags.sourcePath ?? "");
+    const sourceFile = (() => {
+      try {
+        const raw = sourcePath.split("/").pop() ?? "";
+        return decodeURIComponent(raw).replace(/\.[^.]+$/,"");
+      } catch {
+        return sourcePath.split("/").pop()?.replace(/\.[^.]+$/,"") ?? "";
+      }
+    })();
+
+    const candidates = [
+      value?.name,
+      itemFlags.originalLibraryName,
+      itemFlags.originalName,
+      itemFlags.displayName,
+      value?.system?.identifier,
+      sourceFile
+    ];
+
+    for (const candidate of candidates) {
+      const exact = byAlias.get(normalize(candidate));
+      if (exact) return exact;
+    }
+
+    const compactCandidates =
+      candidates
+        .map(candidate => normalize(candidate).replace(/\s+/g,""))
+        .filter(Boolean);
+
+    for (const [alias,def] of byAlias) {
+      const compactAlias = alias.replace(/\s+/g,"");
+      if (!compactAlias) continue;
+
+      if (
+        compactCandidates.some(candidate =>
+          candidate === compactAlias ||
+          candidate.includes(compactAlias) ||
+          compactAlias.includes(candidate)
+        )
+      ) {
+        return def;
+      }
+    }
+
+    return null;
   }
 
   function effectText(value) {
@@ -277,42 +321,31 @@
       Number(tier.price).toLocaleString();
 
     return (
-      '<section data-feha-qh-card="4.1" '+
-      'style="border:1px solid #29434d;background:#071016;padding:14px 15px;'+
-      'box-shadow:inset 0 0 0 1px rgba(61,220,255,.04)">'+
-
-        '<header style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;'+
-        'padding-bottom:10px;border-bottom:1px solid #29434d">'+
-          '<div>'+
-            '<small style="display:block;color:#75dfff;font-size:10px;font-weight:800;'+
-            'letter-spacing:.13em;text-transform:uppercase">'+
-              'QUICKHACK // '+escapeHtml(manufacturer)+
-            '</small>'+
-            '<h2 style="margin:3px 0 0;font-size:22px;line-height:1.05">'+
-              escapeHtml(def.name)+
-            '</h2>'+
-          '</div>'+
-          '<span style="flex:0 0 auto;border:1px solid #75dfff;color:#75dfff;'+
-          'padding:4px 8px;font-size:11px;font-weight:900;letter-spacing:.08em">'+
+      '<section data-feha-qh-card="4.2" '+
+      'style="border:1px solid #263941;background:#081015;padding:12px 14px">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;'+
+        'padding-bottom:9px;border-bottom:1px solid #263941">'+
+          '<small style="color:#79def4;font-size:10px;font-weight:900;letter-spacing:.12em">'+
+            escapeHtml(manufacturer.toUpperCase())+
+            ' // QUICKHACK'+
+          '</small>'+
+          '<strong style="color:#eefaff;font-size:12px">'+
             escapeHtml(tier.label)+
-          '</span>'+
-        '</header>'+
+          '</strong>'+
+        '</div>'+
 
-        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px">'+
-          '<span style="border:1px solid #3d4d54;background:#0d171c;padding:4px 7px;'+
-          'font-size:11px"><strong>RAM</strong> '+escapeHtml(def.ramCost)+'</span>'+
-          '<span style="border:1px solid #3d4d54;background:#0d171c;padding:4px 7px;'+
-          'font-size:11px">'+escapeHtml(tier.availability)+'</span>'+
-          '<span style="border:1px solid #6c6031;background:#17150c;color:#f1d86d;padding:4px 7px;'+
-          'font-size:11px;font-weight:800">'+escapeHtml(price)+'</span>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;align-items:center">'+
+          '<span style="font-size:12px"><strong>RAM '+escapeHtml(def.ramCost)+'</strong></span>'+
+          '<span style="color:#516872">•</span>'+
+          '<span style="font-size:12px">'+escapeHtml(tier.availability)+'</span>'+
+          '<span style="color:#516872">•</span>'+
+          '<span style="font-size:12px;color:#f2d76f;font-weight:900">'+escapeHtml(price)+'</span>'+
         '</div>'+
 
         '<div>'+
-          '<small style="display:block;color:#8ea8b4;font-size:10px;font-weight:900;'+
-          'letter-spacing:.12em;margin-bottom:4px">EFFECT</small>'+
-          '<p style="margin:0;line-height:1.45">'+
-            escapeHtml(def.effectText)+
-          '</p>'+
+          '<small style="display:block;color:#8ca2ac;font-size:10px;font-weight:900;'+
+          'letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
+          '<p style="margin:0;line-height:1.48">'+escapeHtml(def.effectText)+'</p>'+
         '</div>'+
       '</section>'
     );
@@ -373,6 +406,13 @@
 
     if (Number(flags.priceCredits) !== Number(tier.price)) {
       update[`flags.${FLAG}.priceCredits`] = Number(tier.price);
+    }
+
+    if (
+      item.system?.price &&
+      Number(item.system.price.value) !== Number(tier.price)
+    ) {
+      update["system.price.value"] = Number(tier.price);
     }
 
     if (flags.availability !== tier.availability) {
