@@ -3779,7 +3779,8 @@ body > #feha-jackin-overlay {
   inset:0;
   width:100%;
   height:100%;
-  object-fit:fill;
+  object-fit:cover;
+  object-position:center center;
   opacity:.34;
   filter:
     saturate(.38)
@@ -9582,19 +9583,3 @@ body > #feha-jackin-overlay {
 }
 
 
-/* FEHA 0.11.4 // JACK IN PORTRAIT ASPECT RATIO */
-/* Never stretch/crop actor art into the JACK IN square frames.
-   The frame can stay square, but the source portrait keeps its native aspect ratio. */
-#feha-jackin-overlay .jack-world .jack-node img,
-#feha-jackin-overlay .jack-world .jack-operator img,
-#feha-jackin-overlay .jack-lock-portrait {
-  object-fit: contain !important;
-  object-position: center center !important;
-  background: #020405 !important;
-}
-
-/* Explicitly neutralize any legacy image scaling that could distort portraits. */
-#feha-jackin-overlay .jack-world .jack-node img,
-#feha-jackin-overlay .jack-world .jack-operator img {
-  aspect-ratio: auto !important;
-}
