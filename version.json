@@ -1,12 +1,14 @@
 {
-  "version": "0.11.18",
+  "version": "0.11.19",
   "updated": "2026-09-29",
-  "scope": "grenades-are-bonus-actions",
+  "scope": "canonical-consumable-catalog",
   "notes": [
-    "All 18 physical grenades are now canonical Bonus Actions. Grenade migration writes FEHA actionType=bonus / bonusAction=true, exposes Bonus Action in grenadeSchema, updates compatible dnd5e activation data, and displays BONUS ACTION on grenade cards.",
-    "Grenade runtime 1.2.0 enforces one shared Bonus Action per combat turn and only spends it after a grenade successfully detonates; cancelling placement or a failed grenade request does not spend it.",
-    "Quickhack runtime 1.1.0 now shares the same bonusActionTurnStamp with grenades while preserving the legacy quickhackTurnStamp for compatibility.",
-    "A character can use a normal Action plus either a grenade or a Quickhack in the same turn, but cannot use both a grenade and a Quickhack in that turn under the default one-Bonus-Action economy.",
-    "Cookoff does not spend the victim's Bonus Action: the operator's Quickhack is the Bonus Action, and the carried grenade detonates through the grenade runtime as the Quickhack effect."
+    "Rebuilt all 24 legacy consumables into a canonical catalog with readable product names, simple low-maintenance effects, and world-sensible pricing.",
+    "The 14 Medium Quality Drink placeholders are now ordinary branded drinks priced roughly €$5–12 instead of weapon-tier prices.",
+    "Consumables are evenly organized as three products per company across Kurohane Group, Bastion Strategic, Lumen Optics, Vektor Dynamics, Helix Vitae, ForgeLine Industries, Jade Arc Systems, and Corvus Neural.",
+    "Company identity is kept simple: Kurohane stealth, Bastion temp HP, Lumen accuracy, Vektor paired small buffs, Helix healing/speed, ForgeLine Strength, Jade Arc EMP/lightning protection, and Corvus RAM/neural capacity.",
+    "Specialized boosters remain modestly priced professional goods; Corvus Neural Adaptation Kit is a €$2,500 restricted permanent medical enhancement rather than a normal drink.",
+    "GM migration creates missing company folders under 06 — CONSUMABLES, moves world items into the correct folders, renames them, fixes manufacturer/company metadata, updates effects, Mk, availability, prices, identifiers, and refreshes open sheets.",
+    "Consumable cards now show BONUS ACTION IN COMBAT and 1 USE, but this pass deliberately avoids adding complicated new consumable runtime subsystems."
   ]
 }
