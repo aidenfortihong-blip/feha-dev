@@ -2260,6 +2260,25 @@
     if (!globalThis.Hooks?.on) return;
 
     hooks.push([
+      "dnd5e.preUseItem",
+      globalThis.Hooks.on(
+        "dnd5e.preUseItem",
+        item => {
+          if (!isGrenade(item)) return true;
+
+          void api.use(item).catch(error => {
+            console.error("FEHA GRENADE // use failed",error);
+            ui.notifications?.error?.(
+              "Grenade use failed: "+String(error?.message ?? error)
+            );
+          });
+
+          return false;
+        }
+      )
+    ]);
+
+    hooks.push([
       "updateCombat",
       globalThis.Hooks.on(
         "updateCombat",
