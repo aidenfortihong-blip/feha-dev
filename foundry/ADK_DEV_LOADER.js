@@ -438,6 +438,22 @@
       );
     }
 
+    // Show the authority confirmation at the END of the loader, after V3 has
+    // finished initializing and posting its own readiness notifications. The
+    // earlier init-time toast could be visually buried by later startup toasts.
+    if (qhAuthorityModule) {
+      const qhAuthorityVersion =
+        String(qhAuthorityModule.version ?? "UNKNOWN");
+
+      setTimeout(
+        () => ui?.notifications?.info?.(
+          "FEHA // QUICKHACK AUTHORITY ONLINE // v" +
+          qhAuthorityVersion
+        ),
+        350
+      );
+    }
+
     console.log(
       "FEHA DEV integrity pass:",
       {
