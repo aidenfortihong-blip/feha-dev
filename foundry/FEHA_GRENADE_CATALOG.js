@@ -12,7 +12,6 @@
   const COMPANY_ORDER = [
     "Kurohane Group",
     "Bastion Strategic",
-    "Lumen Optics",
     "Vektor Dynamics",
     "Helix Vitae",
     "ForgeLine Industries",
