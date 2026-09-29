@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.9";
+  const VERSION = "0.11.10";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1402,6 +1402,9 @@
       x:operatorPos.x,
       y:operatorPos.y,
       tokenId:operatorToken?.id ?? null,
+      img:
+        String(operatorToken?.texture?.src ?? "").trim() ||
+        portrait(actor),
       tokenWidthPct:(operatorPixelWidth/rw)*100,
       tokenHeightPct:(operatorPixelHeight/rh)*100,
       tokenPixelWidth:operatorPixelWidth,
@@ -1840,7 +1843,7 @@
       height
     };
 
-    const zoom = Math.max(1,Math.min(3,Number(state.zoom)||1));
+    const zoom = Math.max(1,Math.min(2,Number(state.zoom)||1));
 
     let panX = Number(state.panX)||0;
     let panY = Number(state.panY)||0;
@@ -2076,7 +2079,7 @@
 
     const rect = space.getBoundingClientRect();
     const current = jackViewportState(root);
-    const zoom = Math.max(1,Math.min(3,Number(nextZoom)||1));
+    const zoom = Math.max(1,Math.min(2,Number(nextZoom)||1));
 
     const focusX =
       clientX == null
@@ -3048,7 +3051,7 @@
             data-token-screen-height="${Number(net.operator.tokenScreenHeight||0).toFixed(3)}">
             <div></div>
             <div class="jack-operator-hub">${operatorPorts}</div>
-            <img src="${esc(portrait(actor))}" alt="">
+            <img src="${esc(net.operator.img || portrait(actor))}" alt="">
             <span><small>OPERATOR CORE</small><b>${esc(actor.name)}</b></span>
           </div>
 
@@ -3943,14 +3946,14 @@
 
       if (action === "zoom-in") {
         const state = jackViewportState(root);
-        zoomJackAt(root,state.zoom*1.18);
+        zoomJackAt(root,state.zoom*1.12);
         globalThis.FEHA_SOUNDS?.play?.("select",{cooldown:70});
         return;
       }
 
       if (action === "zoom-out") {
         const state = jackViewportState(root);
-        zoomJackAt(root,state.zoom*.84);
+        zoomJackAt(root,state.zoom*.89);
         globalThis.FEHA_SOUNDS?.play?.("select",{cooldown:0});
         return;
       }
