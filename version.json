@@ -1,8 +1,12 @@
 {
-  "version": "0.10.125",
+  "version": "0.10.126",
   "updated": "2026-09-29",
-  "scope": "player-safe-local-adk-reloader",
+  "scope": "quickhack-no-unnecessary-gm-dependency",
   "notes": [
+    "Quickhack damage now attempts the target Actor update locally first, so a player who already has sufficient Foundry ownership no longer requires any GM/DM client or authority route.",
+    "If Foundry actually rejects the local HP write for permissions, the Quickhack falls back to silent GM authority routing; there is still no approval dialog.",
+    "Player clients no longer hard-fail solely because game.users.activeGM is empty/stale: Quickhack authority requests can broadcast to the module socket and be claimed by a live GM client.",
+    "A truly unowned NPC with no live GM remains subject to Foundry's server permission model; the client does not fabricate or bypass server permissions.",
     "ADK reloading is now explicitly client-local and player-safe: every connected user gets game.adk.reload(), game.adk.reloadDev(), game.adk.reloadCurrentClient(), and FEHA_ADK_RELOAD with no GM/DM authority check.",
     "A reload refreshes only the invoking browser client's FEHA runtime; it does not request GM approval and does not grant the player GM world-write permissions.",
     "FEHA_CLIENT_BOOTSTRAP now installs the local reload API and reuses the same validated repo loader path for both initial boot and manual client reloads.",
