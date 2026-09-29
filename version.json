@@ -1,8 +1,15 @@
 {
-  "version": "0.10.133",
+  "version": "0.10.134",
   "updated": "2026-09-29",
-  "scope": "quickhack-5e-copy-and-economy",
+  "scope": "quickhack-silent-authority-module",
   "notes": [
+    "Added FEHA_QUICKHACK_AUTHORITY: a dedicated validated player-to-GM execution bridge for Quickhack mutations. Players keep normal Foundry permissions while the active GM client silently performs allowlisted Quickhack changes.",
+    "Quickhack damage no longer creates GM APPLY DAMAGE / DENY chat approval cards. The player's existing damage application now routes through silent GM authority and resolves without a second GM click.",
+    "Multiplayer Sync 0.3.0 delegates Quickhack damage to the authority module and no longer installs the Quickhack approval-card click handler or approval-message settlement hook.",
+    "The authority module validates the requesting user, owned/assigned operator, loaded Quickhack, target scene/token/actor, and operation before changing any GM-owned document.",
+    "The first authority operations are damage plus future-facing sanitized target item listing, Chrome Lock equip-state changes, and Dead Trigger BROKEN renaming. Item operations are hard-restricted to their matching canonical Quickhack.",
+    "Dead Trigger's authority operation renames a selected firearm to BROKEN // <original name> and records the original name; it does not apply a status effect.",
+    "Player UI wording now says APPLYING DAMAGE rather than AWAITING GM APPROVAL.",
     "Rewrote all 20 Quickhack descriptions into D&D-style ability language: explicit action/reaction timing, target selection, saving-throw phrasing, durations, and resolution order while preserving the 0.10.132 mechanics.",
     "Raised Quickhack market prices substantially while keeping the same Mk balance: Mk.I €$2,500; Mk.II €$6,000; Mk.III €$15,000; Mk.IV €$35,000; Mk.V €$80,000.",
     "The catalog migration marker is now 3.1 so world items and owned copies refresh to the new wording and prices on GM load.",
