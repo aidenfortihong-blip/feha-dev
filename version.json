@@ -1,8 +1,10 @@
 {
-  "version": "0.11.0",
+  "version": "0.11.1",
   "updated": "2026-09-29",
-  "scope": "quickhack-runtime",
+  "scope": "quickhack-card-cleanup",
   "notes": [
-    "Quickhack runtime implementation build."
+    "Quickhack item descriptions are rebuilt into one compact canonical card instead of layering new balance data onto the old ADK Patch 10.2 description.",
+    "Removed duplicate Final Balance blocks, patch labels, repeated market/effect text, and stale legacy presentation from Quickhack descriptions.",
+    "Cards now show only manufacturer, canonical Quickhack name, Mk, RAM, availability, price, and the finalized effect."
   ]
 }
