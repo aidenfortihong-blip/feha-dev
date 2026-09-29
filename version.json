@@ -1,11 +1,11 @@
 {
-  "version": "0.11.7",
+  "version": "0.11.8",
   "updated": "2026-09-29",
-  "scope": "jack-in-native-token-size-floor",
+  "scope": "jack-in-fixed-actor-size",
   "notes": [
-    "JACK IN actor cards now have a hard minimum equal to each token's real Foundry pixel footprint, so fitting the full scene cannot shrink an actor below its original token size.",
-    "The operator uses the same native-token minimum.",
-    "Actor centers remain locked to their exact scene coordinates; only the visual card footprint grows, preserving alignment with the scene, traces, devices and cameras.",
-    "Existing zoom compensation remains active so actor cards stay readable while the fitted scene zooms and pans."
+    "JACK IN actor portraits are now fixed at 96px screen-space size and never grow or shrink with scene fitting, token dimensions, zoom, or pan.",
+    "The operator/user portrait uses the same fixed 96px screen-space size.",
+    "Actor and operator positions remain anchored to their exact scene coordinates, preserving alignment with the full-scene background, traces, devices, and cameras.",
+    "No Quickhack mechanics changed."
   ]
 }
