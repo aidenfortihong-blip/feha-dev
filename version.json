@@ -1,8 +1,15 @@
 {
-  "version": "0.10.129",
+  "version": "0.10.130",
   "updated": "2026-09-29",
-  "scope": "quickhack-chat-approval",
+  "scope": "quickhack-catalog-rewrite-v2",
   "notes": [
+    "Rewrote the full 20-item Quickhack catalog into a single canonical FEHA_QUICKHACK_CATALOG module so RAM/effect definitions are no longer scattered across stale item descriptions.",
+    "Blind is now full Blinded for 1 turn unless the target has blindsense; Brain Melt is 10d6 psychic; Breach Protocol opens a locked networked door; Comms Call In taps a failed-Wisdom target's comms; Comms Noise Deafens for 2 turns and blocks comms.",
+    "Contagion is now an instantaneous placeable 10-ft gas burst for 8d6 poison; EMP Overload is 12d12 lightning with failed-save reaction loss; Grenade Explode has no save and uses the explosive's own damage/radius; Locomotion Malfunction is legs-only with no save.",
+    "Overheat Program is renamed Combustion Program: 10d6 immediate fire, with a 5d6 fire death-burst in 10 ft. Ping reveals network devices plus cyberware-equipped hostiles. Suicide and System Collapse no longer have per-target combat limits.",
+    "Generic Program is now a reaction-style forced lower reroll plus advantage rider; Memory Wipe erases the previous minute after an operator-chosen save; Take Control uses a Charisma save for up to 1 minute with vision sharing and ends after a hostile/damaging action.",
+    "System Collapse RAM is now 6; Take Control RAM is 6; Weapon Malfunction RAM is 5 and permanently breaks one wielded firearm until repaired. Other Quickhack RAM values remain at their current balanced values unless explicitly changed.",
+    "GM load now migrates both world-catalog and already-owned actor Quickhack copies to the canonical names/effectText/RAM values while preserving surrounding item-sheet/market markup.",
     "Player Quickhack damage now uses a GM chat approval card instead of automatic socket authority: player clicks APPLY DAMAGE, GM clicks APPLY DAMAGE in chat, and the HP update happens on the GM client.",
     "Approval cards are whispered to GM users plus the requester and include APPLY DAMAGE / DENY; resolved cards replace themselves with the final HP change and approving GM name.",
     "The player Quickhack panel shows AWAITING GM APPROVAL while pending. Denial, approval errors, or the 10-minute expiry feed the existing failure path so committed RAM is refunded.",
