@@ -269,9 +269,17 @@
       null;
 
     if (qhAuthorityModule) {
+      const qhAuthorityVersion =
+        String(qhAuthorityModule.version ?? "UNKNOWN");
+
       console.info(
         "FEHA DEV // QUICKHACK AUTHORITY // LOADED // v" +
-        String(qhAuthorityModule.version ?? "UNKNOWN")
+        qhAuthorityVersion
+      );
+
+      ui?.notifications?.info?.(
+        "FEHA // QUICKHACK AUTHORITY ONLINE // v" +
+        qhAuthorityVersion
       );
     }
 
