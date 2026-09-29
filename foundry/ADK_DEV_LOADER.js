@@ -321,6 +321,21 @@
       );
     }
 
+    // Run one final canonical Quickhack migration after the entire build is
+    // installed. This prevents legacy world-item descriptions/prices/names
+    // from surviving when older ADK data was already present in the world.
+    if (isGM) {
+      const quickhackMigration =
+        await globalThis.FEHA_QUICKHACK_CATALOG?.migrateAll?.();
+
+      if (quickhackMigration) {
+        console.info(
+          "FEHA DEV // QUICKHACK CATALOG CANONICALIZED",
+          quickhackMigration
+        );
+      }
+    }
+
     await globalThis.FEHA_MULTIPLAYER_SYNC?.attachUiBridges?.();
 
     const reloadLocalClient = async () => {
