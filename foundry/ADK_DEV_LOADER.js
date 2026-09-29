@@ -16,6 +16,7 @@
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
     grenadeRuntime:"foundry/FEHA_GRENADE_RUNTIME.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
+    modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
     quickhackRuntime:"foundry/cyberdeck/FEHA_QUICKHACK_RUNTIME.js",
@@ -170,7 +171,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","core","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","core","modRetirement","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -253,6 +254,7 @@
     evaluate(source.baseJs,files.baseJs,sha);
     evaluate(source.grenades,files.grenades,sha);
     evaluate(source.core,files.core,sha);
+    evaluate(source.modRetirement,files.modRetirement,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
@@ -290,6 +292,7 @@
     }
 
     const requiredModules = [
+      "modRetirement",
       "grenadeRuntime",
       "quickhacks",
       "quickhackAuthority",
