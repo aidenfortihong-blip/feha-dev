@@ -1,10 +1,12 @@
 {
-  "version": "0.11.1",
+  "version": "0.11.2",
   "updated": "2026-09-29",
-  "scope": "quickhack-card-cleanup",
+  "scope": "quickhack-canonical-card-and-data-fix",
   "notes": [
-    "Quickhack item descriptions are rebuilt into one compact canonical card instead of layering new balance data onto the old ADK Patch 10.2 description.",
-    "Removed duplicate Final Balance blocks, patch labels, repeated market/effect text, and stale legacy presentation from Quickhack descriptions.",
-    "Cards now show only manufacturer, canonical Quickhack name, Mk, RAM, availability, price, and the finalized effect."
+    "Quickhack descriptions are now a single compact card with no repeated title, category, patch label, legacy market section, or Final Balance block.",
+    "Canonical tier prices are enforced in FEHA item data and mirrored into dnd5e system price when that field exists: Mk.I €$2,500; Mk.II €$6,000; Mk.III €$15,000; Mk.IV €$35,000; Mk.V €$80,000.",
+    "Quickhack lookup now recognizes old names, original library names, identifiers, and source filenames so legacy world items are renamed/migrated reliably.",
+    "The loader forces a final GM-side Quickhack migration after V3 installation so stale world and owned copies cannot keep old cards/prices/names.",
+    "All 20 canonical Quickhacks have runtime handlers; DM-run effects remain chat/manual by design, while automatic effects use the silent authority layer."
   ]
 }
