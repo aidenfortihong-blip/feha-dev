@@ -1,8 +1,14 @@
 {
-  "version": "0.10.131",
+  "version": "0.10.132",
   "updated": "2026-09-29",
-  "scope": "quickhack-copy-cleanup",
+  "scope": "quickhack-names-mk-rebalance",
   "notes": [
+    "Renamed all 20 Quickhacks into concise in-world software names and rebalanced Mk tier, RAM cost, price, and availability around their rewritten effects.",
+    "Mk.I now covers narrow utility (Ghost Key, Wiretap); Mk.II covers tactical utility/control (Dead Air, Chrome Lock, Motor Lock, Network Sweep, Lure); Mk.III covers reliable combat/control tools (Optic Zero, Cookoff, Frenzy, Blank Slate, Dead Trigger).",
+    "Mk.IV now contains elite encounter-shaping hacks (Synapse Burn, Toxic Bloom, Rollback, Self-Terminate, System Collapse); Mk.V is reserved for the most extreme effects (Arc Overload, Combustion, Puppet Wire).",
+    "RAM was rebalanced with effect strength and reliability: no-save control/AoE and encounter-defining effects cost substantially more, while narrow utility was reduced.",
+    "Quickhack migration now updates world items and owned copies with canonical name, Mk/rating/tier, RAM, price, availability, tier identity, effect text, and visible item-description labels.",
+    "V3 Quickhack resolution now prefers canonical catalog metadata for save and damage parsing so natural player-facing wording cannot break damage/save resolution.",
     "Reworded the rewritten Quickhack effects to read like natural ability text instead of designer notes. Mechanical metadata such as save bypasses remains internal rather than being printed as phrases like 'No save.'",
     "Quickhack mechanics and RAM costs from 0.10.130 are unchanged; this pass only cleans the player-facing wording and bumps the rewrite marker so existing world and owned copies are refreshed.",
     "Rewrote the full 20-item Quickhack catalog into a single canonical FEHA_QUICKHACK_CATALOG module so RAM/effect definitions are no longer scattered across stale item descriptions.",
