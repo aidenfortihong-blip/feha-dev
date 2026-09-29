@@ -1,10 +1,10 @@
 {
-  "version": "0.11.3",
+  "version": "0.11.4",
   "updated": "2026-09-29",
-  "scope": "hot-reload-ui-refresh",
+  "scope": "jack-in-portrait-aspect-ratio",
   "notes": [
-    "After Quickhack catalog migration, open Foundry document sheets/apps are forced to rerender so renamed items, cleaned descriptions, RAM, Mk and prices appear immediately without a browser refresh.",
-    "If the Cyberdeck/JACK IN UI is open, V3 is explicitly rerendered after migration as well.",
-    "No Quickhack balance or mechanics changed."
+    "JACK IN actor portraits, operator portrait, and target-lock portrait now preserve their native image aspect ratio with object-fit: contain.",
+    "Square cyberdeck frames remain unchanged, but character art is no longer cropped or visually squashed to fill them.",
+    "No Quickhack mechanics changed."
   ]
 }
