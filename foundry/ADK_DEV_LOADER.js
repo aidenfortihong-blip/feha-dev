@@ -367,7 +367,13 @@
     requireMethods(
       "Grenade Runtime",
       grenadeRuntime,
-      ["isGrenade","use","detonateCookoff"]
+      [
+        "isGrenade",
+        "use",
+        "detonateCookoff",
+        "assertBonusActionAvailable",
+        "markBonusActionUsed"
+      ]
     );
 
     requireMethods(
