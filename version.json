@@ -1,14 +1,15 @@
 {
-  "version": "0.11.23",
+  "version": "0.11.24",
   "updated": "2026-09-29",
-  "scope": "full-market-catalog-normalization",
+  "scope": "weapon-readiness-market-gate",
   "notes": [
-    "Normalized grenades, consumables, and Quickhacks to the same explicit Market contract already used by canonical armor.",
-    "All 18 grenades now write curatedCatalogV10=true, catalogEnabled=true, sourceCategory=Grenades, shopType=arms, canonical Market category, and canonical Market price metadata.",
-    "All 24 consumables now write curatedCatalogV10=true, catalogEnabled=true, sourceCategory=Consumables, shopType=street, canonical Market category, and canonical Market price metadata.",
-    "All 20 Quickhacks now write curatedCatalogV10=true, catalogEnabled=true, sourceCategory=Quickhacks, shopType=net, canonical Market category, and canonical Market price metadata.",
-    "Grenade, consumable, Quickhack, and armor descriptions all display their canonical prices, while Market purchasing reads the same priceCredits value.",
-    "Native Foundry item prices are synchronized with canonical Market prices so sheet price and Market price cannot drift.",
-    "These categories no longer need to depend on legacy folder or source-path detection to qualify for Market catalog inclusion."
+    "Added DONE and NOT DONE subfolders beneath every manufacturer folder in 01 — WEAPONS.",
+    "Exactly 16 approved weapons are treated as finished and Market-ready: Breachhound, Crusher, Hexburst, Igla, Lexington, Liberty, Overture, Saratoga, Tactician, Umbra, Unity, Warwake, Ashura, Dian, Kyokokukamusari, and Masamune.",
+    "The 12 approved Bastion weapons remain under Bastion and the 4 approved Corvus weapons remain under Corvus, now inside each manufacturer's DONE folder.",
+    "Every other weapon and variant in the curated weapon tree is moved to its parent manufacturer's NOT DONE folder.",
+    "NOT DONE weapons are changed to sourceCategory=Weapons_Unfinished, catalogEnabled=false, curatedCatalogV10=false, marketReady=false, and shopType=none so the existing Market cannot catalog them.",
+    "DONE weapons are normalized to sourceCategory=Weapons, catalogEnabled=true, curatedCatalogV10=true, marketReady=true, and shopType=arms.",
+    "Persistent Market stock is scrubbed of unfinished weapon IDs, and a live Market DOM guard prevents stale in-memory stock from displaying or purchasing unfinished weapons until the Market is freshly reloaded.",
+    "If the Market is open while the GM runs the loader, the current vendor stock is rerolled immediately against the new completion gate."
   ]
 }
