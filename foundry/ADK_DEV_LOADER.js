@@ -22,6 +22,7 @@
     specialRetirement:"foundry/FEHA_SPECIAL_RETIREMENT.js",
     armorRuntime:"foundry/FEHA_ARMOR_RUNTIME.js",
     lumenRetirement:"foundry/FEHA_LUMEN_RETIREMENT.js",
+    weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
     quickhackRuntime:"foundry/cyberdeck/FEHA_QUICKHACK_RUNTIME.js",
@@ -265,6 +266,7 @@
     evaluate(source.specialRetirement,files.specialRetirement,sha);
     evaluate(source.armorRuntime,files.armorRuntime,sha);
     evaluate(source.lumenRetirement,files.lumenRetirement,sha);
+    evaluate(source.weaponReadiness,files.weaponReadiness,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
@@ -306,6 +308,7 @@
       "specialRetirement",
       "armorRuntime",
       "lumenRetirement",
+      "weaponReadiness",
       "grenadeRuntime",
       "quickhacks",
       "quickhackAuthority",
@@ -348,6 +351,11 @@
     const armorRuntime =
       globalThis.FEHA_ARMOR_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("armorRuntime") ??
+      null;
+
+    const weaponReadiness =
+      globalThis.FEHA_WEAPON_READINESS ??
+      globalThis.FEHA_CYBER_CORE?.module?.("weaponReadiness") ??
       null;
 
     const grenadeRuntime =
@@ -415,6 +423,21 @@
         "adjustDamage"
       ]
     );
+
+    requireMethods(
+      "Weapon Readiness",
+      weaponReadiness,
+      ["isDoneWeapon","migrate"]
+    );
+
+    if (
+      !Array.isArray(weaponReadiness.doneNames) ||
+      weaponReadiness.doneNames.length !== 16
+    ) {
+      throw new Error(
+        "Weapon Readiness expected exactly 16 approved Market weapons."
+      );
+    }
 
     requireMethods(
       "Grenade Runtime",
