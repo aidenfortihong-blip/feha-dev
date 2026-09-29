@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_GRENADE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "2.0.2";
-  const REWRITE = "2.2";
+  const VERSION = "2.1.0";
+  const REWRITE = "2.3";
   const FLAG = "fleshEnshrouded";
 
   const definitions = [
@@ -267,6 +267,8 @@
             Number(def.price).toLocaleString()+
           '</span>'+
           '<span style="color:#516872">•</span>'+
+          '<span style="font-size:12px;color:#7ee6ff !important;font-weight:900">BONUS ACTION</span>'+
+          '<span style="color:#516872">•</span>'+
           '<span style="font-size:12px;color:#aebfc6 !important">1 USE</span>'+
         '</div>'+
         '<div style="color:#dce8ec !important">'+
@@ -311,6 +313,12 @@
     if (flags.availability !== def.availability) {
       update[`flags.${FLAG}.availability`] = def.availability;
     }
+    if (flags.actionType !== "bonus") {
+      update[`flags.${FLAG}.actionType`] = "bonus";
+    }
+    if (flags.bonusAction !== true) {
+      update[`flags.${FLAG}.bonusAction`] = true;
+    }
     if (flags.grenadeRewriteVersion !== REWRITE) {
       update[`flags.${FLAG}.grenadeRewriteVersion`] = REWRITE;
     }
@@ -319,6 +327,8 @@
       version:REWRITE,
       key:def.key,
       delivery:def.delivery,
+      actionType:"bonus",
+      bonusAction:true,
       ...def.schema
     };
 
@@ -338,6 +348,21 @@
       Number(item.system.price.value) !== def.price
     ) {
       update["system.price.value"] = def.price;
+    }
+
+    if (
+      item.system?.activation &&
+      String(item.system.activation.type ?? "") !== "bonus"
+    ) {
+      update["system.activation.type"] = "bonus";
+      if (
+        Object.prototype.hasOwnProperty.call(
+          item.system.activation,
+          "cost"
+        )
+      ) {
+        update["system.activation.cost"] = 1;
+      }
     }
 
     if (
