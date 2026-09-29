@@ -12,6 +12,8 @@
   const DONE_NAME = "DONE";
   const NOT_DONE_NAME = "NOT DONE";
   const STOCK_KEY = "adkMarketStockV16";
+  let marketObserver = null;
+  let marketClickGuard = null;
 
   // Canonical finished weapons approved for the Market.
   // Exact normalized names only: variants/suffixed editions remain NOT DONE.
@@ -253,6 +255,126 @@
     return removed;
   }
 
+  function marketEligible(item) {
+    if (!item || item.type !== "weapon") return true;
+    return item.flags?.[FLAG]?.marketReady === true;
+  }
+
+  function itemIdFromMarketNode(node) {
+    return String(
+      node?.dataset?.buyItem ??
+      node?.dataset?.openItem ??
+      ""
+    );
+  }
+
+  function guardMarketDom() {
+    const root =
+      document.getElementById("adk-market-15");
+
+    if (!root) return;
+
+    const cards =
+      new Set(
+        [
+          ...root.querySelectorAll("[data-buy-item]"),
+          ...root.querySelectorAll("[data-open-item]")
+        ]
+          .map(node => node.closest(".item-card"))
+          .filter(Boolean)
+      );
+
+    for (const card of cards) {
+      const node =
+        card.querySelector("[data-buy-item]") ??
+        card.querySelector("[data-open-item]");
+
+      const id = itemIdFromMarketNode(node);
+      const item = game.items?.get?.(id) ?? null;
+
+      if (
+        item?.type === "weapon" &&
+        !marketEligible(item)
+      ) {
+        card.remove();
+      }
+    }
+  }
+
+  function installMarketGuard() {
+    if (marketObserver || marketClickGuard) return;
+
+    marketClickGuard = event => {
+      const node =
+        event.target?.closest?.(
+          "#adk-market-15 [data-buy-item],"+
+          "#adk-market-15 [data-open-item]"
+        ) ??
+        null;
+
+      if (!node) return;
+
+      const item =
+        game.items?.get?.(
+          itemIdFromMarketNode(node)
+        ) ??
+        null;
+
+      if (
+        item?.type !== "weapon" ||
+        marketEligible(item)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      ui.notifications?.warn?.(
+        "That weapon is still marked NOT DONE and is unavailable in the Market."
+      );
+    };
+
+    document.addEventListener(
+      "click",
+      marketClickGuard,
+      true
+    );
+
+    marketObserver =
+      new MutationObserver(() => {
+        queueMicrotask(guardMarketDom);
+      });
+
+    marketObserver.observe(
+      document.body,
+      {
+        childList:true,
+        subtree:true
+      }
+    );
+
+    guardMarketDom();
+  }
+
+  function removeMarketGuard() {
+    try {
+      marketObserver?.disconnect?.();
+    } catch {}
+
+    marketObserver = null;
+
+    if (marketClickGuard) {
+      document.removeEventListener(
+        "click",
+        marketClickGuard,
+        true
+      );
+    }
+
+    marketClickGuard = null;
+  }
+
   async function migrate() {
     if (!game.user?.isGM) {
       return {
@@ -344,8 +466,19 @@
       ).length;
 
     try {
-      globalThis.ADKMarket?.refresh?.();
+      const reroll =
+        document.querySelector(
+          "#adk-market-15 #reroll-stock"
+        );
+
+      if (reroll && game.user?.isGM) {
+        reroll.click();
+      } else {
+        globalThis.ADKMarket?.refresh?.();
+      }
     } catch {}
+
+    guardMarketDom();
 
     const result = {
       skipped:false,
@@ -396,12 +529,15 @@
       game.adk ??= {};
       game.adk.weaponReadiness = api;
 
+      installMarketGuard();
+
       if (game.user?.isGM) {
         await migrate();
       }
     },
 
     async destroy() {
+      removeMarketGuard();
       if (game?.adk?.weaponReadiness === api) {
         delete game.adk.weaponReadiness;
       }
