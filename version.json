@@ -1,10 +1,10 @@
 {
-  "version": "0.11.4",
+  "version": "0.11.5",
   "updated": "2026-09-29",
-  "scope": "jack-in-portrait-aspect-ratio",
+  "scope": "jack-in-scene-aspect-ratio",
   "notes": [
-    "JACK IN actor portraits, operator portrait, and target-lock portrait now preserve their native image aspect ratio with object-fit: contain.",
-    "Square cyberdeck frames remain unchanged, but character art is no longer cropped or visually squashed to fill them.",
-    "No Quickhack mechanics changed."
+    "JACK IN scene background now uses object-fit: cover instead of object-fit: fill, so the scene keeps its natural aspect ratio instead of being stretched/compressed.",
+    "Scene background is centered with object-position: center center.",
+    "Reverted the unrelated 0.11.4 actor portrait contain override; actor portrait behavior is back to the prior design."
   ]
 }
