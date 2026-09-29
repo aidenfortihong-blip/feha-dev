@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.0";
-  const REWRITE = "1.0";
+  const VERSION = "1.1.0";
+  const REWRITE = "1.1";
   const FLAG = "fleshEnshrouded";
 
   const definitions = [
@@ -436,7 +436,48 @@
     };
   }
 
+  function diceParts(formula) {
+    const match = String(formula ?? "").match(/^(\d+)d(\d+)$/i);
+    return match
+      ? {
+          count:Number(match[1]),
+          die:Number(match[2])
+        }
+      : {
+          count:null,
+          die:null
+        };
+  }
+
+  function groupProfile(def) {
+    if (def.company === "Bastion Strategic") {
+      return {
+        role:"Tactical Assault",
+        weight:"medium-heavy",
+        magazine:"medium",
+        caliber:"medium to heavy",
+        damage:"high",
+        fireRate:"high",
+        energy:false,
+        special:"measured military firepower without ForgeLine immobility"
+      };
+    }
+
+    return {
+      role:"Neural Interface",
+      weight:"light to medium",
+      magazine:"small to medium",
+      caliber:"small to medium",
+      damage:"medium",
+      fireRate:"medium",
+      energy:false,
+      special:"smart and neural-linked functions"
+    };
+  }
+
   function flagValues(def) {
+    const dice = diceParts(def.damage);
+
     return {
       weaponCatalogKey:def.key,
       weaponCatalogVersion:VERSION,
@@ -445,7 +486,12 @@
       company:def.company,
       weaponGroup:def.company,
       weaponClass:def.weaponClass,
+      weaponKind:"firearm",
       weaponTechnology:def.technology,
+      weaponSystem:def.technology,
+      weaponDiceCount:dice.count,
+      weaponDie:dice.die,
+      groupProfile:groupProfile(def),
       baseDamageFormula:def.damage,
       damageFormula:def.damage,
       rangeFt:def.range,
@@ -467,6 +513,9 @@
       marketPrice:def.price,
       priceCredits:def.price,
       availability:def.availability,
+      bodyArmor:false,
+      quickhack:false,
+      needsReview:false,
       noMk:true
     };
   }
@@ -478,6 +527,10 @@
     const flags = item.flags?.[FLAG] ?? {};
     const update = {};
     const values = flagValues(def);
+
+    if (String(item.name ?? "") !== def.name) {
+      update.name = def.name;
+    }
 
     for (const [key,value] of Object.entries(values)) {
       let same = false;
