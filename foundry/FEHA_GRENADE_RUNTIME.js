@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const CH = "module.flesh-enshrouded-heart-ablaze";
   const MARK = "fehaGrenadeRuntimeV1";
@@ -19,6 +19,7 @@
 
   const pending = new Map();
   const hooks = [];
+  const inFlight = new Set();
   const bridges = [];
   const lastCombatantByCombat = new Map();
 
@@ -32,6 +33,33 @@
     if (Array.isArray(collection.contents)) return collection.contents;
     try { return [...collection]; } catch { return []; }
   };
+
+  function actorIdentity(actor) {
+    return String(
+      actor?.uuid ??
+      actor?.id ??
+      ""
+    );
+  }
+
+  function runtimeActors() {
+    const actors = new Map();
+
+    for (const actor of list(game.actors)) {
+      const key = actorIdentity(actor);
+      if (key) actors.set(key,actor);
+    }
+
+    for (const scene of list(game.scenes)) {
+      for (const token of list(scene?.tokens)) {
+        const actor = token?.actor ?? null;
+        const key = actorIdentity(actor);
+        if (key) actors.set(key,actor);
+      }
+    }
+
+    return [...actors.values()];
+  }
 
   const norm = value => String(value ?? "")
     .normalize("NFKD")
@@ -951,7 +979,7 @@
   async function removeZoneMarkers(zoneId) {
     if (!zoneId) return;
 
-    for (const actor of list(game.actors)) {
+    for (const actor of runtimeActors()) {
       for (const effect of list(actor.effects)) {
         if (
           String(effect?.flags?.[FLAG]?.grenadeZoneId ?? "") ===
@@ -1014,7 +1042,9 @@
       new Map();
 
     for (const token of insideTokens) {
-      if (token.actor) insideActors.set(token.actor.id,token.actor);
+      const actor = token?.actor ?? null;
+      const key = actorIdentity(actor);
+      if (actor && key) insideActors.set(key,actor);
     }
 
     const label =
@@ -1028,8 +1058,8 @@
       } catch {}
     }
 
-    for (const actor of list(game.actors)) {
-      if (insideActors.has(actor.id)) continue;
+    for (const actor of runtimeActors()) {
+      if (insideActors.has(actorIdentity(actor))) continue;
 
       for (const effect of list(actor.effects)) {
         if (
@@ -1099,7 +1129,7 @@
 
     const now = Date.now();
 
-    for (const actor of list(game.actors)) {
+    for (const actor of runtimeActors()) {
       for (const effect of list(actor.effects)) {
         const flags = effect?.flags?.[FLAG] ?? {};
 
@@ -1138,7 +1168,7 @@
   async function clearCombatBoundEffects(combatId) {
     if (!game.user?.isGM || !combatId) return;
 
-    for (const actor of list(game.actors)) {
+    for (const actor of runtimeActors()) {
       for (const effect of list(actor.effects)) {
         const flags = effect?.flags?.[FLAG] ?? {};
         const expiry = flags.grenadeExpiry;
@@ -1266,13 +1296,29 @@
       try { devices = service.scanScene(scene.id) ?? []; } catch {}
     }
 
-    const width = Number(scene?.width ?? 1) || 1;
-    const height = Number(scene?.height ?? 1) || 1;
+    const rect =
+      scene?.dimensions?.sceneRect ??
+      (
+        String(canvas?.scene?.id ?? "") === String(scene?.id ?? "")
+          ? canvas?.dimensions?.sceneRect
+          : null
+      ) ??
+      {
+        x:0,
+        y:0,
+        width:Number(scene?.width ?? 1) || 1,
+        height:Number(scene?.height ?? 1) || 1
+      };
+
+    const width = Math.max(1,Number(rect.width ?? scene?.width ?? 1) || 1);
+    const height = Math.max(1,Number(rect.height ?? scene?.height ?? 1) || 1);
+    const originX = Number(rect.x ?? 0) || 0;
+    const originY = Number(rect.y ?? 0) || 0;
 
     return list(devices).filter(device => {
       const point = {
-        x:Number(device?.xPct ?? 0) / 100 * width,
-        y:Number(device?.yPct ?? 0) / 100 * height
+        x:originX + (Number(device?.xPct ?? 0) / 100 * width),
+        y:originY + (Number(device?.yPct ?? 0) / 100 * height)
       };
 
       return feetBetween(scene,center,point) <= radius + 0.001;
@@ -1711,6 +1757,13 @@
       throw new Error("Selected item is not a FEHA grenade.");
     }
 
+    const quantity =
+      Math.max(0,Number(item.system?.quantity ?? 1) || 0);
+
+    if (quantity < 1) {
+      throw new Error("That grenade has no remaining quantity.");
+    }
+
     const def = catalog.definition(item);
     const schema = def?.schema ?? null;
 
@@ -2126,21 +2179,36 @@
       }
     }
 
-    const result =
-      await requestUse({
-        actorId:actor.id,
-        itemId:item.id,
-        sceneId:scene.id,
-        sourceTokenId:sourceToken.id,
-        targetTokenId:primaryToken?.id ?? null,
-        center
-      });
+    const flightKey =
+      String(actor.id)+":"+String(item.id);
 
-    ui.notifications?.info?.(
-      "GRENADE // "+def.name+" // DETONATED"
-    );
+    if (inFlight.has(flightKey)) {
+      throw new Error(
+        "That grenade is already being resolved."
+      );
+    }
 
-    return result;
+    inFlight.add(flightKey);
+
+    try {
+      const result =
+        await requestUse({
+          actorId:actor.id,
+          itemId:item.id,
+          sceneId:scene.id,
+          sourceTokenId:sourceToken.id,
+          targetTokenId:primaryToken?.id ?? null,
+          center
+        });
+
+      ui.notifications?.info?.(
+        "GRENADE // "+def.name+" // DETONATED"
+      );
+
+      return result;
+    } finally {
+      inFlight.delete(flightKey);
+    }
   }
 
   async function detonateCookoff({actor,item,scene,token,userId=null}={}) {
@@ -2427,6 +2495,30 @@
     ]);
 
     hooks.push([
+      "dnd5e.preUseActivity",
+      globalThis.Hooks.on(
+        "dnd5e.preUseActivity",
+        activity => {
+          const item =
+            activity?.item ??
+            activity?.parent ??
+            null;
+
+          if (!isGrenade(item)) return true;
+
+          void api.use(item).catch(error => {
+            console.error("FEHA GRENADE // activity use failed",error);
+            ui.notifications?.error?.(
+              "Grenade use failed: "+String(error?.message ?? error)
+            );
+          });
+
+          return false;
+        }
+      )
+    ]);
+
+    hooks.push([
       "dnd5e.preUseItem",
       globalThis.Hooks.on(
         "dnd5e.preUseItem",
@@ -2575,6 +2667,7 @@
       }
 
       pending.clear();
+      inFlight.clear();
       removeHooks();
       removeItemUseBridge();
 
