@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_GRENADE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "2.2.0";
+  const VERSION = "2.3.0";
   const REWRITE = "2.4";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "04 — GRENADES";
@@ -407,6 +407,24 @@
     if (flags.sourceCategory !== "Grenades") {
       update[`flags.${FLAG}.sourceCategory`] = "Grenades";
     }
+    if (flags.shopType !== "arms") {
+      update[`flags.${FLAG}.shopType`] = "arms";
+    }
+    if (flags.curatedCatalogV10 !== true) {
+      update[`flags.${FLAG}.curatedCatalogV10`] = true;
+    }
+    if (flags.catalogEnabled !== true) {
+      update[`flags.${FLAG}.catalogEnabled`] = true;
+    }
+    if (flags.marketPass !== "catalog-1.0") {
+      update[`flags.${FLAG}.marketPass`] = "catalog-1.0";
+    }
+    if (flags.marketCategory !== "Grenades") {
+      update[`flags.${FLAG}.marketCategory`] = "Grenades";
+    }
+    if (Number(flags.marketPrice) !== def.price) {
+      update[`flags.${FLAG}.marketPrice`] = def.price;
+    }
     if (Number(flags.priceCredits) !== def.price) {
       update[`flags.${FLAG}.priceCredits`] = def.price;
     }
@@ -449,6 +467,13 @@
       Number(item.system.price.value) !== def.price
     ) {
       update["system.price.value"] = def.price;
+    }
+
+    if (
+      item.system?.price &&
+      String(item.system.price.denomination ?? "") !== "gp"
+    ) {
+      update["system.price.denomination"] = "gp";
     }
 
     if (
