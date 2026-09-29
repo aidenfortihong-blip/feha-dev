@@ -682,7 +682,7 @@
               '</div>'+
               '<span data-qh-hp>HP '+hp.value+(hp.temp?' + '+hp.temp+' TEMP':'')+' / '+hp.max+'</span>'+
               '<button type="button" class="qh-apply-damage" data-qh-action="apply-damage" '+(!canApplyDamage?'disabled':'')+'>'+
-                (canApplyDamage?"APPLY DAMAGE":"GM PERMISSION REQUIRED")+
+                (canApplyDamage?"APPLY DAMAGE":"AUTHORITY OFFLINE")+
               '</button>'+
             '</div>'+
           '</section>'
