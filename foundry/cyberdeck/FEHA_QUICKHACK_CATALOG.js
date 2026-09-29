@@ -5,9 +5,9 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.0.0";
+  const VERSION = "2.0.1";
   const FLAG = "fleshEnshrouded";
-  const REWRITE = "2.0";
+  const REWRITE = "2.1";
 
   const definitions = [
     {
@@ -15,7 +15,7 @@
       name:"Blind Program",
       aliases:["Blind Program"],
       ramCost:2,
-      effectText:"Blinded for 1 turn. A target with blindsense is immune to this Quickhack's Blinded effect.",
+      effectText:"The target is Blinded until the end of its next turn. Creatures that can perceive through blindsense are unaffected.",
       meta:{durationTurns:1,condition:"blinded",immuneIf:"blindsight"}
     },
     {
@@ -23,7 +23,7 @@
       name:"Brain Melt Program",
       aliases:["Brain Melt Program"],
       ramCost:4,
-      effectText:"Intelligence save; 10d6 psychic damage, half on success. On a failed save, the target also loses reactions until the end of its next turn.",
+      effectText:"The target makes an Intelligence save, taking 10d6 psychic damage on a failure or half as much on a success. On a failure, it also loses its reactions until the end of its next turn.",
       meta:{save:"int",damage:"10d6",damageType:"psychic",halfOnSuccess:true,removeReactionsOnFail:true}
     },
     {
@@ -31,7 +31,7 @@
       name:"Breach Protocol",
       aliases:["Breach Protocol"],
       ramCost:3,
-      effectText:"Open one locked networked door directly in front of you. No save.",
+      effectText:"Force open one locked networked door directly in front of you.",
       meta:{targetType:"door",opensLockedDoor:true,noSave:true}
     },
     {
@@ -39,7 +39,7 @@
       name:"Comms Call In Program",
       aliases:["Comms Call In Program"],
       ramCost:2,
-      effectText:"Wisdom save. On a failure, you tap the target's active communications and can listen to its conversation for up to 1 minute.",
+      effectText:"The target makes a Wisdom save. On a failure, you tap into its active communications and can listen to its conversation for up to 1 minute.",
       meta:{save:"wis",durationRounds:10,listenToComms:true}
     },
     {
@@ -47,7 +47,7 @@
       name:"Comms Noise Program",
       aliases:["Comms Noise Program"],
       ramCost:3,
-      effectText:"The target is Deafened for 2 turns and cannot send or receive calls, alarms, network messages, or other comms during that time.",
+      effectText:"The target is Deafened for 2 turns, and its calls, alarms, network messages, and other communications are cut off for the same duration.",
       meta:{durationTurns:2,condition:"deafened",silenceComms:true,noSave:true}
     },
     {
@@ -55,7 +55,7 @@
       name:"Contagion Program",
       aliases:["Contagion Program"],
       ramCost:4,
-      effectText:"Place an instantaneous 10-foot-radius gas cloud at a point you can target. Creatures in the radius take 8d6 poison damage. The cloud does not linger.",
+      effectText:"Create a 10-foot-radius burst of toxic gas at a point you can target. Creatures caught in the burst take 8d6 poison damage, and the gas disperses immediately afterward.",
       meta:{damage:"8d6",damageType:"poison",radiusFt:10,placeable:true,instantaneous:true,noSave:true}
     },
     {
@@ -63,7 +63,7 @@
       name:"Disable Cyberware Program",
       aliases:["Disable Cyberware Program"],
       ramCost:2,
-      effectText:"Intelligence save or one active cyberware system is disabled until the end of the target's next turn.",
+      effectText:"The target makes an Intelligence save. On a failure, one active cyberware system is disabled until the end of its next turn.",
       meta:{save:"int",disableCyberware:true,durationTurns:1}
     },
     {
@@ -71,7 +71,7 @@
       name:"EMP Overload Program",
       aliases:["EMP Overload Program"],
       ramCost:5,
-      effectText:"Constitution save; 12d12 lightning damage to a cybernetic or electronic target, half on success. On a failed save, the target also loses reactions until the end of its next turn.",
+      effectText:"A cybernetic or electronic target makes a Constitution save, taking 12d12 lightning damage on a failure or half as much on a success. On a failure, it also loses its reactions until the end of its next turn.",
       meta:{save:"con",damage:"12d12",damageType:"lightning",halfOnSuccess:true,cyberneticOnly:true,removeReactionsOnFail:true}
     },
     {
@@ -79,7 +79,7 @@
       name:"Generic Program",
       aliases:["Generic Program"],
       ramCost:2,
-      effectText:"Reaction: when a networked creature you can see succeeds on an attack roll, ability check, or saving throw, force it to reroll and use the lower result. Then choose yourself or one ally you can see; the chosen creature has advantage on its next attack roll, ability check, or saving throw before the end of its next turn.",
+      effectText:"As a reaction when a networked creature you can see succeeds on an attack roll, ability check, or saving throw, force it to reroll and use the lower result. Then choose yourself or one ally you can see; the chosen creature has advantage on its next attack roll, ability check, or saving throw before the end of its next turn.",
       meta:{reaction:true,forceLowerReroll:true,grantAdvantage:true}
     },
     {
@@ -87,7 +87,7 @@
       name:"Grenade Explode Program",
       aliases:["Grenade Explode Program"],
       ramCost:4,
-      effectText:"No save. Detonate one explosive carried by the target. Resolve that explosive's normal damage, radius, damage type, and other effects.",
+      effectText:"Detonate one explosive carried by the target, using that explosive's normal damage, radius, damage type, and other effects.",
       meta:{detonateCarriedExplosive:true,noSave:true}
     },
     {
@@ -95,7 +95,7 @@
       name:"Locomotion Malfunction Program",
       aliases:["Locomotion Malfunction Program"],
       ramCost:1,
-      effectText:"No save. If the target has cybernetic legs or leg actuators, disable them until the end of its next turn; its Speed becomes 0 for the duration.",
+      effectText:"If the target relies on cybernetic legs or leg actuators, disable them until the end of its next turn. Its Speed becomes 0 for the duration.",
       meta:{legsOnly:true,noSave:true,durationTurns:1,speedZero:true}
     },
     {
@@ -103,7 +103,7 @@
       name:"Madness Program",
       aliases:["Madness Program"],
       ramCost:3,
-      effectText:"Wisdom save or the target immediately uses its reaction to make one attack against the nearest creature it can reach or target.",
+      effectText:"The target makes a Wisdom save. On a failure, it immediately uses its reaction to make one attack against the nearest creature it can reach or target.",
       meta:{save:"wis",forcedAttackNearest:true}
     },
     {
@@ -111,7 +111,7 @@
       name:"Memory Wipe Program",
       aliases:["Memory Wipe Program"],
       ramCost:2,
-      effectText:"Choose the saving throw ability when you use this Quickhack. On a failed save, the target forgets everything that happened during the previous 1 minute.",
+      effectText:"Choose the ability used for the target's saving throw when you upload this Quickhack. On a failure, the target forgets everything that happened during the previous 1 minute.",
       meta:{operatorChoosesSave:true,memoryLossSeconds:60}
     },
     {
@@ -119,7 +119,7 @@
       name:"Combustion Program",
       aliases:["Combustion Program","Overheat Program"],
       ramCost:4,
-      effectText:"The target takes 10d6 fire damage immediately. If this damage kills the target, it explodes and every other creature within 10 feet takes 5d6 fire damage.",
+      effectText:"The target takes 10d6 fire damage immediately. If the damage kills it, the target erupts and every other creature within 10 feet takes 5d6 fire damage.",
       meta:{damage:"10d6",damageType:"fire",deathBurst:"5d6",deathBurstType:"fire",deathBurstRadiusFt:10,noSave:true}
     },
     {
@@ -127,7 +127,7 @@
       name:"Ping Program",
       aliases:["Ping Program"],
       ramCost:2,
-      effectText:"Reveal all networked devices within 50 feet, including cameras, turrets, doors, alarms, terminals, and similar systems, plus hostile creatures in range that have cyberware. Revealed targets cannot benefit from being hidden from you until the end of your next turn.",
+      effectText:"Reveal networked devices within 50 feet, including cameras, turrets, doors, alarms, terminals, and similar systems, along with hostile creatures in range that have cyberware. Revealed targets cannot remain hidden from you until the end of your next turn.",
       meta:{radiusFt:50,revealDevices:true,revealCyberwareHostiles:true,durationTurns:1}
     },
     {
@@ -135,7 +135,7 @@
       name:"Suicide Program",
       aliases:["Suicide Program"],
       ramCost:3,
-      effectText:"Wisdom save or the target immediately uses its reaction to make one damaging attack against itself.",
+      effectText:"The target makes a Wisdom save. On a failure, it immediately uses its reaction to make one damaging attack against itself.",
       meta:{save:"wis",forcedSelfAttack:true}
     },
     {
@@ -143,7 +143,7 @@
       name:"System Collapse Program",
       aliases:["System Collapse Program"],
       ramCost:6,
-      effectText:"Intelligence save or the target becomes incapacitated until the end of its next turn.",
+      effectText:"The target makes an Intelligence save. On a failure, it becomes Incapacitated until the end of its next turn.",
       meta:{save:"int",condition:"incapacitated",durationTurns:1}
     },
     {
@@ -151,7 +151,7 @@
       name:"Take Control Program",
       aliases:["Take Control Program"],
       ramCost:6,
-      effectText:"Charisma save or you gain control of the target for up to 1 minute and can see through its eyes. You can direct its movement and non-hostile actions. If it makes an attack or takes another hostile or damaging action, control ends immediately after that action.",
+      effectText:"The target makes a Charisma save. On a failure, you gain control of it for up to 1 minute and can see through its eyes. You can direct its movement and non-hostile actions. If it makes an attack or takes another hostile or damaging action, control ends immediately after that action.",
       meta:{save:"cha",durationRounds:10,controlTarget:true,seeThroughEyes:true,breaksAfterHostileAction:true}
     },
     {
@@ -159,7 +159,7 @@
       name:"Weapon Malfunction Program",
       aliases:["Weapon Malfunction Program"],
       ramCost:5,
-      effectText:"Intelligence save or one firearm the target is wielding is permanently broken until repaired.",
+      effectText:"The target makes an Intelligence save. On a failure, one firearm it is wielding breaks and remains unusable until repaired.",
       meta:{save:"int",breakFirearm:true,permanentUntilRepaired:true}
     },
     {
@@ -167,7 +167,7 @@
       name:"Whistle Program",
       aliases:["Whistle Program"],
       ramCost:3,
-      effectText:"Wisdom save or the target moves up to 20 feet toward a point you choose. This movement does not provoke opportunity attacks.",
+      effectText:"The target makes a Wisdom save. On a failure, it moves up to 20 feet toward a point you choose. This movement does not provoke opportunity attacks.",
       meta:{save:"wis",forcedMoveFt:20,noOpportunityAttacks:true}
     }
   ];
