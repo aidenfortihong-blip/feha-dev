@@ -2,7 +2,7 @@
   "id": "feha-live-dev-bridge",
   "title": "FEHA Live Dev Bridge",
   "description": "Loads the current FEHA development runtime on every connected Foundry client so players and GM receive the same Entry Gateway and Cyberdeck build.",
-  "version": "0.10.121",
+  "version": "0.10.125",
   "authors": [
     {
       "name": "ADK"
