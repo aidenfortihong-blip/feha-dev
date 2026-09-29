@@ -1,8 +1,13 @@
 {
-  "version": "0.10.123",
+  "version": "0.10.124",
   "updated": "2026-09-29",
-  "scope": "quickhack-live-authority-detection",
+  "scope": "quickhack-token-authority-hardening",
   "notes": [
+    "Player Quickhack HP mutation now always routes through GM authority instead of trusting targetActor.isOwner, avoiding synthetic/unlinked token ownership false-positives.",
+    "GM authority now resolves the Quickhack target exclusively from the authoritative Scene Token instead of comparing a client-supplied Actor id, fixing synthetic/unlinked token id mismatches.",
+    "The authority validator accepts the user's assigned character as the operator even when legacy Actor ownership metadata is not normalized to OWNER.",
+    "Quickhack failure toasts now include the actual authority/update error message so any remaining multiplayer failure is directly diagnosable.",
+    "No manual GM approval was added; successful Quickhacks remain one-click from the player client.",
     "Fixed Quickhack resolution incorrectly freezing APPLY DAMAGE as AUTHORITY OFFLINE from a stale/preflight GM-presence check; the button now remains actionable whenever the resolved target Actor exists and authority is resolved at click time.",
     "Switched multiplayer, Network Device, and Camera authority selection to Foundry v14 game.users.activeGM first, with the prior deterministic active-GM scan retained as fallback.",
     "Player Quickhack damage against an unowned target still routes silently through GM authority; there is no manual GM approval dialog.",
