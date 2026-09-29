@@ -1,8 +1,13 @@
 {
-  "version": "0.10.128",
+  "version": "0.10.129",
   "updated": "2026-09-29",
-  "scope": "player-safe-hotbar-reloader",
+  "scope": "quickhack-chat-approval",
   "notes": [
+    "Player Quickhack damage now uses a GM chat approval card instead of automatic socket authority: player clicks APPLY DAMAGE, GM clicks APPLY DAMAGE in chat, and the HP update happens on the GM client.",
+    "Approval cards are whispered to GM users plus the requester and include APPLY DAMAGE / DENY; resolved cards replace themselves with the final HP change and approving GM name.",
+    "The player Quickhack panel shows AWAITING GM APPROVAL while pending. Denial, approval errors, or the 10-minute expiry feed the existing failure path so committed RAM is refunded.",
+    "Quickhack completion is settled from the synchronized ChatMessage update, removing the fragile GM socket-response dependency for damage.",
+    "GM-originated Quickhack damage still applies immediately without an approval card.",
     "The existing Foundry hotbar Macro named ADK DEV LOADER / ADK DEV LOADER V3 is now intercepted client-side and redirected to the player-safe local reload function before any stale historical GM-only macro body can run.",
     "Players no longer need the GM to edit or re-save the old world Macro just to use the reloader; other macros still execute normally.",
     "This changes only the reloader entry point. It does not grant player clients GM permissions for world-document mutations.",
