@@ -1,12 +1,12 @@
 {
-  "version": "0.11.12",
+  "version": "0.11.13",
   "updated": "2026-09-29",
-  "scope": "canonical-grenade-catalog-rebalance",
+  "scope": "grenade-runtime-measured-templates-and-automation",
   "notes": [
-    "Added foundry/FEHA_GRENADE_CATALOG.js as the canonical physical grenade data/migration layer for all 18 Foundry grenade items.",
-    "Regular, Homing, and Sticky delivery variants now have distinct mechanics instead of sharing generic damage text.",
-    "Biohazard, Cutting, EMP, Flash, Frag, Incendiary, Ozob's Nose, Recon, and Smoke payloads now have differentiated effects and explicit grenadeSchema flags for future automation.",
-    "Existing grenade Mk, market price, availability, one-use identity, item art, and catalog placement are preserved.",
-    "ADK DEV LOADER now preflights the grenade module and performs one idempotent GM-side migration across world and owned grenade items."
+    "Physical grenades were rebalanced against FEHA firearm lethality: standard frags now deal 12d6, incendiaries 10d6, cutting 10d6, EMP 6d6-7d6, biohazard 8d6, and Ozob's Nose 15d6.",
+    "Added FEHA_GRENADE_RUNTIME.js with player-safe silent GM authority, measured-template placement, Homing and Sticky targeting behavior, one-roll AoE damage, saving throws, automatic short-duration statuses, automatic burn/bleed ticks, EMP cyberware disable/restore, Prone and blast knockback.",
+    "Persistent Smoke and Recon Sticky zones are real MeasuredTemplate documents, automatically follow attached tokens where appropriate, apply/remove zone markers, and delete themselves when their duration expires. Recon Regular performs an immediate 30-ft scan and self-cleans its template.",
+    "Native dnd5e grenade use is intercepted so using a grenade enters FEHA placement/targeting instead of the old empty consumable flow. Point throws show a live radius ghost before confirmation.",
+    "Cookoff now routes carried FEHA grenades directly through the canonical grenade runtime so hacked explosives detonate on the victim using their normal grenade damage, area, and effects."
   ]
 }
