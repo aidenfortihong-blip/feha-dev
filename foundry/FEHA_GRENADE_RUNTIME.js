@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const FLAG = "fleshEnshrouded";
   const CH = "module.flesh-enshrouded-heart-ablaze";
   const MARK = "fehaGrenadeRuntimeV1";
@@ -344,10 +344,34 @@
     return roll;
   }
 
-  async function rollSave(actor,ability,{disadvantage=false}={}) {
+  async function rollSave(
+    actor,
+    ability,
+    {
+      disadvantage=false,
+      advantage=false
+    }={}
+  ) {
     const key = String(ability ?? "").toLowerCase();
     const modifier = saveModifier(actor,key);
-    const dice = disadvantage ? "2d20kl1" : "1d20";
+
+    const netDisadvantage =
+      Boolean(disadvantage) &&
+      !Boolean(advantage);
+
+    const netAdvantage =
+      Boolean(advantage) &&
+      !Boolean(disadvantage);
+
+    const dice =
+      netDisadvantage
+        ? "2d20kl1"
+        : (
+            netAdvantage
+              ? "2d20kh1"
+              : "1d20"
+          );
+
     const formula =
       dice +
       (modifier >= 0 ? "+" : "") +
@@ -360,7 +384,8 @@
       modifier,
       total:Number(roll.total ?? 0),
       formula:roll.formula,
-      disadvantage:Boolean(disadvantage)
+      disadvantage:netDisadvantage,
+      advantage:netAdvantage
     };
   }
 
@@ -374,8 +399,23 @@
     };
   }
 
-  async function damageLocal(actor,amount) {
-    const damage = Math.max(0,Math.floor(Number(amount) || 0));
+  async function damageLocal(actor,amount,damageType="") {
+    const adjusted =
+      globalThis.FEHA_ARMOR_RUNTIME?.adjustDamage?.(
+        actor,
+        amount,
+        damageType,
+        {sourceKind:"grenade"}
+      );
+
+    const damage =
+      Math.max(
+        0,
+        Math.floor(
+          Number(adjusted ?? amount) || 0
+        )
+      );
+
     const before = hp(actor);
 
     let remaining = damage;
@@ -1599,10 +1639,21 @@
       let success = false;
 
       if (schema.save && !autoFail) {
+        const empAdvantage =
+          /^emp-/.test(String(def?.key ?? "")) &&
+          Boolean(
+            globalThis.FEHA_ARMOR_RUNTIME?.empSaveAdvantage?.(
+              target
+            )
+          );
+
         save = await rollSave(
           target,
           schema.save,
-          {disadvantage}
+          {
+            disadvantage,
+            advantage:empAdvantage
+          }
         );
 
         success = save.total >= base.dc;
@@ -1624,7 +1675,11 @@
           : 0;
 
       if (damage > 0) {
-        await damageLocal(target,damage);
+        await damageLocal(
+          target,
+          damage,
+          schema.damageType ?? ""
+        );
       }
 
       const effects = [];
