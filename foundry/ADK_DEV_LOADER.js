@@ -341,6 +341,59 @@
     game.adk.reloadCurrentClient = reloadLocalClient;
     globalThis.FEHA_ADK_RELOAD = reloadLocalClient;
 
+    // The hotbar Macro is a world document and may still contain the historical
+    // "GM only" guard. Do not require users to edit that world Macro. On every
+    // client, redirect ONLY the ADK DEV LOADER macro to the client-local reload
+    // function before its stale command body can execute.
+    const macroClass =
+      globalThis.CONFIG?.Macro?.documentClass ??
+      globalThis.Macro ??
+      null;
+
+    const macroProto = macroClass?.prototype ?? null;
+    const macroBridgeKey = "__FEHA_ADK_RELOAD_MACRO_BRIDGE";
+
+    if (
+      macroProto &&
+      typeof macroProto.execute === "function"
+    ) {
+      const existingBridge = globalThis[macroBridgeKey];
+
+      if (
+        existingBridge?.proto === macroProto &&
+        macroProto.execute === existingBridge.wrapper
+      ) {
+        existingBridge.reload = reloadLocalClient;
+      } else {
+        const originalExecute = macroProto.execute;
+
+        const bridge = {
+          proto:macroProto,
+          original:originalExecute,
+          reload:reloadLocalClient,
+          wrapper:null
+        };
+
+        bridge.wrapper = function(...args) {
+          const name =
+            String(this?.name ?? "")
+              .replace(/\s+/g," ")
+              .trim();
+
+          if (
+            /^ADK DEV LOADER(?: V\d+)?$/i.test(name)
+          ) {
+            return bridge.reload();
+          }
+
+          return originalExecute.apply(this,args);
+        };
+
+        macroProto.execute = bridge.wrapper;
+        globalThis[macroBridgeKey] = bridge;
+      }
+    }
+
     if (isGM) {
       ui.notifications.info(
         "FEHA DEV // " +
