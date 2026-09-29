@@ -5,13 +5,25 @@
 (() => {
   try { globalThis.FEHA_GRENADE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "2.1.0";
-  const REWRITE = "2.3";
+  const VERSION = "2.2.0";
+  const REWRITE = "2.4";
   const FLAG = "fleshEnshrouded";
+  const ROOT_NAME = "04 — GRENADES";
+  const COMPANY_ORDER = [
+    "Kurohane Group",
+    "Bastion Strategic",
+    "Lumen Optics",
+    "Vektor Dynamics",
+    "Helix Vitae",
+    "ForgeLine Industries",
+    "Jade Arc Systems",
+    "Corvus Neural"
+  ];
 
   const definitions = [
     {
       key:"frag-homing",
+      company:"Lumen Optics",
       name:"Frag Grenade Homing",
       mk:3, price:1500, availability:"Restricted", delivery:"homing",
       effectText:"Choose a creature you can see within 60 ft. The grenade homes to it and detonates in a 10-ft radius. Creatures in the blast make a Dexterity save, taking 12d6 piercing damage on a failure or half on a success. The primary target has disadvantage on the save and cannot benefit from half or three-quarters cover.",
@@ -19,6 +31,7 @@
     },
     {
       key:"frag-sticky",
+      company:"Vektor Dynamics",
       name:"Frag Grenade Sticky",
       mk:1, price:800, availability:"Common", delivery:"sticky",
       effectText:"Throw at a point, surface, or creature within 60 ft. A creature targeted directly makes a Dexterity save against attachment. On a failure the grenade sticks to it and that creature automatically fails the blast save. The grenade detonates in a 10-ft radius for 12d6 piercing damage; other creatures make a Dexterity save for half.",
@@ -26,6 +39,7 @@
     },
     {
       key:"biohazard-homing",
+      company:"Helix Vitae",
       name:"Grenade Biohazard Homing",
       mk:3, price:2000, availability:"Restricted", delivery:"homing",
       effectText:"Choose a creature you can see within 60 ft. The grenade homes to it and bursts in a 10-ft radius. Creatures in the burst make a Constitution save, taking 8d6 poison damage on a failure or half on a success. A failed save also applies Poisoned until the end of the creature's next turn. The primary target has disadvantage on the save.",
@@ -33,6 +47,7 @@
     },
     {
       key:"biohazard-regular",
+      company:"Helix Vitae",
       name:"Grenade Biohazard Regular",
       mk:3, price:1000, availability:"Restricted", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Creatures in a 15-ft radius make a Constitution save, taking 8d6 poison damage on a failure or half on a success. A failed save also applies Poisoned until the end of the creature's next turn.",
@@ -40,6 +55,7 @@
     },
     {
       key:"cutting-regular",
+      company:"Kurohane Group",
       name:"Grenade Cutting Regular",
       mk:2, price:350, availability:"Professional", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Monofilament fragments rip through a 10-ft radius. Creatures make a Dexterity save, taking 10d6 slashing damage on a failure or half on a success. A creature that fails also Bleeds for 2d6 slashing damage at the start of its next turn; the bleed damage and cleanup are automatic.",
@@ -47,6 +63,7 @@
     },
     {
       key:"emp-homing",
+      company:"Jade Arc Systems",
       name:"Grenade EMP Homing",
       mk:3, price:1750, availability:"Restricted", delivery:"homing",
       effectText:"Choose a creature or electronic target you can see within 60 ft. The grenade homes to it and detonates in a 10-ft radius. Targets make a Constitution save, taking 7d6 lightning damage on a failure or half on a success. Cybernetic and electronic targets have disadvantage. A failed cybernetic/electronic target loses reactions until the end of its next turn; if it is the primary target, one active non-weapon cyberware system is automatically disabled for the same duration and then restored.",
@@ -54,6 +71,7 @@
     },
     {
       key:"emp-regular",
+      company:"Jade Arc Systems",
       name:"Grenade EMP Regular",
       mk:1, price:750, availability:"Common", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Targets in a 15-ft radius make a Constitution save, taking 6d6 lightning damage on a failure or half on a success. Cybernetic and electronic targets have disadvantage; on a failed save they also lose reactions until the end of their next turn.",
@@ -61,6 +79,7 @@
     },
     {
       key:"emp-sticky",
+      company:"Jade Arc Systems",
       name:"Grenade EMP Sticky",
       mk:1, price:1100, availability:"Common", delivery:"sticky",
       effectText:"Throw at a point, surface, creature, or device within 60 ft. A creature targeted directly makes a Dexterity save against attachment. On a failure it sticks and the target automatically fails the blast save. The 10-ft EMP burst deals 7d6 lightning damage, half on a successful Constitution save. Cybernetic and electronic targets have disadvantage; failed cybernetic/electronic targets lose reactions, and a directly stuck target also has one active non-weapon cyberware system disabled until the end of its next turn. All restoration is automatic.",
@@ -68,6 +87,7 @@
     },
     {
       key:"flash-regular",
+      company:"Bastion Strategic",
       name:"Grenade Flash Regular",
       mk:2, price:125, availability:"Professional", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Creatures in a 20-ft radius make a Constitution save, taking 2d6 thunder damage on a failure or half on a success. On a failure they are Deafened, lose reactions, and—if they rely on sight—are Blinded until the end of their next turn. These effects are applied and removed automatically.",
@@ -75,6 +95,7 @@
     },
     {
       key:"flashbang-homing",
+      company:"Lumen Optics",
       name:"Grenade Flashbang Homing",
       mk:1, price:750, availability:"Common", delivery:"homing",
       effectText:"Choose a creature you can see within 60 ft. The flashbang homes to it and bursts in a 15-ft radius. Creatures make a Constitution save, taking 2d6 thunder damage on a failure or half on a success. On a failure they are Deafened, lose reactions, and—if they rely on sight—are Blinded until the end of their next turn. The primary target has disadvantage on the save. Effects clean themselves up automatically.",
@@ -82,6 +103,7 @@
     },
     {
       key:"frag-regular",
+      company:"ForgeLine Industries",
       name:"Grenade Frag Regular",
       mk:4, price:250, availability:"Black Market", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Creatures in a 15-ft radius make a Dexterity save, taking 12d6 piercing damage on a failure or half on a success.",
@@ -89,6 +111,7 @@
     },
     {
       key:"incendiary-homing",
+      company:"Vektor Dynamics",
       name:"Grenade Incendiary Homing",
       mk:2, price:1600, availability:"Professional", delivery:"homing",
       effectText:"Choose a creature you can see within 60 ft. The grenade homes to it and detonates in a 10-ft radius. Creatures make a Dexterity save, taking 10d6 fire damage on a failure or half on a success. A failed save also applies Burning for 2d6 fire damage at the start of the creature's next turn, then removes itself automatically. The primary target has disadvantage on the initial save.",
@@ -96,6 +119,7 @@
     },
     {
       key:"incendiary-regular",
+      company:"ForgeLine Industries",
       name:"Grenade Incendiary Regular",
       mk:3, price:400, availability:"Restricted", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Creatures in a 15-ft radius make a Dexterity save, taking 10d6 fire damage on a failure or half on a success. A failed save also applies Burning for 2d6 fire damage at the start of the creature's next turn, then removes itself automatically.",
@@ -103,6 +127,7 @@
     },
     {
       key:"incendiary-sticky",
+      company:"Bastion Strategic",
       name:"Grenade Incendiary Sticky",
       mk:2, price:900, availability:"Professional", delivery:"sticky",
       effectText:"Throw at a point, surface, or creature within 60 ft. A directly targeted creature makes a Dexterity save against attachment. On a failure the grenade sticks and the target automatically fails the blast save. The 10-ft blast deals 10d6 fire damage, half on a successful Dexterity save. Failed creatures Burn for 2d6 fire damage at the start of their next turn; the tick and cleanup are automatic.",
@@ -110,6 +135,7 @@
     },
     {
       key:"ozobs-nose",
+      company:"ForgeLine Industries",
       name:"Grenade Ozobs Nose",
       mk:3, price:2750, availability:"Restricted", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Creatures in a 15-ft radius make a Dexterity save, taking 15d6 explosive damage on a failure or half on a success. A failed save also knocks the creature Prone and blasts it up to 10 ft directly away from the detonation if movement is unobstructed.",
@@ -117,6 +143,7 @@
     },
     {
       key:"recon-regular",
+      company:"Lumen Optics",
       name:"Grenade Recon Regular",
       mk:2, price:600, availability:"Professional", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Place a 30-ft-radius scan template. The grenade immediately identifies creatures, active cyberware, and networked devices inside the area to the operator. The scan is instantaneous and the template removes itself automatically after resolving.",
@@ -124,6 +151,7 @@
     },
     {
       key:"recon-sticky",
+      company:"Corvus Neural",
       name:"Grenade Recon Sticky",
       mk:4, price:1250, availability:"Black Market", delivery:"sticky",
       effectText:"Throw at a point, surface, or creature within 60 ft. The sensor sticks where it lands and creates a 30-ft-radius measured scan zone for 1 minute. If attached to a creature the zone follows that token automatically. Creatures inside are automatically marked RECON // REVEALED; the zone and its markers clean themselves up when the duration ends.",
@@ -131,6 +159,7 @@
     },
     {
       key:"smoke-regular",
+      company:"Kurohane Group",
       name:"Grenade Smoke Regular",
       mk:3, price:150, availability:"Restricted", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Place a 25-ft-radius smoke template. The area is heavily obscured for 1 round. Tokens entering the zone are automatically marked SMOKE // HEAVILY OBSCURED; the marker is removed when they leave, and the template deletes itself automatically when the duration ends.",
@@ -236,12 +265,9 @@
     .replace(/'/g,"&#039;");
 
   function rewriteDescription(def,item) {
-    const flags = item?.flags?.[FLAG] ?? {};
-    const manufacturer = String(
-      flags.manufacturer ??
-      flags.company ??
-      "ForgeLine Industries"
-    ).trim() || "ForgeLine Industries";
+    const manufacturer =
+      String(def?.company ?? "ForgeLine Industries").trim() ||
+      "ForgeLine Industries";
 
     const mkLabel = "Mk." + ["0","I","II","III","IV","V"][def.mk];
     const delivery = String(def.delivery ?? "regular").toUpperCase();
@@ -280,7 +306,66 @@
     );
   }
 
-  async function migrateItem(item) {
+  function rootFolder() {
+    return (
+      (game.folders?.contents ?? [])
+        .filter(folder =>
+          String(folder?.type ?? "") === "Item" &&
+          String(folder?.name ?? "") === ROOT_NAME
+        )
+        .sort((a,b) => {
+          const aTop =
+            a?.folder?.name === "ADK V10 — CURATED CATALOG"
+              ? 0
+              : 1;
+          const bTop =
+            b?.folder?.name === "ADK V10 — CURATED CATALOG"
+              ? 0
+              : 1;
+          return aTop - bTop;
+        })[0] ??
+      null
+    );
+  }
+
+  async function ensureCompanyFolders() {
+    const root = rootFolder();
+
+    if (!root) {
+      throw new Error(
+        "FEHA Grenades could not find the '"+ROOT_NAME+"' Item folder."
+      );
+    }
+
+    const folders = new Map();
+
+    for (const company of COMPANY_ORDER) {
+      let folder =
+        (game.folders?.contents ?? []).find(candidate =>
+          String(candidate?.type ?? "") === "Item" &&
+          String(candidate?.name ?? "") === company &&
+          String(candidate?.folder?.id ?? candidate?.folder ?? "") ===
+            String(root.id)
+        ) ??
+        null;
+
+      if (!folder) {
+        folder =
+          await globalThis.Folder.create({
+            name:company,
+            type:"Item",
+            folder:root.id,
+            sorting:"a"
+          });
+      }
+
+      folders.set(company,folder);
+    }
+
+    return {root,folders};
+  }
+
+  async function migrateItem(item,folderId=null) {
     const def = definition(item);
     if (!item || !def || !looksLikeGrenade(item)) return false;
 
@@ -288,7 +373,23 @@
     const update = {};
     const mkLabel = "Mk." + ["0","I","II","III","IV","V"][def.mk];
 
+    if (
+      folderId &&
+      !item.parent &&
+      String(item.folder?.id ?? item.folder ?? "") !== String(folderId)
+    ) {
+      update.folder = folderId;
+    }
+
     if (item.name !== def.name) update.name = def.name;
+
+    if (flags.manufacturer !== def.company) {
+      update[`flags.${FLAG}.manufacturer`] = def.company;
+    }
+
+    if (flags.company !== def.company) {
+      update[`flags.${FLAG}.company`] = def.company;
+    }
     if (flags.effectText !== def.effectText) {
       update[`flags.${FLAG}.effectText`] = def.effectText;
     }
@@ -326,6 +427,7 @@
     const nextSchema = {
       version:REWRITE,
       key:def.key,
+      company:def.company,
       delivery:def.delivery,
       actionType:"bonus",
       bonusAction:true,
@@ -396,10 +498,44 @@
 
     let world = 0;
     let owned = 0;
+    let foldersCreated = 0;
+
+    const beforeFolders =
+      new Set(
+        (game.folders?.contents ?? [])
+          .filter(folder =>
+            String(folder?.type ?? "") === "Item" &&
+            COMPANY_ORDER.includes(String(folder?.name ?? "")) &&
+            String(folder?.folder?.name ?? "") === ROOT_NAME
+          )
+          .map(folder => String(folder.id))
+      );
+
+    const {folders} = await ensureCompanyFolders();
+
+    const afterFolders =
+      new Set(
+        (game.folders?.contents ?? [])
+          .filter(folder =>
+            String(folder?.type ?? "") === "Item" &&
+            COMPANY_ORDER.includes(String(folder?.name ?? "")) &&
+            String(folder?.folder?.name ?? "") === ROOT_NAME
+          )
+          .map(folder => String(folder.id))
+      );
+
+    foldersCreated =
+      [...afterFolders].filter(id => !beforeFolders.has(id)).length;
 
     for (const item of game.items?.contents ?? []) {
       try {
-        if (await migrateItem(item)) world++;
+        const def = definition(item);
+        const folderId =
+          def
+            ? folders.get(def.company)?.id ?? null
+            : null;
+
+        if (await migrateItem(item,folderId)) world++;
       } catch (err) {
         console.warn(
           "FEHA GRENADES // world migration failed",
@@ -412,7 +548,7 @@
     for (const actor of game.actors?.contents ?? []) {
       for (const item of actor.items ?? []) {
         try {
-          if (await migrateItem(item)) owned++;
+          if (await migrateItem(item,null)) owned++;
         } catch (err) {
           console.warn(
             "FEHA GRENADES // owned migration failed",
@@ -426,15 +562,21 @@
 
     console.info(
       "FEHA GRENADES // rewrite "+REWRITE+" ready",
-      {world,owned}
+      {world,owned,foldersCreated}
     );
 
-    return {world,owned,skipped:false};
+    return {
+      world,
+      owned,
+      foldersCreated,
+      skipped:false
+    };
   }
 
   const api = {
     version:VERSION,
     rewriteVersion:REWRITE,
+    companies:[...COMPANY_ORDER],
     definitions:Object.freeze(
       Object.fromEntries(
         definitions.map(def => [
@@ -458,7 +600,10 @@
         ? {
             version:REWRITE,
             key:def.key,
+            company:def.company,
             delivery:def.delivery,
+            actionType:"bonus",
+            bonusAction:true,
             ...def.schema
           }
         : null;
