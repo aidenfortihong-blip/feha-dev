@@ -1109,6 +1109,24 @@
       throw new Error("Selected explosive is no longer available.");
     }
 
+    const grenadeRuntime =
+      globalThis.FEHA_GRENADE_RUNTIME ??
+      core.module?.("grenadeRuntime") ??
+      null;
+
+    if (
+      grenadeRuntime?.isGrenade?.(item) &&
+      typeof grenadeRuntime.detonateCookoff === "function"
+    ) {
+      return grenadeRuntime.detonateCookoff({
+        actor:base.target,
+        item,
+        scene:base.scene,
+        token:base.token,
+        userId:base.user?.id ?? game.user?.id ?? null
+      });
+    }
+
     let used = false;
     let error = null;
 
