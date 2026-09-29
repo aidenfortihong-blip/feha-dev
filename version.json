@@ -1,15 +1,16 @@
 {
-  "version": "0.11.24",
+  "version": "0.11.25",
   "updated": "2026-09-29",
-  "scope": "weapon-readiness-market-gate",
+  "scope": "canonical-done-weapon-sheets",
   "notes": [
-    "Added DONE and NOT DONE subfolders beneath every manufacturer folder in 01 — WEAPONS.",
-    "Exactly 16 approved weapons are treated as finished and Market-ready: Breachhound, Crusher, Hexburst, Igla, Lexington, Liberty, Overture, Saratoga, Tactician, Umbra, Unity, Warwake, Ashura, Dian, Kyokokukamusari, and Masamune.",
-    "The 12 approved Bastion weapons remain under Bastion and the 4 approved Corvus weapons remain under Corvus, now inside each manufacturer's DONE folder.",
-    "Every other weapon and variant in the curated weapon tree is moved to its parent manufacturer's NOT DONE folder.",
-    "NOT DONE weapons are changed to sourceCategory=Weapons_Unfinished, catalogEnabled=false, curatedCatalogV10=false, marketReady=false, and shopType=none so the existing Market cannot catalog them.",
-    "DONE weapons are normalized to sourceCategory=Weapons, catalogEnabled=true, curatedCatalogV10=true, marketReady=true, and shopType=arms.",
-    "Persistent Market stock is scrubbed of unfinished weapon IDs, and a live Market DOM guard prevents stale in-memory stock from displaying or purchasing unfinished weapons until the Market is freshly reloaded.",
-    "If the Market is open while the GM runs the loader, the current vendor stock is rerolled immediately against the new completion gate."
+    "The 16 DONE weapons now have a dedicated canonical weapon catalog; their cleaned FEHA description cards are the source of truth for weapon stats.",
+    "World and actor-owned copies are migrated so actual Foundry damage, range, native price, company metadata, class, and Market metadata match the canonical description.",
+    "Canonical weapon sheet metadata now includes reload actions, magazine size, Strength requirement, exact damage formula, normal/long range, technology, manufacturer, and structured special-rule data.",
+    "All weapon damage uses an exact custom Foundry formula so unusual campaign dice such as d2 and d30 remain legal and roll exactly as written.",
+    "Bastion DONE weapons: Breachhound 14d2 10/20 ft; Crusher 20d2 15/30 ft; Hexburst 6d8 60 ft; Igla 12d2 20 ft; Lexington 4d6 30 ft; Liberty 1d30 40 ft; Overture 2d20 40/180 ft; Saratoga 8d6 30 ft; Tactician 30d2 15 ft; Umbra 3d8 90 ft; Unity 5d6 30 ft; Warwake 8d10 50 ft.",
+    "Corvus DONE weapons: Ashura 3d12 200 ft; Dian 5d6 40/80 ft; Kyokokukamusari 4d8 60/180 ft; Masamune 5d8 60/180 ft.",
+    "Legacy description mistakes are removed, including Hexburst Neon/Warwake Neon labels, Kyokokukamusari displaying Masamune as its profile title, and stale manufacturer assignments.",
+    "Corvus special rules are rewritten into readable rules text: Ashura neural optic, Dian camera dart, Kyokokukamusari flashbang magazine, and Masamune neural relay.",
+    "Weapon Readiness now recognizes the canonical weapon catalog so DONE/NOT DONE organization and Market eligibility cannot drift away from finished sheet definitions."
   ]
 }
