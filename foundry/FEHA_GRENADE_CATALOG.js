@@ -22,7 +22,7 @@
   const definitions = [
     {
       key:"frag-homing",
-      company:"Lumen Optics",
+      company:"Vektor Dynamics",
       name:"Frag Grenade Homing",
       mk:3, price:1500, availability:"Restricted", delivery:"homing",
       effectText:"Choose a creature you can see within 60 ft. The grenade homes to it and detonates in a 10-ft radius. Creatures in the blast make a Dexterity save, taking 12d6 piercing damage on a failure or half on a success. The primary target has disadvantage on the save and cannot benefit from half or three-quarters cover.",
@@ -94,7 +94,7 @@
     },
     {
       key:"flashbang-homing",
-      company:"Lumen Optics",
+      company:"Bastion Strategic",
       name:"Grenade Flashbang Homing",
       mk:1, price:750, availability:"Common", delivery:"homing",
       effectText:"Choose a creature you can see within 60 ft. The flashbang homes to it and bursts in a 15-ft radius. Creatures make a Constitution save, taking 2d6 thunder damage on a failure or half on a success. On a failure they are Deafened, lose reactions, and—if they rely on sight—are Blinded until the end of their next turn. The primary target has disadvantage on the save. Effects clean themselves up automatically.",
@@ -142,7 +142,7 @@
     },
     {
       key:"recon-regular",
-      company:"Lumen Optics",
+      company:"Corvus Neural",
       name:"Grenade Recon Regular",
       mk:2, price:600, availability:"Professional", delivery:"regular",
       effectText:"Throw to a point within 60 ft. Place a 30-ft-radius scan template. The grenade immediately identifies creatures, active cyberware, and networked devices inside the area to the operator. The scan is instantaneous and the template removes itself automatically after resolving.",
