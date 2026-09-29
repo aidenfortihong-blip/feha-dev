@@ -1,8 +1,10 @@
 {
-  "version": "0.10.130",
+  "version": "0.10.131",
   "updated": "2026-09-29",
-  "scope": "quickhack-catalog-rewrite-v2",
+  "scope": "quickhack-copy-cleanup",
   "notes": [
+    "Reworded the rewritten Quickhack effects to read like natural ability text instead of designer notes. Mechanical metadata such as save bypasses remains internal rather than being printed as phrases like 'No save.'",
+    "Quickhack mechanics and RAM costs from 0.10.130 are unchanged; this pass only cleans the player-facing wording and bumps the rewrite marker so existing world and owned copies are refreshed.",
     "Rewrote the full 20-item Quickhack catalog into a single canonical FEHA_QUICKHACK_CATALOG module so RAM/effect definitions are no longer scattered across stale item descriptions.",
     "Blind is now full Blinded for 1 turn unless the target has blindsense; Brain Melt is 10d6 psychic; Breach Protocol opens a locked networked door; Comms Call In taps a failed-Wisdom target's comms; Comms Noise Deafens for 2 turns and blocks comms.",
     "Contagion is now an instantaneous placeable 10-ft gas burst for 8d6 poison; EMP Overload is 12d12 lightning with failed-save reaction loss; Grenade Explode has no save and uses the explosive's own damage/radius; Locomotion Malfunction is legs-only with no save.",
