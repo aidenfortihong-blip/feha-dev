@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.128";
+  const VERSION = "0.10.129";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -363,8 +363,32 @@
 
   async function applyResolvedDamage(targetActor,amount,context={}) {
     const damage = Math.max(0,Math.floor(Number(amount) || 0));
-    const before = targetHP(targetActor);
 
+    if (!game.user?.isGM) {
+      const sync = globalThis.FEHA_MULTIPLAYER_SYNC;
+
+      if (!sync?.applyQuickhackDamage) {
+        throw new Error(
+          "Quickhack approval service is unavailable."
+        );
+      }
+
+      return sync.applyQuickhackDamage({
+        operatorActorId:context.operatorActor?.id,
+        quickhackItemId:context.item?.id,
+        targetTokenId:
+          context.targetToken?.id ??
+          context.targetToken?.document?.id ??
+          null,
+        sceneId:
+          context.targetToken?.document?.parent?.id ??
+          canvas?.scene?.id ??
+          null,
+        damage
+      });
+    }
+
+    const before = targetHP(targetActor);
     let remaining = damage;
     let temp = before.temp;
     let value = before.value;
@@ -382,57 +406,13 @@
       update["system.attributes.hp.temp"] = temp;
     }
 
-    try {
-      // First try the real Foundry document update on THIS client.
-      // This deliberately avoids requiring a GM whenever the player already
-      // has sufficient Actor/Token ownership to make the write legally.
-      await targetActor.update(update);
+    await targetActor.update(update);
 
-      return {
-        damage,
-        before,
-        after:{value,max:before.max,temp}
-      };
-    } catch (localErr) {
-      if (game.user?.isGM) throw localErr;
-
-      const message = String(
-        localErr?.message ??
-        localErr ??
-        ""
-      ).toLowerCase();
-
-      const looksLikePermissionFailure =
-        message.includes("permission") ||
-        message.includes("ownership") ||
-        message.includes("not authorized") ||
-        message.includes("not allowed") ||
-        message.includes("forbidden");
-
-      if (!looksLikePermissionFailure) {
-        throw localErr;
-      }
-
-      const sync = globalThis.FEHA_MULTIPLAYER_SYNC;
-
-      if (!sync?.applyQuickhackDamage) {
-        throw localErr;
-      }
-
-      return sync.applyQuickhackDamage({
-        operatorActorId:context.operatorActor?.id,
-        quickhackItemId:context.item?.id,
-        targetTokenId:
-          context.targetToken?.id ??
-          context.targetToken?.document?.id ??
-          null,
-        sceneId:
-          context.targetToken?.document?.parent?.id ??
-          canvas?.scene?.id ??
-          null,
-        damage
-      });
-    }
+    return {
+      damage,
+      before,
+      after:{value,max:before.max,temp}
+    };
   }
 
   function syncQuickhackRamUI(actor,resolution=null) {
@@ -3698,6 +3678,10 @@
 
             let result = null;
 
+            if (!game.user?.isGM) {
+              qhButton.textContent = "AWAITING GM APPROVAL...";
+            }
+
             try {
               result =
                 await applyResolvedDamage(
@@ -3797,6 +3781,7 @@
               )
             );
 
+            qhButton.textContent = "APPLY DAMAGE";
             qhButton.disabled = false;
             delete qhButton.dataset.busy;
           }
