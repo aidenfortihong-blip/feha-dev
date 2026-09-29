@@ -15,10 +15,13 @@
     baseJs:"latest-dev.js",
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
     consumables:"foundry/FEHA_CONSUMABLE_CATALOG.js",
+    armor:"foundry/FEHA_ARMOR_CATALOG.js",
     grenadeRuntime:"foundry/FEHA_GRENADE_RUNTIME.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
     specialRetirement:"foundry/FEHA_SPECIAL_RETIREMENT.js",
+    armorRuntime:"foundry/FEHA_ARMOR_RUNTIME.js",
+    lumenRetirement:"foundry/FEHA_LUMEN_RETIREMENT.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
     quickhackRuntime:"foundry/cyberdeck/FEHA_QUICKHACK_RUNTIME.js",
@@ -173,7 +176,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","core","modRetirement","specialRetirement","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -256,9 +259,12 @@
     evaluate(source.baseJs,files.baseJs,sha);
     evaluate(source.grenades,files.grenades,sha);
     evaluate(source.consumables,files.consumables,sha);
+    evaluate(source.armor,files.armor,sha);
     evaluate(source.core,files.core,sha);
     evaluate(source.modRetirement,files.modRetirement,sha);
     evaluate(source.specialRetirement,files.specialRetirement,sha);
+    evaluate(source.armorRuntime,files.armorRuntime,sha);
+    evaluate(source.lumenRetirement,files.lumenRetirement,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
@@ -298,6 +304,8 @@
     const requiredModules = [
       "modRetirement",
       "specialRetirement",
+      "armorRuntime",
+      "lumenRetirement",
       "grenadeRuntime",
       "quickhacks",
       "quickhackAuthority",
@@ -330,6 +338,16 @@
     const consumableCatalog =
       globalThis.FEHA_CONSUMABLE_CATALOG ??
       game.adk?.consumables ??
+      null;
+
+    const armorCatalog =
+      globalThis.FEHA_ARMOR_CATALOG ??
+      game.adk?.armor ??
+      null;
+
+    const armorRuntime =
+      globalThis.FEHA_ARMOR_RUNTIME ??
+      globalThis.FEHA_CYBER_CORE?.module?.("armorRuntime") ??
       null;
 
     const grenadeRuntime =
@@ -381,6 +399,24 @@
     );
 
     requireMethods(
+      "Armor Catalog",
+      armorCatalog,
+      ["list","definition","migrateAll","rewriteDescription"]
+    );
+
+    requireMethods(
+      "Armor Runtime",
+      armorRuntime,
+      [
+        "equippedDefinition",
+        "quickhackSaveBonus",
+        "empSaveAdvantage",
+        "weaponDamageReduction",
+        "adjustDamage"
+      ]
+    );
+
+    requireMethods(
       "Grenade Runtime",
       grenadeRuntime,
       [
@@ -423,6 +459,9 @@
     const consumableDefs =
       consumableCatalog.list?.() ?? [];
 
+    const armorDefs =
+      armorCatalog.list?.() ?? [];
+
     const quickhackDefs =
       quickhackCatalog.list?.() ?? [];
 
@@ -437,6 +476,13 @@
       throw new Error(
         "Consumable integration expected 24 canonical products but found "+
         consumableDefs.length+"."
+      );
+    }
+
+    if (armorDefs.length !== 35) {
+      throw new Error(
+        "Armor integration expected 35 canonical pieces after Lumen retirement but found "+
+        armorDefs.length+"."
       );
     }
 
@@ -460,6 +506,7 @@
       "FEHA DEV // ITEM CONTRACTS // OK // "+
       grenadeDefs.length+" grenades // "+
       consumableDefs.length+" consumables // "+
+      armorDefs.length+" armor // "+
       quickhackDefs.length+" quickhacks"
     );
 
@@ -498,6 +545,16 @@
         console.info(
           "FEHA DEV // CONSUMABLE CATALOG CANONICALIZED",
           consumableMigration
+        );
+      }
+
+      const armorMigration =
+        await globalThis.FEHA_ARMOR_CATALOG?.migrateAll?.();
+
+      if (armorMigration) {
+        console.info(
+          "FEHA DEV // ARMOR CATALOG CANONICALIZED",
+          armorMigration
         );
       }
 
@@ -555,10 +612,17 @@
               globalThis.FEHA_CONSUMABLE_CATALOG?.definition?.(document)
             );
 
+          const isArmor =
+            document?.documentName === "Item" &&
+            Boolean(
+              globalThis.FEHA_ARMOR_CATALOG?.definition?.(document)
+            );
+
           if (
             isQuickhack ||
             isGrenade ||
             isConsumable ||
+            isArmor ||
             app?.rendered === true
           ) {
             await Promise.resolve(app.render?.(true));
