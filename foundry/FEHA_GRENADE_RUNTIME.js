@@ -2256,8 +2256,73 @@
     await cleanupTemplates();
   }
 
+  function injectGrenadeSheetButton(app,html) {
+    const item =
+      app?.document ??
+      app?.item ??
+      app?.object ??
+      null;
+
+    if (!isGrenade(item)) return;
+
+    const root =
+      html instanceof HTMLElement
+        ? html
+        : html?.[0] ?? null;
+
+    if (!root?.querySelector) return;
+    if (root.querySelector("[data-feha-grenade-use]")) return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.fehaGrenadeUse = "1";
+    button.innerHTML =
+      '<i class="fa-solid fa-bomb"></i> THROW GRENADE';
+    button.style.cssText =
+      "width:100%;margin:4px 0 8px;padding:8px 10px;"+
+      "font-weight:900;letter-spacing:.08em;"+
+      "border:1px solid #d7a932;background:#19140a;color:#ffd95a;";
+
+    button.addEventListener("click",event => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      void api.use(item).catch(error => {
+        console.error("FEHA GRENADE // sheet use failed",error);
+        ui.notifications?.error?.(
+          "Grenade use failed: "+String(error?.message ?? error)
+        );
+      });
+    });
+
+    const target =
+      root.querySelector("form") ??
+      root.querySelector(".window-content") ??
+      root;
+
+    try {
+      target.prepend(button);
+    } catch {}
+  }
+
   function installHooks() {
     if (!globalThis.Hooks?.on) return;
+
+    hooks.push([
+      "renderItemSheet",
+      globalThis.Hooks.on(
+        "renderItemSheet",
+        (app,html) => injectGrenadeSheetButton(app,html)
+      )
+    ]);
+
+    hooks.push([
+      "renderItemSheetV2",
+      globalThis.Hooks.on(
+        "renderItemSheetV2",
+        (app,html) => injectGrenadeSheetButton(app,html)
+      )
+    ]);
 
     hooks.push([
       "dnd5e.preUseItem",
