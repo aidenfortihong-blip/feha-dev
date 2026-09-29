@@ -9,7 +9,7 @@
     throw new Error("FEHA_CAMERAS requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "0.1.1";
+  const VERSION = "0.1.2";
   const FLAG_SCOPE = "fleshEnshrouded";
   const ACTOR_FLAG = "cameraActor";
   const TOKEN_FLAG = "cameraToken";
@@ -73,10 +73,13 @@
   }
 
   function activeAuthorityGM() {
-    return collectionContents(game.users)
-      .filter(user => user?.isGM && user?.active)
-      .sort((a,b) => String(a.id).localeCompare(String(b.id)))[0] ??
-      null;
+    return (
+      game.users?.activeGM ??
+      collectionContents(game.users)
+        .filter(user => user?.isGM && user?.active)
+        .sort((a,b) => String(a.id).localeCompare(String(b.id)))[0] ??
+      null
+    );
   }
 
   function sceneRect(scene) {
