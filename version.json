@@ -1,10 +1,11 @@
 {
-  "version": "0.11.5",
+  "version": "0.11.6",
   "updated": "2026-09-29",
-  "scope": "jack-in-scene-aspect-ratio",
+  "scope": "jack-in-full-scene-plane",
   "notes": [
-    "JACK IN scene background now uses object-fit: cover instead of object-fit: fill, so the scene keeps its natural aspect ratio instead of being stretched/compressed.",
-    "Scene background is centered with object-position: center center.",
-    "Reverted the unrelated 0.11.4 actor portrait contain override; actor portrait behavior is back to the prior design."
+    "JACK IN now fits the entire Foundry scene into the viewport at the scene's real aspect ratio instead of cropping it to the ultra-wide JACK IN panel.",
+    "Actor, device, camera, trace, and operator coordinates stay attached to the same fitted scene plane, so spatial alignment is preserved.",
+    "Unused viewport area becomes dark gutter space rather than cutting off the map.",
+    "Zoom, pan, FIT, RESET, and camera placement now account for the fitted scene plane's centered offset."
   ]
 }
