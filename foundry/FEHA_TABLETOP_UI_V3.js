@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.10";
+  const VERSION = "0.11.11";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -3453,6 +3453,66 @@
     };
   }
 
+  function quickhackTransmitHud(root,item,target=null) {
+    if (!root?.isConnected) return null;
+
+    root.querySelector(".jack-qh-transmit")?.remove();
+
+    const hud = document.createElement("div");
+    hud.className = "jack-qh-transmit";
+    hud.innerHTML =
+      '<small>QUICKHACK // UPLOAD</small>'+
+      '<b>'+esc(item?.name ?? "UNKNOWN PROGRAM")+'</b>'+
+      '<span>'+(
+        target
+          ? "TARGET // "+esc(target?.name ?? target?.document?.name ?? target?.actor?.name ?? "UNKNOWN")
+          : "NETWORK EXECUTION"
+      )+'</span>'+
+      '<i></i>';
+
+    root.appendChild(hud);
+    requestAnimationFrame(() => hud.classList.add("is-live"));
+    return hud;
+  }
+
+  async function finishQuickhackTransmit(root,hud,{success=true,message=""}={}) {
+    if (!hud) return;
+
+    hud.classList.remove("is-live");
+    hud.classList.add(success ? "is-success" : "is-failed");
+
+    const label = hud.querySelector("small");
+    const detail = hud.querySelector("span");
+
+    if (label) {
+      label.textContent =
+        success
+          ? "QUICKHACK // EXECUTED"
+          : "QUICKHACK // FAILED";
+    }
+
+    if (detail && message) {
+      detail.textContent = message;
+    }
+
+    if (!success) {
+      await new Promise(resolve => setTimeout(resolve,650));
+      hud.remove();
+      return;
+    }
+
+    await new Promise(resolve => setTimeout(resolve,280));
+
+    if (root?.isConnected) {
+      root.classList.add("is-qh-glitch-exit");
+    }
+
+    await new Promise(resolve => setTimeout(resolve,360));
+
+    root?.remove?.();
+    document.getElementById(ROOT_ID)?.remove?.();
+  }
+
   function bindJack(root,actor) {
     root.onclick = async event => {
       const jackButton = event.target?.closest?.("[data-jack-action]") ?? null;
@@ -4100,6 +4160,7 @@
           sceneModel(actor);
 
         let ramTicket = null;
+        let transmitHud = null;
 
         try {
           if (
@@ -4159,6 +4220,17 @@
 
           root.dataset.executing = "1";
           button.disabled = true;
+
+          transmitHud =
+            quickhackTransmitHud(
+              root,
+              item,
+              target
+            );
+
+          ui?.notifications?.info?.(
+            "QUICKHACK UPLOAD // "+item.name
+          );
 
           globalThis.FEHA_SOUNDS?.play?.(
             "scan",
@@ -4220,6 +4292,15 @@
           ui?.notifications?.info?.(
             item.name+" // EXECUTED"
           );
+
+          await finishQuickhackTransmit(
+            root,
+            transmitHud,
+            {
+              success:true,
+              message:"UPLOAD COMPLETE // RAM "+hackCost(item)+" SPENT"
+            }
+          );
         } catch (err) {
           const wasCancelled =
             err?.code ===
@@ -4239,6 +4320,20 @@
                   : "."
               )
             );
+
+            await finishQuickhackTransmit(
+              root,
+              transmitHud,
+              {
+                success:false,
+                message:
+                  err?.message
+                    ? String(err.message)
+                    : "UPLOAD ABORTED"
+              }
+            );
+          } else {
+            transmitHud?.remove?.();
           }
         } finally {
           if (root?.isConnected) {
