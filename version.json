@@ -1,12 +1,12 @@
 {
-  "version": "0.11.10",
+  "version": "0.11.11",
   "updated": "2026-09-29",
-  "scope": "jack-in-square-operator-and-zoom-tuning",
+  "scope": "quickhack-feedback-and-chat-readability",
   "notes": [
-    "Operator now uses the actual scene token art first and is forced into the same true square portrait treatment as other actor nodes.",
-    "Operator label/rings remain separate from the square portrait and do not change its aspect ratio.",
-    "Maximum JACK IN zoom reduced from 300% to 200% because fixed-size actor nodes felt visually detached at extreme magnification.",
-    "Zoom button increments are gentler while 100% remains unchanged.",
-    "All actor/operator anchors and trace/device/camera alignment are unchanged."
+    "Quickhack chat cards now force readable light text, cyan labels, yellow state text, and clear save success/failure colors even under Foundry light chat themes.",
+    "Clicking RUN now immediately displays a centered QUICKHACK UPLOAD transmission HUD and a player notification instead of appearing unresponsive.",
+    "Successful Quickhacks change the HUD to EXECUTED, play a short cyberpunk glitch-out, then close JACK IN and the Cyberdeck so the player immediately returns to the tabletop to see the result.",
+    "Failed Quickhacks visibly show FAILED in the transmission HUD and keep the client open.",
+    "Quickhack runtime bumped to 1.0.1; no balance values changed."
   ]
 }
