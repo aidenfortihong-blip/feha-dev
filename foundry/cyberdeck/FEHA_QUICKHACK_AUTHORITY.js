@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.0.1";
+  const VERSION = "2.1.0";
   const FLAG = "fleshEnshrouded";
   const CH = "module.flesh-enshrouded-heart-ablaze";
   const MARK = "fehaQuickhackAuthorityV2";
@@ -35,6 +35,33 @@
     if (Array.isArray(collection.contents)) return collection.contents;
     try { return [...collection]; } catch { return []; }
   };
+
+  function actorIdentity(actor) {
+    return String(
+      actor?.uuid ??
+      actor?.id ??
+      ""
+    );
+  }
+
+  function runtimeActors() {
+    const actors = new Map();
+
+    for (const actor of list(game.actors)) {
+      const key = actorIdentity(actor);
+      if (key) actors.set(key,actor);
+    }
+
+    for (const scene of list(game.scenes)) {
+      for (const token of list(scene?.tokens)) {
+        const actor = token?.actor ?? null;
+        const key = actorIdentity(actor);
+        if (key) actors.set(key,actor);
+      }
+    }
+
+    return [...actors.values()];
+  }
 
   const norm = value => String(value ?? "")
     .normalize("NFKD")
@@ -1382,20 +1409,9 @@
   async function cleanupExpiredByTime() {
     if (!game.user?.isGM) return;
 
-    const actors = new Map();
-
-    for (const actor of list(game.actors)) {
-      if (actor?.uuid) actors.set(actor.uuid,actor);
-    }
-
-    for (const token of list(canvas?.scene?.tokens)) {
-      const actor = token?.actor ?? null;
-      if (actor?.uuid) actors.set(actor.uuid,actor);
-    }
-
     const now = Date.now();
 
-    for (const actor of actors.values()) {
+    for (const actor of runtimeActors()) {
       await processActorExpiry(actor,{now});
     }
   }
@@ -1609,8 +1625,57 @@
     }
   }
 
+  function reactionLocked(actor) {
+    if (!actor) return false;
+
+    return list(actor.effects).some(effect =>
+      effect?.flags?.[FLAG]?.noReactions === true
+    );
+  }
+
+  function activityActor(activity) {
+    return (
+      activity?.actor ??
+      activity?.item?.actor ??
+      activity?.item?.parent ??
+      null
+    );
+  }
+
+  function reactionActivity(activity) {
+    const type =
+      String(
+        activity?.activation?.type ??
+        activity?.system?.activation?.type ??
+        activity?.item?.system?.activation?.type ??
+        ""
+      ).toLowerCase();
+
+    return type.startsWith("reaction");
+  }
+
   function installHooks() {
     if (!globalThis.Hooks?.on) return;
+
+    hooks.push([
+      "dnd5e.preUseActivity",
+      globalThis.Hooks.on(
+        "dnd5e.preUseActivity",
+        activity => {
+          if (!reactionActivity(activity)) return true;
+
+          const actor = activityActor(activity);
+          if (!reactionLocked(actor)) return true;
+
+          ui.notifications?.warn?.(
+            String(actor?.name ?? "Target")+
+            " cannot take reactions right now."
+          );
+
+          return false;
+        }
+      )
+    ]);
 
     hooks.push([
       "updateCombat",
