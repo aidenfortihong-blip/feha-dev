@@ -14,6 +14,7 @@
     v3Css:"cyberdeck-v3.css",
     baseJs:"latest-dev.js",
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
+    consumables:"foundry/FEHA_CONSUMABLE_CATALOG.js",
     grenadeRuntime:"foundry/FEHA_GRENADE_RUNTIME.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
@@ -171,7 +172,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","core","modRetirement","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","core","modRetirement","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -253,6 +254,7 @@
 
     evaluate(source.baseJs,files.baseJs,sha);
     evaluate(source.grenades,files.grenades,sha);
+    evaluate(source.consumables,files.consumables,sha);
     evaluate(source.core,files.core,sha);
     evaluate(source.modRetirement,files.modRetirement,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
@@ -322,6 +324,11 @@
       game.adk?.grenades ??
       null;
 
+    const consumableCatalog =
+      globalThis.FEHA_CONSUMABLE_CATALOG ??
+      game.adk?.consumables ??
+      null;
+
     const grenadeRuntime =
       globalThis.FEHA_GRENADE_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("grenadeRuntime") ??
@@ -365,6 +372,12 @@
     );
 
     requireMethods(
+      "Consumable Catalog",
+      consumableCatalog,
+      ["list","definition","migrateAll","rewriteDescription"]
+    );
+
+    requireMethods(
       "Grenade Runtime",
       grenadeRuntime,
       [
@@ -404,6 +417,9 @@
     const grenadeDefs =
       grenadeCatalog.list?.() ?? [];
 
+    const consumableDefs =
+      consumableCatalog.list?.() ?? [];
+
     const quickhackDefs =
       quickhackCatalog.list?.() ?? [];
 
@@ -411,6 +427,13 @@
       throw new Error(
         "Grenade integration expected 18 canonical grenades but found "+
         grenadeDefs.length+"."
+      );
+    }
+
+    if (consumableDefs.length !== 24) {
+      throw new Error(
+        "Consumable integration expected 24 canonical products but found "+
+        consumableDefs.length+"."
       );
     }
 
@@ -431,8 +454,9 @@
     }
 
     console.info(
-      "FEHA DEV // GRENADE + QUICKHACK CONTRACTS // OK // "+
+      "FEHA DEV // ITEM CONTRACTS // OK // "+
       grenadeDefs.length+" grenades // "+
+      consumableDefs.length+" consumables // "+
       quickhackDefs.length+" quickhacks"
     );
 
@@ -461,6 +485,16 @@
         console.info(
           "FEHA DEV // GRENADE CATALOG CANONICALIZED",
           grenadeMigration
+        );
+      }
+
+      const consumableMigration =
+        await globalThis.FEHA_CONSUMABLE_CATALOG?.migrateAll?.();
+
+      if (consumableMigration) {
+        console.info(
+          "FEHA DEV // CONSUMABLE CATALOG CANONICALIZED",
+          consumableMigration
         );
       }
 
@@ -512,7 +546,18 @@
               globalThis.FEHA_GRENADE_CATALOG?.definition?.(document)
             );
 
-          if (isQuickhack || isGrenade || app?.rendered === true) {
+          const isConsumable =
+            document?.documentName === "Item" &&
+            Boolean(
+              globalThis.FEHA_CONSUMABLE_CATALOG?.definition?.(document)
+            );
+
+          if (
+            isQuickhack ||
+            isGrenade ||
+            isConsumable ||
+            app?.rendered === true
+          ) {
             await Promise.resolve(app.render?.(true));
           }
         } catch (refreshError) {
