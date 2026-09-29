@@ -185,6 +185,8 @@
           catalogEnabled:true,
           curatedCatalogV10:true,
           marketReady:true,
+          marketPass:"weapon-readiness-1.0",
+          marketCategory:"Weapons",
           weaponReadiness:"done",
           weaponReadinessVersion:VERSION,
           shopType:"arms"
@@ -194,6 +196,8 @@
           catalogEnabled:false,
           curatedCatalogV10:false,
           marketReady:false,
+          marketPass:"weapon-readiness-1.0",
+          marketCategory:"Weapons_Unfinished",
           weaponReadiness:"not-done",
           weaponReadinessVersion:VERSION,
           shopType:"none"
