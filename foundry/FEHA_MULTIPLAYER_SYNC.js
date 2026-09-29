@@ -2,7 +2,7 @@
 (() => {
   const core=globalThis.FEHA_CYBER_CORE;
   if(!core) throw new Error("FEHA_MULTIPLAYER_SYNC requires FEHA_CYBER_CORE.");
-  const VERSION="0.2.0", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
+  const VERSION="0.3.0", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
   const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000, APPROVAL_TIMEOUT=600000;
   const PLAYABLE=new Set(["ponyboy","derke","sasha","zach"]), pending=new Map(), hooks=[];
   let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, approvalClickHandler=null, stockChain=Promise.resolve();
@@ -235,21 +235,13 @@
       throw new Error("Quickhack authority request is incomplete.");
     }
 
-    if(game.user?.isGM){
-      const v=validateHack({
-        userId:game.user.id,
-        operatorActorId,
-        quickhackItemId,
-        targetTokenId,
-        sceneId,
-        damage
-      });
-      return damageLocal(v.target,v.damage);
+    const authority=globalThis.FEHA_QUICKHACK_AUTHORITY;
+
+    if(!authority?.damage){
+      throw new Error("Silent Quickhack authority module is unavailable.");
     }
 
-    return createQuickhackApproval({
-      requestId:rid(),
-      userId:game.user.id,
+    return authority.damage({
       operatorActorId,
       quickhackItemId,
       targetTokenId,
@@ -414,8 +406,8 @@
     if(k==="purchaseRejected"){if(String(p.userId??"")===String(game.user?.id??""))ui.notifications?.warn?.("Market stock changed before purchase completed. "+String(p.itemName??"Item")+" was removed and refunded.");return}
     if(k==="uiOpen"){if(String(p.userId??"")!==String(game.user?.id??""))return;const sender=game.users?.get?.(p.senderId);if(!sender?.isGM||!sender.active)return;try{await openLocal(p.app,p.actorId)}catch(e){console.error("FEHA remote UI open failed",e)}}
   }
-  function installHooks(){if(!globalThis.Hooks?.on)return;hooks.push(["updateChatMessage",globalThis.Hooks.on("updateChatMessage",message=>settleQuickhackApproval(message))]);hooks.push(["updateActor",globalThis.Hooks.on("updateActor",a=>queueSurface(a?.id))]);hooks.push(["createItem",globalThis.Hooks.on("createItem",(i,_o,u)=>{queueSurface(i?.parent?.id);reconcilePurchase(i,u)})]);hooks.push(["updateItem",globalThis.Hooks.on("updateItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["deleteItem",globalThis.Hooks.on("deleteItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["updateSetting",globalThis.Hooks.on("updateSetting",s=>{const k=String(s?.key??s?._source?.key??"");if(k===NS+"."+STOCK||k.endsWith("."+STOCK))queueMarket();if(k===NS+"."+SESSION||k.endsWith("."+SESSION))void applySession()})]);hooks.push(["updateScene",globalThis.Hooks.on("updateScene",s=>void core.emit("devices:changed",{sceneId:s?.id??null,remote:true}))])}
+  function installHooks(){if(!globalThis.Hooks?.on)return;hooks.push(["updateActor",globalThis.Hooks.on("updateActor",a=>queueSurface(a?.id))]);hooks.push(["createItem",globalThis.Hooks.on("createItem",(i,_o,u)=>{queueSurface(i?.parent?.id);reconcilePurchase(i,u)})]);hooks.push(["updateItem",globalThis.Hooks.on("updateItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["deleteItem",globalThis.Hooks.on("deleteItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["updateSetting",globalThis.Hooks.on("updateSetting",s=>{const k=String(s?.key??s?._source?.key??"");if(k===NS+"."+STOCK||k.endsWith("."+STOCK))queueMarket();if(k===NS+"."+SESSION||k.endsWith("."+SESSION))void applySession()})]);hooks.push(["updateScene",globalThis.Hooks.on("updateScene",s=>void core.emit("devices:changed",{sceneId:s?.id??null,remote:true}))])}
   function removeHooks(){for(const[e,id]of hooks.splice(0))try{globalThis.Hooks.off(e,id)}catch{}}
-  const api={version:VERSION,canUseAuthority,authorityGM,knownGMs,actorForUser,localActor,attachUiBridges,openForUser,applyQuickhackDamage,async init(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=receive;game.socket?.on?.(CH,socketHandler);ensureSession();installHooks();if(!marketHandler){marketHandler=true;document.addEventListener("click",marketClick,true)}if(!approvalClickHandler){approvalClickHandler=handleQuickhackApprovalClick;document.addEventListener("click",approvalClickHandler,true)}console.log("FEHA MULTIPLAYER SYNC",VERSION,"ready")},async destroy(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=null;for(const d of [...pending.values()])try{d.cancel?.()}catch{}pending.clear();removeHooks();if(marketHandler){marketHandler=false;document.removeEventListener("click",marketClick,true)}if(approvalClickHandler){document.removeEventListener("click",approvalClickHandler,true);approvalClickHandler=null}restore();clearTimeout(marketTimer);clearTimeout(surfaceTimer);clearTimeout(sessionTimer);if(globalThis.FEHA_MULTIPLAYER_SYNC===api)delete globalThis.FEHA_MULTIPLAYER_SYNC}};
+  const api={version:VERSION,canUseAuthority,authorityGM,knownGMs,actorForUser,localActor,attachUiBridges,openForUser,applyQuickhackDamage,async init(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=receive;game.socket?.on?.(CH,socketHandler);ensureSession();installHooks();if(!marketHandler){marketHandler=true;document.addEventListener("click",marketClick,true)}console.log("FEHA MULTIPLAYER SYNC",VERSION,"ready // Quickhack approvals disabled; silent authority active")},async destroy(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=null;for(const d of [...pending.values()])try{d.cancel?.()}catch{}pending.clear();removeHooks();if(marketHandler){marketHandler=false;document.removeEventListener("click",marketClick,true)}if(approvalClickHandler){document.removeEventListener("click",approvalClickHandler,true);approvalClickHandler=null}restore();clearTimeout(marketTimer);clearTimeout(surfaceTimer);clearTimeout(sessionTimer);if(globalThis.FEHA_MULTIPLAYER_SYNC===api)delete globalThis.FEHA_MULTIPLAYER_SYNC}};
   core.registerModule("multiplayerSync",api);globalThis.FEHA_MULTIPLAYER_SYNC=api;
 })();
