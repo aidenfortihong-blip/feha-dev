@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.8";
+  const VERSION = "0.11.9";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1282,6 +1282,17 @@
       ) || 100
     );
 
+    const canvasScale = Math.max(
+      0.01,
+      Math.abs(
+        Number(
+          canvas?.stage?.worldTransform?.a ??
+          canvas?.stage?.scale?.x ??
+          1
+        ) || 1
+      )
+    );
+
     const cameraService = cyberModule("cameras");
 
     const allSceneTokens =
@@ -1394,7 +1405,9 @@
       tokenWidthPct:(operatorPixelWidth/rw)*100,
       tokenHeightPct:(operatorPixelHeight/rh)*100,
       tokenPixelWidth:operatorPixelWidth,
-      tokenPixelHeight:operatorPixelHeight
+      tokenPixelHeight:operatorPixelHeight,
+      tokenScreenWidth:operatorPixelWidth*canvasScale,
+      tokenScreenHeight:operatorPixelHeight*canvasScale
     };
 
     const endpointTokens = allSceneTokens.filter(token => {
@@ -1512,6 +1525,8 @@
         tokenHeightPct,
         tokenPixelWidth,
         tokenPixelHeight,
+        tokenScreenWidth:tokenPixelWidth*canvasScale,
+        tokenScreenHeight:tokenPixelHeight*canvasScale,
         index
       };
     });
@@ -1873,7 +1888,16 @@
     const operator = world?.querySelector?.(".jack-operator");
     if (!world || !operator) return;
 
-    const fixedSize = 96;
+    const fixedSize = Math.max(
+      1,
+      Math.round(
+        Math.max(
+          Number(operator.dataset.tokenScreenWidth) || 0,
+          Number(operator.dataset.tokenScreenHeight) || 0,
+          1
+        )
+      )
+    );
 
     operator.style.setProperty(
       "--jack-operator-size",
@@ -1886,12 +1910,21 @@
     const world = root?.querySelector?.(".jack-world");
     if (!world) return;
 
-    const fixedSize = 96;
-
     for (
       const node of
       world.querySelectorAll(".jack-node[data-token-id]")
     ) {
+      const fixedSize = Math.max(
+        1,
+        Math.round(
+          Math.max(
+            Number(node.dataset.tokenScreenWidth) || 0,
+            Number(node.dataset.tokenScreenHeight) || 0,
+            1
+          )
+        )
+      );
+
       node.style.setProperty(
         "--jack-node-size",
         fixedSize+"px"
@@ -1994,8 +2027,8 @@
         String(1/zoom)
       );
 
-      // Actor nodes are constant screen-size. Their world coordinates still
-      // move with zoom/pan, but the square itself never grows or shrinks.
+      // Actor nodes are exact screen-space mirrors of their Foundry token
+      // footprint. JACK IN zoom moves their coordinates but never changes size.
       world.style.setProperty(
         "--jack-actor-scale",
         String(1/zoom)
@@ -2006,14 +2039,10 @@
         String(relayReadability/zoom)
       );
 
-      // Wielder/operator core:
-      // normal size at 100% zoom, growing smoothly to 1.5x at max zoom.
-      const operatorScreenScale =
-        1 + ((zoom-1) / 2) * .5;
-
+      // Operator follows the exact same fixed-screen-size rule as every actor.
       world.style.setProperty(
         "--jack-operator-scale",
-        String(operatorScreenScale/zoom)
+        String(1/zoom)
       );
 
       world.style.setProperty(
@@ -2926,6 +2955,8 @@
       '" data-token-height-pct="'+Number(n.tokenHeightPct||0).toFixed(6)+
       '" data-token-pixel-width="'+Number(n.tokenPixelWidth||0).toFixed(3)+
       '" data-token-pixel-height="'+Number(n.tokenPixelHeight||0).toFixed(3)+
+      '" data-token-screen-width="'+Number(n.tokenScreenWidth||0).toFixed(3)+
+      '" data-token-screen-height="'+Number(n.tokenScreenHeight||0).toFixed(3)+
       '" data-jack-anchor-x="'+n.x.toFixed(4)+
       '" data-jack-anchor-y="'+n.y.toFixed(4)+'">'+
         '<img src="'+esc(n.img)+'" alt="'+esc(n.displayName)+'">'+
@@ -3012,7 +3043,9 @@
             data-token-width-pct="${Number(net.operator.tokenWidthPct||0).toFixed(6)}"
             data-token-height-pct="${Number(net.operator.tokenHeightPct||0).toFixed(6)}"
             data-token-pixel-width="${Number(net.operator.tokenPixelWidth||0).toFixed(3)}"
-            data-token-pixel-height="${Number(net.operator.tokenPixelHeight||0).toFixed(3)}">
+            data-token-pixel-height="${Number(net.operator.tokenPixelHeight||0).toFixed(3)}"
+            data-token-screen-width="${Number(net.operator.tokenScreenWidth||0).toFixed(3)}"
+            data-token-screen-height="${Number(net.operator.tokenScreenHeight||0).toFixed(3)}">
             <div></div>
             <div class="jack-operator-hub">${operatorPorts}</div>
             <img src="${esc(portrait(actor))}" alt="">
