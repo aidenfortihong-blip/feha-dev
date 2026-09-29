@@ -2,7 +2,7 @@
 (() => {
   const core=globalThis.FEHA_CYBER_CORE;
   if(!core) throw new Error("FEHA_MULTIPLAYER_SYNC requires FEHA_CYBER_CORE.");
-  const VERSION="0.1.1", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
+  const VERSION="0.1.2", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
   const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000;
   const PLAYABLE=new Set(["ponyboy","derke","sasha","zach"]), pending=new Map(), hooks=[];
   let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, stockChain=Promise.resolve();
@@ -28,20 +28,89 @@
   function hp(a){const h=a?.system?.attributes?.hp??{};return{value:Math.max(0,Number(h.value??0)),max:Math.max(0,Number(h.max??0)),temp:Math.max(0,Number(h.temp??0))}}
   async function damageLocal(a,amount){const damage=Math.max(0,Math.floor(Number(amount)||0)),before=hp(a);let rem=damage,temp=before.temp,value=before.value;const used=Math.min(temp,rem);temp-=used;rem-=used;value=Math.max(0,value-rem);const u={"system.attributes.hp.value":value};if(temp!==before.temp)u["system.attributes.hp.temp"]=temp;await a.update(u);return{damage,before,after:{value,max:before.max,temp}}}
   function validateHack(p){
-    const user=game.users?.get?.(p.userId),op=game.actors?.get?.(p.operatorActorId),scene=game.scenes?.get?.(p.sceneId),token=scene?.tokens?.get?.(p.targetTokenId),target=token?.actor??game.actors?.get?.(p.targetActorId),item=op?.items?.get?.(p.quickhackItemId);
-    if(!user?.active||!op||!scene||!token||!target||!item)throw new Error("Quickhack authority context is unavailable.");
-    if(!owns(user,op))throw new Error("Requesting player does not own the operator Actor.");
-    const tokenActor=String(token.actorId??token.actor?.id??"");if(tokenActor&&tokenActor!==String(p.targetActorId??""))throw new Error("Quickhack target no longer matches the Scene token.");
-    const f=item.flags?.[FLAG]??{}, isHack=f.quickhack===true||f.isQuickhack===true||String(f.sourceCategory??"").toLowerCase()==="quickhacks"||f.loadedQuickhack===true;
+    const user=game.users?.get?.(p.userId)??null;
+    const op=game.actors?.get?.(p.operatorActorId)??null;
+    const scene=game.scenes?.get?.(p.sceneId)??null;
+    const token=scene?.tokens?.get?.(p.targetTokenId)??null;
+    const target=token?.actor??null;
+    const item=op?.items?.get?.(p.quickhackItemId)??null;
+
+    if(!user?.active)throw new Error("Requesting player is no longer online.");
+    if(!op)throw new Error("Quickhack operator Actor is unavailable.");
+    if(!scene)throw new Error("Quickhack Scene is unavailable.");
+    if(!token)throw new Error("Quickhack target Token is unavailable.");
+    if(!target)throw new Error("Quickhack target Actor is unavailable.");
+    if(!item)throw new Error("Quickhack software is unavailable.");
+
+    const assignedRaw=user.character??null;
+    const assignedId=
+      typeof assignedRaw==="string"
+        ? assignedRaw
+        : assignedRaw?.id??null;
+
+    if(
+      !owns(user,op) &&
+      String(assignedId??"")!==String(op.id)
+    ){
+      throw new Error("Requesting player is not authorized for the operator Actor.");
+    }
+
+    const f=item.flags?.[FLAG]??{};
+    const isHack=
+      f.quickhack===true||
+      f.isQuickhack===true||
+      String(f.sourceCategory??"").toLowerCase()==="quickhacks"||
+      f.loadedQuickhack===true;
+
     if(!isHack)throw new Error("Selected software is not a Quickhack.");
-    if(!(f.loadedQuickhack===true||f.quickhackLoaded===true||f.loaded===true))throw new Error("Quickhack is no longer loaded.");
-    return{target,damage:Math.max(0,Math.floor(Number(p.damage)||0))};
+    if(!(f.loadedQuickhack===true||f.quickhackLoaded===true||f.loaded===true)){
+      throw new Error("Quickhack is no longer loaded.");
+    }
+
+    return{
+      target,
+      damage:Math.max(0,Math.floor(Number(p.damage)||0))
+    };
   }
   async function applyQuickhackDamage(p={}){
-    const {operatorActorId,quickhackItemId,targetActorId,targetTokenId}=p,sceneId=p.sceneId??canvas?.scene?.id,damage=p.damage;
-    if(!operatorActorId||!quickhackItemId||!targetActorId||!targetTokenId||!sceneId)throw new Error("Quickhack authority request is incomplete.");
-    if(game.user?.isGM){const v=validateHack({userId:game.user.id,operatorActorId,quickhackItemId,targetActorId,targetTokenId,sceneId,damage});return damageLocal(v.target,v.damage)}
-    const gm=authorityGM();if(!gm)throw new Error("No online GM authority is available.");const id=rid(),result=wait(id);emit("hackReq",{requestId:id,userId:game.user.id,gmId:gm.id,operatorActorId,quickhackItemId,targetActorId,targetTokenId,sceneId,damage:Math.max(0,Math.floor(Number(damage)||0))});return (await result)?.result??null;
+    const {operatorActorId,quickhackItemId,targetTokenId}=p;
+    const sceneId=p.sceneId??canvas?.scene?.id;
+    const damage=p.damage;
+
+    if(!operatorActorId||!quickhackItemId||!targetTokenId||!sceneId){
+      throw new Error("Quickhack authority request is incomplete.");
+    }
+
+    if(game.user?.isGM){
+      const v=validateHack({
+        userId:game.user.id,
+        operatorActorId,
+        quickhackItemId,
+        targetTokenId,
+        sceneId,
+        damage
+      });
+      return damageLocal(v.target,v.damage);
+    }
+
+    const gm=authorityGM();
+    if(!gm)throw new Error("No online GM authority is available.");
+
+    const id=rid();
+    const result=wait(id);
+
+    emit("hackReq",{
+      requestId:id,
+      userId:game.user.id,
+      gmId:gm.id,
+      operatorActorId,
+      quickhackItemId,
+      targetTokenId,
+      sceneId,
+      damage:Math.max(0,Math.floor(Number(damage)||0))
+    });
+
+    return (await result)?.result??null;
   }
   const hasSetting=k=>Boolean(game.settings?.settings?.has?.(NS+"."+k));
   function ensureSession(){if(hasSetting(SESSION))return true;try{game.settings.register(NS,SESSION,{scope:"world",config:false,type:Object,default:{}});return true}catch{return hasSetting(SESSION)}}
