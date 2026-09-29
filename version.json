@@ -1,12 +1,11 @@
 {
-  "version": "0.11.13",
+  "version": "0.11.14",
   "updated": "2026-09-29",
-  "scope": "grenade-runtime-measured-templates-and-automation",
+  "scope": "grenade-card-readability-and-sheet-chrome-cleanup",
   "notes": [
-    "Physical grenades were rebalanced against FEHA firearm lethality: standard frags now deal 12d6, incendiaries 10d6, cutting 10d6, EMP 6d6-7d6, biohazard 8d6, and Ozob's Nose 15d6.",
-    "Added FEHA_GRENADE_RUNTIME.js with player-safe silent GM authority, measured-template placement, Homing and Sticky targeting behavior, one-roll AoE damage, saving throws, automatic short-duration statuses, automatic burn/bleed ticks, EMP cyberware disable/restore, Prone and blast knockback.",
-    "Persistent Smoke and Recon Sticky zones are real MeasuredTemplate documents, automatically follow attached tokens where appropriate, apply/remove zone markers, and delete themselves when their duration expires. Recon Regular performs an immediate 30-ft scan and self-cleans its template.",
-    "Native dnd5e grenade use is intercepted so using a grenade enters FEHA placement/targeting instead of the old empty consumable flow. Point throws show a live radius ghost before confirmation.",
-    "Cookoff now routes carried FEHA grenades directly through the canonical grenade runtime so hacked explosives detonate on the victim using their normal grenade damage, area, and effects."
+    "Grenade description cards now force readable light body text and metadata colors under Foundry light/parchment themes.",
+    "Grenades no longer use the legacy dnd5e 1 / 1 Charges meter; canonical migration clears uses.max and grenades consume quantity instead.",
+    "Grenade item and actor-sheet render hooks hide meaningless EQUIPPED / NOT EQUIPPED badges and any stale charge labels for grenade rows only.",
+    "Grenade runtime bumped to 1.0.1 and grenade catalog rewrite bumped to 2.1 so existing world and owned grenade descriptions are refreshed automatically."
   ]
 }
