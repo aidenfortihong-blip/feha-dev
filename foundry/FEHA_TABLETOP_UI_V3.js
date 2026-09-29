@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.131";
+  const VERSION = "0.10.132";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -233,28 +233,46 @@
   function quickhackRule(item) {
     const text = hackEffect(item);
     const lower = text.toLowerCase();
+    const catalogDef =
+      globalThis.FEHA_QUICKHACK_CATALOG?.definition?.(item) ??
+      null;
+    const meta = catalogDef?.meta ?? {};
 
     const saveMatch = text.match(
       /\b(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)\s+save\b/i
     );
 
-    const saveKey = saveMatch
-      ? ABILITY_KEYS[String(saveMatch[1]).toLowerCase()]
-      : null;
+    const saveKey =
+      meta.save ??
+      (
+        saveMatch
+          ? ABILITY_KEYS[String(saveMatch[1]).toLowerCase()]
+          : null
+      );
 
     const damageMatch = text.match(
       /\b(\d+d\d+(?:\s*[+-]\s*\d+)?)\s*(?:(acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|poison|psychic|radiant|slashing|thunder)\s+)?damage\b/i
     );
 
-    const damageFormula = damageMatch
-      ? String(damageMatch[1]).replace(/\s+/g,"")
-      : null;
+    const damageFormula =
+      meta.damage ??
+      (
+        damageMatch
+          ? String(damageMatch[1]).replace(/\s+/g,"")
+          : null
+      );
 
-    const damageType = damageMatch?.[2]
-      ? String(damageMatch[2]).toLowerCase()
-      : "untyped";
+    const damageType =
+      meta.damageType ??
+      (
+        damageMatch?.[2]
+          ? String(damageMatch[2]).toLowerCase()
+          : "untyped"
+      );
 
-    const halfOnSuccess = /half on success/i.test(text);
+    const halfOnSuccess =
+      meta.halfOnSuccess === true ||
+      /half on success|half as much on a success|half damage on a success/i.test(text);
     const lingeringSave =
       /save\s+ends?\s+(?:the\s+)?lingering/i.test(text) ||
       /save\s+ends?\s+(?:the\s+)?ongoing/i.test(text);
