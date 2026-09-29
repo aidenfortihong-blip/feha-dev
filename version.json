@@ -1,12 +1,15 @@
 {
-  "version": "0.11.20",
+  "version": "0.11.21",
   "updated": "2026-09-29",
-  "scope": "grenade-manufacturer-distribution",
+  "scope": "armor-manufacturer-rebuild-and-lumen-retirement",
   "notes": [
-    "Distributed the 18 canonical grenades across all eight FEHA manufacturers instead of defaulting almost everything to ForgeLine Industries.",
-    "Assignments follow company identity: Kurohane smoke/cutting, Bastion tactical flash/incendiary sticky, Lumen homing/recon targeting, Vektor smart sticky/incendiary variants, Helix biohazard, ForgeLine heavy conventional explosive/incendiary ordnance, Jade Arc EMP, and Corvus persistent network recon.",
-    "Grenade catalog migration now writes canonical manufacturer/company metadata, creates missing company folders under 04 — GRENADES, and moves world grenade items into the correct manufacturer folder.",
-    "Grenade cards now always display the canonical manufacturer from the catalog rather than stale legacy item metadata.",
-    "Owned grenades keep their inventory location but receive corrected manufacturer metadata and canonical grenade schema."
+    "Rebuilt FEHA body armor around seven active manufacturers with distinct AC, pricing, weight, Dexterity contribution, and one simple signature effect per company.",
+    "ForgeLine Industries is the heaviest raw-protection line; Bastion Strategic sits just below it as more measured tactical military armor.",
+    "Jade Arc Systems now owns heavy energy armor with lightning resistance and EMP-save advantage. Corvus Neural armor is expensive neural-security gear with Quickhack-save bonuses.",
+    "Vektor Dynamics armor is adaptive medium armor with up to +2 Dexterity contribution. Helix Vitae armor emphasizes movement speed. Kurohane Group armor uses full Dexterity contribution and adds Stealth bonuses.",
+    "Armor prices now treat armor as permanent progression gear: Mk I is attainable, Mk III is a serious restricted purchase, and Mk V is expensive endgame equipment.",
+    "Lumen Optics is retired as a manufacturer. Redundant Lumen armor and mod leftovers are removed; useful Lumen weapons, cyberware, grenades, and consumables are reassigned to surviving manufacturers and stale Lumen descriptions/company metadata are rewritten.",
+    "The canonical armor catalog contains 35 pieces: seven manufacturers with Mk I through Mk V.",
+    "Armor runtime connects Bastion weapon-hit damage reduction, Jade Arc custom lightning/EMP protection, and Corvus Quickhack defense to live mechanics."
   ]
 }
