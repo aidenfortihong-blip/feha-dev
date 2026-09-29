@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.1.0";
+  const VERSION = "2.2.0";
   const FLAG = "fleshEnshrouded";
   const CH = "module.flesh-enshrouded-heart-ablaze";
   const MARK = "fehaQuickhackAuthorityV2";
@@ -260,10 +260,22 @@
     };
   }
 
-  async function damageLocal(actor,amount) {
+  async function damageLocal(actor,amount,damageType="") {
+    const adjusted =
+      globalThis.FEHA_ARMOR_RUNTIME?.adjustDamage?.(
+        actor,
+        amount,
+        damageType,
+        {sourceKind:"quickhack"}
+      );
+
     const damage = Math.max(
       0,
-      Math.floor(Number(amount) || 0)
+      Math.floor(
+        Number(
+          adjusted ?? amount
+        ) || 0
+      )
     );
 
     const before = hp(actor);
@@ -344,12 +356,16 @@
 
     const localBonus = Number(ability?.bonuses?.save);
     const globalBonus = Number(actor?.system?.bonuses?.abilities?.save);
+    const armorBonus = Number(
+      globalThis.FEHA_ARMOR_RUNTIME?.quickhackSaveBonus?.(actor) ?? 0
+    );
 
     return (
       mod +
       prof +
       (Number.isFinite(localBonus) ? localBonus : 0) +
-      (Number.isFinite(globalBonus) ? globalBonus : 0)
+      (Number.isFinite(globalBonus) ? globalBonus : 0) +
+      (Number.isFinite(armorBonus) ? armorBonus : 0)
     );
   }
 
@@ -447,11 +463,19 @@
     const roll = await evaluateRoll(formula);
     const raw = Math.max(0,Math.floor(Number(roll.total ?? 0)));
     const applied = Math.floor(raw * factor);
-    const result = await damageLocal(base.target,applied);
+    const damageType =
+      String(base.definition?.meta?.damageType ?? "untyped");
+
+    const result =
+      await damageLocal(
+        base.target,
+        applied,
+        damageType
+      );
 
     return {
       formula,
-      type:String(base.definition?.meta?.damageType ?? "untyped"),
+      type:damageType,
       raw,
       applied,
       result
