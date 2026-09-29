@@ -11,7 +11,6 @@
   const COMPANY_ORDER = [
     "Kurohane Group",
     "Bastion Strategic",
-    "Lumen Optics",
     "Vektor Dynamics",
     "Helix Vitae",
     "ForgeLine Industries",
@@ -101,12 +100,12 @@
       effectText:"Gain 12 temporary HP."
     },
 
-    // LUMEN OPTICS
+    // VEKTOR FOCUS LINE // RETIRED LUMEN PRODUCTS
     {
       key:"lumen-focus",
       legacy:"Medium Quality Drink1",
-      name:"Lumen Focus",
-      company:"Lumen Optics",
+      name:"Vektor Focus",
+      company:"Vektor Dynamics",
       kind:"drink",
       mk:1,
       availability:"Common",
@@ -116,8 +115,8 @@
     {
       key:"lumen-focus-plus",
       legacy:"Medium Quality Drink12",
-      name:"Lumen Focus Plus",
-      company:"Lumen Optics",
+      name:"Vektor Focus Plus",
+      company:"Vektor Dynamics",
       kind:"drink",
       mk:1,
       availability:"Common",
@@ -127,8 +126,8 @@
     {
       key:"lumen-clearview",
       legacy:"Medium Quality Drink13",
-      name:"Lumen Clearview",
-      company:"Lumen Optics",
+      name:"Vektor Clearview",
+      company:"Vektor Dynamics",
       kind:"drink",
       mk:2,
       availability:"Professional",
