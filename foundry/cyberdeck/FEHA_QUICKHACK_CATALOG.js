@@ -88,8 +88,8 @@
       aliases:["Rollback","Generic Program"],
       mk:4,
       ramCost:4,
-      effectText:"When a networked creature you can see succeeds on an attack roll, ability check, or saving throw, you can use your reaction to force it to reroll the d20 and use the lower result. Then choose yourself or one ally you can see. The chosen creature has advantage on the next attack roll, ability check, or saving throw it makes before the end of its next turn.",
-      meta:{reaction:true,forceLowerReroll:true,grantAdvantage:true}
+      effectText:"As a bonus action, choose one networked creature you can see. Until the start of your next turn, the next time that creature succeeds on an attack roll, ability check, or saving throw, it must reroll the d20 and use the lower result. When this occurs, choose yourself or one ally you can see. The chosen creature has advantage on the next attack roll, ability check, or saving throw it makes before the end of its next turn.",
+      meta:{bonusAction:true,armedTrigger:true,forceLowerReroll:true,grantAdvantage:true,durationTurns:1}
     },
     {
       key:"cookoff",
@@ -115,8 +115,8 @@
       aliases:["Frenzy","Madness Program"],
       mk:3,
       ramCost:3,
-      effectText:"As a bonus action, choose one creature you can hack. The target must make a Wisdom saving throw. On a failed save, it must immediately use its reaction, if available, to make one attack against the nearest creature it can reach or target.",
-      meta:{save:"wis",forcedAttackNearest:true}
+      effectText:"As a bonus action, choose one creature you can hack. The target must make a Wisdom saving throw. On a failed save, it must immediately use its reaction, if available, to make one attack against a creature chosen by the operator.",
+      meta:{save:"wis",forcedAttackChosen:true}
     },
     {
       key:"blank-slate",
