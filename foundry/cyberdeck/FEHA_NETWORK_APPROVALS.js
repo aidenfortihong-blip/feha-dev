@@ -10,7 +10,7 @@
     throw new Error("FEHA_NETWORK_APPROVALS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.10.0";
+  const VERSION = "0.10.1";
   const CHANNEL = "module.flesh-enshrouded-heart-ablaze";
   const MARKER = "fehaNetworkDevicesV1";
   const ROOT_ID = "feha-network-approval-queue";
@@ -21,10 +21,13 @@
   const PROBE_TIMEOUT_MS = 15000;
 
   function activeOnlineGM() {
-    return [...(game.users?.contents ?? game.users ?? [])]
-      .filter(user => user?.isGM && user?.active)
-      .sort((a,b) => String(a.id).localeCompare(String(b.id)))[0] ??
-      null;
+    return (
+      game.users?.activeGM ??
+      [...(game.users?.contents ?? game.users ?? [])]
+        .filter(user => user?.isGM && user?.active)
+        .sort((a,b) => String(a.id).localeCompare(String(b.id)))[0] ??
+      null
+    );
   }
 
   function isAuthorityFor(payload={}) {
