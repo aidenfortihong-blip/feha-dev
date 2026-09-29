@@ -1,11 +1,11 @@
 {
-  "version": "0.11.6",
+  "version": "0.11.7",
   "updated": "2026-09-29",
-  "scope": "jack-in-full-scene-plane",
+  "scope": "jack-in-native-token-size-floor",
   "notes": [
-    "JACK IN now fits the entire Foundry scene into the viewport at the scene's real aspect ratio instead of cropping it to the ultra-wide JACK IN panel.",
-    "Actor, device, camera, trace, and operator coordinates stay attached to the same fitted scene plane, so spatial alignment is preserved.",
-    "Unused viewport area becomes dark gutter space rather than cutting off the map.",
-    "Zoom, pan, FIT, RESET, and camera placement now account for the fitted scene plane's centered offset."
+    "JACK IN actor cards now have a hard minimum equal to each token's real Foundry pixel footprint, so fitting the full scene cannot shrink an actor below its original token size.",
+    "The operator uses the same native-token minimum.",
+    "Actor centers remain locked to their exact scene coordinates; only the visual card footprint grows, preserving alignment with the scene, traces, devices and cameras.",
+    "Existing zoom compensation remains active so actor cards stay readable while the fitted scene zooms and pans."
   ]
 }
