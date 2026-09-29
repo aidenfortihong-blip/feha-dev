@@ -2,7 +2,7 @@
 (() => {
   const core=globalThis.FEHA_CYBER_CORE;
   if(!core) throw new Error("FEHA_MULTIPLAYER_SYNC requires FEHA_CYBER_CORE.");
-  const VERSION="0.1.3", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
+  const VERSION="0.1.4", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
   const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000;
   const PLAYABLE=new Set(["ponyboy","derke","sasha","zach"]), pending=new Map(), hooks=[];
   let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, stockChain=Promise.resolve();
@@ -25,7 +25,7 @@
   const localActor=r=>actorForUser(game.user,r), canUseAuthority=()=>Boolean(game.user?.isGM||authorityGM());
   const rid=()=>globalThis.foundry?.utils?.randomID?.()??globalThis.crypto?.randomUUID?.()??String(Date.now())+Math.random().toString(36);
   const emit=(kind,payload={})=>game.socket?.emit?.(CH,{[MARK]:true,kind,payload});
-  function wait(id){let timer;return new Promise((resolve,reject)=>{const done=p=>{clearTimeout(timer);if(pending.get(id)===done)pending.delete(id);p?.error?reject(new Error(p.error)):resolve(p)};done.cancel=()=>done({error:"FEHA multiplayer authority reloaded."});pending.set(id,done);timer=setTimeout(()=>{if(pending.get(id)!==done)return;pending.delete(id);reject(new Error("FEHA multiplayer authority request timed out."))},TIMEOUT)})}
+  function wait(id){let timer;return new Promise((resolve,reject)=>{const done=p=>{clearTimeout(timer);if(pending.get(id)===done)pending.delete(id);p?.error?reject(new Error(p.error)):resolve(p)};done.cancel=()=>done({error:"FEHA multiplayer authority reloaded."});pending.set(id,done);timer=setTimeout(()=>{if(pending.get(id)!==done)return;pending.delete(id);reject(new Error("FEHA multiplayer authority request timed out // no GM client answered the socket request."))},TIMEOUT)})}
   function hp(a){const h=a?.system?.attributes?.hp??{};return{value:Math.max(0,Number(h.value??0)),max:Math.max(0,Number(h.max??0)),temp:Math.max(0,Number(h.temp??0))}}
   async function damageLocal(a,amount){const damage=Math.max(0,Math.floor(Number(amount)||0)),before=hp(a);let rem=damage,temp=before.temp,value=before.value;const used=Math.min(temp,rem);temp-=used;rem-=used;value=Math.max(0,value-rem);const u={"system.attributes.hp.value":value};if(temp!==before.temp)u["system.attributes.hp.temp"]=temp;await a.update(u);return{damage,before,after:{value,max:before.max,temp}}}
   function validateHack(p){
@@ -94,13 +94,17 @@
       return damageLocal(v.target,v.damage);
     }
 
-    const gm=authorityGM();
+    const gm=
+      authorityGM() ??
+      knownGMs()[0] ??
+      null;
+
     const id=rid();
     const result=wait(id);
 
-    // Prefer a specifically-known active GM. If the player client's presence
-    // cache does not expose one, broadcast without gmId. Any genuinely-live GM
-    // client can claim the request; no manual approval UI is involved.
+    // Always include a concrete GM user id when the world has one. This keeps
+    // the request compatible with older FEHA authority handlers that reject
+    // gmId:null even when that GM client is actually online.
     emit("hackReq",{
       requestId:id,
       userId:game.user.id,
