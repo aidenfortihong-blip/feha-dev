@@ -18,6 +18,7 @@
     actions:"foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js",
     approvals:"foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js",
     cameras:"foundry/cyberdeck/FEHA_CAMERAS.js",
+    sync:"foundry/FEHA_MULTIPLAYER_SYNC.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js",
     manifest:"version.json"
   };
@@ -164,7 +165,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","core","devices","actions","approvals","cameras","v3"
+      "baseJs","core","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -250,6 +251,7 @@
     evaluate(source.actions,files.actions,sha);
     evaluate(source.approvals,files.approvals,sha);
     evaluate(source.cameras,files.cameras,sha);
+    evaluate(source.sync,files.sync,sha);
 
     if (!globalThis.FEHA_CYBER_CORE) {
       throw new Error("Cyberdeck Core did not install.");
@@ -261,7 +263,8 @@
       "devices",
       "deviceActions",
       "deviceApprovals",
-      "cameras"
+      "cameras",
+      "multiplayerSync"
     ];
 
     const missingModules = requiredModules.filter(
@@ -288,6 +291,8 @@
         String(loadedVersion || "NONE")
       );
     }
+
+    await globalThis.FEHA_MULTIPLAYER_SYNC?.attachUiBridges?.();
 
     if (isGM) {
       ui.notifications.info(
