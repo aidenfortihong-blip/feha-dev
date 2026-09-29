@@ -1,8 +1,12 @@
 {
-  "version": "0.10.122",
+  "version": "0.10.123",
   "updated": "2026-09-29",
-  "scope": "multiplayer-sync-and-silent-authority",
+  "scope": "quickhack-live-authority-detection",
   "notes": [
+    "Fixed Quickhack resolution incorrectly freezing APPLY DAMAGE as AUTHORITY OFFLINE from a stale/preflight GM-presence check; the button now remains actionable whenever the resolved target Actor exists and authority is resolved at click time.",
+    "Switched multiplayer, Network Device, and Camera authority selection to Foundry v14 game.users.activeGM first, with the prior deterministic active-GM scan retained as fallback.",
+    "Player Quickhack damage against an unowned target still routes silently through GM authority; there is no manual GM approval dialog.",
+    "No Entry Gateway or JACK IN cinematic timing changed.",
     "Added FEHA Multiplayer Sync on every connected client: Market vendor/tier state, stock changes, actor/item surfaces, and device Scene updates now reconcile live across GM and player clients.",
     "Market purchases are reconciled by deterministic GM authority against shared world stock; stale simultaneous duplicate purchases are removed and refunded instead of duplicating limited stock.",
     "Player Quickhack damage against unowned targets now routes automatically through the active GM authority with no manual GM permission/approval step; RAM commit/refund behavior remains unchanged.",
