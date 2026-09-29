@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.6";
+  const VERSION = "0.11.7";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1392,7 +1392,9 @@
       y:operatorPos.y,
       tokenId:operatorToken?.id ?? null,
       tokenWidthPct:(operatorPixelWidth/rw)*100,
-      tokenHeightPct:(operatorPixelHeight/rh)*100
+      tokenHeightPct:(operatorPixelHeight/rh)*100,
+      tokenPixelWidth:operatorPixelWidth,
+      tokenPixelHeight:operatorPixelHeight
     };
 
     const endpointTokens = allSceneTokens.filter(token => {
@@ -1508,6 +1510,8 @@
         y:pos.y,
         tokenWidthPct,
         tokenHeightPct,
+        tokenPixelWidth,
+        tokenPixelHeight,
         index
       };
     });
@@ -1887,8 +1891,15 @@
     const tokenWorldHeight =
       world.clientHeight*(heightPct/100);
 
+    const nativeTokenSize = Math.max(
+      1,
+      Number(operator.dataset.tokenPixelWidth) || 0,
+      Number(operator.dataset.tokenPixelHeight) || 0
+    );
+
     const tokenWorldSize = Math.max(
       32,
+      nativeTokenSize,
       Math.round(
         Math.max(
           tokenWorldWidth,
@@ -1926,10 +1937,19 @@
       const tokenHeight =
         worldHeight*(heightPct/100);
 
-      // Square node uses the larger token dimension so the portrait fully
-      // covers the token footprint without becoming smaller than it.
+      const nativeTokenSize = Math.max(
+        1,
+        Number(node.dataset.tokenPixelWidth) || 0,
+        Number(node.dataset.tokenPixelHeight) || 0
+      );
+
+      // Full-scene fitting can make the projected token footprint tiny.
+      // Never display an actor node below its real Foundry token footprint.
+      // The node remains centered on the same scene anchor, so alignment does
+      // not move when the visual footprint is enlarged.
       const size = Math.max(
         32,
+        nativeTokenSize,
         Math.round(Math.max(tokenWidth,tokenHeight))
       );
 
@@ -2964,6 +2984,8 @@
       '" data-node-index="'+i+
       '" data-token-width-pct="'+Number(n.tokenWidthPct||0).toFixed(6)+
       '" data-token-height-pct="'+Number(n.tokenHeightPct||0).toFixed(6)+
+      '" data-token-pixel-width="'+Number(n.tokenPixelWidth||0).toFixed(3)+
+      '" data-token-pixel-height="'+Number(n.tokenPixelHeight||0).toFixed(3)+
       '" data-jack-anchor-x="'+n.x.toFixed(4)+
       '" data-jack-anchor-y="'+n.y.toFixed(4)+'">'+
         '<img src="'+esc(n.img)+'" alt="'+esc(n.displayName)+'">'+
@@ -3048,7 +3070,9 @@
             data-jack-anchor-x="${net.operator.x.toFixed(4)}"
             data-jack-anchor-y="${net.operator.y.toFixed(4)}"
             data-token-width-pct="${Number(net.operator.tokenWidthPct||0).toFixed(6)}"
-            data-token-height-pct="${Number(net.operator.tokenHeightPct||0).toFixed(6)}">
+            data-token-height-pct="${Number(net.operator.tokenHeightPct||0).toFixed(6)}"
+            data-token-pixel-width="${Number(net.operator.tokenPixelWidth||0).toFixed(3)}"
+            data-token-pixel-height="${Number(net.operator.tokenPixelHeight||0).toFixed(3)}">
             <div></div>
             <div class="jack-operator-hub">${operatorPorts}</div>
             <img src="${esc(portrait(actor))}" alt="">
