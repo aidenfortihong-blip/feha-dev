@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const PICKER_ID = "feha-qh-runtime-picker";
 
@@ -165,15 +165,18 @@
     const stamp = turnStamp(actor);
     if (!stamp) return true;
 
-    const used =
-      String(
-        actor?.flags?.[FLAG]?.quickhackTurnStamp ??
-        ""
-      );
+    const flags = actor?.flags?.[FLAG] ?? {};
+    const quickhackStamp =
+      String(flags.quickhackTurnStamp ?? "");
+    const bonusActionStamp =
+      String(flags.bonusActionTurnStamp ?? "");
 
-    if (used === stamp) {
+    if (
+      quickhackStamp === stamp ||
+      bonusActionStamp === stamp
+    ) {
       throw new Error(
-        "You already used a Quickhack this turn."
+        "You already used your Bonus Action this turn."
       );
     }
 
@@ -185,8 +188,9 @@
     if (!stamp) return false;
 
     await actor.update({
-      ["flags."+FLAG+".quickhackTurnStamp"]:
-        stamp
+      ["flags."+FLAG+".quickhackTurnStamp"]:stamp,
+      ["flags."+FLAG+".bonusActionTurnStamp"]:stamp,
+      ["flags."+FLAG+".bonusActionSource"]:"quickhack"
     });
 
     return true;
