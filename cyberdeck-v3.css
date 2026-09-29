@@ -9596,3 +9596,45 @@ body > #feha-jackin-overlay {
   max-width:none !important;
   max-height:none !important;
 }
+
+
+/* FEHA 0.11.9 // EXACT FOUNDRY TOKEN SCREEN SIZE
+   Actors and operator match the size their tokens are actually displayed at on
+   the Foundry canvas. JACK IN zoom/pan may move them, never resize them. */
+#feha-jackin-overlay .jack-world .jack-node,
+#feha-jackin-overlay .jack-world .jack-node:hover,
+#feha-jackin-overlay .jack-world .jack-node.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-hostile.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-friendly.is-targeted,
+#feha-jackin-overlay .jack-world .jack-node.is-neutral.is-targeted {
+  width:var(--jack-node-size,64px) !important;
+  height:var(--jack-node-size,64px) !important;
+  min-width:var(--jack-node-size,64px) !important;
+  min-height:var(--jack-node-size,64px) !important;
+  max-width:var(--jack-node-size,64px) !important;
+  max-height:var(--jack-node-size,64px) !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-actor-scale,1)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-operator {
+  width:var(--jack-operator-size,64px) !important;
+  height:var(--jack-operator-size,64px) !important;
+  min-width:var(--jack-operator-size,64px) !important;
+  min-height:var(--jack-operator-size,64px) !important;
+  max-width:var(--jack-operator-size,64px) !important;
+  max-height:var(--jack-operator-size,64px) !important;
+  transform:
+    translate(-50%,-50%)
+    scale(var(--jack-operator-scale,1)) !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-operator img {
+  width:100% !important;
+  height:100% !important;
+  min-width:100% !important;
+  min-height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+}
