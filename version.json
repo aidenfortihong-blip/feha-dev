@@ -1,13 +1,12 @@
 {
-  "version": "0.11.17",
+  "version": "0.11.18",
   "updated": "2026-09-29",
-  "scope": "grenade-quickhack-integration-hardening",
+  "scope": "grenades-are-bonus-actions",
   "notes": [
-    "Audited the full 18-grenade and 20-Quickhack chain across catalogs, runtimes, silent GM authority, Cookoff, templates, timed effects, RAM execution flow, and loader initialization.",
-    "Grenade runtime 1.1.0 now cleans timed effects and Smoke/Recon zone markers on world actors and unlinked synthetic token actors, guards zero-quantity and duplicate grenade use, honors controlled source tokens, supports the current dnd5e activity-use hook, and fixes Recon coordinates on padded/offset scenes.",
-    "Recon grenade scan output now identifies electronic targets and lists installed cyberware rather than only reporting creature names.",
-    "Quickhack authority 2.1.0 now cleans timed Quickhack/Chrome Lock state across synthetic actors on all scenes and mechanically blocks dnd5e reaction activities while a FEHA no-reactions effect is active.",
-    "Cookoff remains directly bridged into FEHA_GRENADE_RUNTIME so carried canonical grenades use their real damage, area, statuses, zones, consumption, and cleanup instead of the generic explosive fallback.",
-    "ADK DEV LOADER now performs explicit postflight contracts for Grenade Catalog/Runtime and Quickhack Catalog/Runtime/Authority and refuses a partial hot reload if required bridge methods or the canonical 18/20 definition counts are missing."
+    "All 18 physical grenades are now canonical Bonus Actions. Grenade migration writes FEHA actionType=bonus / bonusAction=true, exposes Bonus Action in grenadeSchema, updates compatible dnd5e activation data, and displays BONUS ACTION on grenade cards.",
+    "Grenade runtime 1.2.0 enforces one shared Bonus Action per combat turn and only spends it after a grenade successfully detonates; cancelling placement or a failed grenade request does not spend it.",
+    "Quickhack runtime 1.1.0 now shares the same bonusActionTurnStamp with grenades while preserving the legacy quickhackTurnStamp for compatibility.",
+    "A character can use a normal Action plus either a grenade or a Quickhack in the same turn, but cannot use both a grenade and a Quickhack in that turn under the default one-Bonus-Action economy.",
+    "Cookoff does not spend the victim's Bonus Action: the operator's Quickhack is the Bonus Action, and the carried grenade detonates through the grenade runtime as the Quickhack effect."
   ]
 }
