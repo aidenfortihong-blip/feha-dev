@@ -1,8 +1,11 @@
 {
-  "version": "0.10.132",
+  "version": "0.10.133",
   "updated": "2026-09-29",
-  "scope": "quickhack-names-mk-rebalance",
+  "scope": "quickhack-5e-copy-and-economy",
   "notes": [
+    "Rewrote all 20 Quickhack descriptions into D&D-style ability language: explicit action/reaction timing, target selection, saving-throw phrasing, durations, and resolution order while preserving the 0.10.132 mechanics.",
+    "Raised Quickhack market prices substantially while keeping the same Mk balance: Mk.I €$2,500; Mk.II €$6,000; Mk.III €$15,000; Mk.IV €$35,000; Mk.V €$80,000.",
+    "The catalog migration marker is now 3.1 so world items and owned copies refresh to the new wording and prices on GM load.",
     "Renamed all 20 Quickhacks into concise in-world software names and rebalanced Mk tier, RAM cost, price, and availability around their rewritten effects.",
     "Mk.I now covers narrow utility (Ghost Key, Wiretap); Mk.II covers tactical utility/control (Dead Air, Chrome Lock, Motor Lock, Network Sweep, Lure); Mk.III covers reliable combat/control tools (Optic Zero, Cookoff, Frenzy, Blank Slate, Dead Trigger).",
     "Mk.IV now contains elite encounter-shaping hacks (Synapse Burn, Toxic Bloom, Rollback, Self-Terminate, System Collapse); Mk.V is reserved for the most extreme effects (Arc Overload, Combustion, Puppet Wire).",
