@@ -1,8 +1,10 @@
 {
-  "version": "0.10.134",
+  "version": "0.10.135",
   "updated": "2026-09-29",
-  "scope": "quickhack-silent-authority-module",
+  "scope": "quickhack-authority-load-status",
   "notes": [
+    "ADK DEV LOADER now prints a clear console confirmation after Cyber Core initialization: FEHA DEV // QUICKHACK AUTHORITY // LOADED // v<version>.",
+    "No Quickhack mechanics changed in this release; this is a visibility/debugging-only loader update.",
     "Added FEHA_QUICKHACK_AUTHORITY: a dedicated validated player-to-GM execution bridge for Quickhack mutations. Players keep normal Foundry permissions while the active GM client silently performs allowlisted Quickhack changes.",
     "Quickhack damage no longer creates GM APPLY DAMAGE / DENY chat approval cards. The player's existing damage application now routes through silent GM authority and resolves without a second GM click.",
     "Multiplayer Sync 0.3.0 delegates Quickhack damage to the authority module and no longer installs the Quickhack approval-card click handler or approval-message settlement hook.",
