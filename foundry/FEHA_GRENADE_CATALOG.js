@@ -368,12 +368,24 @@
     if (flags.grenadeRewriteVersion !== REWRITE) {
       update[`flags.${FLAG}.grenadeRewriteVersion`] = REWRITE;
     }
-    update[`flags.${FLAG}.grenadeSchema`] = {
+
+    const nextSchema = {
       version:REWRITE,
       key:def.key,
       delivery:def.delivery,
       ...def.schema
     };
+
+    let schemaChanged = true;
+    try {
+      schemaChanged =
+        JSON.stringify(flags.grenadeSchema ?? null) !==
+        JSON.stringify(nextSchema);
+    } catch {}
+
+    if (schemaChanged) {
+      update[`flags.${FLAG}.grenadeSchema`] = nextSchema;
+    }
 
     if (
       item.system?.price &&
