@@ -5,9 +5,9 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "3.0.0";
+  const VERSION = "3.1.0";
   const FLAG = "fleshEnshrouded";
-  const REWRITE = "3.0";
+  const REWRITE = "3.1";
 
   const definitions = [
     {
@@ -16,7 +16,7 @@
       aliases:["Optic Zero","Blind Program"],
       mk:3,
       ramCost:4,
-      effectText:"The target is Blinded until the end of its next turn. Creatures that can perceive through blindsense are unaffected.",
+      effectText:"As an action, choose one creature whose visual systems you can access. The target is Blinded until the end of its next turn. A creature that can perceive its surroundings with blindsense is unaffected.",
       meta:{durationTurns:1,condition:"blinded",immuneIf:"blindsight"}
     },
     {
@@ -25,7 +25,7 @@
       aliases:["Synapse Burn","Brain Melt Program"],
       mk:4,
       ramCost:5,
-      effectText:"The target makes an Intelligence save, taking 10d6 psychic damage on a failure or half as much on a success. On a failure, it also loses its reactions until the end of its next turn.",
+      effectText:"As an action, choose one creature you can hack. The target must make an Intelligence saving throw. On a failed save, it takes 10d6 psychic damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
       meta:{save:"int",damage:"10d6",damageType:"psychic",halfOnSuccess:true,removeReactionsOnFail:true}
     },
     {
@@ -34,7 +34,7 @@
       aliases:["Ghost Key","Breach Protocol"],
       mk:1,
       ramCost:1,
-      effectText:"Force open one locked networked door directly in front of you.",
+      effectText:"As an action, choose one locked networked door directly in front of you. The door immediately unlocks and opens.",
       meta:{targetType:"door",opensLockedDoor:true,noSave:true}
     },
     {
@@ -43,7 +43,7 @@
       aliases:["Wiretap","Comms Call In Program"],
       mk:1,
       ramCost:1,
-      effectText:"The target makes a Wisdom save. On a failure, you tap into its active communications and can listen to its conversation for up to 1 minute.",
+      effectText:"As an action, choose one creature whose communications you can access. The target must make a Wisdom saving throw. On a failed save, you can listen to its active communications for up to 1 minute.",
       meta:{save:"wis",durationRounds:10,listenToComms:true}
     },
     {
@@ -52,7 +52,7 @@
       aliases:["Dead Air","Comms Noise Program"],
       mk:2,
       ramCost:2,
-      effectText:"The target is Deafened for 2 turns, and its calls, alarms, network messages, and other communications are cut off for the same duration.",
+      effectText:"As an action, choose one creature you can hack. The target is Deafened until the end of its second turn after this Quickhack is used. During that time, it cannot send or receive calls, alarms, network messages, or other communications.",
       meta:{durationTurns:2,condition:"deafened",silenceComms:true,noSave:true}
     },
     {
@@ -61,7 +61,7 @@
       aliases:["Toxic Bloom","Contagion Program"],
       mk:4,
       ramCost:6,
-      effectText:"Create a 10-foot-radius burst of toxic gas at a point you can target. Creatures caught in the burst take 8d6 poison damage, and the gas disperses immediately afterward.",
+      effectText:"As an action, choose a point you can target. A burst of toxic gas fills a 10-foot-radius sphere centered on that point. Each creature in the area takes 8d6 poison damage, after which the gas immediately disperses.",
       meta:{damage:"8d6",damageType:"poison",radiusFt:10,placeable:true,instantaneous:true,noSave:true}
     },
     {
@@ -70,7 +70,7 @@
       aliases:["Chrome Lock","Disable Cyberware Program"],
       mk:2,
       ramCost:2,
-      effectText:"The target makes an Intelligence save. On a failure, one active cyberware system is disabled until the end of its next turn.",
+      effectText:"As an action, choose one creature with active cyberware. The target must make an Intelligence saving throw. On a failed save, choose one active cyberware system it possesses; that system is disabled until the end of the target's next turn.",
       meta:{save:"int",disableCyberware:true,durationTurns:1}
     },
     {
@@ -79,7 +79,7 @@
       aliases:["Arc Overload","EMP Overload Program"],
       mk:5,
       ramCost:8,
-      effectText:"A cybernetic or electronic target makes a Constitution save, taking 12d12 lightning damage on a failure or half as much on a success. On a failure, it also loses its reactions until the end of its next turn.",
+      effectText:"As an action, choose one cybernetic or electronic target you can hack. The target must make a Constitution saving throw. On a failed save, it takes 12d12 lightning damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
       meta:{save:"con",damage:"12d12",damageType:"lightning",halfOnSuccess:true,cyberneticOnly:true,removeReactionsOnFail:true}
     },
     {
@@ -88,7 +88,7 @@
       aliases:["Rollback","Generic Program"],
       mk:4,
       ramCost:4,
-      effectText:"As a reaction when a networked creature you can see succeeds on an attack roll, ability check, or saving throw, force it to reroll and use the lower result. Then choose yourself or one ally you can see; the chosen creature has advantage on its next attack roll, ability check, or saving throw before the end of its next turn.",
+      effectText:"When a networked creature you can see succeeds on an attack roll, ability check, or saving throw, you can use your reaction to force it to reroll the d20 and use the lower result. Then choose yourself or one ally you can see. The chosen creature has advantage on the next attack roll, ability check, or saving throw it makes before the end of its next turn.",
       meta:{reaction:true,forceLowerReroll:true,grantAdvantage:true}
     },
     {
@@ -97,7 +97,7 @@
       aliases:["Cookoff","Grenade Explode Program"],
       mk:3,
       ramCost:3,
-      effectText:"Detonate one explosive carried by the target, using that explosive's normal damage, radius, damage type, and other effects.",
+      effectText:"As an action, choose one explosive carried by a creature you can hack. The explosive immediately detonates, using its normal damage, area, damage type, and other effects.",
       meta:{detonateCarriedExplosive:true,noSave:true}
     },
     {
@@ -106,7 +106,7 @@
       aliases:["Motor Lock","Locomotion Malfunction Program"],
       mk:2,
       ramCost:2,
-      effectText:"If the target relies on cybernetic legs or leg actuators, disable them until the end of its next turn. Its Speed becomes 0 for the duration.",
+      effectText:"As an action, choose one creature that relies on cybernetic legs or leg actuators. Its cybernetic locomotion is disabled until the end of its next turn, and its Speed becomes 0 for the duration.",
       meta:{legsOnly:true,noSave:true,durationTurns:1,speedZero:true}
     },
     {
@@ -115,7 +115,7 @@
       aliases:["Frenzy","Madness Program"],
       mk:3,
       ramCost:3,
-      effectText:"The target makes a Wisdom save. On a failure, it immediately uses its reaction to make one attack against the nearest creature it can reach or target.",
+      effectText:"As an action, choose one creature you can hack. The target must make a Wisdom saving throw. On a failed save, it must immediately use its reaction, if available, to make one attack against the nearest creature it can reach or target.",
       meta:{save:"wis",forcedAttackNearest:true}
     },
     {
@@ -124,7 +124,7 @@
       aliases:["Blank Slate","Memory Wipe Program"],
       mk:3,
       ramCost:3,
-      effectText:"Choose the ability used for the target's saving throw when you upload this Quickhack. On a failure, the target forgets everything that happened during the previous 1 minute.",
+      effectText:"As an action, choose one creature you can hack and choose one ability score. The target must make a saving throw using that ability. On a failed save, it forgets everything that happened during the previous 1 minute.",
       meta:{operatorChoosesSave:true,memoryLossSeconds:60}
     },
     {
@@ -133,7 +133,7 @@
       aliases:["Combustion","Combustion Program","Overheat Program"],
       mk:5,
       ramCost:7,
-      effectText:"The target takes 10d6 fire damage immediately. If the damage kills it, the target erupts and every other creature within 10 feet takes 5d6 fire damage.",
+      effectText:"As an action, choose one creature you can hack. The target takes 10d6 fire damage. If this damage reduces the target to 0 hit points, it erupts; every other creature within 10 feet of it takes 5d6 fire damage.",
       meta:{damage:"10d6",damageType:"fire",deathBurst:"5d6",deathBurstType:"fire",deathBurstRadiusFt:10,noSave:true}
     },
     {
@@ -142,7 +142,7 @@
       aliases:["Network Sweep","Ping Program"],
       mk:2,
       ramCost:2,
-      effectText:"Reveal networked devices within 50 feet, including cameras, turrets, doors, alarms, terminals, and similar systems, along with hostile creatures in range that have cyberware. Revealed targets cannot remain hidden from you until the end of your next turn.",
+      effectText:"As an action, perform a network sweep in a 50-foot radius centered on you. Until the end of your next turn, you know the location of networked devices in the area, including cameras, turrets, doors, alarms, terminals, and similar systems, as well as hostile creatures in the area that possess cyberware. A revealed target cannot be hidden from you for the duration.",
       meta:{radiusFt:50,revealDevices:true,revealCyberwareHostiles:true,durationTurns:1}
     },
     {
@@ -151,7 +151,7 @@
       aliases:["Self-Terminate","Suicide Program"],
       mk:4,
       ramCost:5,
-      effectText:"The target makes a Wisdom save. On a failure, it immediately uses its reaction to make one damaging attack against itself.",
+      effectText:"As an action, choose one creature you can hack. The target must make a Wisdom saving throw. On a failed save, it must immediately use its reaction, if available, to make one damaging attack against itself.",
       meta:{save:"wis",forcedSelfAttack:true}
     },
     {
@@ -160,7 +160,7 @@
       aliases:["System Collapse","System Collapse Program"],
       mk:4,
       ramCost:6,
-      effectText:"The target makes an Intelligence save. On a failure, it becomes Incapacitated until the end of its next turn.",
+      effectText:"As an action, choose one creature you can hack. The target must make an Intelligence saving throw. On a failed save, it is Incapacitated until the end of its next turn.",
       meta:{save:"int",condition:"incapacitated",durationTurns:1}
     },
     {
@@ -169,7 +169,7 @@
       aliases:["Puppet Wire","Take Control Program"],
       mk:5,
       ramCost:8,
-      effectText:"The target makes a Charisma save. On a failure, you gain control of it for up to 1 minute and can see through its eyes. You can direct its movement and non-hostile actions. If it makes an attack or takes another hostile or damaging action, control ends immediately after that action.",
+      effectText:"As an action, choose one creature you can hack. The target must make a Charisma saving throw. On a failed save, you gain control of it for up to 1 minute and can see through its eyes. While controlled, you can direct its movement and non-hostile actions. If the target makes an attack or takes another hostile or damaging action, the effect ends immediately after that action resolves.",
       meta:{save:"cha",durationRounds:10,controlTarget:true,seeThroughEyes:true,breaksAfterHostileAction:true}
     },
     {
@@ -178,7 +178,7 @@
       aliases:["Dead Trigger","Weapon Malfunction Program"],
       mk:3,
       ramCost:5,
-      effectText:"The target makes an Intelligence save. On a failure, one firearm it is wielding breaks and remains unusable until repaired.",
+      effectText:"As an action, choose one creature you can hack that is wielding a firearm. The target must make an Intelligence saving throw. On a failed save, choose one firearm it is wielding; that weapon breaks and cannot be used until repaired.",
       meta:{save:"int",breakFirearm:true,permanentUntilRepaired:true}
     },
     {
@@ -187,17 +187,17 @@
       aliases:["Lure","Whistle Program"],
       mk:2,
       ramCost:2,
-      effectText:"The target makes a Wisdom save. On a failure, it moves up to 20 feet toward a point you choose. This movement does not provoke opportunity attacks.",
+      effectText:"As an action, choose one creature you can hack and one point you can see within 20 feet of it. The target must make a Wisdom saving throw. On a failed save, it immediately moves up to 20 feet toward that point. This movement does not provoke opportunity attacks.",
       meta:{save:"wis",forcedMoveFt:20,noOpportunityAttacks:true}
     }
   ];
 
   const TIER = {
-    1:{label:"Mk.I",quality:"Civilian",availability:"Common",price:200,tierIdentity:"Entry-level civilian software with narrow, reliable utility."},
-    2:{label:"Mk.II",quality:"Professional",availability:"Professional",price:450,tierIdentity:"Professional-grade tactical software with dependable field value."},
-    3:{label:"Mk.III",quality:"High-Grade",availability:"Restricted",price:1200,tierIdentity:"Restricted combat-grade software with strong encounter impact."},
-    4:{label:"Mk.IV",quality:"Elite",availability:"Black Market",price:3200,tierIdentity:"Elite intrusion software capable of decisive control or major damage."},
-    5:{label:"Mk.V",quality:"Prototype",availability:"Prototype",price:8000,tierIdentity:"Prototype-tier software with encounter-defining or extreme effects."}
+    1:{label:"Mk.I",quality:"Civilian",availability:"Common",price:2500,tierIdentity:"Entry-level civilian software with narrow, reliable utility."},
+    2:{label:"Mk.II",quality:"Professional",availability:"Professional",price:6000,tierIdentity:"Professional-grade tactical software with dependable field value."},
+    3:{label:"Mk.III",quality:"High-Grade",availability:"Restricted",price:15000,tierIdentity:"Restricted combat-grade software with strong encounter impact."},
+    4:{label:"Mk.IV",quality:"Elite",availability:"Black Market",price:35000,tierIdentity:"Elite intrusion software capable of decisive control or major damage."},
+    5:{label:"Mk.V",quality:"Prototype",availability:"Prototype",price:80000,tierIdentity:"Prototype-tier software with encounter-defining or extreme effects."}
   };
 
   const normalize = value => String(value ?? "")
