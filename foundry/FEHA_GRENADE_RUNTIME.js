@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const FLAG = "fleshEnshrouded";
   const CH = "module.flesh-enshrouded-heart-ablaze";
   const MARK = "fehaGrenadeRuntimeV1";
@@ -2256,6 +2256,92 @@
     await cleanupTemplates();
   }
 
+  function domRoot(html) {
+    return (
+      html instanceof HTMLElement
+        ? html
+        : html?.[0] ?? null
+    );
+  }
+
+  function hideLegacyGrenadeChrome(root) {
+    if (!root?.querySelectorAll) return;
+
+    const targets = [
+      root,
+      ...root.querySelectorAll("*")
+    ];
+
+    for (const element of targets) {
+      if (!(element instanceof HTMLElement)) continue;
+
+      const text = String(
+        element.innerText ??
+        element.textContent ??
+        ""
+      )
+        .replace(/\s+/g," ")
+        .trim();
+
+      const legacyCharge =
+        /^\d+\s*\/\s*\d+\s*charges?$/i.test(text);
+
+      const equipState =
+        /^(not\s+equipped|equipped)$/i.test(text);
+
+      if (!legacyCharge && !equipState) continue;
+
+      element.style.setProperty("display","none","important");
+      element.dataset.fehaGrenadeChromeHidden = "1";
+    }
+  }
+
+  function actorGrenadeRows(app,html) {
+    const actor =
+      app?.document ??
+      app?.actor ??
+      app?.object ??
+      null;
+
+    if (actor?.documentName !== "Actor") return;
+
+    const root = domRoot(html);
+    if (!root?.querySelectorAll) return;
+
+    const grenades =
+      list(actor.items).filter(isGrenade);
+
+    for (const item of grenades) {
+      const id = String(item.id ?? "");
+      if (!id) continue;
+
+      const escaped =
+        globalThis.CSS?.escape
+          ? globalThis.CSS.escape(id)
+          : id.replace(/"/g,'\\\"');
+
+      const selectors = [
+        '[data-item-id="'+escaped+'"]',
+        '[data-entry-id="'+escaped+'"]',
+        '[data-document-id="'+escaped+'"]',
+        '[data-id="'+escaped+'"]'
+      ];
+
+      let row = null;
+
+      for (const selector of selectors) {
+        try {
+          row = root.querySelector(selector);
+        } catch {}
+
+        if (row) break;
+      }
+
+      if (!row) continue;
+      hideLegacyGrenadeChrome(row);
+    }
+  }
+
   function injectGrenadeSheetButton(app,html) {
     const item =
       app?.document ??
@@ -2265,12 +2351,12 @@
 
     if (!isGrenade(item)) return;
 
-    const root =
-      html instanceof HTMLElement
-        ? html
-        : html?.[0] ?? null;
+    const root = domRoot(html);
 
     if (!root?.querySelector) return;
+
+    hideLegacyGrenadeChrome(root);
+
     if (root.querySelector("[data-feha-grenade-use]")) return;
 
     const button = document.createElement("button");
@@ -2307,6 +2393,22 @@
 
   function installHooks() {
     if (!globalThis.Hooks?.on) return;
+
+    hooks.push([
+      "renderActorSheet",
+      globalThis.Hooks.on(
+        "renderActorSheet",
+        (app,html) => actorGrenadeRows(app,html)
+      )
+    ]);
+
+    hooks.push([
+      "renderActorSheetV2",
+      globalThis.Hooks.on(
+        "renderActorSheetV2",
+        (app,html) => actorGrenadeRows(app,html)
+      )
+    ]);
 
     hooks.push([
       "renderItemSheet",
