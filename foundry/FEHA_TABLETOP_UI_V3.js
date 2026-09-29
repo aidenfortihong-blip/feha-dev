@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.121";
+  const VERSION = "0.10.122";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -305,7 +305,11 @@
       appliedDamage:0,
       canApplyDamage:Boolean(
         targetActor &&
-        (game.user?.isGM || targetActor.isOwner)
+        (
+          game.user?.isGM ||
+          targetActor.isOwner ||
+          globalThis.FEHA_MULTIPLAYER_SYNC?.canUseAuthority?.()
+        )
       )
     };
 
@@ -364,8 +368,38 @@
     };
   }
 
-  async function applyResolvedDamage(targetActor,amount) {
+  async function applyResolvedDamage(targetActor,amount,context={}) {
     const damage = Math.max(0,Math.floor(Number(amount) || 0));
+
+    if (
+      targetActor &&
+      !game.user?.isGM &&
+      !targetActor.isOwner
+    ) {
+      const sync = globalThis.FEHA_MULTIPLAYER_SYNC;
+
+      if (!sync?.applyQuickhackDamage) {
+        throw new Error(
+          "No automatic GM authority bridge is available for this target."
+        );
+      }
+
+      return sync.applyQuickhackDamage({
+        operatorActorId:context.operatorActor?.id,
+        quickhackItemId:context.item?.id,
+        targetActorId:targetActor.id,
+        targetTokenId:
+          context.targetToken?.id ??
+          context.targetToken?.document?.id ??
+          null,
+        sceneId:
+          context.targetToken?.document?.parent?.id ??
+          canvas?.scene?.id ??
+          null,
+        damage
+      });
+    }
+
     const before = targetHP(targetActor);
 
     let remaining = damage;
@@ -3636,9 +3670,13 @@
             );
           }
 
-          if (!(game.user?.isGM || targetActor.isOwner)) {
+          if (
+            !game.user?.isGM &&
+            !targetActor.isOwner &&
+            !globalThis.FEHA_MULTIPLAYER_SYNC?.canUseAuthority?.()
+          ) {
             return ui?.notifications?.warn?.(
-              "You do not have permission to modify that target's HP."
+              "No online GM authority is available to apply this Quickhack."
             );
           }
 
@@ -3667,7 +3705,14 @@
               result =
                 await applyResolvedDamage(
                   targetActor,
-                  input.value
+                  input.value,
+                  {
+                    operatorActor:actor,
+                    item:actor.items?.get?.(
+                      resolution?.dataset?.qhItem ?? ""
+                    ) ?? null,
+                    targetToken:token
+                  }
                 );
             } catch (damageErr) {
               await refundQuickhackRam(
@@ -4013,12 +4058,49 @@
 
   function open(actorId=null) {
     const actors = roster();
-    const saved = localStorage.getItem("fehaCyberdeckActorV3");
-    const actor =
+    const requested =
       actors.find(candidate => candidate.id === actorId) ??
-      actors.find(candidate => candidate.id === saved) ??
-      actors[0] ??
       null;
+
+    const assignedRaw = game.user?.character ?? null;
+    const assignedId =
+      typeof assignedRaw === "string"
+        ? assignedRaw
+        : assignedRaw?.id ?? null;
+
+    const assigned =
+      actors.find(
+        candidate =>
+          String(candidate.id) === String(assignedId ?? "")
+      ) ??
+      null;
+
+    const saved =
+      localStorage.getItem("fehaCyberdeckActorV3");
+
+    const actor =
+      game.user?.isGM
+        ? (
+            requested ??
+            actors.find(candidate => candidate.id === saved) ??
+            actors[0] ??
+            null
+          )
+        : (
+            (
+              requested &&
+              (
+                requested.isOwner ||
+                assigned?.id === requested.id
+              )
+            )
+              ? requested
+              : null
+          ) ??
+          assigned ??
+          actors.find(candidate => candidate.isOwner) ??
+          actors[0] ??
+          null;
 
     if (!actor) {
       return ui?.notifications?.warn?.("No accessible Cyberdeck roster actor available.");
