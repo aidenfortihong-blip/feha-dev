@@ -15,6 +15,7 @@
     baseJs:"latest-dev.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
+    quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
     devices:"foundry/cyberdeck/FEHA_NETWORK_DEVICES.js",
     actions:"foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js",
     approvals:"foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js",
@@ -166,7 +167,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","core","quickhacks","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","core","quickhacks","quickhackAuthority","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -249,6 +250,7 @@
     evaluate(source.baseJs,files.baseJs,sha);
     evaluate(source.core,files.core,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
+    evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
     evaluate(source.devices,files.devices,sha);
     evaluate(source.actions,files.actions,sha);
     evaluate(source.approvals,files.approvals,sha);
@@ -263,6 +265,7 @@
 
     const requiredModules = [
       "quickhacks",
+      "quickhackAuthority",
       "devices",
       "deviceActions",
       "deviceApprovals",
