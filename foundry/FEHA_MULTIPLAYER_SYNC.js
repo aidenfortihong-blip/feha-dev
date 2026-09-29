@@ -2,11 +2,12 @@
 (() => {
   const core=globalThis.FEHA_CYBER_CORE;
   if(!core) throw new Error("FEHA_MULTIPLAYER_SYNC requires FEHA_CYBER_CORE.");
-  const VERSION="0.1.4", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
-  const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000;
+  const VERSION="0.2.0", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
+  const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000, APPROVAL_TIMEOUT=600000;
   const PLAYABLE=new Set(["ponyboy","derke","sasha","zach"]), pending=new Map(), hooks=[];
-  let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, stockChain=Promise.resolve();
+  let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, approvalClickHandler=null, stockChain=Promise.resolve();
   const norm=v=>String(v??"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g," ").trim().toLowerCase();
+  const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,Number(n)||0));
   const list=c=>{if(!c)return[];if(Array.isArray(c))return c;if(Array.isArray(c.contents))return c.contents;try{return[...c]}catch{return[]}};
   const authorityGM=()=>game.users?.activeGM??list(game.users).filter(u=>u?.isGM&&u?.active).sort((a,b)=>String(a.id).localeCompare(String(b.id)))[0]??null;
@@ -25,7 +26,7 @@
   const localActor=r=>actorForUser(game.user,r), canUseAuthority=()=>Boolean(game.user?.isGM||authorityGM());
   const rid=()=>globalThis.foundry?.utils?.randomID?.()??globalThis.crypto?.randomUUID?.()??String(Date.now())+Math.random().toString(36);
   const emit=(kind,payload={})=>game.socket?.emit?.(CH,{[MARK]:true,kind,payload});
-  function wait(id){let timer;return new Promise((resolve,reject)=>{const done=p=>{clearTimeout(timer);if(pending.get(id)===done)pending.delete(id);p?.error?reject(new Error(p.error)):resolve(p)};done.cancel=()=>done({error:"FEHA multiplayer authority reloaded."});pending.set(id,done);timer=setTimeout(()=>{if(pending.get(id)!==done)return;pending.delete(id);reject(new Error("FEHA multiplayer authority request timed out // no GM client answered the socket request."))},TIMEOUT)})}
+  function wait(id,{timeoutMs=TIMEOUT,timeoutMessage="FEHA multiplayer authority request timed out."}={}){let timer;return new Promise((resolve,reject)=>{const done=p=>{clearTimeout(timer);if(pending.get(id)===done)pending.delete(id);p?.error?reject(new Error(p.error)):resolve(p)};done.cancel=()=>done({error:"FEHA multiplayer authority reloaded."});pending.set(id,done);timer=setTimeout(()=>{if(pending.get(id)!==done)return;pending.delete(id);reject(new Error(timeoutMessage))},timeoutMs)})}
   function hp(a){const h=a?.system?.attributes?.hp??{};return{value:Math.max(0,Number(h.value??0)),max:Math.max(0,Number(h.max??0)),temp:Math.max(0,Number(h.temp??0))}}
   async function damageLocal(a,amount){const damage=Math.max(0,Math.floor(Number(amount)||0)),before=hp(a);let rem=damage,temp=before.temp,value=before.value;const used=Math.min(temp,rem);temp-=used;rem-=used;value=Math.max(0,value-rem);const u={"system.attributes.hp.value":value};if(temp!==before.temp)u["system.attributes.hp.temp"]=temp;await a.update(u);return{damage,before,after:{value,max:before.max,temp}}}
   function validateHack(p){
@@ -73,10 +74,162 @@
       damage:Math.max(0,Math.floor(Number(p.damage)||0))
     };
   }
+  function quickhackApprovalFlag(message){
+    try{
+      return message?.getFlag?.(FLAG,"quickhackApproval") ??
+        message?.flags?.[FLAG]?.quickhackApproval ??
+        null;
+    }catch{
+      return message?.flags?.[FLAG]?.quickhackApproval ?? null;
+    }
+  }
+
+  function quickhackApprovalContent(data){
+    const status=String(data?.status??"pending");
+    const damage=Math.max(0,Math.floor(Number(data?.damage)||0));
+    const operator=game.actors?.get?.(data?.operatorActorId)??null;
+    const scene=game.scenes?.get?.(data?.sceneId)??null;
+    const token=scene?.tokens?.get?.(data?.targetTokenId)??null;
+    const target=token?.actor??null;
+    const item=operator?.items?.get?.(data?.quickhackItemId)??null;
+    const operatorName=operator?.name??data?.operatorName??"PLAYER";
+    const targetName=target?.name??token?.name??data?.targetName??"TARGET";
+    const hackName=item?.name??data?.quickhackName??"QUICKHACK";
+
+    if(status==="applied"){
+      const result=data?.result??{};
+      return (
+        '<div class="feha-qh-chat-approval">'+
+          '<p><strong>QUICKHACK DAMAGE APPLIED</strong></p>'+
+          '<p>'+esc(operatorName)+' → '+esc(targetName)+'</p>'+
+          '<p>'+esc(hackName)+' // <strong>'+damage+' DAMAGE</strong></p>'+
+          '<p>HP '+esc(result?.before?.value??"?")+' → <strong>'+esc(result?.after?.value??"?")+'</strong></p>'+
+          '<p><em>Approved by '+esc(data?.approvedByName??"GM")+'</em></p>'+
+        '</div>'
+      );
+    }
+
+    if(status==="denied"){
+      return (
+        '<div class="feha-qh-chat-approval">'+
+          '<p><strong>QUICKHACK DAMAGE DENIED</strong></p>'+
+          '<p>'+esc(operatorName)+' → '+esc(targetName)+'</p>'+
+          '<p>'+esc(hackName)+' // '+damage+' DAMAGE</p>'+
+        '</div>'
+      );
+    }
+
+    if(status==="error"){
+      return (
+        '<div class="feha-qh-chat-approval">'+
+          '<p><strong>QUICKHACK DAMAGE ERROR</strong></p>'+
+          '<p>'+esc(data?.error??"Unknown error")+'</p>'+
+        '</div>'
+      );
+    }
+
+    if(status==="processing"){
+      return (
+        '<div class="feha-qh-chat-approval">'+
+          '<p><strong>QUICKHACK DAMAGE // PROCESSING</strong></p>'+
+          '<p>'+esc(operatorName)+' → '+esc(targetName)+'</p>'+
+          '<p>'+esc(hackName)+' // '+damage+' DAMAGE</p>'+
+        '</div>'
+      );
+    }
+
+    return (
+      '<div class="feha-qh-chat-approval">'+
+        '<p><strong>QUICKHACK DAMAGE APPROVAL</strong></p>'+
+        '<p>'+esc(operatorName)+' → '+esc(targetName)+'</p>'+
+        '<p>'+esc(hackName)+' // <strong>'+damage+' DAMAGE</strong></p>'+
+        '<p>'+
+          '<button type="button" data-feha-qh-approval-action="apply" data-feha-qh-request="'+esc(data?.requestId??"")+'">APPLY DAMAGE</button> '+
+          '<button type="button" data-feha-qh-approval-action="deny" data-feha-qh-request="'+esc(data?.requestId??"")+'">DENY</button>'+
+        '</p>'+
+      '</div>'
+    );
+  }
+
+  function findQuickhackApprovalMessage(requestId){
+    return list(game.messages).find(message=>{
+      const data=quickhackApprovalFlag(message);
+      return String(data?.requestId??"")===String(requestId??"");
+    })??null;
+  }
+
+  function settleQuickhackApproval(message){
+    const data=quickhackApprovalFlag(message);
+    if(!data)return;
+    if(String(data.userId??"")!==String(game.user?.id??""))return;
+
+    const resolver=pending.get(data.requestId);
+    if(!resolver)return;
+
+    if(data.status==="applied"){
+      resolver({result:data.result??null});
+    }else if(data.status==="denied"){
+      resolver({error:"Quickhack damage was denied by the GM."});
+    }else if(data.status==="error"){
+      resolver({error:String(data.error??"Quickhack damage approval failed.")});
+    }
+  }
+
+  async function createQuickhackApproval(payload){
+    const operator=game.actors?.get?.(payload.operatorActorId)??null;
+    const scene=game.scenes?.get?.(payload.sceneId)??null;
+    const token=scene?.tokens?.get?.(payload.targetTokenId)??null;
+    const target=token?.actor??null;
+    const item=operator?.items?.get?.(payload.quickhackItemId)??null;
+    const gmIds=knownGMs().map(user=>user.id);
+    const whisper=[...new Set([...gmIds,game.user.id])];
+
+    if(!gmIds.length){
+      throw new Error("No GM user exists in this world for Quickhack approval.");
+    }
+
+    const data={
+      ...payload,
+      status:"pending",
+      operatorName:operator?.name??"PLAYER",
+      targetName:target?.name??token?.name??"TARGET",
+      quickhackName:item?.name??"QUICKHACK",
+      createdAt:new Date().toISOString()
+    };
+
+    const result=wait(
+      data.requestId,
+      {
+        timeoutMs:APPROVAL_TIMEOUT,
+        timeoutMessage:"Quickhack damage approval expired before a GM clicked it."
+      }
+    );
+
+    try{
+      await ChatMessage.create({
+        speaker:ChatMessage.getSpeaker({actor:operator}),
+        whisper,
+        content:quickhackApprovalContent(data),
+        flags:{
+          [FLAG]:{
+            quickhackApproval:data
+          }
+        }
+      });
+    }catch(err){
+      pending.get(data.requestId)?.({
+        error:"Could not create Quickhack approval chat message // "+String(err?.message??err)
+      });
+    }
+
+    ui.notifications?.info?.("Quickhack damage sent to GM chat for approval.");
+    return (await result)?.result??null;
+  }
+
   async function applyQuickhackDamage(p={}){
     const {operatorActorId,quickhackItemId,targetTokenId}=p;
     const sceneId=p.sceneId??canvas?.scene?.id;
-    const damage=p.damage;
+    const damage=Math.max(0,Math.floor(Number(p.damage)||0));
 
     if(!operatorActorId||!quickhackItemId||!targetTokenId||!sceneId){
       throw new Error("Quickhack authority request is incomplete.");
@@ -94,29 +247,15 @@
       return damageLocal(v.target,v.damage);
     }
 
-    const gm=
-      authorityGM() ??
-      knownGMs()[0] ??
-      null;
-
-    const id=rid();
-    const result=wait(id);
-
-    // Always include a concrete GM user id when the world has one. This keeps
-    // the request compatible with older FEHA authority handlers that reject
-    // gmId:null even when that GM client is actually online.
-    emit("hackReq",{
-      requestId:id,
+    return createQuickhackApproval({
+      requestId:rid(),
       userId:game.user.id,
-      gmId:gm?.id??null,
       operatorActorId,
       quickhackItemId,
       targetTokenId,
       sceneId,
-      damage:Math.max(0,Math.floor(Number(damage)||0))
+      damage
     });
-
-    return (await result)?.result??null;
   }
   const hasSetting=k=>Boolean(game.settings?.settings?.has?.(NS+"."+k));
   function ensureSession(){if(hasSetting(SESSION))return true;try{game.settings.register(NS,SESSION,{scope:"world",config:false,type:Object,default:{}});return true}catch{return hasSetting(SESSION)}}
@@ -144,6 +283,99 @@
     const openCyberdeck=async(actorRef=null,...args)=>{if(!originals.openCyberdeck)return null;if(game.user?.isGM&&!actorRef)return originals.openCyberdeck(null,...args);return originals.openCyberdeck(localActor(actorRef)?.id??null,...args)};
     const openForUserFn=(u,x,o={})=>openForUser(u,x,o), openMarketForUser=(u,o={})=>openForUser(u,"market",o), openChromeForUser=(u,o={})=>openForUser(u,"chrome",o), openCyberdeckForUser=(u,o={})=>openForUser(u,"cyberdeck",o), openWalletForUser=(u,o={})=>openForUser(u,"wallet",o);
     wrappers={openMarket,openChrome,openCyberdeck,openForUser:openForUserFn,openMarketForUser,openChromeForUser,openCyberdeckForUser,openWalletForUser};if(originals.openMarket)a.openMarket=openMarket;if(originals.openChrome)a.openChrome=openChrome;if(originals.openCyberdeck)a.openCyberdeck=openCyberdeck;Object.assign(a,{openForUser:openForUserFn,openMarketForUser,openChromeForUser,openCyberdeckForUser,openWalletForUser});return true}
+  async function handleQuickhackApprovalClick(event){
+    const button=event.target?.closest?.("[data-feha-qh-approval-action]");
+    if(!button)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if(!game.user?.isGM){
+      ui.notifications?.warn?.("GM approval required.");
+      return;
+    }
+
+    const requestId=button.dataset.fehaQhRequest??"";
+    const message=findQuickhackApprovalMessage(requestId);
+    const data=quickhackApprovalFlag(message);
+
+    if(!message||!data){
+      ui.notifications?.error?.("Quickhack approval request is no longer available.");
+      return;
+    }
+
+    if(String(data.status??"pending")!=="pending"){
+      ui.notifications?.warn?.("This Quickhack request has already been resolved.");
+      return;
+    }
+
+    const action=button.dataset.fehaQhApprovalAction;
+
+    if(action==="deny"){
+      const next={
+        ...data,
+        status:"denied",
+        approvedBy:game.user.id,
+        approvedByName:game.user.name,
+        resolvedAt:new Date().toISOString()
+      };
+
+      await message.update({
+        content:quickhackApprovalContent(next),
+        [`flags.${FLAG}.quickhackApproval`]:next
+      });
+      return;
+    }
+
+    if(action!=="apply")return;
+
+    const processing={
+      ...data,
+      status:"processing",
+      approvedBy:game.user.id,
+      approvedByName:game.user.name
+    };
+
+    await message.update({
+      content:quickhackApprovalContent(processing),
+      [`flags.${FLAG}.quickhackApproval`]:processing
+    });
+
+    try{
+      const validated=validateHack(data);
+      const result=await damageLocal(validated.target,validated.damage);
+      const applied={
+        ...data,
+        status:"applied",
+        approvedBy:game.user.id,
+        approvedByName:game.user.name,
+        resolvedAt:new Date().toISOString(),
+        result
+      };
+
+      await message.update({
+        content:quickhackApprovalContent(applied),
+        [`flags.${FLAG}.quickhackApproval`]:applied
+      });
+    }catch(err){
+      const failed={
+        ...data,
+        status:"error",
+        approvedBy:game.user.id,
+        approvedByName:game.user.name,
+        resolvedAt:new Date().toISOString(),
+        error:String(err?.message??err)
+      };
+
+      await message.update({
+        content:quickhackApprovalContent(failed),
+        [`flags.${FLAG}.quickhackApproval`]:failed
+      });
+
+      console.error("FEHA Quickhack chat approval failed",err);
+    }
+  }
+
   async function receive(m){if(!m?.[MARK])return;const k=m.kind,p=m.payload??{};
     if(k==="hackReq"){
       if(!game.user?.isGM)return;
@@ -182,8 +414,8 @@
     if(k==="purchaseRejected"){if(String(p.userId??"")===String(game.user?.id??""))ui.notifications?.warn?.("Market stock changed before purchase completed. "+String(p.itemName??"Item")+" was removed and refunded.");return}
     if(k==="uiOpen"){if(String(p.userId??"")!==String(game.user?.id??""))return;const sender=game.users?.get?.(p.senderId);if(!sender?.isGM||!sender.active)return;try{await openLocal(p.app,p.actorId)}catch(e){console.error("FEHA remote UI open failed",e)}}
   }
-  function installHooks(){if(!globalThis.Hooks?.on)return;hooks.push(["updateActor",globalThis.Hooks.on("updateActor",a=>queueSurface(a?.id))]);hooks.push(["createItem",globalThis.Hooks.on("createItem",(i,_o,u)=>{queueSurface(i?.parent?.id);reconcilePurchase(i,u)})]);hooks.push(["updateItem",globalThis.Hooks.on("updateItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["deleteItem",globalThis.Hooks.on("deleteItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["updateSetting",globalThis.Hooks.on("updateSetting",s=>{const k=String(s?.key??s?._source?.key??"");if(k===NS+"."+STOCK||k.endsWith("."+STOCK))queueMarket();if(k===NS+"."+SESSION||k.endsWith("."+SESSION))void applySession()})]);hooks.push(["updateScene",globalThis.Hooks.on("updateScene",s=>void core.emit("devices:changed",{sceneId:s?.id??null,remote:true}))])}
+  function installHooks(){if(!globalThis.Hooks?.on)return;hooks.push(["updateChatMessage",globalThis.Hooks.on("updateChatMessage",message=>settleQuickhackApproval(message))]);hooks.push(["updateActor",globalThis.Hooks.on("updateActor",a=>queueSurface(a?.id))]);hooks.push(["createItem",globalThis.Hooks.on("createItem",(i,_o,u)=>{queueSurface(i?.parent?.id);reconcilePurchase(i,u)})]);hooks.push(["updateItem",globalThis.Hooks.on("updateItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["deleteItem",globalThis.Hooks.on("deleteItem",i=>queueSurface(i?.parent?.id))]);hooks.push(["updateSetting",globalThis.Hooks.on("updateSetting",s=>{const k=String(s?.key??s?._source?.key??"");if(k===NS+"."+STOCK||k.endsWith("."+STOCK))queueMarket();if(k===NS+"."+SESSION||k.endsWith("."+SESSION))void applySession()})]);hooks.push(["updateScene",globalThis.Hooks.on("updateScene",s=>void core.emit("devices:changed",{sceneId:s?.id??null,remote:true}))])}
   function removeHooks(){for(const[e,id]of hooks.splice(0))try{globalThis.Hooks.off(e,id)}catch{}}
-  const api={version:VERSION,canUseAuthority,authorityGM,knownGMs,actorForUser,localActor,attachUiBridges,openForUser,applyQuickhackDamage,async init(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=receive;game.socket?.on?.(CH,socketHandler);ensureSession();installHooks();if(!marketHandler){marketHandler=true;document.addEventListener("click",marketClick,true)}console.log("FEHA MULTIPLAYER SYNC",VERSION,"ready")},async destroy(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=null;for(const d of [...pending.values()])try{d.cancel?.()}catch{}pending.clear();removeHooks();if(marketHandler){marketHandler=false;document.removeEventListener("click",marketClick,true)}restore();clearTimeout(marketTimer);clearTimeout(surfaceTimer);clearTimeout(sessionTimer);if(globalThis.FEHA_MULTIPLAYER_SYNC===api)delete globalThis.FEHA_MULTIPLAYER_SYNC}};
+  const api={version:VERSION,canUseAuthority,authorityGM,knownGMs,actorForUser,localActor,attachUiBridges,openForUser,applyQuickhackDamage,async init(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=receive;game.socket?.on?.(CH,socketHandler);ensureSession();installHooks();if(!marketHandler){marketHandler=true;document.addEventListener("click",marketClick,true)}if(!approvalClickHandler){approvalClickHandler=handleQuickhackApprovalClick;document.addEventListener("click",approvalClickHandler,true)}console.log("FEHA MULTIPLAYER SYNC",VERSION,"ready")},async destroy(){if(socketHandler)try{game.socket?.off?.(CH,socketHandler)}catch{}socketHandler=null;for(const d of [...pending.values()])try{d.cancel?.()}catch{}pending.clear();removeHooks();if(marketHandler){marketHandler=false;document.removeEventListener("click",marketClick,true)}if(approvalClickHandler){document.removeEventListener("click",approvalClickHandler,true);approvalClickHandler=null}restore();clearTimeout(marketTimer);clearTimeout(surfaceTimer);clearTimeout(sessionTimer);if(globalThis.FEHA_MULTIPLAYER_SYNC===api)delete globalThis.FEHA_MULTIPLAYER_SYNC}};
   core.registerModule("multiplayerSync",api);globalThis.FEHA_MULTIPLAYER_SYNC=api;
 })();
