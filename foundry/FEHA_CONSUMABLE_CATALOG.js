@@ -3,7 +3,7 @@
 // This pass intentionally avoids complicated runtime mechanics.
 
 (() => {
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const REWRITE = "1.0";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "06 — CONSUMABLES";
@@ -521,6 +521,12 @@
       manufacturer:def.company,
       company:def.company,
       sourceCategory:"Consumables",
+      shopType:"street",
+      curatedCatalogV10:true,
+      catalogEnabled:true,
+      marketPass:"catalog-1.0",
+      marketCategory:"Consumables",
+      marketPrice:def.price,
       effectText:def.effectText,
       mk:def.mk,
       rating:def.mk,
@@ -529,7 +535,6 @@
       priceCredits:def.price,
       availability:def.availability,
       availabilityText:availabilityText(def),
-      catalogEnabled:true,
       actionType:"bonus",
       bonusAction:true
     };
