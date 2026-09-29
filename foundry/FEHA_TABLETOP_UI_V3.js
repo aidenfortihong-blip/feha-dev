@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.7";
+  const VERSION = "0.11.8";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1873,92 +1873,32 @@
     const operator = world?.querySelector?.(".jack-operator");
     if (!world || !operator) return;
 
-    const widthPct =
-      Math.max(
-        0,
-        Number(operator.dataset.tokenWidthPct) || 0
-      );
-
-    const heightPct =
-      Math.max(
-        0,
-        Number(operator.dataset.tokenHeightPct) || 0
-      );
-
-    const tokenWorldWidth =
-      world.clientWidth*(widthPct/100);
-
-    const tokenWorldHeight =
-      world.clientHeight*(heightPct/100);
-
-    const nativeTokenSize = Math.max(
-      1,
-      Number(operator.dataset.tokenPixelWidth) || 0,
-      Number(operator.dataset.tokenPixelHeight) || 0
-    );
-
-    const tokenWorldSize = Math.max(
-      32,
-      nativeTokenSize,
-      Math.round(
-        Math.max(
-          tokenWorldWidth,
-          tokenWorldHeight
-        )
-      )
-    );
+    const fixedSize = 96;
 
     operator.style.setProperty(
       "--jack-operator-size",
-      tokenWorldSize+"px"
+      fixedSize+"px"
     );
   }
+
 
   function syncJackActorConstantSize(root) {
     const world = root?.querySelector?.(".jack-world");
     if (!world) return;
 
-    const worldWidth = Math.max(1,world.clientWidth);
-    const worldHeight = Math.max(1,world.clientHeight);
+    const fixedSize = 96;
 
     for (
       const node of
       world.querySelectorAll(".jack-node[data-token-id]")
     ) {
-      const widthPct =
-        Math.max(0,Number(node.dataset.tokenWidthPct)||0);
-
-      const heightPct =
-        Math.max(0,Number(node.dataset.tokenHeightPct)||0);
-
-      const tokenWidth =
-        worldWidth*(widthPct/100);
-
-      const tokenHeight =
-        worldHeight*(heightPct/100);
-
-      const nativeTokenSize = Math.max(
-        1,
-        Number(node.dataset.tokenPixelWidth) || 0,
-        Number(node.dataset.tokenPixelHeight) || 0
-      );
-
-      // Full-scene fitting can make the projected token footprint tiny.
-      // Never display an actor node below its real Foundry token footprint.
-      // The node remains centered on the same scene anchor, so alignment does
-      // not move when the visual footprint is enlarged.
-      const size = Math.max(
-        32,
-        nativeTokenSize,
-        Math.round(Math.max(tokenWidth,tokenHeight))
-      );
-
       node.style.setProperty(
         "--jack-node-size",
-        size+"px"
+        fixedSize+"px"
       );
     }
   }
+
 
   function syncJackRouteScale(root,state) {
     const zoom = Math.max(
