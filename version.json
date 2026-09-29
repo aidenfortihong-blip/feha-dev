@@ -1,8 +1,11 @@
 {
-  "version": "0.10.126",
+  "version": "0.10.127",
   "updated": "2026-09-29",
-  "scope": "quickhack-no-unnecessary-gm-dependency",
+  "scope": "quickhack-authority-backward-compat",
   "notes": [
+    "Fixed Quickhack authority timeout when the player client is freshly reloaded but the GM client is still running an older FEHA authority handler: requests now include a concrete known GM user id even when the player's active-GM presence cache is stale.",
+    "This preserves compatibility with older handlers that reject gmId:null, avoiding silent socket drops after a player-only ADK reload.",
+    "Authority timeouts now explicitly report that no GM client answered the socket request.",
     "Quickhack damage now attempts the target Actor update locally first, so a player who already has sufficient Foundry ownership no longer requires any GM/DM client or authority route.",
     "If Foundry actually rejects the local HP write for permissions, the Quickhack falls back to silent GM authority routing; there is still no approval dialog.",
     "Player clients no longer hard-fail solely because game.users.activeGM is empty/stale: Quickhack authority requests can broadcast to the module socket and be claimed by a live GM client.",
