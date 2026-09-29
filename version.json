@@ -1,10 +1,12 @@
 {
-  "version": "0.11.15",
+  "version": "0.11.16",
   "updated": "2026-09-29",
-  "scope": "grenade-world-economy-repricing",
+  "scope": "retire-universal-mod-system",
   "notes": [
-    "Repriced all 18 physical grenades around in-world manufacturing complexity, electronics, legality, scarcity, and delivery technology rather than damage output or Mk alone.",
-    "Conventional utility and fragmentation grenades are relatively cheap mass-produced munitions, while Sticky/Homing, EMP, Recon, Biohazard, and exotic ordnance carry large technology and access premiums.",
-    "Canonical grenade migration updates both FEHA priceCredits and dnd5e system.price.value on existing world and owned grenade items, and refreshes the displayed grenade card price."
+    "Retired the universal Mods system from active FEHA play. Legacy Mod items are no longer part of the catalog/economy.",
+    "On GM load, FEHA creates and verifies a hidden world backup of all legacy Mod world items, owned Mod items, and 07 — MODS folders before deleting them from Foundry.",
+    "The 07 — MODS folder tree and its manufacturer subfolders are removed after their contents are backed up; player-owned legacy Mods are removed as well.",
+    "Existing Market stock references to retired Mod item IDs are removed and the Market is refreshed.",
+    "Legacy modSlots metadata and visible Mod Slots rows are stripped from remaining world and owned gear so weapons, armor, and cyberware no longer advertise a universal socket system. Bespoke item customization remains a GM/player-specific future option rather than a catalog mechanic."
   ]
 }
