@@ -1,6 +1,6 @@
 // FEHA // NETWORK DEVICE APPROVALS
-// Player probe requests -> online GM approval queue.
-// Keeps unknown-map information authoritative to the GM.
+// Player probe requests -> silent GM authority execution.
+// Keeps unknown-map information authoritative without a manual approval click.
 
 (() => {
   const core = globalThis.FEHA_CYBER_CORE;
@@ -10,7 +10,7 @@
     throw new Error("FEHA_NETWORK_APPROVALS requires Cyber Core + Network Devices.");
   }
 
-  const VERSION = "0.9.4";
+  const VERSION = "0.10.0";
   const CHANNEL = "module.flesh-enshrouded-heart-ablaze";
   const MARKER = "fehaNetworkDevicesV1";
   const ROOT_ID = "feha-network-approval-queue";
@@ -18,7 +18,7 @@
   const pending = new Map();
   let socketHandler = null;
   const COMMAND_TIMEOUT_MS = 15000;
-  const PROBE_TIMEOUT_MS = 600000;
+  const PROBE_TIMEOUT_MS = 15000;
 
   function activeOnlineGM() {
     return [...(game.users?.contents ?? game.users ?? [])]
@@ -570,6 +570,67 @@
     });
   }
 
+  async function autoApproveProbe(request) {
+    if (!game.user?.isGM) {
+      throw new Error("GM authority is required to create Network Devices.");
+    }
+
+    const user = game.users?.get?.(request.userId) ?? null;
+    const scene = game.scenes?.get?.(request.sceneId) ?? null;
+
+    if (!user?.active) {
+      throw new Error("Requesting player is no longer online.");
+    }
+
+    if (!scene) {
+      throw new Error("Network Probe Scene is no longer available.");
+    }
+
+    const requestedType = String(request.suggestedType || "door");
+    const type = devices.typeDef?.(requestedType)
+      ? requestedType
+      : "door";
+
+    const accessScope = devices.normalizeScope?.(
+      devices.typeDef?.(type)?.defaultScope ?? "endpoint",
+      type
+    ) ?? "endpoint";
+
+    const record = await devices.upsertCustomDevice(
+      request.sceneId,
+      {
+        id:"probe:" + request.id,
+        type,
+        name:
+          String(request.label || "").trim() ||
+          ((devices.typeDef?.(type)?.label ?? type.toUpperCase()) + " NODE"),
+        xPct:request.xPct,
+        yPct:request.yPct,
+        accessScope,
+        securityDC:devices.suggestedDC(type,accessScope),
+        capabilities:devices.defaultCapabilities(type),
+        discoveredBy:[request.userId],
+        origin:"probe",
+        metadata:{
+          requestId:request.id,
+          requesterId:request.userId,
+          approvedBy:game.user.id,
+          approvedAt:new Date().toISOString(),
+          autoAuthorized:true,
+          accessScope
+        }
+      }
+    );
+
+    return {
+      requestId:request.id,
+      userId:request.userId,
+      decision:"approved",
+      gmId:game.user.id,
+      record
+    };
+  }
+
   async function receive(message) {
     if (!message?.[MARKER]) return;
 
@@ -578,8 +639,26 @@
 
     if (kind === "probeRequest") {
       if (!isAuthorityFor(payload)) return;
-      queue.set(payload.id,payload);
-      renderQueue();
+
+      try {
+        const response = await autoApproveProbe(payload);
+        emit("probeResolved",response);
+        pending.get(payload.id)?.(response);
+      } catch (err) {
+        console.error("FEHA NETWORK PROBE auto-authority failed",err);
+
+        const response = {
+          requestId:payload.id,
+          userId:payload.userId,
+          decision:"denied",
+          gmId:game.user.id,
+          error:String(err?.message ?? err)
+        };
+
+        emit("probeResolved",response);
+        pending.get(payload.id)?.(response);
+      }
+
       return;
     }
 
@@ -771,23 +850,25 @@
       createdAt:new Date().toISOString()
     };
 
-    const resolution = createPendingResolution(
-      request.id,
-      {
-        timeoutMs:PROBE_TIMEOUT_MS,
-        timeoutMessage:"Network Probe timed out waiting for GM approval."
-      }
-    );
+    const resolution =
+      game.user?.isGM
+        ? autoApproveProbe(request)
+        : createPendingResolution(
+            request.id,
+            {
+              timeoutMs:PROBE_TIMEOUT_MS,
+              timeoutMessage:"Network Probe timed out waiting for GM authority."
+            }
+          );
 
-    if (game.user?.isGM) {
-      queue.set(request.id,request);
-      renderQueue();
+    if (!game.user?.isGM) {
+      emit("probeRequest",request);
     }
 
-    emit("probeRequest",request);
-
     ui.notifications?.info?.(
-      "NETWORK PROBE SENT // GM APPROVAL REQUIRED"
+      game.user?.isGM
+        ? "NETWORK PROBE // AUTO-AUTHORIZED"
+        : "NETWORK PROBE SENT // AUTHORITY ROUTING"
     );
 
     return {request,resolution};
