@@ -1,12 +1,12 @@
 {
-  "version": "0.11.11",
+  "version": "0.11.12",
   "updated": "2026-09-29",
-  "scope": "quickhack-feedback-and-chat-readability",
+  "scope": "canonical-grenade-catalog-rebalance",
   "notes": [
-    "Quickhack chat cards now force readable light text, cyan labels, yellow state text, and clear save success/failure colors even under Foundry light chat themes.",
-    "Clicking RUN now immediately displays a centered QUICKHACK UPLOAD transmission HUD and a player notification instead of appearing unresponsive.",
-    "Successful Quickhacks change the HUD to EXECUTED, play a short cyberpunk glitch-out, then close JACK IN and the Cyberdeck so the player immediately returns to the tabletop to see the result.",
-    "Failed Quickhacks visibly show FAILED in the transmission HUD and keep the client open.",
-    "Quickhack runtime bumped to 1.0.1; no balance values changed."
+    "Added foundry/FEHA_GRENADE_CATALOG.js as the canonical physical grenade data/migration layer for all 18 Foundry grenade items.",
+    "Regular, Homing, and Sticky delivery variants now have distinct mechanics instead of sharing generic damage text.",
+    "Biohazard, Cutting, EMP, Flash, Frag, Incendiary, Ozob's Nose, Recon, and Smoke payloads now have differentiated effects and explicit grenadeSchema flags for future automation.",
+    "Existing grenade Mk, market price, availability, one-use identity, item art, and catalog placement are preserved.",
+    "ADK DEV LOADER now preflights the grenade module and performs one idempotent GM-side migration across world and owned grenade items."
   ]
 }
