@@ -1,8 +1,10 @@
 {
-  "version": "0.10.135",
+  "version": "0.10.136",
   "updated": "2026-09-29",
-  "scope": "quickhack-authority-load-status",
+  "scope": "quickhack-authority-visible-toast",
   "notes": [
+    "ADK DEV LOADER now shows a visible Foundry toast whenever the Quickhack Authority module loads: FEHA // QUICKHACK AUTHORITY ONLINE // v<version>.",
+    "The existing console confirmation remains in place. No Quickhack mechanics changed in this release.",
     "ADK DEV LOADER now prints a clear console confirmation after Cyber Core initialization: FEHA DEV // QUICKHACK AUTHORITY // LOADED // v<version>.",
     "No Quickhack mechanics changed in this release; this is a visibility/debugging-only loader update.",
     "Added FEHA_QUICKHACK_AUTHORITY: a dedicated validated player-to-GM execution bridge for Quickhack mutations. Players keep normal Foundry permissions while the active GM client silently performs allowlisted Quickhack changes.",
