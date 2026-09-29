@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.137";
+  const VERSION = "0.11.0";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -504,8 +504,23 @@
       const runCost =
         runItem ? hackCost(runItem) : Infinity;
 
+      const quickhackRuntime =
+        globalThis.FEHA_QUICKHACK_RUNTIME;
+
+      const needsTarget =
+        runItem
+          ? (
+              quickhackRuntime?.requiresTarget?.(runItem) ??
+              true
+            )
+          : true;
+
+      const hasTarget =
+        [...(game.user?.targets ?? [])].length > 0;
+
       runButton.disabled =
-        next.currentRam < runCost;
+        next.currentRam < runCost ||
+        (needsTarget && !hasTarget);
     }
 
     return next;
@@ -2928,8 +2943,12 @@
     const hacks = m.loaded.length
       ? m.loaded.map(item => {
           const cost = hackCost(item);
+          const needsTarget =
+            globalThis.FEHA_QUICKHACK_RUNTIME?.requiresTarget?.(item) ??
+            true;
+
           return '<button class="jack-hack" data-jack-action="run" data-item-id="'+
-            esc(item.id)+'" '+(!selected || m.currentRam < cost?'disabled':'')+'>'+
+            esc(item.id)+'" '+((needsTarget && !selected) || m.currentRam < cost?'disabled':'')+'>'+
             '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
             '<span><b>'+esc(item.name)+'</b><small>RAM '+cost+' // DC '+m.dc+'</small></span>'+
             '<em><span>EXECUTE</span><b>RUN</b></em>'+
@@ -3209,7 +3228,17 @@
     for (const button of root.querySelectorAll('.jack-hack[data-jack-action="run"]')) {
       const item = actor.items?.get?.(button.dataset.itemId);
       const cost = item ? hackCost(item) : Infinity;
-      button.disabled = !selected || m.currentRam < cost;
+      const needsTarget =
+        item
+          ? (
+              globalThis.FEHA_QUICKHACK_RUNTIME?.requiresTarget?.(item) ??
+              true
+            )
+          : true;
+
+      button.disabled =
+        m.currentRam < cost ||
+        (needsTarget && !selected);
     }
 
     syncJackRouteScale(
@@ -3990,95 +4019,203 @@
         const lock = beginAction("execute",actor.id);
         if (!lock) return;
 
-        const item = actor.items?.get?.(button.dataset.itemId);
-        const target = [...(game.user?.targets ?? [])][0] ?? null;
-        const targetId = target?.id ?? target?.document?.id ?? null;
-        const liveNet = sceneModel(actor);
+        const item =
+          actor.items?.get?.(
+            button.dataset.itemId
+          ) ??
+          null;
 
-        if (
-          !item ||
-          !model(actor).loaded.some(h => h.id === item.id) ||
-          !target ||
-          !liveNet.nodes.some(node => node.id === targetId)
-        ) {
-          endAction(lock);
-          return ui?.notifications?.warn?.(
-            "Select a live scene target and load that Quickhack first."
-          );
-        }
+        const runtime =
+          globalThis.FEHA_QUICKHACK_RUNTIME;
 
-        const m = model(actor);
-        const cost = hackCost(item);
+        const target =
+          [...(game.user?.targets ?? [])][0] ??
+          null;
 
-        if (m.currentRam < cost) {
-          endAction(lock);
-          return ui?.notifications?.warn?.(
-            "Not enough RAM. "+m.currentRam+"/"+cost+"."
-          );
-        }
+        const targetId =
+          target?.id ??
+          target?.document?.id ??
+          null;
 
-        root.dataset.executing = "1";
-        button.disabled = true;
+        const liveNet =
+          sceneModel(actor);
+
+        let ramTicket = null;
 
         try {
-          // Resolution is preview-only. RAM is committed only when
-          // APPLY DAMAGE / APPLY EFFECT is actually confirmed.
-          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
+          if (
+            !item ||
+            !model(actor).loaded.some(
+              hack => hack.id === item.id
+            )
+          ) {
+            return ui?.notifications?.warn?.(
+              "Load that Quickhack first."
+            );
+          }
 
-          const resolution = await resolveQuickhack(
-            actor,
-            item,
-            target
+          if (
+            !runtime?.handles?.(item)
+          ) {
+            return ui?.notifications?.warn?.(
+              "This Quickhack has not been migrated to the finalized runtime."
+            );
+          }
+
+          const needsTarget =
+            runtime.requiresTarget(item);
+
+          if (
+            needsTarget &&
+            (
+              !target ||
+              !liveNet.nodes.some(
+                node =>
+                  node.id === targetId
+              )
+            )
+          ) {
+            return ui?.notifications?.warn?.(
+              "Select a live scene target for this Quickhack."
+            );
+          }
+
+          const current =
+            model(actor);
+
+          const cost =
+            hackCost(item);
+
+          if (
+            current.currentRam < cost
+          ) {
+            return ui?.notifications?.warn?.(
+              "Not enough RAM. "+
+              current.currentRam+
+              "/"+
+              cost+
+              "."
+            );
+          }
+
+          root.dataset.executing = "1";
+          button.disabled = true;
+
+          globalThis.FEHA_SOUNDS?.play?.(
+            "scan",
+            {cooldown:0}
           );
 
-          await ChatMessage.create({
-            speaker:ChatMessage.getSpeaker({actor}),
-            content:
-              '<div style="display:flex;gap:10px;align-items:center">'+
-                '<img src="'+esc(item.img)+'" style="width:54px;height:54px;object-fit:contain">'+
-                '<div>'+
-                  '<h3>'+esc(item.name)+'</h3>'+
-                  '<p><strong>RAM COST '+cost+'</strong> • DC '+m.dc+
-                  ' • TARGET '+esc(target.name ?? target.document?.name ?? "UNKNOWN")+'</p>'+
-                  (
-                    resolution.save
-                      ? '<p>'+esc(resolution.save.label)+' save: <strong>'+
-                        resolution.save.total+'</strong> vs DC '+m.dc+
-                        ' — '+(resolution.save.passed?'SUCCESS':'FAILURE')+'</p>'
-                      : ''
-                  )+
-                  (
-                    resolution.damage
-                      ? '<p>Damage roll: <strong>'+resolution.damage.raw+
-                        '</strong> '+esc(resolution.damage.type)+
-                        ' • suggested '+resolution.damage.suggested+'</p>'
-                      : ''
-                  )+
-                  '<p>'+esc(hackEffect(item))+'</p>'+
-                '</div>'+
-              '</div>'
-          });
+          const prepared =
+            await runtime.prepare(
+              actor,
+              item,
+              target
+            );
 
-          const liveRoot =
-            document.getElementById(JACK_ID);
+          ramTicket =
+            document.createElement("div");
 
-          if (liveRoot?.isConnected) {
-            delete liveRoot.dataset.executing;
-            showResolution(liveRoot,resolution);
+          ramTicket.dataset.qhItem =
+            item.id;
+
+          const ramCommitted =
+            await commitQuickhackRam(
+              actor,
+              ramTicket
+            );
+
+          if (!ramCommitted) return;
+
+          try {
+            await runtime.execute(
+              prepared
+            );
+          } catch (effectError) {
+            await refundQuickhackRam(
+              actor,
+              ramTicket
+            );
+
+            throw effectError;
           }
 
-          globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
-        } catch (err) {
-          console.error("FEHA V3 Quickhack resolution failed",err);
-          ui?.notifications?.error?.("Quickhack resolution failed.");
+          try {
+            await runtime.markTurnUsed(
+              actor
+            );
+          } catch (turnError) {
+            console.warn(
+              "FEHA V3 Quickhack turn stamp failed",
+              turnError
+            );
+          }
 
-          if (root.isConnected) {
-            delete root.dataset.executing;
-            button.disabled = false;
+          syncQuickhackRamUI(actor);
+
+          globalThis.FEHA_SOUNDS?.play?.(
+            "confirm",
+            {cooldown:0}
+          );
+
+          ui?.notifications?.info?.(
+            item.name+" // EXECUTED"
+          );
+        } catch (err) {
+          const wasCancelled =
+            err?.code ===
+            "FEHA_QH_CANCELLED";
+
+          if (!wasCancelled) {
+            console.error(
+              "FEHA V3 finalized Quickhack execution failed",
+              err
+            );
+
+            ui?.notifications?.error?.(
+              "Quickhack failed"+
+              (
+                err?.message
+                  ? " // "+String(err.message)
+                  : "."
+              )
+            );
           }
         } finally {
+          if (root?.isConnected) {
+            delete root.dataset.executing;
+
+            const current =
+              model(actor);
+
+            const needsTarget =
+              item
+                ? (
+                    runtime?.requiresTarget?.(item) ??
+                    true
+                  )
+                : true;
+
+            const hasTarget =
+              [...(game.user?.targets ?? [])].length > 0;
+
+            button.disabled =
+              !item ||
+              current.currentRam < (
+                item
+                  ? hackCost(item)
+                  : Infinity
+              ) ||
+              (
+                needsTarget &&
+                !hasTarget
+              );
+          }
+
           endAction(lock);
         }
+
+        return;
       }
     };
   }
