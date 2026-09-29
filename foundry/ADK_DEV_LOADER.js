@@ -13,6 +13,7 @@
     baseCss:"latest-dev.css",
     v3Css:"cyberdeck-v3.css",
     baseJs:"latest-dev.js",
+    grenades:"foundry/FEHA_GRENADE_CATALOG.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
@@ -168,7 +169,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","core","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","core","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -249,6 +250,7 @@
     injectedStyle = style;
 
     evaluate(source.baseJs,files.baseJs,sha);
+    evaluate(source.grenades,files.grenades,sha);
     evaluate(source.core,files.core,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
@@ -321,10 +323,20 @@
       );
     }
 
-    // Run one final canonical Quickhack migration after the entire build is
-    // installed. This prevents legacy world-item descriptions/prices/names
-    // from surviving when older ADK data was already present in the world.
+    // Run final canonical item migrations after the entire build is installed.
+    // This prevents legacy world-item descriptions/effects from surviving an
+    // otherwise successful hot reload.
     if (isGM) {
+      const grenadeMigration =
+        await globalThis.FEHA_GRENADE_CATALOG?.migrateAll?.();
+
+      if (grenadeMigration) {
+        console.info(
+          "FEHA DEV // GRENADE CATALOG CANONICALIZED",
+          grenadeMigration
+        );
+      }
+
       const quickhackMigration =
         await globalThis.FEHA_QUICKHACK_CATALOG?.migrateAll?.();
 
@@ -367,7 +379,13 @@
               globalThis.FEHA_QUICKHACK_CATALOG?.definition?.(document)
             );
 
-          if (isQuickhack || app?.rendered === true) {
+          const isGrenade =
+            document?.documentName === "Item" &&
+            Boolean(
+              globalThis.FEHA_GRENADE_CATALOG?.definition?.(document)
+            );
+
+          if (isQuickhack || isGrenade || app?.rendered === true) {
             await Promise.resolve(app.render?.(true));
           }
         } catch (refreshError) {
