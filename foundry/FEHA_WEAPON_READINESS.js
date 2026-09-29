@@ -134,7 +134,9 @@
   }
 
   function isDoneWeapon(item) {
-    return DONE_WEAPONS.has(norm(item?.name));
+    return Boolean(
+      globalThis.FEHA_WEAPON_CATALOG?.definition?.(item)
+    ) || DONE_WEAPONS.has(norm(item?.name));
   }
 
   async function ensureStatusFolder(company,name) {
