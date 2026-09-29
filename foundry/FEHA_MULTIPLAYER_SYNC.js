@@ -2,14 +2,14 @@
 (() => {
   const core=globalThis.FEHA_CYBER_CORE;
   if(!core) throw new Error("FEHA_MULTIPLAYER_SYNC requires FEHA_CYBER_CORE.");
-  const VERSION="0.1.0", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
+  const VERSION="0.1.1", CH="module.flesh-enshrouded-heart-ablaze", MARK="fehaMultiplayerSyncV1";
   const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000;
   const PLAYABLE=new Set(["ponyboy","derke","sasha","zach"]), pending=new Map(), hooks=[];
   let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, stockChain=Promise.resolve();
   const norm=v=>String(v??"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g," ").trim().toLowerCase();
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,Number(n)||0));
   const list=c=>{if(!c)return[];if(Array.isArray(c))return c;if(Array.isArray(c.contents))return c.contents;try{return[...c]}catch{return[]}};
-  const authorityGM=()=>list(game.users).filter(u=>u?.isGM&&u?.active).sort((a,b)=>String(a.id).localeCompare(String(b.id)))[0]??null;
+  const authorityGM=()=>game.users?.activeGM??list(game.users).filter(u=>u?.isGM&&u?.active).sort((a,b)=>String(a.id).localeCompare(String(b.id)))[0]??null;
   const ownerLevel=()=>Number(globalThis.CONST?.DOCUMENT_OWNERSHIP_LEVELS?.OWNER??3);
   const owns=(u,a)=>{if(!u||!a)return false;if(u.isGM)return true;try{if(typeof a.testUserPermission==="function")return a.testUserPermission(u,ownerLevel())}catch{}const o=a.ownership??a.permission??{};return Number(o[u.id]??o.default??0)>=ownerLevel()};
   function actorForUser(user,requested=null){
