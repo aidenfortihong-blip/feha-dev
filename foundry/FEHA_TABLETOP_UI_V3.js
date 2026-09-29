@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.122";
+  const VERSION = "0.10.123";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -303,14 +303,7 @@
       save:null,
       damage:null,
       appliedDamage:0,
-      canApplyDamage:Boolean(
-        targetActor &&
-        (
-          game.user?.isGM ||
-          targetActor.isOwner ||
-          globalThis.FEHA_MULTIPLAYER_SYNC?.canUseAuthority?.()
-        )
-      )
+      canApplyDamage:Boolean(targetActor)
     };
 
     if (rule.saveKey && targetActor) {
@@ -3667,16 +3660,6 @@
           if (!targetActor) {
             return ui?.notifications?.warn?.(
               "Resolved target is no longer available."
-            );
-          }
-
-          if (
-            !game.user?.isGM &&
-            !targetActor.isOwner &&
-            !globalThis.FEHA_MULTIPLAYER_SYNC?.canUseAuthority?.()
-          ) {
-            return ui?.notifications?.warn?.(
-              "No online GM authority is available to apply this Quickhack."
             );
           }
 
