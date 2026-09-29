@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.129";
+  const VERSION = "0.10.130";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -124,16 +124,38 @@
   }
 
   function hackCost(item) {
+    const catalogCost =
+      globalThis.FEHA_QUICKHACK_CATALOG?.ramCost?.(item);
+
+    if (
+      Number.isFinite(Number(catalogCost)) &&
+      Number(catalogCost) > 0
+    ) {
+      return Number(catalogCost);
+    }
+
     const explicit = Number(flags(item).ramCost);
     if (Number.isFinite(explicit) && explicit > 0) return explicit;
+
     const match = description(item).match(/\bRAM\s+(\d+)/i);
     return match ? Number(match[1]) : 2;
   }
 
   function hackEffect(item) {
     const cost = hackCost(item);
-    const raw = String(flags(item).effectText || description(item) || "Quickhack software.");
-    return raw.replace(/\bRAM\s+\d+\b/i, "RAM " + cost);
+    const catalogText =
+      globalThis.FEHA_QUICKHACK_CATALOG?.effectText?.(item);
+
+    const raw = String(
+      catalogText ||
+      flags(item).effectText ||
+      description(item) ||
+      "Quickhack software."
+    );
+
+    return /\bRAM\s+\d+\b/i.test(raw)
+      ? raw.replace(/\bRAM\s+\d+\b/i, "RAM " + cost)
+      : "RAM " + cost + ". " + raw;
   }
 
   function hackDC(actor) {
