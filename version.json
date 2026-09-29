@@ -1,12 +1,13 @@
 {
-  "version": "0.11.16",
+  "version": "0.11.17",
   "updated": "2026-09-29",
-  "scope": "retire-universal-mod-system",
+  "scope": "grenade-quickhack-integration-hardening",
   "notes": [
-    "Retired the universal Mods system from active FEHA play. Legacy Mod items are no longer part of the catalog/economy.",
-    "On GM load, FEHA creates and verifies a hidden world backup of all legacy Mod world items, owned Mod items, and 07 — MODS folders before deleting them from Foundry.",
-    "The 07 — MODS folder tree and its manufacturer subfolders are removed after their contents are backed up; player-owned legacy Mods are removed as well.",
-    "Existing Market stock references to retired Mod item IDs are removed and the Market is refreshed.",
-    "Legacy modSlots metadata and visible Mod Slots rows are stripped from remaining world and owned gear so weapons, armor, and cyberware no longer advertise a universal socket system. Bespoke item customization remains a GM/player-specific future option rather than a catalog mechanic."
+    "Audited the full 18-grenade and 20-Quickhack chain across catalogs, runtimes, silent GM authority, Cookoff, templates, timed effects, RAM execution flow, and loader initialization.",
+    "Grenade runtime 1.1.0 now cleans timed effects and Smoke/Recon zone markers on world actors and unlinked synthetic token actors, guards zero-quantity and duplicate grenade use, honors controlled source tokens, supports the current dnd5e activity-use hook, and fixes Recon coordinates on padded/offset scenes.",
+    "Recon grenade scan output now identifies electronic targets and lists installed cyberware rather than only reporting creature names.",
+    "Quickhack authority 2.1.0 now cleans timed Quickhack/Chrome Lock state across synthetic actors on all scenes and mechanically blocks dnd5e reaction activities while a FEHA no-reactions effect is active.",
+    "Cookoff remains directly bridged into FEHA_GRENADE_RUNTIME so carried canonical grenades use their real damage, area, statuses, zones, consumption, and cleanup instead of the generic explosive fallback.",
+    "ADK DEV LOADER now performs explicit postflight contracts for Grenade Catalog/Runtime and Quickhack Catalog/Runtime/Authority and refuses a partial hot reload if required bridge methods or the canonical 18/20 definition counts are missing."
   ]
 }
