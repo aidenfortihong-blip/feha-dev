@@ -334,6 +334,60 @@
           quickhackMigration
         );
       }
+
+      // Hot-reload visibility pass: Foundry can keep already-open item sheets
+      // rendered from their old HTML even after the underlying document updates.
+      // Force every currently-open document sheet/app to redraw so catalog
+      // migrations are visible immediately without a browser refresh.
+      const refreshApps = new Set();
+
+      try {
+        for (const app of Object.values(ui?.windows ?? {})) {
+          if (app) refreshApps.add(app);
+        }
+      } catch {}
+
+      try {
+        for (const app of globalThis.foundry?.applications?.instances ?? []) {
+          if (app) refreshApps.add(app);
+        }
+      } catch {}
+
+      for (const app of refreshApps) {
+        try {
+          const document =
+            app?.document ??
+            app?.object ??
+            app?.item ??
+            null;
+
+          const isQuickhack =
+            document?.documentName === "Item" &&
+            Boolean(
+              globalThis.FEHA_QUICKHACK_CATALOG?.definition?.(document)
+            );
+
+          if (isQuickhack || app?.rendered === true) {
+            await Promise.resolve(app.render?.(true));
+          }
+        } catch (refreshError) {
+          console.debug(
+            "FEHA DEV // hot sheet refresh skipped",
+            refreshError
+          );
+        }
+      }
+
+      try {
+        const visibleActorId =
+          document.getElementById("feha-jackin-overlay")?.dataset?.actorId ??
+          document.getElementById("feha-cyberdeck-v2")?.dataset?.actorId ??
+          null;
+
+        if (visibleActorId) {
+          globalThis.FEHA_TABLETOP_UI_V3?.render?.(visibleActorId);
+        }
+      } catch {}
     }
 
     await globalThis.FEHA_MULTIPLAYER_SYNC?.attachUiBridges?.();
