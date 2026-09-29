@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.133";
+  const VERSION = "0.10.134";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -409,7 +409,7 @@
 
       if (!sync?.applyQuickhackDamage) {
         throw new Error(
-          "Quickhack approval service is unavailable."
+          "Quickhack authority service is unavailable."
         );
       }
 
@@ -3719,7 +3719,7 @@
             let result = null;
 
             if (!game.user?.isGM) {
-              qhButton.textContent = "AWAITING GM APPROVAL...";
+              qhButton.textContent = "APPLYING DAMAGE...";
             }
 
             try {
