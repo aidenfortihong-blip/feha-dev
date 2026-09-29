@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.2.0";
+  const VERSION = "4.3.0";
   const FLAG = "fleshEnshrouded";
   const REWRITE = "4.2";
 
@@ -415,6 +415,13 @@
       update["system.price.value"] = Number(tier.price);
     }
 
+    if (
+      item.system?.price &&
+      String(item.system.price.denomination ?? "") !== "gp"
+    ) {
+      update["system.price.denomination"] = "gp";
+    }
+
     if (flags.availability !== tier.availability) {
       update[`flags.${FLAG}.availability`] = tier.availability;
     }
@@ -429,6 +436,30 @@
 
     if (flags.sourceCategory !== "Quickhacks") {
       update[`flags.${FLAG}.sourceCategory`] = "Quickhacks";
+    }
+
+    if (flags.shopType !== "net") {
+      update[`flags.${FLAG}.shopType`] = "net";
+    }
+
+    if (flags.curatedCatalogV10 !== true) {
+      update[`flags.${FLAG}.curatedCatalogV10`] = true;
+    }
+
+    if (flags.catalogEnabled !== true) {
+      update[`flags.${FLAG}.catalogEnabled`] = true;
+    }
+
+    if (flags.marketPass !== "catalog-1.0") {
+      update[`flags.${FLAG}.marketPass`] = "catalog-1.0";
+    }
+
+    if (flags.marketCategory !== "Quickhacks") {
+      update[`flags.${FLAG}.marketCategory`] = "Quickhacks";
+    }
+
+    if (Number(flags.marketPrice) !== Number(tier.price)) {
+      update[`flags.${FLAG}.marketPrice`] = Number(tier.price);
     }
 
     if (flags.quickhackRewriteVersion !== REWRITE) {
