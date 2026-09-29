@@ -263,6 +263,18 @@
 
     await globalThis.FEHA_CYBER_CORE.init();
 
+    const qhAuthorityModule =
+      globalThis.FEHA_CYBER_CORE?.module?.("quickhackAuthority") ??
+      globalThis.FEHA_QUICKHACK_AUTHORITY ??
+      null;
+
+    if (qhAuthorityModule) {
+      console.info(
+        "FEHA DEV // QUICKHACK AUTHORITY // LOADED // v" +
+        String(qhAuthorityModule.version ?? "UNKNOWN")
+      );
+    }
+
     const requiredModules = [
       "quickhacks",
       "quickhackAuthority",
