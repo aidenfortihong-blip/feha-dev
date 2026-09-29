@@ -1,8 +1,14 @@
 {
-  "version": "0.10.121",
-  "updated": "2026-09-28",
-  "scope": "player-join-live-bridge-and-legacy-gateway-suppression",
+  "version": "0.10.122",
+  "updated": "2026-09-29",
+  "scope": "multiplayer-sync-and-silent-authority",
   "notes": [
+    "Added FEHA Multiplayer Sync on every connected client: Market vendor/tier state, stock changes, actor/item surfaces, and device Scene updates now reconcile live across GM and player clients.",
+    "Market purchases are reconciled by deterministic GM authority against shared world stock; stale simultaneous duplicate purchases are removed and refunded instead of duplicating limited stock.",
+    "Player Quickhack damage against unowned targets now routes automatically through the active GM authority with no manual GM permission/approval step; RAM commit/refund behavior remains unchanged.",
+    "Network Probe creation now uses silent GM authority instead of the manual approval queue; Network Device commands and reveals remain authority-validated and automatic.",
+    "Market, Chrome, Cyberdeck, and Wallet opening now route player clients to their assigned/owned character while preserving GM control; GM helper APIs can also open a specific UI on a specific online player's client.",
+    "No Entry Gateway or JACK IN cinematic timing values were changed.",
     "Added FEHA Live Dev Bridge: a Foundry module bootstrap that runs on every connected client and loads the same validated GitHub dev runtime for players and GM on world join.",
     "ADK_DEV_LOADER is now client-safe instead of GM-only; player clients use the same immutable-commit preflight/swap path while world mutations remain protected by the existing GM-authority modules.",
     "Player join temporarily hides the legacy Entry Gateway while the current build attaches, with a timed fallback that restores the installed gateway if the live bridge cannot load.",
