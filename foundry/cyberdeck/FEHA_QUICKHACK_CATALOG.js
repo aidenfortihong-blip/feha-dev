@@ -5,9 +5,9 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.0.0";
+  const VERSION = "4.1.0";
   const FLAG = "fleshEnshrouded";
-  const REWRITE = "4.0";
+  const REWRITE = "4.1";
 
   const definitions = [
     {
@@ -251,110 +251,71 @@
     return rating ? {...TIER[rating]} : null;
   }
 
-  function rewriteDescription(html,def) {
-    const raw = String(html ?? "");
-    if (!raw || typeof document === "undefined") return raw;
-
-    const root = document.createElement("div");
-    root.innerHTML = raw;
-
-    const h2 = root.querySelector("h2");
-    if (h2) h2.textContent = def.name;
+  function rewriteDescription(html,def,item=null) {
+    if (typeof document === "undefined") {
+      return String(html ?? "");
+    }
 
     const tier = TIER[def.mk] ?? TIER[1];
+    const itemFlags = item?.flags?.[FLAG] ?? {};
 
-    const paragraphs = [...root.querySelectorAll("p")];
+    const manufacturer = String(
+      itemFlags.manufacturer ??
+      itemFlags.company ??
+      "Corvus Neural"
+    ).trim() || "Corvus Neural";
 
-    const setLabeledParagraph = (label,html) => {
-      const p = paragraphs.find(node =>
-        [...node.querySelectorAll("strong")].some(strong =>
-          normalize(strong.textContent) === normalize(label)
-        )
-      );
-      if (p) p.innerHTML = html;
-    };
+    const escapeHtml = value => String(value ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
 
-    setLabeledParagraph(
-      "Rating:",
-      "<strong>Rating:</strong> " +
-      tier.label +
-      " — " +
-      tier.quality
+    const price =
+      "€$" +
+      Number(tier.price).toLocaleString();
+
+    return (
+      '<section data-feha-qh-card="4.1" '+
+      'style="border:1px solid #29434d;background:#071016;padding:14px 15px;'+
+      'box-shadow:inset 0 0 0 1px rgba(61,220,255,.04)">'+
+
+        '<header style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;'+
+        'padding-bottom:10px;border-bottom:1px solid #29434d">'+
+          '<div>'+
+            '<small style="display:block;color:#75dfff;font-size:10px;font-weight:800;'+
+            'letter-spacing:.13em;text-transform:uppercase">'+
+              'QUICKHACK // '+escapeHtml(manufacturer)+
+            '</small>'+
+            '<h2 style="margin:3px 0 0;font-size:22px;line-height:1.05">'+
+              escapeHtml(def.name)+
+            '</h2>'+
+          '</div>'+
+          '<span style="flex:0 0 auto;border:1px solid #75dfff;color:#75dfff;'+
+          'padding:4px 8px;font-size:11px;font-weight:900;letter-spacing:.08em">'+
+            escapeHtml(tier.label)+
+          '</span>'+
+        '</header>'+
+
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px">'+
+          '<span style="border:1px solid #3d4d54;background:#0d171c;padding:4px 7px;'+
+          'font-size:11px"><strong>RAM</strong> '+escapeHtml(def.ramCost)+'</span>'+
+          '<span style="border:1px solid #3d4d54;background:#0d171c;padding:4px 7px;'+
+          'font-size:11px">'+escapeHtml(tier.availability)+'</span>'+
+          '<span style="border:1px solid #6c6031;background:#17150c;color:#f1d86d;padding:4px 7px;'+
+          'font-size:11px;font-weight:800">'+escapeHtml(price)+'</span>'+
+        '</div>'+
+
+        '<div>'+
+          '<small style="display:block;color:#8ea8b4;font-size:10px;font-weight:900;'+
+          'letter-spacing:.12em;margin-bottom:4px">EFFECT</small>'+
+          '<p style="margin:0;line-height:1.45">'+
+            escapeHtml(def.effectText)+
+          '</p>'+
+        '</div>'+
+      '</section>'
     );
-
-    setLabeledParagraph(
-      "RAM Cost:",
-      "<strong>RAM Cost:</strong> " +
-      String(def.ramCost)
-    );
-
-    setLabeledParagraph(
-      "Price:",
-      "<strong>Price:</strong> ₡" +
-      Number(tier.price).toLocaleString()
-    );
-
-    setLabeledParagraph(
-      "Availability:",
-      "<strong>Availability:</strong> " +
-      tier.availability
-    );
-
-    const effectHeading = [...root.querySelectorAll("h3")]
-      .find(node => normalize(node.textContent) === "effect");
-
-    if (effectHeading) {
-      let effectNode = effectHeading.nextElementSibling;
-      while (
-        effectNode &&
-        effectNode.tagName !== "P"
-      ) {
-        effectNode = effectNode.nextElementSibling;
-      }
-      if (effectNode) effectNode.textContent = def.effectText;
-    }
-
-    const balance = root.querySelector(
-      'section[data-adk-final-balance]'
-    );
-
-    if (balance) {
-      const divs = [...balance.querySelectorAll(":scope > div")];
-
-      if (divs[1]) {
-        divs[1].innerHTML =
-          "<strong>" +
-          tier.label +
-          "</strong> • " +
-          tier.availability;
-      }
-
-      if (divs[2]) {
-        divs[2].textContent = def.effectText;
-      }
-
-      const ramLine = divs.find(node =>
-        /^RAM\s*:/i.test(String(node.textContent ?? "").trim())
-      );
-
-      if (ramLine) {
-        ramLine.innerHTML =
-          "<strong>RAM:</strong> " +
-          String(def.ramCost);
-      }
-
-      const marketLine = divs.find(node =>
-        /^Market\s*:/i.test(String(node.textContent ?? "").trim())
-      );
-
-      if (marketLine) {
-        marketLine.innerHTML =
-          "<strong>Market:</strong> €$ " +
-          Number(tier.price).toLocaleString();
-      }
-    }
-
-    return root.innerHTML;
   }
 
   function looksLikeQuickhack(item) {
@@ -436,7 +397,8 @@
 
     const nextDescription = rewriteDescription(
       item.system?.description?.value,
-      def
+      def,
+      item
     );
 
     if (
