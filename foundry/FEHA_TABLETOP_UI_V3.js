@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.10.123";
+  const VERSION = "0.10.124";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -366,8 +366,7 @@
 
     if (
       targetActor &&
-      !game.user?.isGM &&
-      !targetActor.isOwner
+      !game.user?.isGM
     ) {
       const sync = globalThis.FEHA_MULTIPLAYER_SYNC;
 
@@ -380,7 +379,6 @@
       return sync.applyQuickhackDamage({
         operatorActorId:context.operatorActor?.id,
         quickhackItemId:context.item?.id,
-        targetActorId:targetActor.id,
         targetTokenId:
           context.targetToken?.id ??
           context.targetToken?.document?.id ??
@@ -3775,7 +3773,12 @@
             );
 
             ui?.notifications?.error?.(
-              "Could not apply Quickhack damage."
+              "Could not apply Quickhack damage" +
+              (
+                err?.message
+                  ? " // " + String(err.message)
+                  : "."
+              )
             );
 
             qhButton.disabled = false;
