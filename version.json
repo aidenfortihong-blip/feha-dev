@@ -1,11 +1,12 @@
 {
-  "version": "0.11.8",
+  "version": "0.11.9",
   "updated": "2026-09-29",
-  "scope": "jack-in-fixed-actor-size",
+  "scope": "jack-in-exact-foundry-token-screen-size",
   "notes": [
-    "JACK IN actor portraits are now fixed at 96px screen-space size and never grow or shrink with scene fitting, token dimensions, zoom, or pan.",
-    "The operator/user portrait uses the same fixed 96px screen-space size.",
-    "Actor and operator positions remain anchored to their exact scene coordinates, preserving alignment with the full-scene background, traces, devices, and cameras.",
-    "No Quickhack mechanics changed."
+    "Removed the arbitrary 96px JACK IN actor/operator size.",
+    "Each actor and the operator now uses the token's actual on-screen Foundry canvas footprint at JACK IN render time.",
+    "JACK IN zoom is exactly cancelled for actors and operator, so they never become bigger or smaller while zooming or panning.",
+    "Operator outer frame no longer uses the old 1.62x size multiplier.",
+    "All scene anchors remain unchanged, preserving alignment with the full scene, traces, devices, and cameras."
   ]
 }
