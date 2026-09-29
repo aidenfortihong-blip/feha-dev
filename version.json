@@ -1,14 +1,12 @@
 {
-  "version": "0.11.19",
+  "version": "0.11.20",
   "updated": "2026-09-29",
-  "scope": "canonical-consumable-catalog",
+  "scope": "grenade-manufacturer-distribution",
   "notes": [
-    "Rebuilt all 24 legacy consumables into a canonical catalog with readable product names, simple low-maintenance effects, and world-sensible pricing.",
-    "The 14 Medium Quality Drink placeholders are now ordinary branded drinks priced roughly €$5–12 instead of weapon-tier prices.",
-    "Consumables are evenly organized as three products per company across Kurohane Group, Bastion Strategic, Lumen Optics, Vektor Dynamics, Helix Vitae, ForgeLine Industries, Jade Arc Systems, and Corvus Neural.",
-    "Company identity is kept simple: Kurohane stealth, Bastion temp HP, Lumen accuracy, Vektor paired small buffs, Helix healing/speed, ForgeLine Strength, Jade Arc EMP/lightning protection, and Corvus RAM/neural capacity.",
-    "Specialized boosters remain modestly priced professional goods; Corvus Neural Adaptation Kit is a €$2,500 restricted permanent medical enhancement rather than a normal drink.",
-    "GM migration creates missing company folders under 06 — CONSUMABLES, moves world items into the correct folders, renames them, fixes manufacturer/company metadata, updates effects, Mk, availability, prices, identifiers, and refreshes open sheets.",
-    "Consumable cards now show BONUS ACTION IN COMBAT and 1 USE, but this pass deliberately avoids adding complicated new consumable runtime subsystems."
+    "Distributed the 18 canonical grenades across all eight FEHA manufacturers instead of defaulting almost everything to ForgeLine Industries.",
+    "Assignments follow company identity: Kurohane smoke/cutting, Bastion tactical flash/incendiary sticky, Lumen homing/recon targeting, Vektor smart sticky/incendiary variants, Helix biohazard, ForgeLine heavy conventional explosive/incendiary ordnance, Jade Arc EMP, and Corvus persistent network recon.",
+    "Grenade catalog migration now writes canonical manufacturer/company metadata, creates missing company folders under 04 — GRENADES, and moves world grenade items into the correct manufacturer folder.",
+    "Grenade cards now always display the canonical manufacturer from the catalog rather than stale legacy item metadata.",
+    "Owned grenades keep their inventory location but receive corrected manufacturer metadata and canonical grenade schema."
   ]
 }
