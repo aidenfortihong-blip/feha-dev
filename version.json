@@ -1,11 +1,10 @@
 {
-  "version": "0.11.14",
+  "version": "0.11.15",
   "updated": "2026-09-29",
-  "scope": "grenade-card-readability-and-sheet-chrome-cleanup",
+  "scope": "grenade-world-economy-repricing",
   "notes": [
-    "Grenade description cards now force readable light body text and metadata colors under Foundry light/parchment themes.",
-    "Grenades no longer use the legacy dnd5e 1 / 1 Charges meter; canonical migration clears uses.max and grenades consume quantity instead.",
-    "Grenade item and actor-sheet render hooks hide meaningless EQUIPPED / NOT EQUIPPED badges and any stale charge labels for grenade rows only.",
-    "Grenade runtime bumped to 1.0.1 and grenade catalog rewrite bumped to 2.1 so existing world and owned grenade descriptions are refreshed automatically."
+    "Repriced all 18 physical grenades around in-world manufacturing complexity, electronics, legality, scarcity, and delivery technology rather than damage output or Mk alone.",
+    "Conventional utility and fragmentation grenades are relatively cheap mass-produced munitions, while Sticky/Homing, EMP, Recon, Biohazard, and exotic ordnance carry large technology and access premiums.",
+    "Canonical grenade migration updates both FEHA priceCredits and dnd5e system.price.value on existing world and owned grenade items, and refreshes the displayed grenade card price."
   ]
 }
