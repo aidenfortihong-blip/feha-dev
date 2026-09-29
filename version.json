@@ -1,8 +1,10 @@
 {
-  "version": "0.10.136",
+  "version": "0.10.137",
   "updated": "2026-09-29",
-  "scope": "quickhack-authority-visible-toast",
+  "scope": "quickhack-authority-final-toast",
   "notes": [
+    "Moved the visible Quickhack Authority confirmation to the end of the successful ADK loader sequence and delay it briefly so it appears after the normal DEV/Cyberdeck readiness toasts instead of being buried by them.",
+    "No Quickhack mechanics changed.",
     "ADK DEV LOADER now shows a visible Foundry toast whenever the Quickhack Authority module loads: FEHA // QUICKHACK AUTHORITY ONLINE // v<version>.",
     "The existing console confirmation remains in place. No Quickhack mechanics changed in this release.",
     "ADK DEV LOADER now prints a clear console confirmation after Cyber Core initialization: FEHA DEV // QUICKHACK AUTHORITY // LOADED // v<version>.",
