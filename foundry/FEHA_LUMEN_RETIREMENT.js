@@ -193,9 +193,17 @@
   }
 
   function rewriteDescription(html,company) {
-    return String(html ?? "")
-      .replace(/Lumen Optics/gi,company)
-      .replace(/LUMEN\s+OPTICS/gi,company.toUpperCase());
+    let value =
+      String(html ?? "")
+        .replace(/Lumen Optics/gi,company)
+        .replace(/LUMEN\s+OPTICS/gi,company.toUpperCase());
+
+    value = value.replace(
+      /(<strong>\s*Manufacturer:\s*<\/strong>\s*)([^<]+)/i,
+      (_match,prefix) => prefix + company
+    );
+
+    return value;
   }
 
   function deepClone(value) {
