@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_GRENADE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "2.0.0";
-  const REWRITE = "2.0";
+  const VERSION = "2.0.1";
+  const REWRITE = "2.1";
   const FLAG = "fleshEnshrouded";
 
   const definitions = [
@@ -248,7 +248,7 @@
 
     return (
       '<section data-feha-grenade-card="'+REWRITE+'" '+
-      'style="border:1px solid #33424a;background:#081015;padding:12px 14px">'+
+      'style="border:1px solid #33424a;background:#081015;padding:12px 14px;color:#dce8ec !important">'+
         '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;'+
         'padding-bottom:9px;border-bottom:1px solid #263941">'+
           '<small style="color:#f0c85a;font-size:10px;font-weight:900;letter-spacing:.12em">'+
@@ -258,21 +258,21 @@
             esc(mkLabel)+
           '</strong>'+
         '</div>'+
-        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;align-items:center">'+
-          '<span style="font-size:12px"><strong>'+esc(delivery)+'</strong></span>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;align-items:center;color:#9fb3bc !important">'+
+          '<span style="font-size:12px;color:#eefaff !important"><strong>'+esc(delivery)+'</strong></span>'+
           '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px">'+esc(def.availability)+'</span>'+
+          '<span style="font-size:12px;color:#aebfc6 !important">'+esc(def.availability)+'</span>'+
           '<span style="color:#516872">•</span>'+
           '<span style="font-size:12px;color:#f2d76f;font-weight:900">€$'+
             Number(def.price).toLocaleString()+
           '</span>'+
           '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px">1 USE</span>'+
+          '<span style="font-size:12px;color:#aebfc6 !important">1 USE</span>'+
         '</div>'+
-        '<div>'+
-          '<small style="display:block;color:#8ca2ac;font-size:10px;font-weight:900;'+
+        '<div style="color:#dce8ec !important">'+
+          '<small style="display:block;color:#8ca2ac !important;font-size:10px;font-weight:900;'+
           'letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
-          '<p style="margin:0;line-height:1.48">'+esc(def.effectText)+'</p>'+
+          '<p style="margin:0;line-height:1.55;color:#dce8ec !important">'+esc(def.effectText)+'</p>'+
         '</div>'+
       '</section>'
     );
@@ -342,9 +342,12 @@
 
     if (
       item.system?.uses &&
-      String(item.system.uses.max ?? "") !== "1"
+      (
+        String(item.system.uses.max ?? "") !== "" ||
+        Number(item.system.uses.spent ?? 0) !== 0
+      )
     ) {
-      update["system.uses.max"] = "1";
+      update["system.uses.max"] = "";
       update["system.uses.spent"] = 0;
     }
 
