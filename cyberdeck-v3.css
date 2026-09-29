@@ -9638,3 +9638,28 @@ body > #feha-jackin-overlay {
   max-width:100% !important;
   max-height:100% !important;
 }
+
+
+/* FEHA 0.11.10 // SQUARE OPERATOR + CALMER ZOOM
+   The operator portrait is always a true square just like actor nodes.
+   Label/rings may sit outside the square, but the portrait itself never becomes
+   a tall card or inherits portrait-sheet aspect ratio. */
+#feha-jackin-overlay .jack-world .jack-operator {
+  aspect-ratio:1 / 1 !important;
+}
+
+#feha-jackin-overlay .jack-world .jack-operator > img {
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:var(--jack-operator-size,64px) !important;
+  height:var(--jack-operator-size,64px) !important;
+  min-width:var(--jack-operator-size,64px) !important;
+  min-height:var(--jack-operator-size,64px) !important;
+  max-width:var(--jack-operator-size,64px) !important;
+  max-height:var(--jack-operator-size,64px) !important;
+  transform:translate(-50%,-50%) !important;
+  aspect-ratio:1 / 1 !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+}
