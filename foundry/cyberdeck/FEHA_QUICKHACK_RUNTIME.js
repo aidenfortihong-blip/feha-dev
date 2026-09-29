@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const FLAG = "fleshEnshrouded";
   const PICKER_ID = "feha-qh-runtime-picker";
 
@@ -857,26 +857,36 @@
     const saveHtml =
       save
         ? (
-            '<p style="margin:6px 0">'+
-              '<strong>'+esc(save.label)+' SAVE</strong> '+
-              esc(save.total)+' vs DC '+esc(prepared.dc)+
-              ' — <b>'+(
-                save.passed
-                  ? "SUCCESS"
-                  : "FAILURE"
-              )+'</b>'+
-            '</p>'
+            '<div class="feha-qh-chat-save" style="'+
+              'margin:8px 0 0;padding:7px 9px;border:1px solid rgba(126,222,244,.28);'+
+              'background:#0b151b;color:#eafcff !important">'+
+              '<strong style="color:#79def4 !important">'+esc(save.label)+' SAVE</strong>'+
+              '<span style="color:#eafcff !important"> '+esc(save.total)+' vs DC '+esc(prepared.dc)+'</span>'+
+              '<b style="margin-left:8px;color:'+(save.passed?'#8df5a6':'#ff6d8f')+' !important">'+
+                (save.passed ? "SUCCESS" : "FAILURE")+
+              '</b>'+
+            '</div>'
           )
         : "";
 
     const content =
-      '<section style="border-left:4px solid '+esc(accent)+';background:#080d11;padding:10px 12px">'+
-        '<small style="letter-spacing:.12em;color:#8fa7b5">BONUS ACTION // QUICKHACK</small>'+
-        '<h3 style="margin:3px 0 7px">'+esc(prepared.item.name)+'</h3>'+
-        '<p style="margin:4px 0"><strong>TARGET:</strong> '+esc(target)+'</p>'+
-        '<p style="margin:4px 0"><strong>STATE:</strong> '+esc(state)+'</p>'+
+      '<section class="feha-qh-chat-card" style="'+
+        'border:1px solid #24424b;border-left:4px solid '+esc(accent)+';'+
+        'background:#071015;color:#eafcff !important;padding:11px 12px;'+
+        'box-shadow:inset 0 0 0 1px rgba(46,239,255,.03)">'+
+        '<small style="display:block;color:#79def4 !important;font-size:10px;font-weight:900;'+
+        'letter-spacing:.13em">BONUS ACTION // QUICKHACK</small>'+
+        '<h3 style="margin:4px 0 9px;color:#ffffff !important;font-size:18px;line-height:1.1;'+
+        'border:0 !important;text-shadow:none !important">'+esc(prepared.item.name)+'</h3>'+
+        '<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 9px;margin:0 0 8px">'+
+          '<strong style="color:#7895a0 !important;font-size:10px;letter-spacing:.08em">TARGET</strong>'+
+          '<span style="color:#eafcff !important;font-weight:800">'+esc(target)+'</span>'+
+          '<strong style="color:#7895a0 !important;font-size:10px;letter-spacing:.08em">STATE</strong>'+
+          '<span style="color:#f2d76f !important;font-weight:900">'+esc(state)+'</span>'+
+        '</div>'+
         saveHtml+
-        '<p style="margin:6px 0 0">'+body+'</p>'+
+        '<p class="feha-qh-chat-body" style="margin:9px 0 0;color:#d7e5ea !important;'+
+        'line-height:1.45;font-size:12px">'+body+'</p>'+
       '</section>';
 
     try {
