@@ -1330,7 +1330,31 @@
     const devices = deviceScan(scene,center,radius);
 
     const creatures =
-      tokens.map(token => String(token.name ?? token.actor?.name ?? "Unknown"));
+      tokens.map(token => {
+        const actor = token?.actor ?? null;
+        const profile = targetProfile(actor);
+
+        const chrome =
+          list(actor?.items)
+            .filter(installedCyberware)
+            .map(item => String(item.name ?? "CYBERWARE"));
+
+        const tags = [];
+
+        if (profile.electronic) tags.push("ELECTRONIC");
+        if (chrome.length) {
+          tags.push(
+            "CHROME: "+chrome.join(" / ")
+          );
+        }
+
+        const name =
+          String(token.name ?? actor?.name ?? "Unknown");
+
+        return tags.length
+          ? name+" ["+tags.join(" // ")+"]"
+          : name;
+      });
 
     const deviceNames =
       devices.map(device => String(device.name ?? device.typeLabel ?? "Device"));
@@ -2125,7 +2149,21 @@
       throw new Error("No active scene is available for grenade placement.");
     }
 
-    const sourceToken = actorToken(scene,actor);
+    const controlledToken =
+      list(canvas?.tokens?.controlled)
+        .map(token => token?.document ?? token)
+        .find(token =>
+          String(token?.actorId ?? token?.actor?.id ?? "") ===
+          String(actor.id)
+        ) ??
+      null;
+
+    const sourceToken =
+      actorToken(
+        scene,
+        actor,
+        controlledToken?.id ?? null
+      );
 
     if (!sourceToken) {
       throw new Error("The grenade user needs a token on the active scene.");
