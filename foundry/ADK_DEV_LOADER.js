@@ -294,6 +294,53 @@
 
     await globalThis.FEHA_MULTIPLAYER_SYNC?.attachUiBridges?.();
 
+    const reloadLocalClient = async () => {
+      if (globalThis.__FEHA_ADK_RELOAD_IN_FLIGHT) {
+        return globalThis.__FEHA_ADK_RELOAD_IN_FLIGHT;
+      }
+
+      const task = (async () => {
+        const url =
+          "https://raw.githubusercontent.com/" +
+          OWNER + "/" + REPO + "/main/foundry/ADK_DEV_LOADER.js?t=" +
+          Date.now();
+
+        const response = await fetch(url,{cache:"no-store"});
+        if (!response.ok) {
+          throw new Error(
+            "ADK reload fetch failed: " + response.status
+          );
+        }
+
+        const source = await response.text();
+        compileCheck(source,"foundry/ADK_DEV_LOADER.js");
+
+        const result = (0,eval)(
+          source +
+          "\n//# sourceURL=feha-reloader/foundry/ADK_DEV_LOADER.js"
+        );
+
+        if (result?.then) await result;
+        return true;
+      })();
+
+      globalThis.__FEHA_ADK_RELOAD_IN_FLIGHT = task;
+
+      try {
+        return await task;
+      } finally {
+        if (globalThis.__FEHA_ADK_RELOAD_IN_FLIGHT === task) {
+          delete globalThis.__FEHA_ADK_RELOAD_IN_FLIGHT;
+        }
+      }
+    };
+
+    game.adk ??= {};
+    game.adk.reload = reloadLocalClient;
+    game.adk.reloadDev = reloadLocalClient;
+    game.adk.reloadCurrentClient = reloadLocalClient;
+    globalThis.FEHA_ADK_RELOAD = reloadLocalClient;
+
     if (isGM) {
       ui.notifications.info(
         "FEHA DEV // " +
