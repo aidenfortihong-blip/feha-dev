@@ -4,8 +4,8 @@
 (() => {
   try { globalThis.FEHA_ARMOR_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.0";
-  const REWRITE = "1.0";
+  const VERSION = "1.1.0";
+  const REWRITE = "1.1";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "03 — ARMOR";
 
@@ -520,7 +520,15 @@
       manufacturer:def.company,
       company:def.company,
       sourceCategory:"Armor_Outer",
+      shopType:"arms",
       bodyArmor:true,
+      curatedCatalogV10:true,
+      catalogEnabled:true,
+      marketPass:"armor-1.1",
+      marketCategory:"Armor_Outer",
+      marketPrice:def.price,
+      bodyArmorBaseAC:def.ac,
+      bodyArmorAC:def.ac,
       effectText:def.signature.text,
       armorSignatureKey:def.signature.key,
       armorSignatureValue:def.signature.value,
@@ -530,7 +538,6 @@
       ratingLabel:mkLabel(def.mk),
       priceCredits:def.price,
       availability:def.availability,
-      catalogEnabled:true,
       rawArmorClass:def.ac,
       dexCap:def.dexCap,
       armorWeight:def.weight
