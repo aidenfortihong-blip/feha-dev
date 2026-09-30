@@ -753,11 +753,12 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-se
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-segments i {
   position: relative !important;
-  width: auto !important;
+  width: 100% !important;
+  max-width: 58px !important;
   height: auto !important;
   aspect-ratio: 1 !important;
   min-height: 0 !important;
-  max-height: 58px !important;
+  max-height: none !important;
   justify-self: center !important;
   border: 0 !important;
   border-radius: 0 !important;
