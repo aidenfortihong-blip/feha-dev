@@ -471,6 +471,22 @@
       if (game.user?.isGM) {
         for (const actor of list(game.actors)) {
           try { await syncHelixSpeed(actor); } catch {}
+
+          // Hot reload removes runtime-owned ActiveEffects in destroy().
+          // Rehydrate an already-earned ForgeLine brace from actor flags so a
+          // mid-combat DEV LOADER run does not silently erase valid AC.
+          if (
+            actor.flags?.[FLAG]?.forgeLineBraced === true &&
+            equippedDefinition(actor)?.company === "ForgeLine Industries"
+          ) {
+            try {
+              await setForgeBraced(
+                actor,
+                true,
+                actor.flags?.[FLAG]?.forgeLineBracedFrom ?? null
+              );
+            } catch {}
+          }
         }
       }
 
