@@ -43,6 +43,30 @@
   let injectedStyle = null;
   let resolvedSha = null;
 
+  // A reload used to throw a stack of startup info toasts from every module.
+  // Keep warnings/errors visible, but collapse normal loader chatter into the
+  // console and show one final success toast.
+  const originalInfoToast =
+    ui?.notifications?.info ?? null;
+  let infoToastsMuted = false;
+
+  const muteInfoToasts = () => {
+    if (!isGM || !ui?.notifications || !originalInfoToast || infoToastsMuted) return;
+    try {
+      ui.notifications.info = (...args) => {
+        console.info("FEHA DEV // suppressed startup toast",...args);
+        return null;
+      };
+      infoToastsMuted = true;
+    } catch {}
+  };
+
+  const restoreInfoToasts = () => {
+    if (!infoToastsMuted || !ui?.notifications || !originalInfoToast) return;
+    try { ui.notifications.info = originalInfoToast; } catch {}
+    infoToastsMuted = false;
+  };
+
   const compileCheck = (text,path) => {
     try {
       new Function(String(text ?? ""));
@@ -127,11 +151,12 @@
   };
 
   try {
-    if (isGM) {
-      ui.notifications.info("FEHA DEV // resolving latest modular build...");
-    } else {
-      console.info("FEHA DEV // resolving latest modular build for player client...");
-    }
+    muteInfoToasts();
+    console.info(
+      isGM
+        ? "FEHA DEV // resolving latest modular build..."
+        : "FEHA DEV // resolving latest modular build for player client..."
+    );
 
     const commitRes = await fetch(
       API + "/commits/main?t=" + bust,
@@ -668,16 +693,6 @@
         );
       }
 
-      const uniqueWeaponMigration =
-        await globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.migrateAll?.();
-
-      if (uniqueWeaponMigration) {
-        console.info(
-          "FEHA DEV // UNIQUE WEAPON CATALOG CANONICALIZED",
-          uniqueWeaponMigration
-        );
-      }
-
       const quickhackMigration =
         await globalThis.FEHA_QUICKHACK_CATALOG?.migrateAll?.();
 
@@ -685,6 +700,18 @@
         console.info(
           "FEHA DEV // QUICKHACK CATALOG CANONICALIZED",
           quickhackMigration
+        );
+      }
+
+      // Run uniques after Quickhacks so one-off weapon identity always wins
+      // for deliberate shared names such as Motor Lock and Optic Zero.
+      const uniqueWeaponMigration =
+        await globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.migrateAll?.();
+
+      if (uniqueWeaponMigration) {
+        console.info(
+          "FEHA DEV // UNIQUE WEAPON CATALOG CANONICALIZED",
+          uniqueWeaponMigration
         );
       }
 
@@ -744,12 +771,19 @@
               globalThis.FEHA_WEAPON_CATALOG?.definition?.(document)
             );
 
+          const isUniqueWeapon =
+            document?.documentName === "Item" &&
+            Boolean(
+              globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.definition?.(document)
+            );
+
           if (
             isQuickhack ||
             isGrenade ||
             isConsumable ||
             isArmor ||
             isWeapon ||
+            isUniqueWeapon ||
             app?.rendered === true
           ) {
             await Promise.resolve(app.render?.(true));
@@ -761,6 +795,11 @@
           );
         }
       }
+
+      // Refresh the Items sidebar too. A normal ADK hot reload should never
+      // require a browser/page reload just to see migrated item changes.
+      try { await Promise.resolve(ui?.items?.render?.(true)); } catch {}
+      try { await Promise.resolve(ui?.sidebar?.tabs?.items?.render?.(true)); } catch {}
 
       try {
         const visibleActorId =
@@ -876,6 +915,8 @@
       }
     }
 
+    restoreInfoToasts();
+
     if (isGM) {
       ui.notifications.info(
         "FEHA DEV // " +
@@ -894,22 +935,6 @@
       );
     }
 
-    // Show the authority confirmation at the END of the loader, after V3 has
-    // finished initializing and posting its own readiness notifications. The
-    // earlier init-time toast could be visually buried by later startup toasts.
-    if (qhAuthorityModule) {
-      const qhAuthorityVersion =
-        String(qhAuthorityModule.version ?? "UNKNOWN");
-
-      setTimeout(
-        () => ui?.notifications?.info?.(
-          "FEHA // QUICKHACK AUTHORITY ONLINE // v" +
-          qhAuthorityVersion
-        ),
-        350
-      );
-    }
-
     console.log(
       "FEHA DEV integrity pass:",
       {
@@ -921,6 +946,7 @@
       }
     );
   } catch (err) {
+    restoreInfoToasts();
     console.error(
       "FEHA DEV LOADER failed",
       {
