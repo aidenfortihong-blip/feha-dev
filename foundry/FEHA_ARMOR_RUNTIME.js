@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -175,7 +175,7 @@
 
     if (
       existing.length === 1 &&
-      Number(existing[0]?.flags?.[FLAG]?.rangedAcBonus ?? 0) === bonus
+      Number(existing[0]?.flags?.[FLAG]?.acBonus ?? 0) === bonus
     ) return;
 
     if (existing.length) {
@@ -186,10 +186,17 @@
       name:"ANCHOR PLATING // BRACED",
       img:null,
       type:"base",
-      system:{changes:[]},
+      system:{
+        changes:[{
+          key:"system.attributes.ac.bonus",
+          value:String(bonus),
+          type:"add",
+          priority:null
+        }]
+      },
       disabled:false,
       duration:{value:null,units:"seconds",expiry:null,expired:false},
-      description:"Stationary ForgeLine posture: +"+bonus+" AC against ranged weapon attacks until the start of this actor's next turn.",
+      description:"Stationary ForgeLine posture: +"+bonus+" AC until the start of this actor's next turn.",
       origin:null,
       tint:"#ffffff",
       transfer:false,
@@ -198,7 +205,7 @@
       flags:{
         [FLAG]:{
           armorForgeLineBraced:true,
-          rangedAcBonus:bonus,
+          acBonus:bonus,
           runtimeVersion:VERSION
         }
       }
@@ -214,62 +221,48 @@
     await setForgeBraced(actor,movedStamp !== String(turn.stamp),turn.stamp);
   }
 
-  function forgeLineRangedAcBonus(actor) {
+  function forgeLineAcBonus(actor) {
     const def = equippedDefinition(actor);
     if (def?.company !== "ForgeLine Industries") return 0;
     if (actor?.flags?.[FLAG]?.forgeLineBraced !== true) return 0;
-    return Math.max(0,Number(def.signature?.value ?? def.mk ?? 0) || 0);
+    return Math.max(0,Number(def.signature?.value ?? 0) || 0);
+  }
+
+  // Compatibility aliases retained for any old macros that referenced the
+  // ranged-only helper names before Anchor Plating became universal AC.
+  function forgeLineRangedAcBonus(actor) {
+    return forgeLineAcBonus(actor);
   }
 
   function rangedArmorClass(actor) {
     const base = Number(actor?.system?.attributes?.ac?.value ?? 0) || 0;
-    return base + forgeLineRangedAcBonus(actor);
+    return base + forgeLineAcBonus(actor);
   }
 
-  function weaponDiceProfile(item) {
-    if (!item || item.type !== "weapon") return null;
+  function isFirearmItem(item) {
+    if (!item || item.type !== "weapon") return false;
     const flags = item.flags?.[FLAG] ?? {};
     const kind = String(flags.weaponKind ?? "").toLowerCase();
-    if (kind === "melee" || kind === "bow") return null;
+    if (kind) return kind === "firearm";
 
-    let count = Number(flags.weaponDiceCount ?? 0) || 0;
-    let die = Number(flags.weaponDie ?? 0) || 0;
-    let bonus = 0;
+    const def =
+      globalThis.FEHA_WEAPON_CATALOG?.definition?.(item) ??
+      game.adk?.weapons?.definition?.(item) ??
+      null;
 
-    const formula = String(flags.baseDamageFormula ?? flags.damageFormula ?? "");
-    const m = formula.replace(/\s+/g,"").match(/^(\d+)d(\d+)([+-]\d+)?$/i);
-    if (m) {
-      if (!count) count = Number(m[1]) || 0;
-      if (!die) die = Number(m[2]) || 0;
-      bonus = Number(m[3] ?? 0) || 0;
-    }
+    return Boolean(def && def.weaponClass !== "Bow");
+  }
 
-    if (!count || !die) return null;
-    return {count,die,bonus:Math.max(0,bonus)};
+  function bastionFirearmDr(actor,item) {
+    const def = equippedDefinition(actor);
+    if (def?.company !== "Bastion Strategic") return 0;
+    if (!isFirearmItem(item)) return 0;
+    return Math.max(0,Math.floor(Number(def.signature?.value ?? 0) || 0));
   }
 
   function bastionBulletProfile(actor,item) {
-    const def = equippedDefinition(actor);
-    if (def?.company !== "Bastion Strategic") return null;
-
-    const weapon = weaponDiceProfile(item);
-    if (!weapon || weapon.die > 8) return null;
-
-    const removeDice = Math.min(
-      Math.max(0,Number(def.signature?.value ?? def.mk ?? 0) || 0),
-      weapon.count
-    );
-
-    if (!removeDice) return null;
-    return {...weapon,removeDice};
-  }
-
-  function rollRemovedDice(count,die) {
-    let total = 0;
-    for (let i=0;i<count;i++) {
-      total += 1 + Math.floor(Math.random() * die);
-    }
-    return total;
+    const dr = bastionFirearmDr(actor,item);
+    return dr ? {dr} : null;
   }
 
   function originItem(options={}) {
@@ -362,11 +355,10 @@
             return;
           }
 
-          const profile = bastionBulletProfile(actor,item);
-          if (!profile) return;
+          const dr = bastionFirearmDr(actor,item);
+          if (!dr) return;
 
-          const reduction = rollRemovedDice(profile.removeDice,profile.die);
-          const reduced = reduceFirstDamagePart(damages,reduction,profile.bonus);
+          const reduced = reduceFirstDamagePart(damages,dr,0);
 
           if (reduced > 0) {
             console.debug(
@@ -374,7 +366,7 @@
               {
                 actor:actor?.name,
                 weapon:item?.name,
-                removedDice:profile.removeDice+"d"+profile.die,
+                firearmDR:dr,
                 reduced
               }
             );
@@ -460,8 +452,10 @@
     hasFireResistance,
     helixSpeedBonus,
     syncHelixSpeed,
+    forgeLineAcBonus,
     forgeLineRangedAcBonus,
     rangedArmorClass,
+    bastionFirearmDr,
     bastionBulletProfile,
     adjustDamage,
 
