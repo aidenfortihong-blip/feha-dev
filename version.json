@@ -1,12 +1,13 @@
 {
-  "version": "0.11.34",
+  "version": "0.11.35",
   "updated": "2026-09-29",
-  "scope": "flat-weapon-folder-organization",
+  "scope": "do-these-authoritative-guns",
   "notes": [
-    "Canonical mega-pass guns now live directly in their manufacturer folders.",
-    "DONE and NOT DONE status folders are no longer used.",
-    "Melee items are consolidated into MELEE.",
-    "All remaining non-canonical items under 01 — WEAPONS are parked in OTHER for later review.",
-    "Empty legacy organizer folders are removed after their contents are moved."
+    "The Item folder named Do these is now the authoritative finished firearm set.",
+    "Every weapon inside the seven manufacturer subfolders is accepted by folder membership, including repaired or variant-looking names such as Neon entries.",
+    "The finalizer preserves manual Foundry mechanics, description-card edits, and GM notes; it only applies manufacturer/readiness/Market flags.",
+    "Previously managed guns outside Do these are demoted so they do not duplicate the finalized set in the Market.",
+    "The weapon catalog skips Do these world items and finalized copies so loader migrations cannot overwrite reviewed gun stats.",
+    "Weapon Readiness now uses the live Do these folder count instead of assuming exactly 81 finished guns."
   ]
 }
