@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_GRENADE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "2.3.0";
-  const REWRITE = "2.4";
+  const VERSION = "2.4.0";
+  const REWRITE = "2.5-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "04 — GRENADES";
   const COMPANY_ORDER = [
@@ -270,36 +270,40 @@
 
     const mkLabel = "Mk." + ["0","I","II","III","IV","V"][def.mk];
     const delivery = String(def.delivery ?? "regular").toUpperCase();
+    const schema = def.schema ?? {};
+    const damage =
+      schema.damage
+        ? String(schema.damage)+" "+String(schema.damageType ?? "").toUpperCase()
+        : "—";
+    const range =
+      schema.rangeFt != null ? String(schema.rangeFt)+" ft" : "—";
+    const area =
+      schema.radiusFt != null ? String(schema.radiusFt)+" ft radius" : "—";
 
     return (
-      '<section data-feha-grenade-card="'+REWRITE+'" '+
-      'style="border:1px solid #33424a;background:#081015;padding:12px 14px;color:#dce8ec !important">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;'+
-        'padding-bottom:9px;border-bottom:1px solid #263941">'+
-          '<small style="color:#f0c85a;font-size:10px;font-weight:900;letter-spacing:.12em">'+
-            esc(manufacturer.toUpperCase())+' // GRENADE'+
+      '<section data-feha-ui="item-card-v1" data-feha-grenade-card="'+REWRITE+'" '+
+      'style="border:1px solid #2b5662;background:#071116;padding:13px 14px;color:#dce8ec !important">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #263941">'+
+          '<small style="color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.12em">'+
+            'FEHA // '+esc(manufacturer.toUpperCase())+' // GRENADE'+
           '</small>'+
-          '<strong style="color:#eefaff;font-size:12px">'+
-            esc(mkLabel)+
-          '</strong>'+
+          '<strong style="color:#eefaff;font-size:12px">'+esc(mkLabel)+'</strong>'+
         '</div>'+
-        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;align-items:center;color:#9fb3bc !important">'+
-          '<span style="font-size:12px;color:#eefaff !important"><strong>'+esc(delivery)+'</strong></span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#aebfc6 !important">'+esc(def.availability)+'</span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#f2d76f;font-weight:900">€$'+
-            Number(def.price).toLocaleString()+
-          '</span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#7ee6ff !important;font-weight:900">BONUS ACTION</span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#aebfc6 !important">1 USE</span>'+
+        '<h2 style="margin:10px 0 4px;color:#fff">'+esc(def.name)+'</h2>'+
+        '<p style="margin:0 0 11px;font-size:11px;line-height:1.45;color:#8ba0a8 !important">'+
+          esc(def.availability)+' // '+esc(delivery)+
+        '</p>'+
+        '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
+          '<div><small style="color:#8ca2ac">DELIVERY</small><br><strong style="color:#fff">'+esc(delivery)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">DAMAGE</small><br><strong style="color:#fff">'+esc(damage)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">RANGE</small><br><strong style="color:#fff">'+esc(range)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">AREA</small><br><strong style="color:#fff">'+esc(area)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">€$'+Number(def.price).toLocaleString()+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">ACTIVATION</small><br><strong style="color:#fff">BONUS ACTION</strong></div>'+
         '</div>'+
-        '<div style="color:#dce8ec !important">'+
-          '<small style="display:block;color:#8ca2ac !important;font-size:10px;font-weight:900;'+
-          'letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
-          '<p style="margin:0;line-height:1.55;color:#dce8ec !important">'+esc(def.effectText)+'</p>'+
+        '<div style="margin-top:10px;padding:10px;border:1px solid #24404a;background:#09171c">'+
+          '<small style="display:block;color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
+          '<p style="margin:0;line-height:1.5;color:#dce8ec !important">'+esc(def.effectText)+'</p>'+
         '</div>'+
       '</section>'
     );
