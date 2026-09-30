@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.0.0";
+  const VERSION = "2.0.1";
   const FLAG = "fleshEnshrouded";
   const HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
@@ -199,6 +199,16 @@
     const actor = selectedActor();
     const items = equippedFirearms(actor);
     return items[0] ?? null;
+  }
+
+  function purgeLegacyPanels() {
+    try {
+      for (const node of document.querySelectorAll(
+        '[data-feha-reload-tracker], [id^="feha-reload-tracker-"]'
+      )) {
+        node.remove();
+      }
+    } catch {}
   }
 
   function ensureHud() {
@@ -416,6 +426,7 @@
     open:show,
 
     async init() {
+      purgeLegacyPanels();
       installHooks();
       game.adk ??= {};
       game.adk.weaponTracker = api;
@@ -439,6 +450,7 @@
       }
 
       recentUses.clear();
+      purgeLegacyPanels();
       document.getElementById(HUD_ID)?.remove?.();
 
       if (game?.adk?.weaponTracker === api) delete game.adk.weaponTracker;
