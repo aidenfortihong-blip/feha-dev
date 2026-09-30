@@ -29,6 +29,9 @@ Do not let generic design-system advice erase FEHA's established application-spe
 - Use `graphify` for broad codebase/architecture questions, dependency tracing, cross-file relationships, or before a large refactor when understanding FEHA's accumulated module interactions matters. If `graphify-out/graph.json` already exists, query it instead of rebuilding. Do not build/rebuild a graph for every small edit.
 - Use `agentskills` when creating, importing, validating, or reorganizing project-local skills under `.claude/skills/`. Its bundled references define the portable Agent Skills format and authoring/integration rules.
 - Use `omniroute` only when OmniRoute itself is configured or the user asks to use/configure it. The skill is discoverable here, but actual routing requires a running OmniRoute instance plus `OMNIROUTE_URL` and `OMNIROUTE_KEY`; do not pretend the skill file alone provides the service.
+- Use `foundry-vtt-module-dev` for Foundry VTT implementation details, v14 APIs, ApplicationV2, hooks, document models, canvas/PIXI, sockets, rolls, migration behavior, and Foundry-specific debugging. Prefer its bundled v14 references over guessing from older Foundry patterns.
+- Use `debug` whenever FEHA behavior is broken or regressed: reproduce first, localize the failure, test one hypothesis at a time, fix the root cause, then retest the original flow. Pair it with `playwright-cli` for rendered Foundry/UI bugs.
+- Use `verification-before-completion` before saying a code change is fixed, complete, passing, or regression-free. Run fresh verification appropriate to the change; for UI work, exercise the actual flow with Playwright when the Foundry surface is available. Evidence comes before the success claim.
 
 ## External runtime note
 
