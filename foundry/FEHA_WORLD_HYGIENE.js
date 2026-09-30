@@ -7,8 +7,9 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WORLD_HYGIENE requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.1.1";
   const FLAG = "fleshEnshrouded";
+  const sheetHooks = [];
 
   const list = collection => {
     if (!collection) return [];
@@ -626,6 +627,88 @@
     return report;
   }
 
+  function renderedRoot(html,app) {
+    if (globalThis.HTMLElement && html instanceof HTMLElement) return html;
+    if (globalThis.HTMLElement && html?.[0] instanceof HTMLElement) return html[0];
+    if (globalThis.HTMLElement && app?.element instanceof HTMLElement) return app.element;
+    if (globalThis.HTMLElement && app?.element?.[0] instanceof HTMLElement) return app.element[0];
+    return null;
+  }
+
+  function stubIds(item) {
+    if (item?.type !== "weapon") return [];
+    return attackActivities(item)
+      .filter(legacyAttackStub)
+      .map(activityId)
+      .filter(Boolean);
+  }
+
+  function hideLegacyActivityRows(app,html) {
+    const root = renderedRoot(html,app);
+    if (!root?.querySelectorAll) return;
+
+    const document =
+      app?.document ??
+      app?.item ??
+      app?.actor ??
+      app?.object ??
+      null;
+
+    const removeIds = new Set();
+
+    if (document?.documentName === "Item") {
+      for (const id of stubIds(document)) removeIds.add(id);
+    } else if (document?.documentName === "Actor") {
+      for (const item of list(document.items)) {
+        for (const id of stubIds(item)) removeIds.add(id);
+      }
+    }
+
+    if (!removeIds.size) return;
+
+    for (const id of removeIds) {
+      let selector = "";
+      try {
+        selector = '[data-activity-id="'+CSS.escape(String(id))+'"]';
+      } catch {
+        selector = '[data-activity-id="'+String(id).replace(/"/g,'\\"')+'"]';
+      }
+
+      for (const node of root.querySelectorAll(selector)) {
+        // This is presentation-only fallback for Foundry 14.367 items that the
+        // database quarantine cannot safely rewrite. Source cleanup still runs
+        // first wherever Foundry accepts it.
+        node.remove();
+      }
+    }
+  }
+
+  function installSheetGuard() {
+    if (!globalThis.Hooks?.on || sheetHooks.length) return;
+
+    for (const event of [
+      "renderItemSheet",
+      "renderItemSheetV2",
+      "renderActorSheet",
+      "renderActorSheetV2"
+    ]) {
+      sheetHooks.push([
+        event,
+        Hooks.on(event,(app,html) => {
+          try { hideLegacyActivityRows(app,html); } catch (error) {
+            console.warn("FEHA HYGIENE // legacy activity UI guard failed",error);
+          }
+        })
+      ]);
+    }
+  }
+
+  function removeSheetGuard() {
+    for (const [event,id] of sheetHooks.splice(0)) {
+      try { Hooks.off(event,id); } catch {}
+    }
+  }
+
   function hasInvalidPersistedIdentifier(item) {
     const build = Number(game.release?.build ?? 0);
     if (build >= 368) return false;
@@ -761,8 +844,10 @@
     attackCleanupPlan,
     realAttack,
     identifierIssues,
+    hideLegacyActivityRows,
 
     async init() {
+      installSheetGuard();
       game.adk ??= {};
       game.adk.worldHygiene = api;
       globalThis.FEHA_WORLD_HYGIENE = api;
@@ -770,6 +855,7 @@
     },
 
     async destroy() {
+      removeSheetGuard();
       if (game?.adk?.worldHygiene === api) delete game.adk.worldHygiene;
       if (globalThis.FEHA_WORLD_HYGIENE === api) delete globalThis.FEHA_WORLD_HYGIENE;
     }
