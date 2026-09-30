@@ -776,6 +776,127 @@
         );
       }
 
+      // Final visual sweep. Older FEHA copies can live outside the current
+      // curated folders, so category migrations may intentionally skip them.
+      // If an item still contains one of our old FEHA card wrappers, rewrite
+      // ONLY its description using the matching canonical catalog. This is
+      // deliberately description-only: it cannot move folders, alter stats,
+      // inventory, ownership, or combat data.
+      const staleCardSweep = {
+        world:0,
+        owned:0,
+        failed:0
+      };
+
+      const repairStaleCard = async item => {
+        if (!item?.system?.description) return false;
+
+        const html =
+          String(item.system.description.value ?? "");
+
+        if (!html || html.includes('data-feha-ui="item-card-v1"')) {
+          return false;
+        }
+
+        let catalog = null;
+        let def = null;
+        let next = null;
+
+        try {
+          if (
+            /data-feha-unique-weapon-card=/i.test(html)
+          ) {
+            catalog = globalThis.FEHA_UNIQUE_WEAPON_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) next = catalog.rewriteDescription(def);
+          } else if (
+            /data-feha-melee-card=/i.test(html)
+          ) {
+            catalog = globalThis.FEHA_MELEE_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) next = catalog.rewriteDescription(def);
+          } else if (
+            /data-feha-weapon-card=|FINAL GUN|REVIEW STATUS|GM REVIEW NOTES/i.test(html)
+          ) {
+            catalog = globalThis.FEHA_WEAPON_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) next = catalog.rewriteDescription(def);
+          } else if (
+            /data-feha-armor-card=/i.test(html)
+          ) {
+            catalog = globalThis.FEHA_ARMOR_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) next = catalog.rewriteDescription(def);
+          } else if (
+            /data-feha-grenade-card=/i.test(html)
+          ) {
+            catalog = globalThis.FEHA_GRENADE_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) next = catalog.rewriteDescription(def,item);
+          } else if (
+            /data-feha-consumable-card=/i.test(html)
+          ) {
+            catalog = globalThis.FEHA_CONSUMABLE_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) next = catalog.rewriteDescription(def);
+          } else if (
+            /data-feha-qh-card=/i.test(html)
+          ) {
+            catalog = globalThis.FEHA_QUICKHACK_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) {
+              next = catalog.rewriteDescription(
+                html,
+                def,
+                item
+              );
+            }
+          }
+
+          if (
+            !def ||
+            !next ||
+            String(next) === html
+          ) {
+            return false;
+          }
+
+          await item.update({
+            "system.description.value":String(next)
+          });
+
+          return true;
+        } catch (error) {
+          staleCardSweep.failed++;
+          console.warn(
+            "FEHA DEV // STALE ITEM CARD REPAIR FAILED",
+            item?.name,
+            item?.uuid ?? item?.id,
+            error
+          );
+          return false;
+        }
+      };
+
+      for (const item of game.items?.contents ?? []) {
+        if (await repairStaleCard(item)) {
+          staleCardSweep.world++;
+        }
+      }
+
+      for (const actor of game.actors?.contents ?? []) {
+        for (const item of actor.items?.contents ?? []) {
+          if (await repairStaleCard(item)) {
+            staleCardSweep.owned++;
+          }
+        }
+      }
+
+      console.info(
+        "FEHA DEV // UNIFIED ITEM CARD SWEEP",
+        staleCardSweep
+      );
+
       // Hot-reload visibility pass: Foundry can keep already-open item sheets
       // rendered from their old HTML even after the underlying document updates.
       // Force every currently-open document sheet/app to redraw so catalog
