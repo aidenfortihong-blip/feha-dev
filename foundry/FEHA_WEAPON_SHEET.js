@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_SHEET requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.6.0";
+  const VERSION = "1.6.1";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
 
@@ -190,42 +190,47 @@
         root.closest?.(".window-app") ??
         root;
 
-      const header =
-        windowEl?.querySelector?.(".window-header") ??
-        windowEl?.querySelector?.("header.window-header") ??
+      const windowRect =
+        windowEl?.getBoundingClientRect?.() ??
         null;
 
-      const headerHeight =
-        Number(header?.getBoundingClientRect?.().height ?? 0) || 36;
+      const pageRect =
+        page.getBoundingClientRect?.() ??
+        null;
 
-      const contentHeight =
-        Math.ceil(
-          Math.max(
-            page.scrollHeight || 0,
-            page.getBoundingClientRect?.().height || 0
-          )
-        );
-
-      if (!contentHeight) return;
-
-      const viewport =
-        Math.max(520,Number(globalThis.innerHeight ?? 900)-36);
-
-      const desiredHeight =
-        Math.max(
-          500,
-          Math.min(
-            viewport,
-            contentHeight + headerHeight + 10
-          )
-        );
+      if (!windowRect || !pageRect) return;
 
       const currentHeight =
         Number(app?.position?.height ?? 0) ||
-        Number(windowEl?.getBoundingClientRect?.().height ?? 0) ||
+        Number(windowRect.height ?? 0) ||
         0;
 
-      if (Math.abs(currentHeight-desiredHeight) < 12) return;
+      if (!currentHeight) return;
+
+      // Trim the outer Foundry window against the actual FEHA page bottom
+      // instead of guessing from scrollHeight/header math. Keep only a tiny
+      // 2px safety gap so there is no visible black footer strip.
+      const bottomGap =
+        Number(windowRect.bottom) -
+        Number(pageRect.bottom);
+
+      const desiredGap = 2;
+      let desiredHeight =
+        Math.round(
+          currentHeight -
+          Math.max(0,bottomGap-desiredGap)
+        );
+
+      const viewport =
+        Math.max(500,Number(globalThis.innerHeight ?? 900)-24);
+
+      desiredHeight =
+        Math.max(
+          480,
+          Math.min(viewport,desiredHeight)
+        );
+
+      if (Math.abs(currentHeight-desiredHeight) < 3) return;
 
       app._fehaWeaponHeightFit = true;
 
@@ -237,7 +242,10 @@
           windowEl.style.maxHeight = "calc(100vh - 24px)";
         }
       } catch (error) {
-        console.debug("FEHA WEAPON SHEET // content height fit failed",error);
+        console.debug(
+          "FEHA WEAPON SHEET // content height trim failed",
+          error
+        );
       } finally {
         setTimeout(() => {
           try { delete app._fehaWeaponHeightFit; }
