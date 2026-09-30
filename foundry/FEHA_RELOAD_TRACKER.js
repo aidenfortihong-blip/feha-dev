@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.0.1";
+  const VERSION = "2.1.0";
   const FLAG = "fleshEnshrouded";
   const HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
@@ -200,6 +200,113 @@
     const items = equippedFirearms(actor);
     return items[0] ?? null;
   }
+  function activities(item) {
+    const collection = item?.system?.activities;
+    if (!collection) return [];
+    if (Array.isArray(collection)) return collection;
+    if (Array.isArray(collection.contents)) return collection.contents;
+    if (typeof collection.values === "function") {
+      try { return [...collection.values()]; } catch {}
+    }
+    if (typeof collection === "object") return Object.values(collection);
+    return [];
+  }
+
+  function legacyAttackStub(activity) {
+    const source = activity?._source ?? activity ?? {};
+    if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") return false;
+
+    const name = String(source?.name ?? "").trim();
+    const sort = Number(source?.sort ?? activity?.sort ?? 0) || 0;
+    const range = source?.range ?? {};
+    const damage = source?.damage ?? {};
+    const parts = Array.isArray(damage?.parts)
+      ? damage.parts
+      : Array.isArray(damage?.parts?.contents)
+        ? damage.parts.contents
+        : [];
+    const effects = Array.isArray(source?.effects) ? source.effects : [];
+
+    const rangeValue = range?.value;
+    const noRange =
+      rangeValue == null ||
+      rangeValue === "" ||
+      Number(rangeValue) === 0;
+
+    return (
+      (!name || name.toLowerCase() === "attack") &&
+      sort === 0 &&
+      String(range?.units ?? "") === "self" &&
+      noRange &&
+      damage?.includeBase === true &&
+      parts.length === 0 &&
+      effects.length === 0
+    );
+  }
+
+  function primaryAttack(item) {
+    const attacks = activities(item).filter(activity =>
+      String(activity?.type ?? activity?._source?.type ?? "").toLowerCase() === "attack"
+    );
+
+    if (!attacks.length) return null;
+
+    const usable = attacks.filter(activity => !legacyAttackStub(activity));
+    const pool = usable.length ? usable : attacks;
+
+    const score = activity => {
+      const source = activity?._source ?? activity ?? {};
+      const range = source?.range ?? activity?.range ?? {};
+      const attack = source?.attack ?? activity?.attack ?? {};
+      let value = 0;
+
+      if (String(source?.name ?? activity?.name ?? "").trim()) value += 2;
+      if ((Number(source?.sort ?? activity?.sort ?? 0) || 0) > 0) value += 3;
+      if ((Number(range?.value ?? 0) || 0) > 0) value += 4;
+      if (String(range?.units ?? "") === "ft") value += 1;
+      if (String(attack?.ability ?? "").trim()) value += 2;
+      if (activity?.img || source?.img) value += 1;
+
+      return value;
+    };
+
+    return [...pool].sort((a,b) => score(b)-score(a))[0] ?? null;
+  }
+
+  async function useAttack(item,event=null) {
+    const activity = primaryAttack(item);
+    if (!activity || typeof activity.use !== "function") {
+      ui.notifications?.warn?.("FEHA Weapon Tracker // no usable attack activity found for "+String(item?.name ?? "weapon")+".");
+      return {ok:false,reason:"no-attack-activity"};
+    }
+
+    try {
+      const result = await activity.use({event,legacy:false});
+      return {ok:true,result,activity};
+    } catch (error) {
+      console.warn("FEHA WEAPON TRACKER // attack use failed",item?.name,error);
+      ui.notifications?.warn?.("FEHA Weapon Tracker // attack failed. Check console.");
+      return {ok:false,reason:"attack-failed",error};
+    }
+  }
+
+  async function rollDamage(item,event=null) {
+    const activity = primaryAttack(item);
+    if (!activity || typeof activity.rollDamage !== "function") {
+      ui.notifications?.warn?.("FEHA Weapon Tracker // no damage action found for "+String(item?.name ?? "weapon")+".");
+      return {ok:false,reason:"no-damage-action"};
+    }
+
+    try {
+      const result = await activity.rollDamage({event});
+      return {ok:true,result,activity};
+    } catch (error) {
+      console.warn("FEHA WEAPON TRACKER // damage roll failed",item?.name,error);
+      ui.notifications?.warn?.("FEHA Weapon Tracker // damage roll failed. Check console.");
+      return {ok:false,reason:"damage-failed",error};
+    }
+  }
+
 
   function purgeLegacyPanels() {
     try {
@@ -219,10 +326,11 @@
     root.id = HUD_ID;
     root.style.cssText = [
       "position:fixed",
-      "right:24px",
-      "bottom:24px",
+      "left:50%",
+      "top:50%",
+      "transform:translate(-50%,-50%)",
       "z-index:100000",
-      "width:min(390px,calc(100vw - 48px))",
+      "width:min(560px,calc(100vw - 48px))",
       "background:linear-gradient(145deg,#061116 0%,#0a171d 75%,#10191c 100%)",
       "border:1px solid #316b79",
       "box-shadow:0 18px 60px #000b,0 0 22px #21d4ff22",
@@ -279,6 +387,15 @@
       def?.physicalCapacity == null ? "" :
       '<span>PHYSICAL '+String(def.physicalCapacity)+' '+String(def.capacityType ?? "").toUpperCase()+'</span>';
 
+    const attackActivity = primaryAttack(item);
+    const attackAvailable = Boolean(attackActivity?.use);
+    const damageAvailable = Boolean(attackActivity?.rollDamage);
+    const damageFormula = String(def?.damage ?? item?.flags?.[FLAG]?.damageFormula ?? "—");
+    const rangeLabel =
+      def?.longRange
+        ? String(def.range)+" / "+String(def.longRange)+" FT"
+        : String(def?.range ?? "—")+" FT";
+
     const reloadControls = current.reloadMax > 0
       ? (
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">' +
@@ -323,6 +440,15 @@
           (flash ? '<span style="font-size:10px;color:#f3ce63">'+flash+'</span>' : '') +
         '</div>' +
 
+        '<div style="display:grid;grid-template-columns:1.45fr 1fr;gap:8px;margin-top:10px">' +
+          '<button type="button" data-feha-wt="attack" '+(attackAvailable ? '' : 'disabled')+' style="padding:14px 12px;background:#0d3440;border:1px solid #57dff8;color:#f4fdff;font-weight:1000;font-size:14px;letter-spacing:.08em;box-shadow:inset 0 0 18px #20dbff18">ATTACK</button>' +
+          '<button type="button" data-feha-wt="damage" '+(damageAvailable ? '' : 'disabled')+' style="padding:14px 12px;background:#332513;border:1px solid #d9af55;color:#fff8e8;font-weight:1000;font-size:14px;letter-spacing:.08em;box-shadow:inset 0 0 18px #ffc54b12">DAMAGE</button>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;padding:7px 9px;border:1px solid #18333c;background:#050d10;color:#829aa3;font-size:10px">' +
+          '<span>DAMAGE <strong style="color:#fff">'+damageFormula+'</strong></span>' +
+          '<span style="text-align:right">RANGE <strong style="color:#fff">'+rangeLabel+'</strong></span>' +
+        '</div>' +
+
         reloadControls +
 
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">' +
@@ -353,7 +479,14 @@
 
       button.disabled = true;
       try {
-        if (action === "action") await addReload(liveItem,2,"ACTION");
+        if (action === "attack") {
+          if (state(liveItem).empty) {
+            ui.notifications?.warn?.("FEHA Weapon Tracker // "+String(liveItem.name)+" is tracked empty. Attack is still allowed; reload/reset if this is intentional.");
+          }
+          await useAttack(liveItem,event);
+        }
+        else if (action === "damage") await rollDamage(liveItem,event);
+        else if (action === "action") await addReload(liveItem,2,"ACTION");
         else if (action === "bonus") await addReload(liveItem,1,"BONUS");
         else if (action === "undo") await undoShot(liveItem);
         else if (action === "reset") await resetWeapon(liveItem);
@@ -365,7 +498,7 @@
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
       document.getElementById(HUD_ID)?.remove?.();
-    },12000);
+    },30000);
 
     return root;
   }
@@ -418,6 +551,9 @@
     capacity,
     reloadPoints,
     state,
+    primaryAttack,
+    useAttack,
+    rollDamage,
     recordShot,
     undoShot,
     addReload,
