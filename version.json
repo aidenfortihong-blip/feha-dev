@@ -1,15 +1,17 @@
 {
-  "version": "0.11.46",
+  "version": "0.11.47",
   "updated": "2026-09-30",
-  "scope": "finalized-firearm-manufacturer-passives",
+  "scope": "armor-passives-power-audit-and-pricing",
   "notes": [
-    "Finalized and exposed all seven firearm manufacturer passives on the player-facing weapon cards.",
-    "Bastion ACTION SURGE is now kill-triggered instead of once per Long Rest: once per turn, a Bastion firearm kill grants one extra Action that can only attack with a Bastion firearm; the surge cannot retrigger that turn.",
-    "Kurohane DEAD SILENT makes its firearms completely inaudible; Corvus RAM THIEF drains remaining cyberdeck RAM on a Corvus kill.",
-    "ForgeLine ANCHOR grants Advantage only on turns with no movement; Helix SELF-CHARGING CELL fully restores the wielded weapon after a turn in which it was not fired.",
-    "Jade Arc ARC CHAIN deals full normal weapon damage to one other enemy within 5 feet of a killed target and cannot recursively chain.",
-    "Vektor CUNNING ACTION grants Dash, Disengage, or Hide as a Bonus Action while wielding a Vektor firearm.",
-    "Reran Bastion ratings for the stronger kill-triggered surge; Warwake rises to 83, Tactician to 70, Umbra to 69, and pricing/shop bands follow the updated ratings.",
-    "Melee remains unchanged pending a deliberate decision on whether to add any universal or family passives."
+    "Rebuilt all seven armor manufacturer passives while keeping the existing base AC progression for the first balance pass.",
+    "ForgeLine ANCHOR PLATING grants +Mk AC against ranged weapon attacks after a turn with no movement; the runtime tracks movement and shows a BRACED state until the wearer's next turn.",
+    "Bastion TAKE THE BULLET removes up to Mk base weapon damage dice from firearm hits using d8-or-smaller class dice; flat bonuses and separate special damage are preserved.",
+    "Jade Arc THERMAL FARADAY now grants fire resistance; Mk.I-II gain advantage against EMP saves, while Mk.III-V are immune to EMP effects.",
+    "Corvus NEURAL ISOLATION remains +1/+1/+2/+2/+3 to Quickhack saves.",
+    "Vektor GRENADE NULL removes Dexterity contribution and grants immunity to direct grenade damage/effects/scans/forced movement; environmental smoke still obscures normally.",
+    "Helix KINETIC SYNC grants +5/+10/+15/+20/+25 ft walking Speed only while a Helix firearm is actively equipped.",
+    "Kurohane GHOSTWEAVE remains full Dexterity to AC plus +1/+1/+2/+2/+3 Stealth.",
+    "Completed a 1-100 armor power audit across all 35 armor pieces and repriced each Mk band by relative power while preserving Mk.I-V as the shop-tier progression.",
+    "Grenade runtime 1.4.0 now respects Vektor grenade immunity and Jade EMP immunity/fire resistance, including grenade damage-over-time ticks."
   ]
 }
