@@ -815,6 +815,22 @@
       const repairStaleCard = async item => {
         if (!item?.system?.description) return false;
 
+        // Foundry <=14.367 has a core _updateDiff validation bug around some
+        // legacy dnd5e weapon Items with a blank persisted system.identifier.
+        // Those Items are deliberately left untouched until 14.368+ rather
+        // than repeatedly throwing validation toasts during hot reload.
+        if (item?.type === "weapon") {
+          const rawIdentifier =
+            String(item?._source?.system?.identifier ?? "");
+          const build = Number(game.release?.build ?? 0);
+          if (
+            !/^[a-z0-9_-]+$/i.test(rawIdentifier) &&
+            (!build || build < 368)
+          ) {
+            return false;
+          }
+        }
+
         const html =
           String(item.system.description.value ?? "");
 
