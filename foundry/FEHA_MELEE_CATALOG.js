@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_MELEE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.1.1";
   const REWRITE = "melee-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const MELEE_FOLDERS = new Set(["melee","-melee"]);
@@ -206,6 +206,37 @@
     };
   }
 
+  function enforceDexAttackUpdates(item,update) {
+    const activities = item?.system?.activities;
+    let rows = [];
+
+    if (Array.isArray(activities)) rows = activities;
+    else if (Array.isArray(activities?.contents)) rows = activities.contents;
+    else if (typeof activities?.values === "function") {
+      try { rows = [...activities.values()]; } catch {}
+    } else if (activities && typeof activities === "object") {
+      rows = Object.values(activities);
+    }
+
+    for (const activity of rows) {
+      const source = activity?._source ?? activity ?? {};
+      if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") continue;
+
+      const id = String(activity?.id ?? activity?._id ?? "");
+      if (!id) continue;
+
+      const ability = String(
+        source?.attack?.ability ??
+        activity?.attack?.ability ??
+        ""
+      ).trim().toLowerCase();
+
+      if (ability !== "dex") {
+        update["system.activities."+id+".attack.ability"] = "dex";
+      }
+    }
+  }
+
   async function migrateItem(item) {
     if (!item || item.type !== "weapon") return false;
     const def = definition(item);
@@ -216,6 +247,7 @@
 
     const flags = item.flags?.[FLAG] ?? {};
     const update = {};
+    enforceDexAttackUpdates(item,update);
 
     for (const stale of ["mk","rating","tier","ratingLabel","marketTier"]) {
       if (Object.prototype.hasOwnProperty.call(flags,stale)) {
