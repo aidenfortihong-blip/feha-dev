@@ -1,12 +1,12 @@
 {
-  "version": "0.11.66",
+  "version": "0.11.67",
   "updated": "2026-09-30",
-  "scope": "canonical-weapon-sheet-layout-fix",
+  "scope": "persistent-adk-hotbar-loader-repair",
   "notes": [
-    "Fixes the custom canonical firearm sheet opening in an inherited narrow dnd5e window that compressed the FEHA card.",
-    "Canonical weapon sheets now grow undersized Foundry item windows toward a usable desktop footprint without shrinking already-expanded windows.",
-    "Weapon art now uses a dedicated contained preview frame so wide gun images are shown whole instead of being cropped by square cover behavior.",
-    "The layout now responds to the actual sheet/container width: normal windows use a two-column art-plus-card layout, narrow windows stack cleanly, and stat grids fall back to two or one column instead of crushing text.",
-    "No weapon mechanics, balance values, hidden attack activities, cyberware, armor, grenade, or Quickhack rules changed."
+    "Repairs the ADK DEV LOADER world Macro so each hotbar click performs its own fresh cache-busted fetch of main/foundry/ADK_DEV_LOADER.js.",
+    "Removes the old Macro.prototype.execute interception bridge that could become stale across hot reloads and make the ADK button appear dead until a browser refresh.",
+    "The repaired Macro is persisted as a normal Foundry script Macro by the GM, so future clicks no longer depend on already-loaded FEHA runtime globals.",
+    "Internal game.adk.reload helpers remain available for debugging and manual reloads.",
+    "No gameplay, weapon, armor, cyberware, grenade, Quickhack, or UI layout rules changed."
   ]
 }
