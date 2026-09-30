@@ -1,17 +1,16 @@
 {
-  "version": "0.11.47",
+  "version": "0.11.48",
   "updated": "2026-09-30",
-  "scope": "armor-passives-power-audit-and-pricing",
+  "scope": "unified-non-cyberware-item-sheets",
   "notes": [
-    "Rebuilt all seven armor manufacturer passives while keeping the existing base AC progression for the first balance pass.",
-    "ForgeLine ANCHOR PLATING grants +Mk AC against ranged weapon attacks after a turn with no movement; the runtime tracks movement and shows a BRACED state until the wearer's next turn.",
-    "Bastion TAKE THE BULLET removes up to Mk base weapon damage dice from firearm hits using d8-or-smaller class dice; flat bonuses and separate special damage are preserved.",
-    "Jade Arc THERMAL FARADAY now grants fire resistance; Mk.I-II gain advantage against EMP saves, while Mk.III-V are immune to EMP effects.",
-    "Corvus NEURAL ISOLATION remains +1/+1/+2/+2/+3 to Quickhack saves.",
-    "Vektor GRENADE NULL removes Dexterity contribution and grants immunity to direct grenade damage/effects/scans/forced movement; environmental smoke still obscures normally.",
-    "Helix KINETIC SYNC grants +5/+10/+15/+20/+25 ft walking Speed only while a Helix firearm is actively equipped.",
-    "Kurohane GHOSTWEAVE remains full Dexterity to AC plus +1/+1/+2/+2/+3 Stealth.",
-    "Completed a 1-100 armor power audit across all 35 armor pieces and repriced each Mk band by relative power while preserving Mk.I-V as the shop-tier progression.",
-    "Grenade runtime 1.4.0 now respects Vektor grenade immunity and Jade EMP immunity/fire resistance, including grenade damage-over-time ticks."
+    "Unified every canonical non-cyberware item description card onto one FEHA visual system: firearms, melee, unique weapons, armor, grenades, consumables, and Quickhacks.",
+    "All unified cards now share the same dark #071116 shell, cyan FEHA header, white item title, three-column stat grid, muted stat labels, gold market/special accents, and consistent cyan effect/passive panels.",
+    "Firearm manufacturer passives and bespoke weapon systems were preserved while moving to the unified card.",
+    "Melee and unique weapons now use the same shell and stat hierarchy as firearms instead of separate red/gold layouts.",
+    "Armor cards now show the armor name, type, AC, Dexterity contribution, weight, market price, availability, and passive using the common layout.",
+    "Grenade cards now expose delivery, damage, range, radius, market price, activation, and full effect in the common layout.",
+    "Consumables now use the common layout while retaining Short Rest use-limit language and one-time permanent treatment handling.",
+    "Quickhack cards now use the common layout with title, tier identity, RAM, quality, availability, market price, activation, and effect.",
+    "Cyberware sheets were intentionally excluded and remain untouched for the upcoming cyberware pass."
   ]
 }
