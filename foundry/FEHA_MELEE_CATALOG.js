@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_MELEE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.2";
-  const REWRITE = "melee-1.0-c";
+  const VERSION = "1.1.0";
+  const REWRITE = "melee-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const MELEE_FOLDERS = new Set(["melee","-melee"]);
 
@@ -152,9 +152,9 @@
 
   function rewriteDescription(def) {
     const special = def.special
-      ? '<div style="margin-top:12px;padding:11px;border:1px solid #8f2f22;background:#190b08">'+
-          '<small style="display:block;color:#ff6b51;font-size:10px;font-weight:900;letter-spacing:.13em;margin-bottom:6px">ICONIC EFFECT // '+esc(def.special.name)+'</small>'+
-          '<p style="margin:0;line-height:1.52;color:#ffe1d8 !important">'+esc(def.special.text)+'</p>'+
+      ? '<div style="margin-top:10px;padding:10px;border:1px solid #5d4d20;background:#171308">'+
+          '<small style="display:block;color:#f0c85a;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:5px">SPECIAL SYSTEM // '+esc(def.special.name)+'</small>'+
+          '<p style="margin:0;line-height:1.5;color:#f4ead0 !important">'+esc(def.special.text)+'</p>'+
         '</div>'
       : "";
 
@@ -163,22 +163,22 @@
       : "—";
 
     const gorilla = def.strengthRequirement != null
-      ? '<div style="margin-top:10px;padding:9px 10px;border-left:3px solid #d3a83c;background:#12120c;color:#d9d5bf !important;font-size:11px"><strong style="color:#f3d36c">GORILLA ARMS:</strong> satisfies this weapon\'s STR requirement.</div>'
+      ? '<div style="margin-top:10px;padding:9px 10px;border-left:3px solid #4b7180;background:#0a151a;color:#b9cbd2 !important;font-size:11px"><strong style="color:#7ee6ff">GORILLA ARMS:</strong> satisfies this weapon\'s STR requirement.</div>'
       : "";
 
-    return '<section data-feha-melee-card="'+REWRITE+'" style="border:1px solid #57332c;background:#0b0d0f;padding:13px 14px;color:#e7ecee !important">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #3a2926">'+
-        '<small style="color:#ff7a61;font-size:10px;font-weight:900;letter-spacing:.12em">FEHA // MELEE</small>'+
-        '<strong style="color:#f6e9e5;font-size:12px">ONE ACTION // ONE STRIKE</strong>'+
+    return '<section data-feha-ui="item-card-v1" data-feha-melee-card="'+REWRITE+'" style="border:1px solid #2b5662;background:#071116;padding:13px 14px;color:#dce8ec !important">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #263941">'+
+        '<small style="color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.12em">FEHA // MELEE WEAPON</small>'+
+        '<strong style="color:#eefaff;font-size:12px">ONE ACTION // ONE STRIKE</strong>'+
       '</div>'+
       '<h2 style="margin:10px 0 4px;color:#fff">'+esc(def.name)+'</h2>'+
-      '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #262d30;border-bottom:1px solid #262d30">'+
-        '<div><small>CLASS</small><br><strong>'+esc(def.weaponClass)+'</strong></div>'+
-        '<div><small>DAMAGE</small><br><strong>'+esc(def.damage)+'</strong></div>'+
-        '<div><small>REACH</small><br><strong>'+esc(def.reach)+' ft</strong></div>'+
-        '<div><small>STR REQUIREMENT</small><br><strong>'+esc(def.strengthRequirement ?? "—")+'</strong></div>'+
-        '<div><small>THROWN</small><br><strong>'+esc(thrown)+'</strong></div>'+
-        '<div><small>DAMAGE TYPE</small><br><strong>'+esc(String(def.damageType ?? "—").toUpperCase())+'</strong></div>'+
+      '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
+        '<div><small style="color:#8ca2ac">CLASS</small><br><strong style="color:#fff">'+esc(def.weaponClass)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">DAMAGE</small><br><strong style="color:#fff">'+esc(def.damage)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">DAMAGE TYPE</small><br><strong style="color:#fff">'+esc(String(def.damageType ?? "—").toUpperCase())+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">REACH</small><br><strong style="color:#fff">'+esc(def.reach)+' ft</strong></div>'+
+        '<div><small style="color:#8ca2ac">STR REQUIREMENT</small><br><strong style="color:#fff">'+esc(def.strengthRequirement ?? "—")+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">THROWN</small><br><strong style="color:#fff">'+esc(thrown)+'</strong></div>'+
       '</div>'+gorilla+special+
     '</section>';
   }
