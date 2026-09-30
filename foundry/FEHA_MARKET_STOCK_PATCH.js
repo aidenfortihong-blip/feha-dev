@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
@@ -216,10 +216,15 @@
         source.slice(manufacturerStart);
     }
 
-    // Tag weapon cards so CSS can remove the Mk badge completely.
+    // Tag weapon cards and remove the Mk badge from weapon HTML entirely.
     source = source.replace(
       'class="item-card"',
       'class="item-card ${c === "Weapons" ? "feha-weapon-card" : ""}"'
+    );
+
+    source = source.replace(
+      /<span class="item-mk">\s*\$\{mkLabel\(itemTier\)\}\s*<\/span>/m,
+      '${c === "Weapons" ? "" : `<span class="item-mk">${mkLabel(itemTier)}</span>`}'
     );
 
     // Mk filter chips should not hide/show guns because guns have no Mk.
