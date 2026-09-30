@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_READINESS requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "2.0.0";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "01 — WEAPONS";
   const DONE_NAME = "DONE";
@@ -15,26 +15,18 @@
   let marketObserver = null;
   let marketClickGuard = null;
 
-  // Canonical finished weapons approved for the Market.
-  // Exact normalized names only: variants/suffixed editions remain NOT DONE.
-  const DONE_WEAPONS = new Set([
-    "breachhound",
-    "crusher",
-    "hexburst",
-    "igla",
-    "lexington",
-    "liberty",
-    "overture",
-    "saratoga",
-    "tactician",
-    "umbra",
-    "unity",
-    "warwake",
-    "ashura",
-    "dian",
-    "kyokokukamusari",
-    "masamune"
-  ]);
+  // Canonical finished weapons come directly from the mega-review catalog.
+  // Exact normalized names only; suffixed/reskin editions remain NOT DONE.
+  const DONE_WEAPONS = new Set(
+    (globalThis.FEHA_WEAPON_CATALOG?.list?.() ?? []).map(def =>
+      String(def?.name ?? "")
+        .normalize("NFKD")
+        .replace(/[\\u0300-\\u036f]/g,"")
+        .replace(/[^a-zA-Z0-9]+/g," ")
+        .trim()
+        .toLowerCase()
+    )
+  );
 
   const list = collection => {
     if (!collection) return [];
