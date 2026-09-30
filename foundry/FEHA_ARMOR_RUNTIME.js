@@ -1,13 +1,14 @@
 // FEHA // ARMOR RUNTIME
-// Lightweight runtime helpers for canonical armor signatures.
+// Runtime helpers and conditional automation for canonical armor signatures.
 
 (() => {
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
+  let activeForgeTurn = null;
 
   const list = collection => {
     if (!collection) return [];
@@ -18,108 +19,215 @@
 
   function equippedDefinition(actor) {
     if (!actor) return null;
-
     for (const item of list(actor.items)) {
       if (item.system?.equipped !== true) continue;
-
-      const def =
-        globalThis.FEHA_ARMOR_CATALOG?.definition?.(item) ??
-        null;
-
+      const def = globalThis.FEHA_ARMOR_CATALOG?.definition?.(item) ?? null;
       if (def) return def;
     }
-
     return null;
+  }
+
+  function equippedArmorItem(actor) {
+    if (!actor) return null;
+    return list(actor.items).find(item =>
+      item.system?.equipped === true &&
+      Boolean(globalThis.FEHA_ARMOR_CATALOG?.definition?.(item))
+    ) ?? null;
   }
 
   function quickhackSaveBonus(actor) {
     const def = equippedDefinition(actor);
-
     if (def?.company !== "Corvus Neural") return 0;
-
-    return Math.max(
-      0,
-      Number(def.signature?.value ?? 0) || 0
-    );
+    return Math.max(0,Number(def.signature?.value ?? 0) || 0);
   }
 
   function empSaveAdvantage(actor) {
-    return (
-      equippedDefinition(actor)?.company ===
-      "Jade Arc Systems"
-    );
-  }
-
-  function weaponDamageReduction(actor) {
     const def = equippedDefinition(actor);
-
-    if (def?.company !== "Bastion Strategic") return 0;
-
-    return Math.max(
-      0,
-      Number(def.signature?.value ?? def.mk ?? 0) || 0
-    );
+    return def?.company === "Jade Arc Systems" && Number(def.mk) < 3;
   }
 
-  function hasLightningResistance(actor) {
-    return (
-      equippedDefinition(actor)?.company ===
-      "Jade Arc Systems"
-    );
+  function empImmune(actor) {
+    const def = equippedDefinition(actor);
+    return def?.company === "Jade Arc Systems" && Number(def.mk) >= 3;
   }
 
-  function adjustDamage(
-    actor,
-    amount,
-    damageType,
-    {sourceKind=""}={}
-  ) {
-    let value =
-      Math.max(
-        0,
-        Math.floor(Number(amount) || 0)
-      );
+  function grenadeImmune(actor) {
+    return equippedDefinition(actor)?.company === "Vektor Dynamics";
+  }
 
-    const type =
-      String(damageType ?? "")
-        .trim()
-        .toLowerCase();
+  function hasFireResistance(actor) {
+    return equippedDefinition(actor)?.company === "Jade Arc Systems";
+  }
 
-    if (
-      value > 0 &&
-      type === "lightning" &&
-      hasLightningResistance(actor)
-    ) {
-      value = Math.floor(value / 2);
+  function isHelixFirearm(item) {
+    if (!item || item.type !== "weapon" || item.system?.equipped !== true) return false;
+    const flags = item.flags?.[FLAG] ?? {};
+    const company = String(flags.manufacturer ?? flags.company ?? "");
+    const kind = String(flags.weaponKind ?? "").toLowerCase();
+    return company === "Helix Vitae" && kind !== "melee" && kind !== "bow";
+  }
+
+  function helixSpeedBonus(actor) {
+    const def = equippedDefinition(actor);
+    if (def?.company !== "Helix Vitae") return 0;
+    if (!list(actor?.items).some(isHelixFirearm)) return 0;
+    return Math.max(0,Number(def.signature?.value ?? (5 * Number(def.mk || 0))) || 0);
+  }
+
+  async function syncHelixSpeed(actor) {
+    if (!actor || !game.user?.isGM) return false;
+
+    const current = list(actor.effects).filter(effect =>
+      effect.flags?.[FLAG]?.armorHelixKineticSync === true
+    );
+
+    const bonus = helixSpeedBonus(actor);
+
+    if (!bonus) {
+      if (current.length) {
+        await actor.deleteEmbeddedDocuments("ActiveEffect",current.map(e => e.id));
+        return true;
+      }
+      return false;
     }
 
+    const spec = {
+      name:"KINETIC SYNC // HELIX",
+      img:null,
+      type:"base",
+      system:{
+        changes:[{
+          key:"system.attributes.movement.walk",
+          value:String(bonus),
+          type:"add",
+          priority:null
+        }]
+      },
+      disabled:false,
+      duration:{value:null,units:"seconds",expiry:null,expired:false},
+      description:"Helix armor synchronized to an equipped Helix firearm: +"+bonus+" ft walking Speed.",
+      origin:null,
+      tint:"#ffffff",
+      transfer:false,
+      statuses:[],
+      sort:0,
+      flags:{
+        [FLAG]:{
+          armorHelixKineticSync:true,
+          speedBonus:bonus,
+          runtimeVersion:VERSION
+        }
+      }
+    };
+
+    const existing = current[0] ?? null;
+    const existingBonus = Number(existing?.flags?.[FLAG]?.speedBonus ?? 0);
+
+    if (existing && current.length === 1 && existingBonus === bonus) return false;
+
+    if (current.length) {
+      await actor.deleteEmbeddedDocuments("ActiveEffect",current.map(e => e.id));
+    }
+    await actor.createEmbeddedDocuments("ActiveEffect",[spec]);
+    return true;
+  }
+
+  function combatantActor(combat) {
+    return combat?.combatant?.actor ?? null;
+  }
+
+  function combatStamp(combat) {
+    if (!combat?.id) return null;
+    return String(combat.id)+":"+String(combat.round ?? 0)+":"+String(combat.turn ?? 0);
+  }
+
+  async function setForgeBraced(actor,value,stamp=null) {
+    if (!actor || !game.user?.isGM) return;
+    const current = actor.flags?.[FLAG] ?? {};
     if (
-      value > 0 &&
-      String(sourceKind).toLowerCase() === "weapon"
-    ) {
-      value =
-        Math.max(
-          0,
-          value - weaponDamageReduction(actor)
-        );
+      Boolean(current.forgeLineBraced) === Boolean(value) &&
+      String(current.forgeLineBracedFrom ?? "") === String(stamp ?? "")
+    ) return;
+    await actor.update({
+      ["flags."+FLAG+".forgeLineBraced"]:Boolean(value),
+      ["flags."+FLAG+".forgeLineBracedFrom"]:stamp ?? ""
+    });
+  }
+
+  async function finalizeForgeTurn(turn) {
+    if (!turn?.actorId || !turn?.stamp || !game.user?.isGM) return;
+    const actor = game.actors?.get?.(turn.actorId) ?? null;
+    const def = equippedDefinition(actor);
+    if (def?.company !== "ForgeLine Industries") return;
+    const movedStamp = String(actor.flags?.[FLAG]?.forgeLineMovedStamp ?? "");
+    await setForgeBraced(actor,movedStamp !== String(turn.stamp),turn.stamp);
+  }
+
+  function forgeLineRangedAcBonus(actor) {
+    const def = equippedDefinition(actor);
+    if (def?.company !== "ForgeLine Industries") return 0;
+    if (actor?.flags?.[FLAG]?.forgeLineBraced !== true) return 0;
+    return Math.max(0,Number(def.signature?.value ?? def.mk ?? 0) || 0);
+  }
+
+  function rangedArmorClass(actor) {
+    const base = Number(actor?.system?.attributes?.ac?.value ?? 0) || 0;
+    return base + forgeLineRangedAcBonus(actor);
+  }
+
+  function weaponDiceProfile(item) {
+    if (!item || item.type !== "weapon") return null;
+    const flags = item.flags?.[FLAG] ?? {};
+    const kind = String(flags.weaponKind ?? "").toLowerCase();
+    if (kind === "melee" || kind === "bow") return null;
+
+    let count = Number(flags.weaponDiceCount ?? 0) || 0;
+    let die = Number(flags.weaponDie ?? 0) || 0;
+    let bonus = 0;
+
+    const formula = String(flags.baseDamageFormula ?? flags.damageFormula ?? "");
+    const m = formula.replace(/\s+/g,"").match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+    if (m) {
+      if (!count) count = Number(m[1]) || 0;
+      if (!die) die = Number(m[2]) || 0;
+      bonus = Number(m[3] ?? 0) || 0;
     }
 
-    return value;
+    if (!count || !die) return null;
+    return {count,die,bonus:Math.max(0,bonus)};
+  }
+
+  function bastionBulletProfile(actor,item) {
+    const def = equippedDefinition(actor);
+    if (def?.company !== "Bastion Strategic") return null;
+
+    const weapon = weaponDiceProfile(item);
+    if (!weapon || weapon.die > 8) return null;
+
+    const removeDice = Math.min(
+      Math.max(0,Number(def.signature?.value ?? def.mk ?? 0) || 0),
+      weapon.count
+    );
+
+    if (!removeDice) return null;
+    return {...weapon,removeDice};
+  }
+
+  function rollRemovedDice(count,die) {
+    let total = 0;
+    for (let i=0;i<count;i++) {
+      total += 1 + Math.floor(Math.random() * die);
+    }
+    return total;
   }
 
   function originItem(options={}) {
     const origin = options.origin ?? null;
-
     const candidates = [
       origin?.item,
-      origin?.parent?.documentName === "Item"
-        ? origin.parent
-        : null,
-      origin?.documentName === "Item"
-        ? origin
-        : null,
-      options.originatingMessage?.item ??
-        null
+      origin?.parent?.documentName === "Item" ? origin.parent : null,
+      origin?.documentName === "Item" ? origin : null,
+      options.originatingMessage?.item ?? null
     ].filter(Boolean);
 
     if (candidates.length) return candidates[0];
@@ -138,137 +246,214 @@
         if (doc?.item?.documentName === "Item") return doc.item;
       } catch {}
     }
-
     return null;
   }
 
-  function isWeaponDamage(options={}) {
-    const item = originItem(options);
-
-    if (item?.type === "weapon") return true;
-
-    const text = [
-      options.origin?.constructor?.name,
-      options.origin?.type,
-      options.originatingMessage?.system?.context?.type,
-      options.originatingMessage?.flags?.dnd5e?.type
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-    return /weapon|attack/.test(text);
+  function isGrenadeItem(item) {
+    const flags = item?.flags?.[FLAG] ?? {};
+    return String(flags.sourceCategory ?? "").toLowerCase() === "grenades" ||
+      Boolean(flags.grenadeKey);
   }
 
-  function reduceDamageDescriptions(
-    damages,
-    reduction
-  ) {
-    let remaining =
-      Math.max(
-        0,
-        Math.floor(Number(reduction) || 0)
-      );
-
-    if (!remaining) return 0;
-
-    let reduced = 0;
+  function reduceFirstDamagePart(damages,reduction,floor=0) {
+    const amount = Math.max(0,Math.floor(Number(reduction) || 0));
+    if (!amount) return 0;
 
     for (const part of damages ?? []) {
-      if (!remaining) break;
-
       const current = Number(part?.value);
+      if (!Number.isFinite(current) || current <= floor) continue;
+      const delta = Math.min(amount,Math.max(0,Math.floor(current - floor)));
+      part.value = Math.max(floor,current - delta);
+      return delta;
+    }
+    return 0;
+  }
 
-      if (!Number.isFinite(current) || current <= 0) {
-        continue;
-      }
+  function zeroDamageDescriptions(damages) {
+    let removed = 0;
+    for (const part of damages ?? []) {
+      const current = Number(part?.value);
+      if (!Number.isFinite(current) || current <= 0) continue;
+      removed += current;
+      part.value = 0;
+    }
+    return removed;
+  }
 
-      const delta =
-        Math.min(
-          remaining,
-          Math.floor(current)
-        );
+  function adjustDamage(actor,amount,damageType,{sourceKind=""}={}) {
+    let value = Math.max(0,Math.floor(Number(amount) || 0));
+    const type = String(damageType ?? "").trim().toLowerCase();
+    const source = String(sourceKind ?? "").trim().toLowerCase();
 
-      part.value = Math.max(0,current - delta);
-
-      remaining -= delta;
-      reduced += delta;
+    if (value > 0 && source === "grenade" && grenadeImmune(actor)) {
+      return 0;
     }
 
-    return reduced;
+    if (value > 0 && type === "fire" && hasFireResistance(actor)) {
+      value = Math.floor(value / 2);
+    }
+
+    return value;
   }
 
   function installHooks() {
     hooks.push(
-      Hooks.on(
+      ["dnd5e.preCalculateDamage",Hooks.on(
         "dnd5e.preCalculateDamage",
         (actor,damages,options={}) => {
-          const reduction =
-            weaponDamageReduction(actor);
+          const item = originItem(options);
 
-          if (!reduction) return;
-          if (!isWeaponDamage(options)) return;
+          if (grenadeImmune(actor) && isGrenadeItem(item)) {
+            const removed = zeroDamageDescriptions(damages);
+            if (removed > 0) {
+              console.debug("FEHA ARMOR // VEKTOR GRENADE NULL",{actor:actor?.name,removed});
+            }
+            return;
+          }
 
-          const reduced =
-            reduceDamageDescriptions(
-              damages,
-              reduction
-            );
+          const profile = bastionBulletProfile(actor,item);
+          if (!profile) return;
+
+          const reduction = rollRemovedDice(profile.removeDice,profile.die);
+          const reduced = reduceFirstDamagePart(damages,reduction,profile.bonus);
 
           if (reduced > 0) {
             console.debug(
-              "FEHA ARMOR // BASTION TACTICAL LAYERING",
+              "FEHA ARMOR // BASTION TAKE THE BULLET",
               {
                 actor:actor?.name,
+                weapon:item?.name,
+                removedDice:profile.removeDice+"d"+profile.die,
                 reduced
               }
             );
           }
         }
-      )
+      )]
     );
+
+    if (game.user?.isGM) {
+      hooks.push(
+        ["updateToken",Hooks.on("updateToken",async (token,changed) => {
+          const moved =
+            Object.prototype.hasOwnProperty.call(changed,"x") ||
+            Object.prototype.hasOwnProperty.call(changed,"y") ||
+            Object.prototype.hasOwnProperty.call(changed,"elevation");
+          if (!moved) return;
+
+          const actor = token?.actor ?? null;
+          if (!actor) return;
+
+          if (actor.flags?.[FLAG]?.forgeLineBraced === true) {
+            await setForgeBraced(actor,false,null);
+          }
+
+          if (
+            activeForgeTurn?.actorId === actor.id &&
+            activeForgeTurn?.stamp
+          ) {
+            await actor.update({
+              ["flags."+FLAG+".forgeLineMovedStamp"]:activeForgeTurn.stamp
+            });
+          }
+        })]
+      );
+
+      hooks.push(
+        ["updateCombat",Hooks.on("updateCombat",async combat => {
+          const stamp = combatStamp(combat);
+          const current = combatantActor(combat);
+
+          if (
+            activeForgeTurn?.stamp &&
+            activeForgeTurn.stamp !== stamp
+          ) {
+            await finalizeForgeTurn(activeForgeTurn);
+          }
+
+          if (
+            current &&
+            activeForgeTurn?.stamp !== stamp
+          ) {
+            if (equippedDefinition(current)?.company === "ForgeLine Industries") {
+              await setForgeBraced(current,false,null);
+            }
+            activeForgeTurn = {
+              actorId:current.id,
+              stamp
+            };
+          }
+        })]
+      );
+
+      const syncActorFromItem = item => {
+        const actor = item?.parent?.documentName === "Actor" ? item.parent : null;
+        if (!actor) return;
+        queueMicrotask(() => void syncHelixSpeed(actor).catch(() => {}));
+      };
+
+      for (const event of ["createItem","updateItem","deleteItem"]) {
+        hooks.push([event,Hooks.on(event,syncActorFromItem)]);
+      }
+    }
   }
 
   const api = {
     version:VERSION,
     equippedDefinition,
+    equippedArmorItem,
     quickhackSaveBonus,
     empSaveAdvantage,
-    weaponDamageReduction,
-    hasLightningResistance,
+    empImmune,
+    grenadeImmune,
+    hasFireResistance,
+    helixSpeedBonus,
+    syncHelixSpeed,
+    forgeLineRangedAcBonus,
+    rangedArmorClass,
+    bastionBulletProfile,
     adjustDamage,
 
     async init() {
       installHooks();
 
+      const combat = game.combat ?? null;
+      const current = combatantActor(combat);
+      const stamp = combatStamp(combat);
+      if (current && stamp) {
+        activeForgeTurn = {actorId:current.id,stamp};
+      }
+
+      if (game.user?.isGM) {
+        for (const actor of list(game.actors)) {
+          try { await syncHelixSpeed(actor); } catch {}
+        }
+      }
+
       game.adk ??= {};
       game.adk.armorRuntime = api;
       globalThis.FEHA_ARMOR_RUNTIME = api;
 
-      console.log(
-        "FEHA ARMOR RUNTIME",
-        VERSION,
-        "online"
-      );
+      console.log("FEHA ARMOR RUNTIME",VERSION,"online");
     },
 
     async destroy() {
-      for (const id of hooks.splice(0)) {
-        try {
-          Hooks.off(
-            "dnd5e.preCalculateDamage",
-            id
-          );
-        } catch {}
+      for (const [event,id] of hooks.splice(0)) {
+        try { Hooks.off(event,id); } catch {}
       }
 
-      if (game?.adk?.armorRuntime === api) {
-        delete game.adk.armorRuntime;
+      if (game.user?.isGM) {
+        for (const actor of list(game.actors)) {
+          for (const effect of list(actor.effects).filter(effect =>
+            effect.flags?.[FLAG]?.armorHelixKineticSync === true
+          )) {
+            try { await effect.delete(); } catch {}
+          }
+        }
       }
 
-      if (globalThis.FEHA_ARMOR_RUNTIME === api) {
-        delete globalThis.FEHA_ARMOR_RUNTIME;
-      }
+      if (game?.adk?.armorRuntime === api) delete game.adk.armorRuntime;
+      if (globalThis.FEHA_ARMOR_RUNTIME === api) delete globalThis.FEHA_ARMOR_RUNTIME;
     }
   };
 
