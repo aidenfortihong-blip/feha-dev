@@ -143,15 +143,66 @@
 
   async function setForgeBraced(actor,value,stamp=null) {
     if (!actor || !game.user?.isGM) return;
+
+    const def = equippedDefinition(actor);
+    const bonus =
+      value && def?.company === "ForgeLine Industries"
+        ? Math.max(0,Number(def.signature?.value ?? def.mk ?? 0) || 0)
+        : 0;
+
     const current = actor.flags?.[FLAG] ?? {};
+    const existing = list(actor.effects).filter(effect =>
+      effect.flags?.[FLAG]?.armorForgeLineBraced === true
+    );
+
+    const stateChanged =
+      Boolean(current.forgeLineBraced) !== Boolean(value) ||
+      String(current.forgeLineBracedFrom ?? "") !== String(stamp ?? "");
+
+    if (stateChanged) {
+      await actor.update({
+        ["flags."+FLAG+".forgeLineBraced"]:Boolean(value),
+        ["flags."+FLAG+".forgeLineBracedFrom"]:stamp ?? ""
+      });
+    }
+
+    if (!bonus) {
+      if (existing.length) {
+        await actor.deleteEmbeddedDocuments("ActiveEffect",existing.map(e => e.id));
+      }
+      return;
+    }
+
     if (
-      Boolean(current.forgeLineBraced) === Boolean(value) &&
-      String(current.forgeLineBracedFrom ?? "") === String(stamp ?? "")
+      existing.length === 1 &&
+      Number(existing[0]?.flags?.[FLAG]?.rangedAcBonus ?? 0) === bonus
     ) return;
-    await actor.update({
-      ["flags."+FLAG+".forgeLineBraced"]:Boolean(value),
-      ["flags."+FLAG+".forgeLineBracedFrom"]:stamp ?? ""
-    });
+
+    if (existing.length) {
+      await actor.deleteEmbeddedDocuments("ActiveEffect",existing.map(e => e.id));
+    }
+
+    await actor.createEmbeddedDocuments("ActiveEffect",[{
+      name:"ANCHOR PLATING // BRACED",
+      img:null,
+      type:"base",
+      system:{changes:[]},
+      disabled:false,
+      duration:{value:null,units:"seconds",expiry:null,expired:false},
+      description:"Stationary ForgeLine posture: +"+bonus+" AC against ranged weapon attacks until the start of this actor's next turn.",
+      origin:null,
+      tint:"#ffffff",
+      transfer:false,
+      statuses:[],
+      sort:0,
+      flags:{
+        [FLAG]:{
+          armorForgeLineBraced:true,
+          rangedAcBonus:bonus,
+          runtimeVersion:VERSION
+        }
+      }
+    }]);
   }
 
   async function finalizeForgeTurn(turn) {
@@ -445,7 +496,8 @@
       if (game.user?.isGM) {
         for (const actor of list(game.actors)) {
           for (const effect of list(actor.effects).filter(effect =>
-            effect.flags?.[FLAG]?.armorHelixKineticSync === true
+            effect.flags?.[FLAG]?.armorHelixKineticSync === true ||
+            effect.flags?.[FLAG]?.armorForgeLineBraced === true
           )) {
             try { await effect.delete(); } catch {}
           }
