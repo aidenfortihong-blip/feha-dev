@@ -4,8 +4,8 @@
 (() => {
   try { globalThis.FEHA_ARMOR_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.3.0";
-  const REWRITE = "1.3-unified";
+  const VERSION = "1.4.0";
+  const REWRITE = "1.4-simplified-passives";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "03 — ARMOR";
 
@@ -41,7 +41,7 @@
     {
       company:"ForgeLine Industries",
       line:"Rivet Work Armor",
-      flavor:"Overbuilt industrial armor that becomes brutally hard to hit with ranged fire once the wearer plants their feet.",
+      flavor:"Overbuilt industrial armor that locks into a brutally stable defensive posture once the wearer plants their feet.",
       armorType:"heavy",
       dexCap:0,
       ac:[16,18,20,23,25],
@@ -50,11 +50,11 @@
       effect:mk => ({
         key:"anchor-plating",
         name:"Anchor Plating",
-        value:mk,
+        value:[1,1,2,2,3][mk-1],
         text:
           "Anchor Plating: if you do not move during your turn, until the start of your next turn you gain +" +
-          mk +
-          " AC against ranged weapon attacks."
+          [1,1,2,2,3][mk-1] +
+          " AC."
       })
     },
     {
@@ -69,14 +69,11 @@
       effect:mk => ({
         key:"take-the-bullet",
         name:"Take the Bullet",
-        value:mk,
-        maxDie:8,
+        value:[5,10,15,20,30][mk-1],
         text:
-          "Take the Bullet: when hit by a firearm whose base damage die is d8 or smaller, remove up to " +
-          mk +
-          " base weapon damage " +
-          (mk === 1 ? "die" : "dice") +
-          " from that hit, to a minimum of 0 base dice. Flat bonuses and separate special damage are unaffected."
+          "Take the Bullet: reduce the normal damage of each firearm hit against you by " +
+          [5,10,15,20,30][mk-1] +
+          ", to a minimum of 0. Separate non-firearm and special damage is unaffected."
       })
     },
     {
