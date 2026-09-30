@@ -1,13 +1,13 @@
 {
-  "version": "0.11.35",
+  "version": "0.11.36",
   "updated": "2026-09-29",
-  "scope": "do-these-authoritative-guns",
+  "scope": "permanent-reviewed-gun-catalog",
   "notes": [
-    "The Item folder named Do these is now the authoritative finished firearm set.",
-    "Every weapon inside the seven manufacturer subfolders is accepted by folder membership, including repaired or variant-looking names such as Neon entries.",
-    "The finalizer preserves manual Foundry mechanics, description-card edits, and GM notes; it only applies manufacturer/readiness/Market flags.",
-    "Previously managed guns outside Do these are demoted so they do not duplicate the finalized set in the Market.",
-    "The weapon catalog skips Do these world items and finalized copies so loader migrations cannot overwrite reviewed gun stats.",
-    "Weapon Readiness now uses the live Do these folder count instead of assuming exactly 81 finished guns."
+    "Rebuilt the permanent weapon catalog from the GM-reviewed Do these export: 78 finished weapons across seven manufacturers.",
+    "Applied both styles of review edits: explicit GM REVIEW NOTES and direct edits made inside the displayed weapon profile.",
+    "Final review changes include the Bastion shell/mag adjustments, the Corvus Tracker and Truesight edits, ForgeLine profile edits, Helix capacity/damage edits, Jade Arc profile edits, Quietus becoming a Bow, and the reviewed Vektor legacy profiles.",
+    "The permanent catalog now follows the actual Do these membership rather than the older 81-name draft; Ticon is final, HMG belongs to Jade Arc, and Zhuo, Nue, and Sor22 are not in the finalized set.",
+    "Catalog migration now updates only world weapons inside Do these plus matching actor-owned copies, preventing obsolete outside variants from being promoted again.",
+    "Weapon integration validates that the permanent catalog count exactly matches the live Do these finished set."
   ]
 }
