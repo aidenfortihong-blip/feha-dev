@@ -5,15 +5,15 @@
 (() => {
   try { globalThis.FEHA_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.2.0";
-  const REWRITE = "1.2";
+  const VERSION = "1.3.0";
+  const REWRITE = "1.3";
   const FLAG = "fleshEnshrouded";
 
   const definitions = [
     {
       key:"breachhound",
       name:"Breachhound",
-      tier:2,
+      marketBand:2,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"14d2",
@@ -31,7 +31,7 @@
     {
       key:"crusher",
       name:"Crusher",
-      tier:3,
+      marketBand:3,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"20d2",
@@ -48,7 +48,7 @@
     {
       key:"hexburst",
       name:"Hexburst",
-      tier:3,
+      marketBand:3,
       company:"Bastion Strategic",
       weaponClass:"Assault Rifle",
       damage:"6d8",
@@ -65,7 +65,7 @@
     {
       key:"igla",
       name:"Igla",
-      tier:2,
+      marketBand:2,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"12d2",
@@ -83,7 +83,7 @@
     {
       key:"lexington",
       name:"Lexington",
-      tier:1,
+      marketBand:1,
       company:"Bastion Strategic",
       weaponClass:"Pistol",
       damage:"4d6",
@@ -100,7 +100,7 @@
     {
       key:"liberty",
       name:"Liberty",
-      tier:1,
+      marketBand:1,
       company:"Bastion Strategic",
       weaponClass:"Heavy Pistol",
       damage:"1d30",
@@ -117,7 +117,7 @@
     {
       key:"overture",
       name:"Overture",
-      tier:2,
+      marketBand:2,
       company:"Bastion Strategic",
       weaponClass:"Heavy Pistol",
       damage:"2d20",
@@ -134,7 +134,7 @@
     {
       key:"saratoga",
       name:"Saratoga",
-      tier:3,
+      marketBand:3,
       company:"Bastion Strategic",
       weaponClass:"SMG",
       damage:"8d6",
@@ -151,7 +151,7 @@
     {
       key:"tactician",
       name:"Tactician",
-      tier:4,
+      marketBand:4,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"30d2",
@@ -168,7 +168,7 @@
     {
       key:"umbra",
       name:"Umbra",
-      tier:1,
+      marketBand:1,
       company:"Bastion Strategic",
       weaponClass:"Assault Rifle",
       damage:"3d8",
@@ -185,7 +185,7 @@
     {
       key:"unity",
       name:"Unity",
-      tier:2,
+      marketBand:2,
       company:"Bastion Strategic",
       weaponClass:"Pistol",
       damage:"5d6",
@@ -202,7 +202,7 @@
     {
       key:"warwake",
       name:"Warwake",
-      tier:4,
+      marketBand:4,
       company:"Bastion Strategic",
       weaponClass:"LMG",
       damage:"8d10",
@@ -219,7 +219,7 @@
     {
       key:"ashura",
       name:"Ashura",
-      tier:2,
+      marketBand:2,
       company:"Corvus Neural",
       weaponClass:"Sniper Rifle",
       damage:"3d12",
@@ -243,7 +243,7 @@
     {
       key:"dian",
       name:"Dian",
-      tier:3,
+      marketBand:3,
       company:"Corvus Neural",
       weaponClass:"SMG",
       damage:"5d6",
@@ -266,7 +266,7 @@
     {
       key:"kyokokukamusari",
       name:"Kyokokukamusari",
-      tier:4,
+      marketBand:4,
       company:"Corvus Neural",
       weaponClass:"Assault Rifle",
       damage:"4d8",
@@ -289,7 +289,7 @@
     {
       key:"masamune",
       name:"Masamune",
-      tier:5,
+      marketBand:5,
       company:"Corvus Neural",
       weaponClass:"Assault Rifle",
       damage:"5d8",
@@ -528,10 +528,7 @@
       marketCategory:"Weapons",
       marketPrice:def.price,
       priceCredits:def.price,
-      marketTier:def.tier,
-      rating:def.tier,
-      tier:def.tier,
-      ratingLabel:"Tier "+["","I","II","III","IV","V"][def.tier],
+      marketBand:def.marketBand,
       availability:def.availability,
       bodyArmor:false,
       quickhack:false,
@@ -547,6 +544,18 @@
     const flags = item.flags?.[FLAG] ?? {};
     const update = {};
     const values = flagValues(def);
+
+    for (const stale of [
+      "mk",
+      "rating",
+      "tier",
+      "ratingLabel",
+      "marketTier"
+    ]) {
+      if (Object.prototype.hasOwnProperty.call(flags,stale)) {
+        update["flags."+FLAG+".-="+stale] = null;
+      }
+    }
 
     if (String(item.name ?? "") !== def.name) {
       update.name = def.name;
