@@ -29,6 +29,13 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 {
   --cp-display: "Rajdhani", "Roboto Condensed", "Arial Narrow", sans-serif;
   --cp-body: "Rajdhani", "Roboto Condensed", "Segoe UI", sans-serif;
 
+  /* Retarget the per-character runtime theme so accents follow CP red/cyan. */
+  --adk-primary: #5ef2ff !important;
+  --adk-primary-rgb: 94, 242, 255 !important;
+  --adk-secondary: #ff5e57 !important;
+  --adk-secondary-rgb: 255, 94, 87 !important;
+
+  background: var(--cp-bg) !important;
   color: var(--cp-text) !important;
   font-family: var(--cp-body) !important;
 }
