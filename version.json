@@ -1,14 +1,14 @@
 {
-  "version": "0.11.70",
+  "version": "0.11.71",
   "updated": "2026-09-30",
-  "scope": "universal-dex-weapon-attacks",
+  "scope": "weapon-sheet-redesign-and-shot-tracking-hardening",
   "notes": [
-    "Every usable attack activity on every weapon Item in the live world and actor inventories is now normalized to Dexterity for to-hit.",
-    "World Hygiene performs the universal DEX pass after legacy duplicate-attack cleanup so hidden empty legacy stubs are not accidentally promoted into configured attacks.",
-    "The DEX pass covers catalog firearms, melee weapons, unique weapons, and non-catalog weapon Items with real attack activities.",
-    "Melee and Unique Weapon catalog migrations now also write DEX directly so future copies inherit the rule before the global hygiene pass.",
-    "The canonical 78-gun catalog already enforced DEX and remains unchanged.",
-    "Any failed live mutation is retained in the hygiene DEX report instead of being silently ignored.",
-    "No damage formulas, ranges, reload rules, manufacturer rules, armor, cyberware, grenades, or Quickhacks changed."
+    "Hardens firearm shot tracking so successful FEHA sheet attacks are counted deterministically even when dnd5e.postRollAttack arrives late or cannot resolve its subject.",
+    "A short-lived pending attack token deduplicates the direct fallback against late postRollAttack hooks, preventing the reliability fix from double-spending shots.",
+    "Attacks triggered outside the FEHA weapon sheet continue to use postRollAttack tracking with roll-ID deduplication.",
+    "Redesigns the canonical firearm sheet into one compact tactical surface: weapon art and identity at top, clean stat tiles and manufacturer/special rules beside it, and the live combat controls spanning the full sheet below.",
+    "Removes the duplicate catalog-style Weapon Tracker explainer and the dead whitespace produced by keeping combat controls only in the right column.",
+    "Adds an explicit TO HIT: DEX stat to the canonical firearm sheet.",
+    "No firearm balance, damage, reload cadence, manufacturer effects, armor, cyberware, grenade, or Quickhack rules changed."
   ]
 }
