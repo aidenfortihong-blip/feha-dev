@@ -1,12 +1,12 @@
 {
-  "version": "0.11.83",
+  "version": "0.11.84",
   "updated": "2026-09-30",
-  "scope": "chrome-cp2077-ripperdoc",
+  "scope": "cyberdeck-fui-skin",
   "notes": [
-    "Chrome Manager rebuilt as a Cyberpunk 2077 ripperdoc screen around the character portrait: all ten body systems sit left and right of the subject, each with a red label, an AVAILABLE ITEMS count and a row of square slot tiles.",
-    "Installed chrome shows as a teal image tile with a cyan corner; empty ports are red dashed '+' tiles. Clicking an empty tile opens the owned-chrome cache for that system; clicking an installed tile opens it in the inspector with EJECT.",
-    "Inspector restyled as the CP item tooltip (teal status bar, salmon title with orange rule); red-on-black HUD, radar ring behind the portrait, yellow CR balance matching the Market.",
-    "New FEHA_CHROME_RIPPERDOC.js is presentation only and routes every action through the installed module's own install/eject/use buttons; latest-dev.js markRoot() calls it after each Chrome render. chrome-cp.css is loaded with market-cp.css.",
-    "Verified on the GM client: install and eject of Ponyboy's Dense Marrow round-tripped with identical item data and capacity. No install rules, capacity, slots, prices or balances changed."
+    "Cyberdeck loadout restyled after the monochrome HUD / FUI reference: white on black, flat grey panels with hairline outlines and corner ticks, no magenta/yellow accents.",
+    "Blocky Chakra Petch display type with an outlined 'OS' in the CYBERDECK OS logotype; Share Tech Mono for small labels (':NETRUNNER LOADOUT:', '_DECK MEMORY').",
+    "RAM pips are ring glyphs that fill white; empty software slots show a ring '+'; the offline reticle is concentric rings; the operator portrait is greyscale.",
+    "JACK IN is a solid white bar with black type that inverts on hover (light grey while hardware is offline).",
+    "New cyberdeck-cp.css is loaded with the Market and Chrome skins. Styling only: no RAM, Quickhack load/eject, Short Rest or JACK IN behavior changed. Text passes WCAG AA contrast."
   ]
 }

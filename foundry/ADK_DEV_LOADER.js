@@ -14,6 +14,7 @@
     v3Css:"cyberdeck-v3.css",
     marketSkinCss:"market-cp.css",
     chromeSkinCss:"chrome-cp.css",
+    cyberdeckSkinCss:"cyberdeck-cp.css",
     baseJs:"latest-dev.js",
     chromeRipperdoc:"foundry/FEHA_CHROME_RIPPERDOC.js",
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
@@ -224,6 +225,7 @@
     cssBraceCheck(source.v3Css,files.v3Css);
     cssBraceCheck(source.marketSkinCss,files.marketSkinCss);
     cssBraceCheck(source.chromeSkinCss,files.chromeSkinCss);
+    cssBraceCheck(source.cyberdeckSkinCss,files.cyberdeckSkinCss);
 
     let buildManifest = null;
     try {
@@ -297,14 +299,14 @@
     document.head.appendChild(style);
     injectedStyle = style;
 
-    // CP2077 Market + Chrome skins share one sheet so the font @import stays first.
+    // Market + Chrome + Cyberdeck skins share one sheet so the font @import stays first.
     document.getElementById("feha-market-cp-css")?.remove();
     const marketSkin = document.createElement("style");
     marketSkin.id = "feha-market-cp-css";
     marketSkin.dataset.adkCommit = sha.slice(0,7);
     marketSkin.textContent =
-      '@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap");\n' +
-      source.marketSkinCss + "\n\n" + source.chromeSkinCss;
+      '@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@500;600;700&family=Share+Tech+Mono&display=swap");\n' +
+      source.marketSkinCss + "\n\n" + source.chromeSkinCss + "\n\n" + source.cyberdeckSkinCss;
     document.head.appendChild(marketSkin);
 
     evaluate(source.baseJs,files.baseJs,sha);
