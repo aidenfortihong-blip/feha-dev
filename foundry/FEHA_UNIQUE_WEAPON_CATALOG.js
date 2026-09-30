@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.2";
-  const REWRITE = "unique-1.0-c";
+  const VERSION = "1.1.0";
+  const REWRITE = "unique-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "Do these";
   const UNIQUE_FOLDERS = new Set(["-other","other","-unique","unique"]);
@@ -234,23 +234,23 @@
     const reload = d.reloadActions == null ? "—" : (String(d.reloadActions)+" action"+(d.reloadActions===1?"":"s"));
     const strength = d.strengthRequirement == null ? "—" : String(d.strengthRequirement);
     const effect = d.effect
-      ? '<div style="margin-top:12px;padding:11px;border:1px solid #7f6323;background:#181205"><small style="display:block;color:#ffd35a;font-size:10px;font-weight:900;letter-spacing:.13em;margin-bottom:6px">UNIQUE EFFECT // '+esc(d.effect.name)+'</small><p style="margin:0;line-height:1.5;color:#fff1bd !important">'+esc(d.effect.text)+'</p></div>'
-      : '<div style="margin-top:12px;padding:11px;border:1px solid #3e4b50;background:#0b1114"><small style="display:block;color:#9aaab0;font-size:10px;font-weight:900;letter-spacing:.13em;margin-bottom:6px">UNIQUE EFFECT</small><p style="margin:0;color:#c7d0d3 !important">None. It is a shovel.</p></div>';
+      ? '<div style="margin-top:10px;padding:10px;border:1px solid #5d4d20;background:#171308"><small style="display:block;color:#f0c85a;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:5px">SPECIAL SYSTEM // '+esc(d.effect.name)+'</small><p style="margin:0;line-height:1.5;color:#f4ead0 !important">'+esc(d.effect.text)+'</p></div>'
+      : '<div style="margin-top:10px;padding:10px;border:1px solid #24404a;background:#09171c"><small style="display:block;color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:5px">SPECIAL SYSTEM</small><p style="margin:0;line-height:1.5;color:#dce8ec !important">None. It is a shovel.</p></div>';
 
-    return '<section data-feha-unique-weapon-card="'+REWRITE+'" style="border:1px solid #80651f;background:#090d10;padding:13px 14px;color:#e7eef0 !important">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #40391f"><small style="color:#ffd35a;font-size:10px;font-weight:900;letter-spacing:.12em">FEHA // UNIQUE WEAPON</small><strong style="color:#fff3bd;font-size:12px">ONE-OFF</strong></div>'+
+    return '<section data-feha-ui="item-card-v1" data-feha-unique-weapon-card="'+REWRITE+'" style="border:1px solid #2b5662;background:#071116;padding:13px 14px;color:#dce8ec !important">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #263941"><small style="color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.12em">FEHA // UNIQUE WEAPON</small><strong style="color:#eefaff;font-size:12px">ONE-OFF</strong></div>'+
       '<h2 style="margin:10px 0 4px;color:#fff">'+esc(d.name)+'</h2>'+
-      '<p style="margin:0 0 11px;font-size:11px;color:#9dafb5 !important">One-off hardware. Extremely rare and normally found only through high-tier specialist, black-market, or corporate stock.</p>'+
-      '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #263238;border-bottom:1px solid #263238">'+
-      '<div><small>CLASS</small><br><strong>'+esc(d.weaponClass)+'</strong></div>'+
-      '<div><small>DAMAGE</small><br><strong>'+esc(d.damage)+'</strong></div>'+
-      '<div><small>RANGE</small><br><strong>'+esc(rangeText(d))+'</strong></div>'+
-      '<div><small>CAPACITY</small><br><strong>'+esc(capacity)+'</strong></div>'+
-      '<div><small>ATTACKS / LOAD</small><br><strong>'+esc(attacks)+'</strong></div>'+
-      '<div><small>RELOAD</small><br><strong>'+esc(reload)+'</strong></div>'+
-      '<div><small>SYSTEM</small><br><strong>'+esc(d.technology)+'</strong></div>'+
-      '<div><small>STR</small><br><strong>'+esc(strength)+'</strong></div>'+
-      '<div><small>RARITY</small><br><strong style="color:#ffd35a">EXTREMELY RARE</strong></div>'+
+      '<p style="margin:0 0 11px;font-size:11px;line-height:1.45;color:#8ba0a8 !important">One-off hardware. Extremely rare and normally found only through high-tier specialist, black-market, or corporate stock.</p>'+
+      '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
+        '<div><small style="color:#8ca2ac">CLASS</small><br><strong style="color:#fff">'+esc(d.weaponClass)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">DAMAGE</small><br><strong style="color:#fff">'+esc(d.damage)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">RANGE</small><br><strong style="color:#fff">'+esc(rangeText(d))+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">CAPACITY</small><br><strong style="color:#fff">'+esc(capacity)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">ATTACKS / LOAD</small><br><strong style="color:#fff">'+esc(attacks)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">RELOAD</small><br><strong style="color:#fff">'+esc(reload)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">SYSTEM</small><br><strong style="color:#fff">'+esc(d.technology)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">STR REQUIREMENT</small><br><strong style="color:#fff">'+esc(strength)+'</strong></div>'+
+        '<div><small style="color:#8ca2ac">RARITY</small><br><strong style="color:#f0c85a">EXTREMELY RARE</strong></div>'+
       '</div>'+effect+'</section>';
   }
 
