@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.3.0";
+  const VERSION = "1.4.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
@@ -45,10 +45,24 @@
     "};",
     "",
     "function fehaStockWeight(item) {",
-    "  return Math.max(",
+    "  const flags = item?.flags?.[FLAG] ?? {};",
+    "  const rarity = Math.max(0.005,Number(flags.marketStockWeight ?? 1) || 1);",
+    "  const tierWeight = Math.max(",
     "    1,",
     "    5 - 2 * Math.max(0,state.shopTier - tier(item))",
     "  );",
+    "  return Math.max(0.005,tierWeight * rarity);",
+    "}",
+    "",
+    "function fehaWeaponAllowedInShop(item,shop) {",
+    "  if (item?.type !== \"weapon\") return true;",
+    "  const flags = item?.flags?.[FLAG] ?? {};",
+    "  if (flags.marketReady !== true) return false;",
+    "  if (tier(item) > state.shopTier) return false;",
+    "  const allowed = Array.isArray(flags.marketAllowedShops)",
+    "    ? flags.marketAllowedShops",
+    "    : [\"street\",\"arms\",\"black\",\"corporate\"];",
+    "  return allowed.includes(shop);",
     "}",
     "",
     "function fehaDrawFrom(candidates,predicate=()=>true) {",
@@ -109,11 +123,16 @@
     "  if (!shop) return [];",
     "",
     "  const key = adkStockKey(shop);",
-    "  const pool = availableInShop(shop)",
+    "  const ordinaryPool = availableInShop(shop)",
+    "    .filter(item => item?.type !== \"weapon\");",
+    "  const weaponPool = (game.items?.contents ?? [])",
     "    .filter(item =>",
-    "      item.type !== \"weapon\" ||",
-    "      item?.flags?.[FLAG]?.marketReady === true",
+    "      item?.type === \"weapon\" &&",
+    "      fehaWeaponAllowedInShop(item,shop)",
     "    );",
+    "  const pool = [...new Map(",
+    "    [...ordinaryPool,...weaponPool].map(item => [item.id,item])",
+    "  ).values()];",
     "",
     "  const previous = adkStockCache[key] || [];",
     "  const size = fehaStockSize(shop,pool.length);",
