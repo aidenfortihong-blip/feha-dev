@@ -6,11 +6,11 @@
 
   const VERSION = "1.2.1";
   const FLAG = "fleshEnshrouded";
-  const POWER_AUDIT = "manufacturer-passives-bastion-kill-surge-2026-09-30";
-  // Ratings include the finalized manufacturer passives: Kurohane Dead Silent,
-  // Bastion once-per-turn kill-triggered Action Surge, Corvus RAM Thief,
-  // ForgeLine Anchor, Helix full-mag recharge after a no-fire turn,
-  // Jade Arc non-recursive kill-chain, and Vektor Cunning Action.
+  const POWER_AUDIT = "manufacturer-passives-manual-simplification-2026-09-30";
+  // Manufacturer passives are intentionally player-tracked. Current weapon
+  // power ratings/prices are retained for this cleanup build; Corvus' simplified
+  // Cyberdeck-gated RAM recovery will be rechecked during the post-cyberware
+  // balance regression once Cyberdeck Mk/RAM values are final.
 
   const GUN_RATINGS = Object.freeze({"Breachhound":47,"Crusher":62,"Hexburst":63,"Igla":52,"Lexington":44,"Liberty":50,"Overture":63,"Saratoga":64,"Tactician":70,"Umbra":69,"Unity":33,"Warwake":83,"Ashura":67,"Dian":56,"Kyokokukamusari":57,"Masamune":55,"Metel":62,"Palica":55,"Razor Choir":85,"Borg4a":78,"Burya":63,"Carnage":69,"Deadrail":67,"Defender":80,"Grad":87,"Iron Psalm":71,"Mirefang":54,"Monarch Zero":92,"Nova":59,"Osprey Prototype":84,"Watchtower":76,"Arcspike":48,"Cinderjack":45,"Grit":33,"Guillotine":64,"Kappa":48,"Omaha":38,"Quasar":42,"Senkoh":45,"Shingen":45,"Starforge":62,"Ticon":38,"Triskelion":47,"Twin Viper":65,"Warden":45,"Achilles":61,"Black Requiem":90,"Choirbreaker":79,"Gravetide":66,"Hercules Prototype":70,"HMG":82,"MA70":80,"Nekomata":88,"Nemora":60,"Nullstorm":68,"Rasetsu Prototype":100,"Satara":66,"Sunlance":82,"Testera":72,"Trucebreaker":65,"Chao":43,"Cinder-20":38,"Copperhead":56,"Dreadline":61,"Kenshin":39,"Quickscar":57,"Quietus":41,"Sidewinder":51,"Yukimura":43,"Ajax":62,"Arcflash":59,"Kolac":65,"Kyubi":56,"Long Vigil":76,"Pale Kestrel":59,"Pozhar":61,"Pulsar":62,"Red Wisp":65});
   const MELEE_RATINGS = Object.freeze({"Baseball Bat":29,"Baton Beta":26,"Baton Murphy":35,"Baton Tinker Bell":26,"Butcher's Knife":29,"Cane Fingers":21,"Chainsword Legendary":81,"Chef's Knife":21,"Crowbar":26,"Dildo Stout":84,"Errata":88,"Fanged Axe Military":48,"Hammer":39,"Iron Pipe":26,"Kanabo":53,"Katana":44,"Katana Go G":44,"Katana Takemura":54,"Knife Kurtz":29,"Knife Military":29,"Knife Stinger":29,"Kukri":35,"Kukri Voodoo":35,"Machete":35,"Machete Maelstrom":41,"Machete Valentinos":43,"Neurotoxin Knife":45,"Punk Knife Pimp":29,"Sword Witcher":49,"Tanto":29,"Tire Iron":26,"Tomahawk":42,"VB Axe":57});
