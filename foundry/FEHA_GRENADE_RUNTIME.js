@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.3.0";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const CH = "module.flesh-enshrouded-heart-ablaze";
   const MARK = "fehaGrenadeRuntimeV1";
@@ -1149,6 +1149,17 @@
         : "RECON // REVEALED";
 
     for (const actor of insideActors.values()) {
+      const grenadeImmune =
+        Boolean(
+          globalThis.FEHA_ARMOR_RUNTIME?.grenadeImmune?.(
+            actor
+          )
+        );
+
+      // Smoke remains an environmental visibility problem even for Vektor.
+      // Other grenade zones cannot directly mark/reveal a Grenade Null wearer.
+      if (grenadeImmune && zone.kind !== "smoke") continue;
+
       try {
         await ensureZoneMarker(actor,template.id,label);
       } catch {}
@@ -1426,7 +1437,13 @@
     const devices = deviceScan(scene,center,radius);
 
     const creatures =
-      tokens.map(token => {
+      tokens
+        .filter(token =>
+          !globalThis.FEHA_ARMOR_RUNTIME?.grenadeImmune?.(
+            token?.actor ?? null
+          )
+        )
+        .map(token => {
         const actor = token?.actor ?? null;
         const profile = targetProfile(actor);
 
@@ -1612,6 +1629,31 @@
         String(primaryToken.id) === String(token.id);
 
       const profile = targetProfile(target);
+
+      const armorRuntime = globalThis.FEHA_ARMOR_RUNTIME;
+      const grenadeNull =
+        Boolean(armorRuntime?.grenadeImmune?.(target));
+      const empImmune =
+        /^emp-/.test(String(def?.key ?? "")) &&
+        Boolean(armorRuntime?.empImmune?.(target));
+
+      if (grenadeNull || empImmune) {
+        results.push({
+          tokenId:token.id,
+          actorId:target.id,
+          name:String(token.name ?? target.name ?? "Target"),
+          autoFail:false,
+          save:null,
+          success:true,
+          damage:0,
+          effects:[
+            grenadeNull
+              ? "GRENADE NULL // IMMUNE"
+              : "EMP SHIELDING // IMMUNE"
+          ]
+        });
+        continue;
+      }
 
       const autoFail =
         Boolean(
