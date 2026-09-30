@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.5.1";
+  const VERSION = "1.5.2";
   const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -14,7 +14,7 @@
   const STOCK_KEY = "adkMarketStockV16";
   const START = "/* FEHA MARKET STOCK PATCH START */";
   const END = "/* FEHA MARKET STOCK PATCH END */";
-  let noMkObserver = null;
+  let marketClickSyncHandler = null;
   let marketSyncScheduled = false;
   let marketSyncRunning = false;
   const MARKET_STYLE_ID = "feha-market-weapon-description-style";
@@ -604,34 +604,50 @@
     syncWeaponMarketCards();
   }
 
+  function scheduleMarketSyncBurst() {
+    for (const delay of [0,80,220,500,1000]) {
+      setTimeout(() => {
+        if (!document.getElementById("adk-market-15")) return;
+        scheduleWeaponMarketSync();
+      },delay);
+    }
+  }
+
   function installNoMkGuard() {
-    if (noMkObserver) {
-      stripWeaponMkBadges();
-      return;
+    // IMPORTANT: there is intentionally NO MutationObserver here.
+    // The previous observer watched document.body and reacted while the Market
+    // was constructing/rerendering itself. Even with idempotent card writes,
+    // the sheer mutation storm could lock the Foundry client on Shop open.
+    //
+    // Instead, synchronize once on load and after user interaction. Market
+    // rerolls, filters, DETAILS, and shop switching are all user-driven, so a
+    // short delayed burst is enough to catch the finished DOM without ever
+    // observing our own mutations.
+    if (!marketClickSyncHandler) {
+      marketClickSyncHandler = () => {
+        scheduleMarketSyncBurst();
+      };
+
+      document.addEventListener(
+        "click",
+        marketClickSyncHandler,
+        true
+      );
     }
 
-    noMkObserver =
-      new MutationObserver(() => {
-        scheduleWeaponMarketSync();
-      });
-
-    noMkObserver.observe(
-      document.body,
-      {
-        childList:true,
-        subtree:true
-      }
-    );
-
-    stripWeaponMkBadges();
+    scheduleMarketSyncBurst();
   }
 
   function removeNoMkGuard() {
-    try {
-      noMkObserver?.disconnect?.();
-    } catch {}
+    if (marketClickSyncHandler) {
+      document.removeEventListener(
+        "click",
+        marketClickSyncHandler,
+        true
+      );
+      marketClickSyncHandler = null;
+    }
 
-    noMkObserver = null;
     marketSyncScheduled = false;
     marketSyncRunning = false;
     document.getElementById(MARKET_STYLE_ID)?.remove?.();
