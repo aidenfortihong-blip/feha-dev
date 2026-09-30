@@ -5,9 +5,9 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.3.1";
+  const VERSION = "4.4.0";
   const FLAG = "fleshEnshrouded";
-  const REWRITE = "4.2";
+  const REWRITE = "4.4-unified";
 
   const definitions = [
     {
@@ -316,36 +316,29 @@
       .replace(/"/g,"&quot;")
       .replace(/'/g,"&#039;");
 
-    const price =
-      "€$" +
-      Number(tier.price).toLocaleString();
+    const price = "€$" + Number(tier.price).toLocaleString();
 
     return (
-      '<section data-feha-qh-card="4.2" '+
-      'style="border:1px solid #263941;background:#081015;padding:12px 14px">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;'+
-        'padding-bottom:9px;border-bottom:1px solid #263941">'+
-          '<small style="color:#79def4;font-size:10px;font-weight:900;letter-spacing:.12em">'+
-            escapeHtml(manufacturer.toUpperCase())+
-            ' // QUICKHACK'+
+      '<section data-feha-ui="item-card-v1" data-feha-qh-card="'+REWRITE+'" '+
+      'style="border:1px solid #2b5662;background:#071116;padding:13px 14px;color:#dce8ec !important">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #263941">'+
+          '<small style="color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.12em">'+
+            'FEHA // '+escapeHtml(manufacturer.toUpperCase())+' // QUICKHACK'+
           '</small>'+
-          '<strong style="color:#eefaff;font-size:12px">'+
-            escapeHtml(tier.label)+
-          '</strong>'+
+          '<strong style="color:#eefaff;font-size:12px">'+escapeHtml(tier.label)+'</strong>'+
         '</div>'+
-
-        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;align-items:center">'+
-          '<span style="font-size:12px"><strong>RAM '+escapeHtml(def.ramCost)+'</strong></span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px">'+escapeHtml(tier.availability)+'</span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#f2d76f;font-weight:900">'+escapeHtml(price)+'</span>'+
+        '<h2 style="margin:10px 0 4px;color:#fff">'+escapeHtml(def.name)+'</h2>'+
+        '<p style="margin:0 0 11px;font-size:11px;line-height:1.45;color:#8ba0a8 !important">'+escapeHtml(tier.tierIdentity)+'</p>'+
+        '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
+          '<div><small style="color:#8ca2ac">RAM</small><br><strong style="color:#fff">'+escapeHtml(def.ramCost)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">QUALITY</small><br><strong style="color:#fff">'+escapeHtml(tier.quality)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">AVAILABILITY</small><br><strong style="color:#fff">'+escapeHtml(tier.availability)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">'+escapeHtml(price)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">ACTIVATION</small><br><strong style="color:#fff">BONUS ACTION</strong></div>'+
         '</div>'+
-
-        '<div>'+
-          '<small style="display:block;color:#8ca2ac;font-size:10px;font-weight:900;'+
-          'letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
-          '<p style="margin:0;line-height:1.48">'+escapeHtml(def.effectText)+'</p>'+
+        '<div style="margin-top:10px;padding:10px;border:1px solid #24404a;background:#09171c">'+
+          '<small style="display:block;color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
+          '<p style="margin:0;line-height:1.5;color:#dce8ec !important">'+escapeHtml(def.effectText)+'</p>'+
         '</div>'+
       '</section>'
     );
