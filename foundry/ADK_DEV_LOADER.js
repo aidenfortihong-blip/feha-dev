@@ -29,6 +29,7 @@
     derkeImport:"foundry/FEHA_DERKE_IMPORT.js",
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
     weaponRuntime:"foundry/FEHA_WEAPON_RUNTIME.js",
+    reloadTracker:"foundry/FEHA_RELOAD_TRACKER.js",
     marketStockPatch:"foundry/FEHA_MARKET_STOCK_PATCH.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
@@ -153,154 +154,8 @@
     );
   };
 
-  // Temporary diagnostic bridge for the Foundry <=14.367 identifier issue.
-  // It wraps Item#update only for the duration of one loader run, records the
-  // exact document + changed paths when dnd5e rejects an identifier, then
-  // restores the original method before the loader exits.
-  const identifierFailures = [];
-  let restoreItemUpdateTrace = () => {};
-
-  let tracePhase = "loader:start";
-  const identifierNotices = [];
-  let restoreIdentifierNoticeTrace = () => {};
-
-  const foundryIdentifierErrors = [];
-  let foundryErrorHookId = null;
-
-  const installFoundryErrorTrace = () => {
-    if (!isGM || foundryErrorHookId != null) return;
-    foundryErrorHookId = Hooks.on(
-      "error",
-      (location,error,data={}) => {
-        const message =
-          String(
-            error?.message ??
-            data?.msg ??
-            data?.message ??
-            ""
-          );
-        const stack = String(error?.stack ?? "");
-
-        if (
-          !/identifier can only contain/i.test(message) &&
-          !/SchemaField#?_updateDiff/i.test(message + " " + stack)
-        ) {
-          return;
-        }
-
-        const row = {
-          phase:tracePhase,
-          location:String(location ?? ""),
-          message,
-          notify:String(data?.notify ?? ""),
-          msg:String(data?.msg ?? ""),
-          data,
-          stack
-        };
-
-        foundryIdentifierErrors.push(row);
-        console.error("FEHA FOUNDRY ERROR TRACE",row,error);
-      }
-    );
-  };
-
-  const restoreFoundryErrorTrace = () => {
-    if (foundryErrorHookId == null) return;
-    try { Hooks.off("error",foundryErrorHookId); } catch {}
-    foundryErrorHookId = null;
-  };
-
-  const installIdentifierNoticeTrace = () => {
-    if (!isGM || !ui?.notifications) return;
-    const originalError = ui.notifications.error;
-    if (typeof originalError !== "function") return;
-
-    const wrapper = function(message,...args) {
-      const text = String(message ?? "");
-      if (/identifier can only contain/i.test(text)) {
-        const stack = String(new Error("FEHA identifier notice trace").stack ?? "");
-        const row = {
-          phase:tracePhase,
-          message:text,
-          stack
-        };
-        identifierNotices.push(row);
-        console.error("FEHA IDENTIFIER NOTICE TRACE",row);
-      }
-      return originalError.call(this,message,...args);
-    };
-
-    ui.notifications.error = wrapper;
-    restoreIdentifierNoticeTrace = () => {
-      try {
-        if (ui.notifications.error === wrapper) {
-          ui.notifications.error = originalError;
-        }
-      } catch {}
-    };
-  };
-
-  const setTracePhase = phase => {
-    tracePhase = String(phase ?? "unknown");
-  };
-
-  const installItemUpdateTrace = () => {
-    if (!isGM) return;
-    const build = Number(game.release?.build ?? 0);
-    if (build >= 368) return;
-
-    const ItemClass = globalThis.CONFIG?.Item?.documentClass;
-    const proto = ItemClass?.prototype;
-    const original = proto?.update;
-    if (!proto || typeof original !== "function") return;
-
-    const wrapper = async function(changes={},options={}) {
-      try {
-        return await original.call(this,changes,options);
-      } catch (error) {
-        const message = String(error?.message ?? error ?? "");
-        const stack = String(error?.stack ?? "");
-        if (
-          /identifier can only contain/i.test(message) ||
-          /SchemaField#?_updateDiff/i.test(message + " " + stack)
-        ) {
-          let paths = [];
-          try {
-            paths = Object.keys(
-              globalThis.foundry?.utils?.flattenObject?.(changes) ?? changes ?? {}
-            );
-          } catch {}
-
-          const row = {
-            item:String(this?.name ?? "UNKNOWN"),
-            uuid:String(this?.uuid ?? this?.id ?? ""),
-            actor:String(this?.parent?.documentName === "Actor" ? this.parent.name ?? "" : ""),
-            type:String(this?.type ?? ""),
-            paths:paths.slice(0,20),
-            rawIdentifier:String(this?._source?.system?.identifier ?? ""),
-            message
-          };
-          identifierFailures.push(row);
-          console.error("FEHA IDENTIFIER TRACE // Item.update rejected",row,error);
-        }
-        throw error;
-      }
-    };
-
-    proto.update = wrapper;
-    restoreItemUpdateTrace = () => {
-      try {
-        if (proto.update === wrapper) proto.update = original;
-      } catch {}
-    };
-  };
-
   try {
     muteInfoToasts();
-    installItemUpdateTrace();
-    installIdentifierNoticeTrace();
-    installFoundryErrorTrace();
-    setTracePhase("loader:fetch-preflight");
     console.info(
       isGM
         ? "FEHA DEV // resolving latest modular build..."
@@ -355,7 +210,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","reloadTracker","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -435,27 +290,38 @@
     document.head.appendChild(style);
     injectedStyle = style;
 
-    const evaluateTracked = key => {
-      setTracePhase("evaluate:"+key);
-      evaluate(source[key],files[key],sha);
-    };
-
-    for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee",
-      "uniqueWeapons","weaponEconomy","core","modRetirement",
-      "specialRetirement","armorRuntime","lumenRetirement","derkeImport",
-      "weaponReadiness","weaponRuntime","marketStockPatch","grenadeRuntime",
-      "quickhacks","quickhackAuthority","quickhackRuntime","devices",
-      "actions","approvals","cameras","sync"
-    ]) {
-      evaluateTracked(key);
-    }
+    evaluate(source.baseJs,files.baseJs,sha);
+    evaluate(source.grenades,files.grenades,sha);
+    evaluate(source.consumables,files.consumables,sha);
+    evaluate(source.armor,files.armor,sha);
+    evaluate(source.weapons,files.weapons,sha);
+    evaluate(source.melee,files.melee,sha);
+    evaluate(source.uniqueWeapons,files.uniqueWeapons,sha);
+    evaluate(source.weaponEconomy,files.weaponEconomy,sha);
+    evaluate(source.core,files.core,sha);
+    evaluate(source.modRetirement,files.modRetirement,sha);
+    evaluate(source.specialRetirement,files.specialRetirement,sha);
+    evaluate(source.armorRuntime,files.armorRuntime,sha);
+    evaluate(source.lumenRetirement,files.lumenRetirement,sha);
+    evaluate(source.derkeImport,files.derkeImport,sha);
+    evaluate(source.weaponReadiness,files.weaponReadiness,sha);
+    evaluate(source.weaponRuntime,files.weaponRuntime,sha);
+    evaluate(source.reloadTracker,files.reloadTracker,sha);
+    evaluate(source.marketStockPatch,files.marketStockPatch,sha);
+    evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
+    evaluate(source.quickhacks,files.quickhacks,sha);
+    evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
+    evaluate(source.quickhackRuntime,files.quickhackRuntime,sha);
+    evaluate(source.devices,files.devices,sha);
+    evaluate(source.actions,files.actions,sha);
+    evaluate(source.approvals,files.approvals,sha);
+    evaluate(source.cameras,files.cameras,sha);
+    evaluate(source.sync,files.sync,sha);
 
     if (!globalThis.FEHA_CYBER_CORE) {
       throw new Error("Cyberdeck Core did not install.");
     }
 
-    setTracePhase("core:init");
     await globalThis.FEHA_CYBER_CORE.init();
 
     const qhAuthorityModule =
@@ -486,6 +352,7 @@
       "derkeImport",
       "weaponReadiness",
       "weaponRuntime",
+      "reloadTracker",
       "marketStockPatch",
       "grenadeRuntime",
       "quickhacks",
@@ -564,6 +431,11 @@
     const weaponRuntime =
       globalThis.FEHA_WEAPON_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("weaponRuntime") ??
+      null;
+
+    const reloadTracker =
+      globalThis.FEHA_RELOAD_TRACKER ??
+      globalThis.FEHA_CYBER_CORE?.module?.("reloadTracker") ??
       null;
 
     const marketStockPatch =
@@ -659,7 +531,9 @@
         "empImmune",
         "grenadeImmune",
         "helixSpeedBonus",
+        "forgeLineAcBonus",
         "forgeLineRangedAcBonus",
+        "bastionFirearmDr",
         "bastionBulletProfile",
         "adjustDamage"
       ]
@@ -690,6 +564,19 @@
         "disable",
         "disableAll",
         "destroy"
+      ]
+    );
+
+    requireMethods(
+      "Reload Tracker",
+      reloadTracker,
+      [
+        "required",
+        "progress",
+        "set",
+        "addAction",
+        "addBonus",
+        "reset"
       ]
     );
 
@@ -836,7 +723,6 @@
       quickhackDefs.length+" quickhacks"
     );
 
-    setTracePhase("evaluate:v3");
     evaluate(source.v3,files.v3,sha);
 
     const loadedVersion =
@@ -855,7 +741,6 @@
     // This prevents legacy world-item descriptions/effects from surviving an
     // otherwise successful hot reload.
     if (isGM) {
-      setTracePhase("migrate:grenades");
       const grenadeMigration =
         await globalThis.FEHA_GRENADE_CATALOG?.migrateAll?.();
 
@@ -866,7 +751,6 @@
         );
       }
 
-      setTracePhase("migrate:consumables");
       const consumableMigration =
         await globalThis.FEHA_CONSUMABLE_CATALOG?.migrateAll?.();
 
@@ -877,7 +761,6 @@
         );
       }
 
-      setTracePhase("migrate:armor");
       const armorMigration =
         await globalThis.FEHA_ARMOR_CATALOG?.migrateAll?.();
 
@@ -888,7 +771,6 @@
         );
       }
 
-      setTracePhase("migrate:weapons");
       const weaponMigration =
         await globalThis.FEHA_WEAPON_CATALOG?.migrateAll?.();
 
@@ -899,7 +781,6 @@
         );
       }
 
-      setTracePhase("migrate:melee");
       const meleeMigration =
         await globalThis.FEHA_MELEE_CATALOG?.migrateAll?.();
 
@@ -910,7 +791,6 @@
         );
       }
 
-      setTracePhase("migrate:quickhacks");
       const quickhackMigration =
         await globalThis.FEHA_QUICKHACK_CATALOG?.migrateAll?.();
 
@@ -923,7 +803,6 @@
 
       // Run uniques after Quickhacks so one-off weapon identity always wins
       // for deliberate shared names such as Motor Lock and Optic Zero.
-      setTracePhase("migrate:uniqueWeapons");
       const uniqueWeaponMigration =
         await globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.migrateAll?.();
 
@@ -934,7 +813,6 @@
         );
       }
 
-      setTracePhase("migrate:weaponEconomy");
       const weaponEconomyMigration =
         await globalThis.FEHA_WEAPON_ECONOMY?.migrateAll?.();
 
@@ -951,7 +829,6 @@
       // ONLY its description using the matching canonical catalog. This is
       // deliberately description-only: it cannot move folders, alter stats,
       // inventory, ownership, or combat data.
-      setTracePhase("migrate:staleCardSweep");
       const staleCardSweep = {
         world:0,
         owned:0,
@@ -961,13 +838,11 @@
       const repairStaleCard = async item => {
         if (!item?.system?.description) return false;
 
-        // Foundry <=14.367 has a core _updateDiff validation bug around some
-        // legacy dnd5e weapon Items with a blank persisted system.identifier.
-        // Those Items are deliberately left untouched until 14.368+ rather
-        // than repeatedly throwing validation toasts during hot reload.
+        // Foundry <=14.367 can reject a weapon update when any nested
+        // persisted identifier in the dnd5e system tree is blank/invalid.
+        // Skip only those malformed weapons until 14.368+ fixes _updateDiff.
         if (item?.type === "weapon") {
           const build = Number(game.release?.build ?? 0);
-
           if (!build || build < 368) {
             const root = item?._source?.system;
             const stack = root && typeof root === "object" ? [root] : [];
@@ -985,10 +860,7 @@
                   invalidIdentifier = true;
                   break;
                 }
-
-                if (value && typeof value === "object") {
-                  stack.push(value);
-                }
+                if (value && typeof value === "object") stack.push(value);
               }
             }
 
@@ -1341,98 +1213,6 @@
       }
     }
 
-    restoreItemUpdateTrace();
-    restoreIdentifierNoticeTrace();
-    restoreFoundryErrorTrace();
-
-    if (foundryIdentifierErrors.length) {
-      globalThis.__FEHA_LAST_FOUNDRY_IDENTIFIER_ERRORS =
-        foundryIdentifierErrors.map(row => ({
-          ...row,
-          data:row.data ? {...row.data} : {}
-        }));
-
-      const phaseCounts = {};
-      for (const row of foundryIdentifierErrors) {
-        const key =
-          (row.phase || "unknown") +
-          (row.location ? " @ " + row.location : "");
-        phaseCounts[key] = (phaseCounts[key] ?? 0) + 1;
-      }
-
-      console.table(
-        foundryIdentifierErrors.map(row => ({
-          phase:row.phase,
-          location:row.location,
-          message:row.message
-        }))
-      );
-      console.warn("FEHA FOUNDRY IDENTIFIER ERROR PHASES",phaseCounts);
-
-      ui.notifications.warn(
-        "FEHA CORE TRACE // " +
-        Object.entries(phaseCounts)
-          .map(([phase,count]) => phase + " x" + count)
-          .join(" | "),
-        {permanent:true}
-      );
-    } else {
-      delete globalThis.__FEHA_LAST_FOUNDRY_IDENTIFIER_ERRORS;
-    }
-
-    if (identifierNotices.length) {
-      globalThis.__FEHA_LAST_IDENTIFIER_NOTICES =
-        identifierNotices.map(row => ({...row}));
-
-      const phaseCounts = {};
-      for (const row of identifierNotices) {
-        phaseCounts[row.phase] = (phaseCounts[row.phase] ?? 0) + 1;
-      }
-      console.table(identifierNotices);
-      console.warn("FEHA IDENTIFIER NOTICE PHASES",phaseCounts);
-      ui.notifications.warn(
-        "FEHA TRACE PHASES // " +
-        Object.entries(phaseCounts)
-          .map(([phase,count]) => phase + " x" + count)
-          .join(" | "),
-        {permanent:true}
-      );
-    } else {
-      delete globalThis.__FEHA_LAST_IDENTIFIER_NOTICES;
-    }
-
-    if (identifierFailures.length) {
-      globalThis.__FEHA_LAST_IDENTIFIER_FAILURES =
-        identifierFailures.map(row => ({...row,paths:[...row.paths]}));
-
-      const compact = [];
-      const seen = new Set();
-      for (const row of identifierFailures) {
-        const key = row.uuid + "|" + row.paths.join(",");
-        if (seen.has(key)) continue;
-        seen.add(key);
-        compact.push(
-          (row.actor ? row.actor + " // " : "") +
-          row.item +
-          " [" +
-          (row.paths.slice(0,3).join(", ") || "unknown update") +
-          "]"
-        );
-      }
-
-      console.table(identifierFailures);
-      ui.notifications.warn(
-        "FEHA TRACE // " +
-        identifierFailures.length +
-        " identifier failure(s): " +
-        compact.slice(0,6).join(" | ") +
-        (compact.length > 6 ? " | +" + (compact.length-6) + " more" : ""),
-        {permanent:true}
-      );
-    } else {
-      delete globalThis.__FEHA_LAST_IDENTIFIER_FAILURES;
-    }
-
     restoreInfoToasts();
 
     if (isGM) {
@@ -1464,14 +1244,6 @@
       }
     );
   } catch (err) {
-    restoreItemUpdateTrace();
-    restoreIdentifierNoticeTrace();
-    restoreFoundryErrorTrace();
-    if (identifierFailures.length) {
-      globalThis.__FEHA_LAST_IDENTIFIER_FAILURES =
-        identifierFailures.map(row => ({...row,paths:[...row.paths]}));
-      console.table(identifierFailures);
-    }
     restoreInfoToasts();
     console.error(
       "FEHA DEV LOADER failed",
