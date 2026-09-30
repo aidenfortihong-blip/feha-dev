@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WORLD_HYGIENE requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const FLAG = "fleshEnshrouded";
   const sheetHooks = [];
 
@@ -127,6 +127,32 @@
 
   function realAttack(activity) {
     return attackScore(activity) > 0;
+  }
+
+  function attackAbility(activity) {
+    const source = attackSource(activity);
+    return String(
+      source?.attack?.ability ??
+      activity?.attack?.ability ??
+      ""
+    ).trim().toLowerCase();
+  }
+
+  function dexEligibleAttacks(item) {
+    return attackActivities(item).filter(activity => !legacyAttackStub(activity));
+  }
+
+  function nonDexAttackInfo(row,item,activity) {
+    return {
+      scope:row.scope,
+      owner:row.owner,
+      name:String(item?.name ?? ""),
+      uuid:String(item?.uuid ?? item?.id ?? ""),
+      activityId:activityId(activity),
+      activityName:String(activity?.name ?? attackSource(activity)?.name ?? ""),
+      ability:attackAbility(activity) || "(blank)",
+      folder:folderPath(item)
+    };
   }
 
   function attackCleanupPlan(item) {
@@ -335,6 +361,7 @@
     const staleDescriptions = [];
     const retiredOrLegacyWorld = [];
     const duplicateActorCyberwareSource = [];
+    const nonDexWeaponAttacks = [];
 
     for (const row of rows) {
       const item = row.item;
@@ -346,6 +373,14 @@
       if (sourceCategory) {
         bySourceCategory[sourceCategory] =
           (bySourceCategory[sourceCategory] ?? 0) + 1;
+      }
+
+      if (item?.type === "weapon") {
+        for (const activity of dexEligibleAttacks(item)) {
+          if (attackAbility(activity) !== "dex") {
+            nonDexWeaponAttacks.push(nonDexAttackInfo(row,item,activity));
+          }
+        }
       }
 
       const attacks = attackActivities(item);
@@ -601,6 +636,7 @@
       duplicateActorNames,
       duplicateActorCyberwareSource,
       retiredOrLegacyWorld,
+      nonDexWeaponAttacks,
       legacyActorFlags,
       runtimeHealth,
       catalogs
@@ -617,6 +653,7 @@
       duplicateActorNameGroups:duplicateActorNames.length,
       duplicateActorCyberwareSourceGroups:duplicateActorCyberwareSource.length,
       retiredOrLegacyWorldItems:retiredOrLegacyWorld.length,
+      nonDexWeaponAttackActivities:nonDexWeaponAttacks.length,
       legacyActorFlagActors:legacyActorFlags.length,
       runtimeTracerGlobals:runtimeHealth.temporaryTracerGlobals.length,
       catalogMissingTotal:catalogs.reduce((sum,row) => sum + row.missing.length,0),
@@ -747,6 +784,159 @@
     return {ok:false,reason:"dnd5e-delete-api-unavailable",id};
   }
 
+  async function setWeaponAttackDex(item,activity) {
+    const id = activityId(activity);
+    if (!item || !id) {
+      return {ok:false,reason:"missing-item-or-id",id};
+    }
+
+    if (legacyAttackStub(activity)) {
+      return {ok:true,skipped:true,reason:"legacy-stub",id};
+    }
+
+    if (attackAbility(activity) === "dex") {
+      return {ok:true,skipped:true,reason:"already-dex",id};
+    }
+
+    const source = attackSource(activity);
+    const clone =
+      globalThis.foundry?.utils?.deepClone?.(source?.attack ?? {}) ??
+      structuredClone(source?.attack ?? {});
+    clone.ability = "dex";
+
+    let method = "";
+
+    try {
+      if (typeof item.updateActivity === "function") {
+        method = "item.updateActivity";
+        await item.updateActivity(id,{attack:clone});
+      } else {
+        method = "item.update";
+        await item.update(
+          {["system.activities."+id+".attack.ability"]:"dex"},
+          {fallback:true}
+        );
+      }
+    } catch (firstError) {
+      // Foundry 14.367 can reject some otherwise narrow activity updates when
+      // unrelated persisted identifier fields are malformed. Retry the
+      // smallest flattened update with fallback enabled before reporting it.
+      try {
+        method = "item.update:fallback";
+        await item.update(
+          {["system.activities."+id+".attack.ability"]:"dex"},
+          {fallback:true}
+        );
+      } catch (secondError) {
+        return {
+          ok:false,
+          id,
+          method,
+          error:String(secondError?.message ?? secondError),
+          firstError:String(firstError?.message ?? firstError)
+        };
+      }
+    }
+
+    const live =
+      item.system?.activities?.get?.(id) ??
+      attackActivities(item).find(entry => activityId(entry) === id) ??
+      null;
+
+    const ok = attackAbility(live) === "dex";
+
+    return {
+      ok,
+      id,
+      method,
+      ability:attackAbility(live) || "(blank)",
+      reason:ok ? "dex-enforced" : "verification-failed"
+    };
+  }
+
+  async function enforceDexWeaponAttacks({notify=false}={}) {
+    if (!game.user?.isGM) {
+      return {
+        ok:false,
+        reason:"gm-only",
+        changedActivities:0,
+        changedItems:0,
+        alreadyDex:0,
+        skippedLegacyStubs:0,
+        failures:[]
+      };
+    }
+
+    let changedActivities = 0;
+    let changedItems = 0;
+    let alreadyDex = 0;
+    let skippedLegacyStubs = 0;
+    const failures = [];
+
+    for (const row of allTrackedItems()) {
+      const item = row.item;
+      if (item?.type !== "weapon") continue;
+
+      let changedHere = 0;
+
+      for (const activity of attackActivities(item)) {
+        if (legacyAttackStub(activity)) {
+          skippedLegacyStubs++;
+          continue;
+        }
+
+        if (attackAbility(activity) === "dex") {
+          alreadyDex++;
+          continue;
+        }
+
+        const result = await setWeaponAttackDex(item,activity);
+
+        if (result.ok && !result.skipped) {
+          changedActivities++;
+          changedHere++;
+        } else if (!result.ok) {
+          failures.push({
+            scope:row.scope,
+            owner:row.owner,
+            name:String(item.name ?? ""),
+            uuid:String(item.uuid ?? item.id ?? ""),
+            activityId:activityId(activity),
+            previousAbility:attackAbility(activity) || "(blank)",
+            ...result
+          });
+        }
+      }
+
+      if (changedHere) changedItems++;
+    }
+
+    const result = {
+      ok:failures.length === 0,
+      changedActivities,
+      changedItems,
+      alreadyDex,
+      skippedLegacyStubs,
+      failures
+    };
+
+    globalThis.__FEHA_WORLD_HYGIENE_LAST_DEX_PASS = result;
+
+    if (notify && (changedActivities || failures.length)) {
+      const message =
+        "FEHA DEX // "+changedActivities+
+        " attack activit"+(changedActivities===1?"y":"ies")+
+        " normalized across "+changedItems+
+        " weapon item"+(changedItems===1?"":"s")+
+        (failures.length ? " // "+failures.length+" failed" : "");
+
+      if (failures.length) ui.notifications?.warn?.(message);
+      else ui.notifications?.info?.(message);
+    }
+
+    return result;
+  }
+
   async function cleanupLegacyWeaponActivities({notify=false}={}) {
     if (!game.user?.isGM) {
       return {ok:false,reason:"gm-only",removed:0,itemsChanged:0,skipped:[]};
@@ -851,12 +1041,20 @@
     const cleanupResult = cleanup
       ? await cleanupLegacyWeaponActivities({notify:false})
       : {ok:true,removed:0,itemsChanged:0,skipped:[],failures:[]};
+
+    // Attack-ability normalization deliberately runs AFTER legacy-stub
+    // deletion. Otherwise assigning DEX to an empty legacy stub would make it
+    // look configured and prevent safe duplicate cleanup on later passes.
+    const dexResult =
+      await enforceDexWeaponAttacks({notify:false});
+
     const after = scan();
 
     const result = {
       version:VERSION,
       before:before.summary,
       cleanup:cleanupResult,
+      dex:dexResult,
       after:after.summary,
       report:after
     };
@@ -870,6 +1068,7 @@
     );
     console.log("Before",before.summary);
     console.log("Cleanup",cleanupResult);
+    console.log("DEX normalization",dexResult);
     console.log("After",after.summary);
     console.log("Full report",after);
     console.groupEnd();
@@ -881,6 +1080,7 @@
         cleanupResult.removed+" duplicate attack stub"+
         (cleanupResult.removed===1?"":"s")+" removed // "+
         s.ambiguousMultiAttackItems+" ambiguous attacks // "+
+        s.nonDexWeaponAttackActivities+" non-DEX weapon attacks // "+
         s.invalidIdentifierItems+" identifier issue items // "+
         s.staleDescriptionItems+" stale descriptions // "+
         s.duplicateWorldNameGroups+" duplicate world-name groups"
@@ -895,6 +1095,8 @@
     scan,
     runFullPass,
     cleanupLegacyWeaponActivities,
+    enforceDexWeaponAttacks,
+    setWeaponAttackDex,
     deleteActivityFromItem,
     legacyAttackStub,
     attackScore,
