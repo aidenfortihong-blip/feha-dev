@@ -1,12 +1,14 @@
 {
-  "version": "0.11.29",
+  "version": "0.11.30",
   "updated": "2026-09-29",
-  "scope": "hard-remove-weapon-mk-badges",
+  "scope": "derke-actor-import",
   "notes": [
-    "Weapon cards can no longer display Mk badges.",
-    "Market stock patch now installs a MutationObserver that identifies rendered weapon cards by their item IDs and physically removes any .item-mk node from those cards.",
-    "The runtime guard works even if an older cached Market template still emits Mk markup.",
-    "World Market macro patching still omits Mk markup for weapons at the source, so the DOM guard is a defensive fallback rather than the primary presentation.",
-    "Finished gun sheets remain free of mk, rating, tier, ratingLabel, and marketTier metadata."
+    "Added an idempotent Derke actor importer to the ADK loader.",
+    "If Derke already exists, his existing stats, inventory, cyberware, ownership, and other character data are preserved; the importer only repairs canonical identity and ADK scaffolding.",
+    "If Derke is missing, the loader creates a character actor using the canonical Derke identity, DK-02 roster code, current Forge portrait, linked 1x1 token art, and ADK playable flags.",
+    "Derke is placed under ADK Campaign PCs / OMEGA — Streetkids, creating those Actor folders if necessary.",
+    "The importer guarantees Derke has a Cyberware Cache without duplicating an existing cache.",
+    "The existing ADK roster and Entry Gateway already recognize Derke, so the imported actor becomes available to the ADK character selectors using the canonical derke roster key.",
+    "No unsupported Derke personality, combat stats, class build, gear, or cyberware were invented by this migration."
   ]
 }
