@@ -1,14 +1,13 @@
 {
-  "version": "0.11.43",
+  "version": "0.11.44",
   "updated": "2026-09-30",
-  "scope": "weapon-pricing-shop-bands-and-rarity",
+  "scope": "final-player-facing-wrappers-and-consumable-rest-limit",
   "notes": [
-    "Added FEHA_WEAPON_ECONOMY.js using the completed 1-100 weapon power audit as the pricing source of truth.",
-    "Weapons still have no Mk. A hidden marketBand 1-5 now gates stronger and more expensive weapons behind higher-tier shops.",
-    "Price curve is power-based, while iconic/prototype/true-unique gear receives rarity premiums rather than arbitrary stat changes.",
-    "Errata, Chainsword Legendary, Dildo Stout, select prototypes/iconics, and all seven true unique weapons use reduced stock weights so they appear much less often.",
-    "True unique weapons are now allowed to appear rarely in arms, black-market, and corporate shops instead of being permanently excluded.",
-    "Market stock patch 1.4.0 now enforces weapon shop-tier gating, explicit allowed shops, and fractional rarity weights.",
-    "Normal weapons remain common within their eligible tier; higher cost corresponds to higher required vendor tier."
+    "Consumables now state a once-per-Short-Rest benefit limit per specific product, preventing duplicate copies from being spammed while keeping the items consumable; Corvus Neural Adaptation Kit remains a one-time permanent treatment.",
+    "Firearm cards are now fully player-facing: removed FINAL GUN, REVIEW STATUS, and GM REVIEW NOTES development metadata while preserving manufacturer doctrine and existing special systems.",
+    "Melee cards no longer expose a CUSTOM EFFECT yes/no development field; they show damage type instead and still surface actual iconic effects when present.",
+    "Unique weapon cards now describe their real high-tier rare-shop availability instead of claiming they never appear in Market stock.",
+    "Market stock patch 1.4.1 runs weapon pricing/rarity migration before stock reset or first roll so tier and rarity gating are correct immediately.",
+    "Gun passive-effect design is intentionally deferred to the dedicated final firearm-passive pass; current manufacturer traits and established special effects remain preserved."
   ]
 }
