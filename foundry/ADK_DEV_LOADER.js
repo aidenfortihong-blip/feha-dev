@@ -153,8 +153,67 @@
     );
   };
 
+  // Temporary diagnostic bridge for the Foundry <=14.367 identifier issue.
+  // It wraps Item#update only for the duration of one loader run, records the
+  // exact document + changed paths when dnd5e rejects an identifier, then
+  // restores the original method before the loader exits.
+  const identifierFailures = [];
+  let restoreItemUpdateTrace = () => {};
+
+  const installItemUpdateTrace = () => {
+    if (!isGM) return;
+    const build = Number(game.release?.build ?? 0);
+    if (build >= 368) return;
+
+    const ItemClass = globalThis.CONFIG?.Item?.documentClass;
+    const proto = ItemClass?.prototype;
+    const original = proto?.update;
+    if (!proto || typeof original !== "function") return;
+
+    const wrapper = async function(changes={},options={}) {
+      try {
+        return await original.call(this,changes,options);
+      } catch (error) {
+        const message = String(error?.message ?? error ?? "");
+        const stack = String(error?.stack ?? "");
+        if (
+          /identifier can only contain/i.test(message) ||
+          /SchemaField#?_updateDiff/i.test(message + " " + stack)
+        ) {
+          let paths = [];
+          try {
+            paths = Object.keys(
+              globalThis.foundry?.utils?.flattenObject?.(changes) ?? changes ?? {}
+            );
+          } catch {}
+
+          const row = {
+            item:String(this?.name ?? "UNKNOWN"),
+            uuid:String(this?.uuid ?? this?.id ?? ""),
+            actor:String(this?.parent?.documentName === "Actor" ? this.parent.name ?? "" : ""),
+            type:String(this?.type ?? ""),
+            paths:paths.slice(0,20),
+            rawIdentifier:String(this?._source?.system?.identifier ?? ""),
+            message
+          };
+          identifierFailures.push(row);
+          console.error("FEHA IDENTIFIER TRACE // Item.update rejected",row,error);
+        }
+        throw error;
+      }
+    };
+
+    proto.update = wrapper;
+    restoreItemUpdateTrace = () => {
+      try {
+        if (proto.update === wrapper) proto.update = original;
+      } catch {}
+    };
+  };
+
   try {
     muteInfoToasts();
+    installItemUpdateTrace();
     console.info(
       isGM
         ? "FEHA DEV // resolving latest modular build..."
@@ -1176,6 +1235,40 @@
       }
     }
 
+    restoreItemUpdateTrace();
+
+    if (identifierFailures.length) {
+      globalThis.__FEHA_LAST_IDENTIFIER_FAILURES =
+        identifierFailures.map(row => ({...row,paths:[...row.paths]}));
+
+      const compact = [];
+      const seen = new Set();
+      for (const row of identifierFailures) {
+        const key = row.uuid + "|" + row.paths.join(",");
+        if (seen.has(key)) continue;
+        seen.add(key);
+        compact.push(
+          (row.actor ? row.actor + " // " : "") +
+          row.item +
+          " [" +
+          (row.paths.slice(0,3).join(", ") || "unknown update") +
+          "]"
+        );
+      }
+
+      console.table(identifierFailures);
+      ui.notifications.warn(
+        "FEHA TRACE // " +
+        identifierFailures.length +
+        " identifier failure(s): " +
+        compact.slice(0,6).join(" | ") +
+        (compact.length > 6 ? " | +" + (compact.length-6) + " more" : ""),
+        {permanent:true}
+      );
+    } else {
+      delete globalThis.__FEHA_LAST_IDENTIFIER_FAILURES;
+    }
+
     restoreInfoToasts();
 
     if (isGM) {
@@ -1207,6 +1300,12 @@
       }
     );
   } catch (err) {
+    restoreItemUpdateTrace();
+    if (identifierFailures.length) {
+      globalThis.__FEHA_LAST_IDENTIFIER_FAILURES =
+        identifierFailures.map(row => ({...row,paths:[...row.paths]}));
+      console.table(identifierFailures);
+    }
     restoreInfoToasts();
     console.error(
       "FEHA DEV LOADER failed",
