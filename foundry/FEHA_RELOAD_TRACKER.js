@@ -19,6 +19,8 @@
   function definition(item) {
     return globalThis.FEHA_WEAPON_CATALOG?.definition?.(item) ??
       game.adk?.weapons?.definition?.(item) ??
+      globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.definition?.(item) ??
+      game.adk?.uniqueWeapons?.definition?.(item) ??
       null;
   }
 
@@ -493,20 +495,27 @@
         ? String(def.range)+" / "+String(def.longRange)+" FT"
         : String(def?.range ?? "—")+" FT";
 
-    const reloadControls = current.reloadMax > 0
+    const sealedDisposable =
+      Boolean(def?.effect?.sealedDisposable);
+
+    const reloadControls = sealedDisposable
       ? (
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">' +
-          '<button type="button" data-feha-wt="action" style="padding:7px;background:#13242a;border:1px solid #36545e;color:#eef8fb;font-weight:800">ACTION <small style="color:#8fb8c2">+2</small></button>' +
-          '<button type="button" data-feha-wt="bonus" style="padding:7px;background:#13242a;border:1px solid #36545e;color:#eef8fb;font-weight:800">BONUS <small style="color:#8fb8c2">+1</small></button>' +
-        '</div>' +
-        '<div style="margin-top:6px;display:flex;align-items:center;gap:8px;color:#9eb3ba;font-size:10px">' +
-          '<span>RELOAD</span><strong style="color:#fff">'+current.reload+' / '+current.reloadMax+' PTS</strong>' +
-          '<span style="margin-left:auto">ACTION=2 // BONUS=1</span>' +
-        '</div>'
+        '<div style="margin-top:8px;padding:8px 10px;border:1px solid #5b342f;background:#1a0d0c;color:#ff9f92;font-size:10px;font-weight:900;letter-spacing:.08em">SEALED DISPOSABLE // NO RELOAD</div>'
       )
-      : (
-        '<button type="button" data-feha-wt="reset" style="width:100%;margin-top:8px;padding:7px;background:#13242a;border:1px solid #36545e;color:#eef8fb;font-weight:800">RESET / CHARGE</button>'
-      );
+      : current.reloadMax > 0
+        ? (
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">' +
+            '<button type="button" data-feha-wt="action" style="padding:7px;background:#13242a;border:1px solid #36545e;color:#eef8fb;font-weight:800">ACTION <small style="color:#8fb8c2">+2</small></button>' +
+            '<button type="button" data-feha-wt="bonus" style="padding:7px;background:#13242a;border:1px solid #36545e;color:#eef8fb;font-weight:800">BONUS <small style="color:#8fb8c2">+1</small></button>' +
+          '</div>' +
+          '<div style="margin-top:6px;display:flex;align-items:center;gap:8px;color:#9eb3ba;font-size:10px">' +
+            '<span>RELOAD</span><strong style="color:#fff">'+current.reload+' / '+current.reloadMax+' PTS</strong>' +
+            '<span style="margin-left:auto">ACTION=2 // BONUS=1</span>' +
+          '</div>'
+        )
+        : (
+          '<button type="button" data-feha-wt="reset" style="width:100%;margin-top:8px;padding:7px;background:#13242a;border:1px solid #36545e;color:#eef8fb;font-weight:800">RESET / CHARGE</button>'
+        );
 
     root.innerHTML =
       '<div style="padding:10px 12px 11px">' +
