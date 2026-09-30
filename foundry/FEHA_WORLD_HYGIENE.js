@@ -637,10 +637,9 @@
 
   function stubIds(item) {
     if (item?.type !== "weapon") return [];
-    return attackActivities(item)
-      .filter(legacyAttackStub)
-      .map(activityId)
-      .filter(Boolean);
+    const plan = attackCleanupPlan(item);
+    if (!plan.safe || !plan.remove.length) return [];
+    return plan.remove.map(activityId).filter(Boolean);
   }
 
   function hideLegacyActivityRows(app,html) {
