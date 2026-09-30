@@ -1,17 +1,14 @@
 {
-  "version": "0.11.26",
+  "version": "0.11.27",
   "updated": "2026-09-29",
-  "scope": "weapon-pricing-and-vendor-stock",
+  "scope": "remove-weapon-mk-semantics",
   "notes": [
-    "Repriced all 16 canonical DONE weapons by actual combat value, handling, range, magazine/reload burden, special utility, and Corvus premium positioning instead of the old placeholder 800/2000/5000 bands.",
-    "Canonical prices: Lexington 450; Liberty 650; Umbra 800; Igla 1100; Breachhound 1500; Unity 1700; Overture 1800; Ashura 2600; Hexburst 3000; Crusher 3400; Saratoga 3800; Dian 4500; Kyokokukamusari 6800; Tactician 7200; Warwake 8200; Masamune 14000.",
-    "Finished weapons now carry Market tiers 1-5 so vendor tier meaningfully gates firearm quality: Tier I entry guns, Tier II professional guns, Tier III restricted combat guns, Tier IV elite weapons, and Tier V prototype weapons.",
-    "Weapon sheet native price, priceCredits, marketPrice, Market tier, rating/tier metadata, availability, and description price are synchronized by the weapon catalog migration.",
-    "Added an idempotent FEHA Market stock patch that upgrades the world ADK Market macro rather than layering fake DOM-only stock on top of it.",
-    "Vendor stock is increased from the old fully-random 8-12 model to shop-specific ranges: Street 14-18, Arms 16-20, Chrome 12-16, Netrunner 14-18, Black Market 16-20, Specialist 14-18, limited by the eligible catalog pool.",
-    "Arms Dealer now guarantees up to 7 weapons, 3 armor pieces, and 3 grenades before filling the remainder of its stock, so it cannot randomly become an armor-and-grenade shop when eligible DONE guns exist.",
-    "Other vendors receive lighter category guarantees as appropriate, including Quickhack/Cyberware guarantees for the Netrunner Shop and mixed high-value guarantees for Black Market.",
-    "The patched stock generator explicitly excludes weapons unless marketReady=true, preserving the DONE/NOT DONE weapon gate even though legacy curated-folder discovery still exists in the Market macro.",
-    "On first install of this patch, persisted vendor stock is cleared once so the next stock roll uses the new larger category-aware model. If the Market is open during migration, it is restarted against the patched macro."
+    "Finished guns no longer use Mk/rating/tier presentation anywhere.",
+    "Canonical DONE weapon migration deletes stale mk, rating, tier, ratingLabel, and marketTier flags from world and actor-owned weapon copies.",
+    "Weapon vendor progression now uses a hidden marketBand field only for vendor-quality gating; marketBand is not presented as a weapon stat.",
+    "ADK Market weapon cards are tagged separately and their Mk badge is hidden completely.",
+    "Mk filter chips no longer filter weapon results because guns are not Mk equipment.",
+    "Armor, grenades, consumables, Quickhacks, and other Mk-based equipment retain their existing Mk behavior.",
+    "Market stock patch version 1.1.0 re-patches the world Market macro and resets saved vendor stock once so open shops immediately reflect the Mk-free weapon behavior."
   ]
 }
