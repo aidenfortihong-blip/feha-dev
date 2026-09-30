@@ -1,12 +1,13 @@
 {
-  "version": "0.11.57",
+  "version": "0.11.58",
   "updated": "2026-09-30",
-  "scope": "foundry-core-error-hook-identifier-trace",
+  "scope": "foundry-14-367-nested-identifier-quarantine",
   "notes": [
-    "Adds a temporary listener to Foundry's official error hook during the ADK DEV LOADER run.",
-    "Captures identifier validation errors even when they bypass Item.update and ui.notifications.error.",
-    "Records loader phase, Foundry error location, message, notify level, hook data, and stack at globalThis.__FEHA_LAST_FOUNDRY_IDENTIFIER_ERRORS.",
-    "Removes the temporary error hook before the loader exits.",
-    "No gameplay, balance, catalog, manufacturer, armor, or observer behavior changes are introduced."
+    "Uses the 0.11.57 core trace result: all 11 validation failures occurred during migrate:weapons at ClientDatabaseBackend##preUpdateDocumentArray.",
+    "On Foundry builds older than 14.368, weapon-writing paths now quarantine a weapon when any persisted system identifier field anywhere in its nested system tree is blank or invalid, not only the top-level system.identifier.",
+    "Applies the same defensive guard to Weapon Catalog, Weapon Readiness, Weapon Economy, and the loader stale-card sweep.",
+    "The weapon catalog's internal version is intentionally not bumped, avoiding another full-catalog version-only rewrite.",
+    "On Foundry 14.368+, the quarantine automatically lifts because Foundry fixed the DataField#_updateDiff model-state validation path.",
+    "No gameplay, balance, manufacturer, armor, reload, or observer mechanics changed."
   ]
 }
