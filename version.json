@@ -1,14 +1,16 @@
 {
-  "version": "0.11.40",
+  "version": "0.11.41",
   "updated": "2026-09-29",
-  "scope": "unique-name-collision-hot-reload-cleanup",
+  "scope": "melee-balance-and-iconic-effects",
   "notes": [
-    "Fixed Motor Lock and Optic Zero unique weapons being mistaken for same-named Quickhacks.",
-    "Quickhack migration now refuses unique-folder/unique-flagged items even when their names match canonical Quickhacks.",
-    "The -Other folder itself is now authoritative for unique weapon migration; it no longer has to be nested under Do these.",
-    "Unique migration clears stale Quickhack flags/price data and runs after Quickhack migration so the unique weapon identity wins.",
-    "ADK hot reload now explicitly rerenders unique item sheets and the Items sidebar, so normal updates should not require a browser page reload.",
-    "Startup info-toast spam is suppressed during module initialization; warnings/errors still show and a single final build-loaded toast remains.",
-    "Unique weapon catalog is now 1.0.1 and Quickhack catalog is now 4.3.1."
+    "Added FEHA_MELEE_CATALOG.js v1.0.0 covering all 33 weapons in the MELEE folder.",
+    "Melee is balanced around one Action = one strike so Sandevistan extra Actions scale the style instead of forcing gun-level damage onto every swing.",
+    "Gorilla Arms satisfy all melee STR requirements; heavy melee uses higher STR gates while knives/light weapons usually have none.",
+    "Most melee weapons intentionally have no bespoke passive: damage, STR, reach, and thrown stats carry their identity.",
+    "Chainsword Legendary gets REDLINE // TEETH IN THE WOUND: once per turn, a second same-turn hit on the same target adds 3d10 and ignores worn-armor weapon damage reduction for that hit.",
+    "Errata gets THERMAL RUNAWAY: consecutive same-turn hits on one target escalate from normal to +2d8 fire, then +4d8 fire with worn-armor reduction ignored from the third hit onward.",
+    "Neurotoxin Knife gets BLACKOUT DOSE: failed CON save poisons and removes reactions; a repeat failed dose while poisoned crashes the nervous system into Stunned.",
+    "Dildo Stout is intentionally just 1d100 bludgeoning damage with no extra passive.",
+    "ADK DEV LOADER now preflights, contract-checks, migrates, and hot-rerenders the melee catalog."
   ]
 }
