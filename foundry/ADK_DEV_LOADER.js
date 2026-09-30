@@ -621,6 +621,8 @@
         "scan",
         "runFullPass",
         "cleanupLegacyWeaponActivities",
+        "enforceDexWeaponAttacks",
+        "setWeaponAttackDex",
         "deleteActivityFromItem",
         "attackCleanupPlan",
         "identifierIssues",
