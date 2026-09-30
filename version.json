@@ -1,13 +1,13 @@
 {
-  "version": "0.11.58",
+  "version": "0.11.59",
   "updated": "2026-09-30",
-  "scope": "foundry-14-367-nested-identifier-quarantine",
+  "scope": "simplified-weapons-armor-and-manual-reload",
   "notes": [
-    "Uses the 0.11.57 core trace result: all 11 validation failures occurred during migrate:weapons at ClientDatabaseBackend##preUpdateDocumentArray.",
-    "On Foundry builds older than 14.368, weapon-writing paths now quarantine a weapon when any persisted system identifier field anywhere in its nested system tree is blank or invalid, not only the top-level system.identifier.",
-    "Applies the same defensive guard to Weapon Catalog, Weapon Readiness, Weapon Economy, and the loader stale-card sweep.",
-    "The weapon catalog's internal version is intentionally not bumped, avoiding another full-catalog version-only rewrite.",
-    "On Foundry 14.368+, the quarantine automatically lifts because Foundry fixed the DataField#_updateDiff model-state validation path.",
-    "No gameplay, balance, manufacturer, armor, reload, or observer mechanics changed."
+    "Simplifies firearm manufacturer rules for tabletop reliability: Bastion extra attack is manual, Corvus RAM Thief is manual and restores 1d2/1d3/1d4/1d6/1d8 RAM by the wielder's Cyberdeck Mk only when the killed enemy had an installed Cyberdeck, and Helix/Jade/Vektor/Kurohane/ForgeLine weapon traits remain player-tracked.",
+    "Reframes weapon reload values as reload points: Action +2, Bonus Action +1. Adds a small actor-side manual reload tracker with +Action, +Bonus, -1, and Reset controls without spending actions or refilling ammo automatically.",
+    "ForgeLine Rivet Work Armor Anchor Plating now grants universal AC +1/+1/+2/+2/+3 after a no-move turn until the start of the wearer's next turn.",
+    "Bastion Combat Plate Take the Bullet now uses flat firearm DR 5/10/15/20/30 instead of removing damage dice.",
+    "Removes the temporary 0.11.55-0.11.57 identifier tracing infrastructure while retaining the 14.367 nested-identifier quarantine proven by the trace.",
+    "Weapon ratings/prices are intentionally retained for now; Corvus balance will be rechecked after Cyberdeck Mk/RAM values are finalized."
   ]
 }
