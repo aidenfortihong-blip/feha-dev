@@ -1,13 +1,13 @@
 {
   "version": "0.11.81",
   "updated": "2026-09-30",
-  "scope": "identifier-false-positive",
+  "scope": "weapon-identifier-root-cause",
   "notes": [
-    "Lifts the weapon quarantine for items whose only 'invalid identifier' was an unset optional field.",
-    "Root cause: the nested identifier checks treated undefined/null (field absent) as an invalid blank string, flagging 143 of 147 items and skipping catalog migration, economy pricing, readiness and duplicate-attack cleanup for them.",
-    "Genuinely blank persisted identifiers are still quarantined on Foundry <14.368.",
-    "World hygiene can now remove the 52 cleanup-safe legacy attack stubs (empty default attacks left beside the real DEX attack).",
+    "Root cause of the long-running 'Foundry 14.367 identifier bug': FEHA_WEAPON_CATALOG's norm/slug helpers had double-escaped regexes. norm stripped capitals and digits before lowercasing (Achilles -> 'chilles', MA70/HMG -> blank) and slug never replaced spaces, so the catalog wrote invalid identifiers like 'osprey prototype' and Foundry correctly rejected the update.",
+    "Fixed norm, slug, diceParts and the damage-field comparison in FEHA_WEAPON_CATALOG (same four double-escaped regex literals).",
+    "The nested identifier checks also treated unset optional fields (undefined) as invalid, quarantining 143 healthy items; they now skip unset values.",
+    "World hygiene removes the cleanup-safe legacy attack stubs (empty default attacks beside the real DEX attack).",
     "All 135 weapons were backed up to compendium world.feha-weapon-backup-2026-09-30 before this build loaded.",
-    "No weapon balance, prices, stock, DEX rules or reload cadence changed beyond applying the existing canonical catalog."
+    "No weapon damage, balance, stock, DEX rules or reload cadence changed; previously-skipped weapons receive the existing canonical catalog and economy values."
   ]
 }

@@ -4,7 +4,7 @@
 **Repository:** `aidenfortihong-blip/feha-dev` · branch `main`
 **Live world:** `caradactyl.forge-vtt.com` (Forge)
 **Foundry baseline:** 14.367 · dnd5e 5.3.3
-**Current verified build:** **0.11.80** (`8fe57ec`)
+**Current verified build:** **0.11.81**
 **Known-good checkpoint:** branch `checkpoint-before-claude` (`eeebb69`, build 0.11.78)
 
 This supersedes `FEHA_MASTER_HANDOFF_2026-09-28.md` (build 0.10.79). The older
@@ -100,11 +100,14 @@ This PC has no global git identity; commits use
 
 ## 4. Open issues
 
-1. **Foundry 14.368 needed.** 51 canonical firearms still carry a duplicate
-   legacy attack activity (52 are marked cleanup-safe) and 147 items have
-   invalid nested identifiers. Presentation hides them; world hygiene will clean
-   them automatically on the first GM load under Foundry ≥ 14.368. Do not force
-   a workaround on 14.367.
+1. **Weapon identifier bug — fixed in 0.11.81.** The "Foundry 14.367 nested
+   identifier bug" (0.11.52–0.11.58) was FEHA's own: `FEHA_WEAPON_CATALOG.js`
+   `norm`/`slug` had regex literals with doubled backslashes (`\\u0300`, `\\s`), so
+   identifiers were written as `chilles`, blank (`MA70`, `HMG`) or
+   `osprey prototype`, and Foundry rejected them. The quarantine checks also
+   counted unset optional fields as invalid (143 false positives). Both fixed;
+   weapons back up in compendium `world.feha-weapon-backup-2026-09-30`.
+   Remaining quarantine logic (`build >= 368`) is now belt-and-braces only.
 2. **Installed module bug:** `chrome-legacy.js` `repairChromeData()` calls
    `Item.updateDocuments(...)` for actor-owned cyberware **without
    `{parent: actor}`**, so it throws "Item id … does not exist in the Items5e
