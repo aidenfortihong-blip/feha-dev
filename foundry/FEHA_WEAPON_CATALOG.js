@@ -4,7 +4,7 @@
 // actor-owned copies with matching final names are also synchronized.
 (() => {
   try { globalThis.FEHA_WEAPON_CATALOG?.destroy?.(); } catch {}
-  const VERSION="3.4.1", REWRITE="3.4-weapon-tracker-hud", REVIEW_SEED="do-these-final-2026-09-30-i", FLAG="fleshEnshrouded";
+  const VERSION="3.4.2", REWRITE="3.4-clean-single-attack", REVIEW_SEED="do-these-final-2026-09-30-i", FLAG="fleshEnshrouded";
   const COMPANY={"BAS":{"name":"Bastion Strategic","doctrine":"Professional military firearms built to turn confirmed kills into immediate follow-up violence.","trait":["ACTION SURGE","Once per turn, when you kill a creature with a Bastion firearm, you may make one additional attack with a Bastion firearm before the end of that turn. This extra attack cannot trigger ACTION SURGE again. Track this manually."]},"COR":{"name":"Corvus Neural","doctrine":"Neural-linked weapons designed to prey on cyberware users and convert enemy network resources into your own.","trait":["RAM THIEF","When you kill a creature with a Corvus firearm, if the killed creature had an installed Cyberdeck, restore RAM based on your installed Cyberdeck Mk: Mk I 1d2, Mk II 1d3, Mk III 1d4, Mk IV 1d6, Mk V 1d8. You cannot exceed your maximum RAM. Track this manually."]},"FOR":{"name":"ForgeLine Industries","doctrine":"Heavy frames and oversized firepower engineered to dominate when the shooter plants their feet.","trait":["ANCHOR","If you do not move at any point during your turn, attacks you make with ForgeLine weapons have Advantage. Moving at any point during the turn prevents ANCHOR from applying that turn."]},"HEL":{"name":"Helix Vitae","doctrine":"Self-sustaining energy weapons designed to recover completely during brief pauses in fire.","trait":["SELF-CHARGING CELL","At the end of a turn in which you did not fire the Helix weapon you are wielding, it fully restores its magazine, charge, or heat capacity to maximum with no Action required."]},"JAD":{"name":"Jade Arc Systems","doctrine":"Overdriven energy weapons built to turn a kill into an immediate secondary detonation.","trait":["ARC CHAIN","When a Jade Arc weapon kills an enemy, choose one other enemy within 5 feet of the killed target. That enemy immediately takes the weapon's full normal damage with no second attack roll. Damage dealt by ARC CHAIN cannot trigger ARC CHAIN again."]},"KUR":{"name":"Kurohane Group","doctrine":"Purpose-built covert firearms whose report is effectively nonexistent.","trait":["DEAD SILENT","Kurohane firearms are completely silent. Firing one produces no audible report and cannot reveal the shooter through sound."]},"VEK":{"name":"Vektor Dynamics","doctrine":"Mobile combat weapons designed around movement, repositioning, and keeping initiative.","trait":["CUNNING ACTION","While actively wielding a Vektor firearm, you may Dash, Disengage, or Hide as a Bonus Action."]}};
   const SPECIALS={"Ashura":{"key":"darkvision-optic","name":"NEURAL OPTIC","text":"While actively wielded, the integrated neural optic provides Darkvision 60 ft.","darkvisionFt":60,"automation":"manual"},"Dian":{"key":"camera-dart","name":"CAMERA DART","text":"The integrated camera dart can be fired and deployed as a camera token. Its feed can be viewed and used as an IoT origin for Quickhacks.","automation":"manual"},"Kyokokukamusari":{"key":"flashbang-magazine","name":"FLASHBANG MAGAZINE","text":"On reload, the integrated flashbang magazine may trigger. Resolve the blast using the campaign's Flashbang Grenade rules.","automation":"manual"},"Masamune":{"key":"neural-relay","name":"NEURAL RELAY","text":"2 charges per Long Rest. Expend 1 charge to route a Quickhack through the weapon's targeting link.","charges":2,"recovery":"long","automation":"manual"},"Metel":{"key":"tracker","name":"TRACKER","text":"Twice per Long Rest, designate a target. One Quickhack may target that creature without direct visual contact even if it leaves network range. Reloading erases the signature.","charges":2,"recovery":"long","automation":"manual"},"Palica":{"key":"distributed-lock","name":"DISTRIBUTED LOCK","text":"The smart scatter system may split the pellet pool between two nearby valid targets instead of placing the entire blast on one target.","automation":"manual"},"Razor Choir":{"key":"truesight-optic","name":"TRUESIGHT OPTIC","text":"While actively wielded, the integrated neural optic provides Truesight 30 ft.","truesightFt":30,"automation":"manual"}};
   const ROWS=[["Breachhound","BAS","Shotgun","14d2",15,30,8,8,2,11,"P","s"],["Crusher","BAS","Shotgun","20d2",15,30,5,5,2,12,"P","s"],["Hexburst","BAS","Assault Rifle","6d8",60,180,30,5,2,11,"P","r"],["Igla","BAS","Shotgun","16d2",20,40,2,2,1,11,"P","s"],["Lexington","BAS","Pistol","5d6",30,60,15,3,1,null,"P","r"],["Liberty","BAS","Heavy Pistol","2d20",40,100,4,2,1,11,"P","r"],["Overture","BAS","Heavy Pistol","1d30+12",40,180,6,6,2,11,"P","r"],["Saratoga","BAS","SMG","8d6",40,100,40,5,1,null,"P","r"],["Tactician","BAS","Shotgun","24d2",15,30,5,5,3,12,"P","s"],["Umbra","BAS","Assault Rifle","7d8",60,150,35,5,2,11,"P","r"],["Unity","BAS","Pistol","3d6",30,70,15,5,1,null,"P","r"],["Warwake","BAS","LMG","7d12",50,200,70,10,8,16,"P","r"],["Ashura","COR","Sniper Rifle","1d20+14",300,1000,3,3,3,13,"S","r"],["Dian","COR","SMG","5d6",40,100,30,6,1,null,"S","r"],["Kyokokukamusari","COR","Assault Rifle","4d8",60,180,28,7,1,11,"S","r"],["Masamune","COR","Assault Rifle","3d8",60,180,30,10,2,11,"S","r"],["Metel","COR","Heavy Pistol","1d30+6",40,120,8,8,1,10,"P","r"],["Palica","COR","Shotgun","14d2",20,40,4,4,2,10,"S","s"],["Razor Choir","COR","SMG","15d6",40,80,null,6,1,null,"T","b"],["Borg4a","FOR","Pistol","15d6",30,60,15,1,1,11,"P","r"],["Burya","FOR","Heavy Pistol","1d30+16",40,120,6,6,2,13,"P","r"],["Carnage","FOR","Shotgun","30d2",15,30,5,5,4,14,"P","s"],["Deadrail","FOR","Assault Rifle","8d8",60,180,32,4,3,13,"P","r"],["Defender","FOR","LMG","8d12",50,200,96,12,8,16,"P","r"],["Grad","FOR","Sniper Rifle","1d20+46",300,1000,4,4,3,16,"P","r"],["Iron Psalm","FOR","LMG","6d12",50,200,96,16,8,16,"T","r"],["Mirefang","FOR","Shotgun Pistol","18d2",20,40,4,4,2,12,"P","s"],["Monarch Zero","FOR","Sniper Rifle","5d20+16",300,1000,3,3,3,16,"T","r"],["Nova","FOR","Heavy Pistol","1d30+12",40,100,6,6,2,12,"P","r"],["Osprey Prototype","FOR","DMR","10d10",90,200,30,3,3,null,"P","r"],["Watchtower","FOR","Sniper Rifle","1d20+28",300,1000,5,5,3,16,"P","r"],["Arcspike","HEL","DMR","3d10",90,200,null,10,2,10,"E","c"],["Cinderjack","HEL","SMG","5d6",40,100,null,12,1,null,"E","c"],["Grit","HEL","Pistol","3d6",30,70,null,20,1,null,"E","c"],["Guillotine","HEL","SMG","10d6",40,100,null,5,1,null,"E","c"],["Kappa","HEL","Pistol","6d6",30,80,null,15,1,null,"E","c"],["Omaha","HEL","Pistol","4d6",30,90,null,8,1,null,"E","c"],["Quasar","HEL","Heavy Pistol","1d20+5",40,120,null,8,1,10,"E","c"],["Senkoh","HEL","SMG","5d6",40,120,null,10,1,null,"E","c"],["Shingen","HEL","SMG","5d6",40,100,null,10,1,null,"E","c"],["Starforge","HEL","LMG","5d12",50,200,null,18,4,13,"E","h"],["Ticon","HEL","Pistol","4d6",30,60,null,10,0,null,"E","c"],["Triskelion","HEL","DMR","3d10",90,250,null,10,2,11,"E","c"],["Twin Viper","HEL","SMG","10d6",40,80,null,30,1,null,"E","c"],["Warden","HEL","SMG","5d6",40,100,null,15,1,null,"E","c"],["Achilles","JAD","DMR","6d10",100,300,null,3,3,14,"E","c"],["Black Requiem","JAD","Heavy Pistol","5d20+20",30,60,null,1,1,null,"E","c"],["Choirbreaker","JAD","LMG","9d12",50,200,null,5,8,16,"E","c"],["Gravetide","JAD","Shotgun","28d2",20,40,null,4,3,13,"E","c"],["Hercules Prototype","JAD","Assault Rifle","9d8",60,180,null,4,2,12,"E","c"],["HMG","JAD","LMG","10d12",50,200,null,5,10,17,"E","c"],["MA70","JAD","LMG","10d12",50,200,null,4,10,17,"E","c"],["Nekomata","JAD","Sniper Rifle","3d20+40",300,1000,null,1,4,12,"E","c"],["Nemora","JAD","Assault Rifle","7d8",60,180,null,5,3,12,"E","c"],["Nullstorm","JAD","Assault Rifle","9d8",60,180,null,4,3,13,"E","c"],["Rasetsu Prototype","JAD","Sniper Rifle","8d20+30",300,1000,null,4,5,16,"E","c"],["Satara","JAD","Shotgun","30d2",20,40,null,2,3,13,"E","c"],["Sunlance","JAD","Sniper Rifle","1d20+50",400,1200,null,1,5,14,"E","c"],["Testera","JAD","Shotgun","36d2",10,20,null,2,3,14,"E","c"],["Trucebreaker","JAD","Shotgun","28d2",20,50,null,3,3,13,"E","c"],["Chao","KUR","Pistol","3d6",30,80,12,4,1,null,"S","r"],["Cinder-20","KUR","Pistol","2d6",30,60,12,6,1,null,"P","r"],["Copperhead","KUR","Assault Rifle","4d8",60,180,28,7,2,10,"P","r"],["Dreadline","KUR","Assault Rifle","5d8",60,180,25,5,1,10,"P","r"],["Kenshin","KUR","Pistol","2d6",30,90,12,6,1,null,"T","r"],["Quickscar","KUR","SMG","6d6",40,80,24,4,1,null,"P","r"],["Quietus","KUR","Bow","2d10",90,250,null,null,1,11,"P","a"],["Sidewinder","KUR","Assault Rifle","3d8",60,180,30,10,2,10,"S","r"],["Yukimura","KUR","Pistol","3d6",30,80,15,5,1,null,"S","r"],["Ajax","VEK","Assault Rifle","5d8",60,180,30,6,2,12,"P","r"],["Arcflash","VEK","SMG","5d6",40,100,null,10,1,null,"E","c"],["Kolac","VEK","DMR","4d10",90,250,20,5,3,12,"P","r"],["Kyubi","VEK","Assault Rifle","2d8+4",90,240,30,15,2,10,"P","r"],["Long Vigil","VEK","Sniper Rifle","2d20+10",300,1000,8,8,3,16,"T","r"],["Pale Kestrel","VEK","DMR","3d10",90,200,30,10,3,13,"T","r"],["Pozhar","VEK","Shotgun","16d2",15,30,10,10,3,11,"P","s"],["Pulsar","VEK","SMG","6d6",40,100,30,5,1,null,"P","r"],["Red Wisp","VEK","Pistol","8d6",30,60,16,2,1,null,"T","r"]];
@@ -13,6 +13,48 @@
   const slug=v=>norm(v).replace(/\\s+/g,"-");
   const list=c=>Array.isArray(c)?c:Array.isArray(c?.contents)?c.contents:(()=>{try{return [...(c??[])]}catch{return []}})();
   const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\x27/g,"&#039;");
+  function activities(item){
+    const c=item?.system?.activities;
+    if(!c)return [];
+    if(Array.isArray(c))return c;
+    if(Array.isArray(c.contents))return c.contents;
+    if(typeof c.values==="function"){try{return [...c.values()]}catch{}}
+    if(typeof c==="object")return Object.values(c);
+    return [];
+  }
+  function activityId(a){return String(a?.id??a?._id??"")}
+  function legacyAttackStub(a){
+    const src=a?._source??a??{};
+    if(String(src?.type??a?.type??"").toLowerCase()!=="attack")return false;
+    const name=String(src?.name??a?.name??"").trim().toLowerCase();
+    const generic=!name||name==="attack";
+    const sort=Number(src?.sort??a?.sort??0)||0;
+    const activation=src?.activation??a?.activation??{};
+    const range=src?.range??a?.range??{};
+    const damage=src?.damage??a?.damage??{};
+    const attack=src?.attack??a?.attack??{};
+    const parts=Array.isArray(damage?.parts)?damage.parts:Array.isArray(damage?.parts?.contents)?damage.parts.contents:[];
+    const effects=Array.isArray(src?.effects)?src.effects:Array.isArray(a?.effects)?a.effects:[];
+    const rv=range?.value;
+    const noRange=rv==null||rv===""||Number(rv)===0;
+    const ability=String(attack?.ability??"").trim();
+    return generic&&sort===0&&String(activation?.type??"action")==="action"&&
+      String(range?.units??"")==="self"&&noRange&&damage?.includeBase===true&&
+      parts.length===0&&effects.length===0&&!ability&&String(attack?.bonus??"").trim()==="";
+  }
+  function attackCleanupUpdate(item){
+    const attacks=activities(item).filter(a=>String(a?.type??a?._source?.type??"").toLowerCase()==="attack");
+    if(attacks.length<2)return {};
+    const stubs=attacks.filter(legacyAttackStub);
+    const real=attacks.filter(a=>!legacyAttackStub(a));
+    if(!stubs.length||real.length!==1)return {};
+    const update={};
+    for(const a of stubs){
+      const id=activityId(a);
+      if(id)update["system.activities.-="+id]=null;
+    }
+    return update;
+  }
   function legacyNestedIdentifierQuarantined(item) {
     const build = Number(game.release?.build ?? 0);
     if (build >= 368) return false;
@@ -168,7 +210,10 @@
       console.warn("FEHA WEAPON CATALOG // identifier source repair failed",item?.name,error);
       throw error;
     }
-    const f=item.flags?.[FLAG]??{},u={},vals=flagValues(d);
+    const f=item.flags?.[FLAG]??{},u=attackCleanupUpdate(item),vals=flagValues(d);
+    if(Object.keys(u).length){
+      u["flags."+FLAG+".attackActivityCleanupVersion"]="single-attack-2026-09-30";
+    }
     for(const stale of ["mk","rating","tier","ratingLabel","marketTier"])if(Object.prototype.hasOwnProperty.call(f,stale))u["flags."+FLAG+".-="+stale]=null;
     for(const [k,v] of Object.entries(vals)){let same=false;try{same=JSON.stringify(f[k]??null)===JSON.stringify(v)}catch{same=f[k]===v}if(!same)u["flags."+FLAG+"."+k]=v}
     const desc=String(item.system?.description?.value??"");
