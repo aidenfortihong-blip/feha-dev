@@ -82,57 +82,16 @@
     const update={};
 
     if(!keeper){
-      const Cls=globalThis.CONFIG?.DND5E?.activityTypes?.attack?.documentClass;
-      if(!Cls)return {
+      // Do not synthesize a dnd5e Activity from guessed schema during a hot
+      // migration. Every reviewed firearm should already have at least the old
+      // migrated attack stub; if a live copy has none, preserve it and report
+      // the anomaly for explicit repair instead of inventing combat data.
+      return {
         update:{},
         ambiguous:true,
         attackCount:attacks.length,
-        reason:"attack-document-class-unavailable"
+        reason:"no-attack-activity"
       };
-
-      let source={};
-      try{
-        source=new Cls({}, {parent:item}).toObject();
-      }catch(error){
-        console.warn("FEHA WEAPON CATALOG // could not create canonical attack source",item?.name,error);
-        return {
-          update:{},
-          ambiguous:true,
-          attackCount:attacks.length,
-          reason:"attack-source-create-failed"
-        };
-      }
-
-      source._id=source._id||globalThis.foundry?.utils?.randomID?.()||Math.random().toString(36).slice(2,18);
-      source.type="attack";
-      source.name="Attack";
-      source.img=item?.img??source.img??null;
-      source.sort=100000;
-      source.activation={...(source.activation??{}),type:"action",value:1,override:false};
-      source.attack={
-        ...(source.attack??{}),
-        ability:"dex",
-        bonus:"",
-        flat:false,
-        critical:{...(source.attack?.critical??{}),threshold:20},
-        type:{value:"ranged",classification:"weapon"}
-      };
-      source.range={
-        ...(source.range??{}),
-        value:Number(d.range)||0,
-        units:"ft",
-        special:"",
-        override:true
-      };
-      source.damage={
-        ...(source.damage??{}),
-        includeBase:true,
-        parts:Array.isArray(source.damage?.parts)?source.damage.parts:[],
-        critical:{...(source.damage?.critical??{}),bonus:""}
-      };
-
-      update["system.activities."+source._id]=source;
-      keeper={id:source._id,_id:source._id,_source:source,...source};
     }
 
     const id=activityId(keeper);
