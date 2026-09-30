@@ -1,11 +1,13 @@
 {
-  "version": "0.11.76",
+  "version": "0.11.77",
   "updated": "2026-09-30",
-  "scope": "market-freeze-hard-fix",
+  "scope": "market-legacy-description-cleanup",
   "notes": [
-    "Removes the Market weapon-description MutationObserver entirely. Watching document.body during Market construction could still produce a mutation storm and lock the Foundry client even after card writes were made idempotent.",
-    "Weapon-description synchronization now runs only in short scheduled bursts after user clicks and on module initialization, which still catches Shop open, DETAILS, filters, rerolls, and shop changes without observing its own DOM writes.",
-    "Canonical FEHA weapon descriptions and Mk suppression remain active in the Market.",
-    "No Market stock, prices, weapon balance, DEX rules, reload cadence, armor, cyberware, grenade, or Quickhack rules changed."
+    "Fixes Market weapon cards that showed both a malformed concatenated legacy rich-description block and the new FEHA weapon summary.",
+    "The Market patch now recognizes unclassed legacy description containers, including melee cards whose HTML collapsed into strings like 'FEHA // MELEE WEAPON...DAMAGE3d6...'.",
+    "When a correct FEHA summary was previously appended below the action buttons, the patch moves that summary into the original description slot and removes the duplicate placement.",
+    "The cleanup stays observer-free, so it does not reintroduce the Shop freeze fixed in 0.11.76.",
+    "Market Stock Patch advances to 1.5.3.",
+    "No prices, stock, weapon balance, DEX rules, reload cadence, armor, cyberware, grenades, or Quickhacks changed."
   ]
 }
