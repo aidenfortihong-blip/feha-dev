@@ -4,8 +4,8 @@
 (() => {
   try { globalThis.FEHA_ARMOR_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.2.1";
-  const REWRITE = "1.2";
+  const VERSION = "1.3.0";
+  const REWRITE = "1.3-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "03 — ARMOR";
 
@@ -293,32 +293,31 @@
 
   function rewriteDescription(def) {
     return (
-      '<section data-feha-armor-card="'+REWRITE+'" '+
-      'style="border:1px solid #35515b;background:#071116;padding:13px 14px;color:#dce8ec !important">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;'+
-        'padding-bottom:9px;border-bottom:1px solid #263941">'+
+      '<section data-feha-ui="item-card-v1" data-feha-armor-card="'+REWRITE+'" '+
+      'style="border:1px solid #2b5662;background:#071116;padding:13px 14px;color:#dce8ec !important">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #263941">'+
           '<small style="color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.12em">'+
-            'FEHA BODY ARMOR // '+esc(def.company.toUpperCase())+
+            'FEHA // '+esc(def.company.toUpperCase())+' // BODY ARMOR'+
           '</small>'+
           '<strong style="color:#eefaff;font-size:12px">'+esc(mkLabel(def.mk))+'</strong>'+
         '</div>'+
-        '<p style="margin:10px 0 11px;line-height:1.45;color:#c6d7dd !important">'+
+        '<h2 style="margin:10px 0 4px;color:#fff">'+esc(def.name)+'</h2>'+
+        '<p style="margin:0 0 11px;font-size:11px;line-height:1.45;color:#8ba0a8 !important">'+
           esc(def.flavor)+
         '</p>'+
-        '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 12px;'+
-        'padding:9px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
-          '<div><small style="color:#8ca2ac">ARMOR CLASS</small><br><strong style="color:#fff;font-size:18px">'+def.ac+'</strong></div>'+
+        '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
+          '<div><small style="color:#8ca2ac">TYPE</small><br><strong style="color:#fff">'+esc(String(def.armorType).toUpperCase())+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">ARMOR CLASS</small><br><strong style="color:#fff">'+def.ac+'</strong></div>'+
           '<div><small style="color:#8ca2ac">DEX CONTRIBUTION</small><br><strong style="color:#fff">'+esc(dexText(def))+'</strong></div>'+
           '<div><small style="color:#8ca2ac">WEIGHT</small><br><strong style="color:#fff">'+def.weight+' lb</strong></div>'+
-          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f2d76f">€$'+Number(def.price).toLocaleString()+'</strong> <span style="color:#93aab3">// '+esc(def.availability)+'</span></div>'+
+          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">€$'+Number(def.price).toLocaleString()+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">AVAILABILITY</small><br><strong style="color:#fff">'+esc(def.availability)+'</strong></div>'+
         '</div>'+
-        '<div style="margin-top:10px">'+
-          '<small style="display:block;color:#f0c85a;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:4px">'+
+        '<div style="margin-top:10px;padding:10px;border:1px solid #24404a;background:#09171c">'+
+          '<small style="display:block;color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:5px">ARMOR PASSIVE // '+
             esc(def.signature.name.toUpperCase())+
           '</small>'+
-          '<p style="margin:0;line-height:1.5;color:#e4f0f3 !important">'+
-            esc(def.signature.text)+
-          '</p>'+
+          '<p style="margin:0;line-height:1.5;color:#dce8ec !important">'+esc(def.signature.text)+'</p>'+
         '</div>'+
       '</section>'
     );
