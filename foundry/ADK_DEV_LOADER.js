@@ -29,7 +29,7 @@
     derkeImport:"foundry/FEHA_DERKE_IMPORT.js",
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
     weaponRuntime:"foundry/FEHA_WEAPON_RUNTIME.js",
-    reloadTracker:"foundry/FEHA_RELOAD_TRACKER.js",
+    weaponTracker:"foundry/FEHA_RELOAD_TRACKER.js",
     worldHygiene:"foundry/FEHA_WORLD_HYGIENE.js",
     marketStockPatch:"foundry/FEHA_MARKET_STOCK_PATCH.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
@@ -211,7 +211,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","reloadTracker","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -307,7 +307,7 @@
     evaluate(source.derkeImport,files.derkeImport,sha);
     evaluate(source.weaponReadiness,files.weaponReadiness,sha);
     evaluate(source.weaponRuntime,files.weaponRuntime,sha);
-    evaluate(source.reloadTracker,files.reloadTracker,sha);
+    evaluate(source.weaponTracker,files.weaponTracker,sha);
     evaluate(source.worldHygiene,files.worldHygiene,sha);
     evaluate(source.marketStockPatch,files.marketStockPatch,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
@@ -354,7 +354,7 @@
       "derkeImport",
       "weaponReadiness",
       "weaponRuntime",
-      "reloadTracker",
+      "weaponTracker",
       "worldHygiene",
       "marketStockPatch",
       "grenadeRuntime",
@@ -436,9 +436,10 @@
       globalThis.FEHA_CYBER_CORE?.module?.("weaponRuntime") ??
       null;
 
-    const reloadTracker =
+    const weaponTracker =
+      globalThis.FEHA_WEAPON_TRACKER ??
       globalThis.FEHA_RELOAD_TRACKER ??
-      globalThis.FEHA_CYBER_CORE?.module?.("reloadTracker") ??
+      globalThis.FEHA_CYBER_CORE?.module?.("weaponTracker") ??
       null;
 
     const worldHygiene =
@@ -576,15 +577,18 @@
     );
 
     requireMethods(
-      "Reload Tracker",
-      reloadTracker,
+      "Weapon Tracker",
+      weaponTracker,
       [
-        "required",
-        "progress",
-        "set",
-        "addAction",
-        "addBonus",
-        "reset"
+        "capacity",
+        "reloadPoints",
+        "state",
+        "recordShot",
+        "undoShot",
+        "addReload",
+        "reset",
+        "equippedFirearms",
+        "open"
       ]
     );
 
