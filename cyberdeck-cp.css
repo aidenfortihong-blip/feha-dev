@@ -1,0 +1,563 @@
+/* ==========================================================================
+   FEHA // CYBERDECK — MONOCHROME FUI SKIN
+   After the "HUD / FUI ELEMENTS // CYBERDECK" reference: white on black,
+   flat grey panels with hairline outlines and corner ticks, ring glyphs,
+   a blocky wide display face and small monospace labels.
+
+   Loaded by ADK_DEV_LOADER in <style id="feha-market-cp-css">. Scope:
+   #feha-cyberdeck-v2 (the loadout screen) only. Styling only.
+
+   Specificity: html body + tripled id outranks the loadout's existing
+   rules (max: two ids + one class).
+   ========================================================================== */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 {
+  --fui-bg: #0a0a0a;
+  --fui-panel: #191919;
+  --fui-panel-2: #222222;
+  --fui-line: #333333;
+  --fui-line-2: #4a4a4a;
+  --fui-white: #f2f2f2;
+  --fui-muted: #9a9a9a;
+  --fui-dim: #6b6b6b;
+  --fui-display: "Chakra Petch", "Rajdhani", "Arial Narrow", sans-serif;
+  --fui-mono: "Share Tech Mono", "Consolas", monospace;
+  /* Corner ticks under a panel, like the reference's L-brackets. */
+  --fui-ticks:
+    linear-gradient(var(--fui-line-2), var(--fui-line-2)) 0 100% / 7px 1px no-repeat,
+    linear-gradient(var(--fui-line-2), var(--fui-line-2)) 0 100% / 1px 7px no-repeat,
+    linear-gradient(var(--fui-line-2), var(--fui-line-2)) 100% 100% / 7px 1px no-repeat,
+    linear-gradient(var(--fui-line-2), var(--fui-line-2)) 100% 100% / 1px 7px no-repeat;
+
+  background: var(--fui-bg) !important;
+  border: 1px solid var(--fui-line) !important;
+  box-shadow: 0 0 0 1px #000, 0 24px 60px rgba(0,0,0,.8) !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::before,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::after {
+  text-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-scanlines {
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px) !important;
+  opacity: 1 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 button,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 select {
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 button:focus-visible,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 select:focus-visible {
+  outline: 1px solid var(--fui-white) !important;
+  outline-offset: 2px !important;
+}
+
+/* Shared small label treatment. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 small,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-subhead {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-weight: 400 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+/* ---------- header ------------------------------------------------------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-header {
+  background: var(--fui-bg) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand small::before { content: ":"; }
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand small::after { content: ":"; }
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand h1 {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* Outlined "OS", like the reference's outlined logotype row. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand h1 span {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  -webkit-text-stroke: 1px var(--fui-white) !important;
+  background: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-build {
+  color: var(--fui-dim) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-header-status > div {
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-header-status span {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-header-status b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 600 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 #v3-actor,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 #cd2-actor {
+  background: #000 !important;
+  color: var(--fui-white) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .06em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 #v3-actor option,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 #cd2-actor option {
+  background: #111;
+  color: var(--fui-white);
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-close {
+  background: transparent !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-close:hover {
+  background: var(--fui-white) !important;
+  color: #000 !important;
+}
+
+/* ---------- operator column ---------------------------------------------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-operator {
+  background: var(--fui-bg) !important;
+  border: 0 !important;
+  border-right: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-portrait {
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-portrait img {
+  filter: grayscale(1) contrast(1.12) brightness(.95) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-portrait-grid {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(0deg, rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 24px 24px !important;
+  opacity: 1 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-operator-tag {
+  background: var(--fui-white) !important;
+  border: 0 !important;
+  color: #000 !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .1em !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-operator-meta,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-deck-summary {
+  background: var(--fui-ticks), var(--fui-panel) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-operator-meta span {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-operator-meta b,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-deck-summary b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 600 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-offline-copy {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .08em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-offline-copy span {
+  color: var(--fui-dim) !important;
+}
+
+/* ---------- RAM ---------------------------------------------------------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram {
+  background: var(--fui-ticks), var(--fui-panel) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram strong {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 700 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram strong em {
+  color: var(--fui-dim) !important;
+  font-style: normal !important;
+}
+
+/* RAM pips become the reference's ring glyphs. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-segments {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 5px !important;
+  background: none !important;
+  border: 0 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-segments i {
+  flex: 0 0 auto !important;
+  width: 11px !important;
+  height: 11px !important;
+  border: 1.5px solid var(--fui-line-2) !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-segments i.is-filled {
+  border-color: var(--fui-white) !important;
+  background: radial-gradient(circle, var(--fui-white) 0 35%, transparent 38%) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-rest {
+  background: transparent !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .1em !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-rest:hover:not(:disabled) {
+  background: var(--fui-white) !important;
+  color: #000 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-rest:disabled {
+  color: var(--fui-dim) !important;
+  border-color: var(--fui-line) !important;
+  opacity: 1 !important;
+}
+
+/* ---------- sections: loaded quickhacks + library ------------------------ */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-main,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-scroll,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-section {
+  background: transparent !important;
+  border-color: var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head {
+  border: 0 !important;
+  border-bottom: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head > div {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head small::before {
+  content: "_";
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head h3 {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head > span {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-support-card {
+  background: var(--fui-ticks), var(--fui-panel) !important;
+  border: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+  color: var(--fui-white) !important;
+  transition: background-color .12s, border-color .12s !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card:hover,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card:focus-within {
+  background: var(--fui-ticks), var(--fui-panel-2) !important;
+  border-color: var(--fui-white) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card img,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-support-card img {
+  filter: grayscale(1) brightness(1.15) !important;
+  background: #000 !important;
+  border: 1px solid var(--fui-line) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-code {
+  color: var(--fui-dim) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-copy b,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-support-card b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-copy span,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-support-card span {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-copy small,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-support-card small {
+  color: var(--fui-muted) !important;
+  text-transform: none !important;
+  letter-spacing: .02em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card button {
+  background: transparent !important;
+  border: 1px solid var(--fui-white) !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .12em !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card button:hover:not(:disabled) {
+  background: var(--fui-white) !important;
+  color: #000 !important;
+}
+
+/* Empty software slot: dashed hairline with a ring "+". */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-empty-slot {
+  background: transparent !important;
+  border: 1px dashed var(--fui-line-2) !important;
+  box-shadow: none !important;
+  color: var(--fui-muted) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-empty-slot em {
+  color: var(--fui-dim) !important;
+  font-family: var(--fui-mono) !important;
+  font-style: normal !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-empty-slot span {
+  display: inline-grid !important;
+  place-items: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  border: 1.5px solid var(--fui-line-2) !important;
+  border-radius: 50% !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  background: transparent !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-empty-slot b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .06em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-empty-message {
+  background: transparent !important;
+  border: 1px dashed var(--fui-line) !important;
+  box-shadow: none !important;
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck em,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck span {
+  color: var(--fui-dim) !important;
+  font-style: normal !important;
+}
+
+/* Reticle as concentric rings. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck-reticle,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck-reticle i {
+  border-color: var(--fui-line-2) !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck-reticle span {
+  color: var(--fui-muted) !important;
+}
+
+/* ---------- right column ------------------------------------------------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-right {
+  background: var(--fui-bg) !important;
+  border: 0 !important;
+  border-left: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-right > section,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-bus-panel {
+  background: var(--fui-ticks), var(--fui-panel) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-head b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-stage {
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 22%, rgba(255,255,255,.08) 22.3% 22.8%, transparent 23% 38%, rgba(255,255,255,.06) 38.3% 38.8%, transparent 39%),
+    #0d0d0d !important;
+  border: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-label {
+  background: #000 !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-scanline {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-session p,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-right p {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+/* ---------- JACK IN ------------------------------------------------------ */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-bottom {
+  background: var(--fui-bg) !important;
+  border: 0 !important;
+  border-top: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar {
+  background: var(--fui-white) !important;
+  border: 1px solid var(--fui-white) !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transition: background-color .12s, color .12s !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar *,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar small {
+  color: #000 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jack-main b {
+  font-family: var(--fui-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .14em !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jack-state,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jack-meta {
+  font-family: var(--fui-mono) !important;
+  letter-spacing: .1em !important;
+  border-color: rgba(0,0,0,.25) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:hover:not(:disabled),
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:focus-visible {
+  background: #000 !important;
+  color: var(--fui-white) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:hover:not(:disabled) *,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:focus-visible * {
+  color: var(--fui-white) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:disabled,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar.is-disabled {
+  background: #cfcfcf !important;
+  border-color: #cfcfcf !important;
+  opacity: 1 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *,
+  html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::before,
+  html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::after {
+    transition: none !important;
+  }
+}
