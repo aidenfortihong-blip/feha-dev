@@ -1,12 +1,11 @@
 {
-  "version": "0.11.37",
+  "version": "0.11.38",
   "updated": "2026-09-29",
-  "scope": "repair-final-gun-world-copies",
+  "scope": "force-do-these-final-gun-card-repair",
   "notes": [
-    "Repair pass for finalized gun source items that still showed the old ADK WEAPON PROFILE card.",
-    "FEHA_WEAPON_CATALOG 3.0.1 now canonicalizes managed/finalized world copies in addition to items still physically under Do these and actor-owned copies.",
-    "Market-ready/finalized canonical guns such as Monarch Zero, Black Requiem, and Twin Viper are repaired even when their source item is no longer inside the Do these folder tree.",
-    "The final-card rewrite now verifies the actual description marker as well as the migration seed, so a stale or partially stamped description cannot be skipped.",
-    "The permanent reviewed 78-gun stats remain unchanged; this pass repairs migration coverage and presentation/mechanics synchronization only."
+    "Forced one-time description repair for every canonical weapon inside the authoritative Do these manufacturer folders.",
+    "The repair runs from FEHA_WEAPON_READINESS after the Do these folder scan, so it does not depend on the earlier weapon-catalog migration stamp that allowed some legacy ADK WEAPON PROFILE cards to survive.",
+    "All 78 reviewed weapons keep their finalized catalog stats; this pass rewrites only the canonical final gun card presentation plus a one-time repair stamp.",
+    "FEHA_WEAPON_READINESS is now 4.1.1 and uses descriptionRepairVersion 2026-09-30-final-card-repair-1."
   ]
 }
