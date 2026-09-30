@@ -30,6 +30,7 @@
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
     weaponRuntime:"foundry/FEHA_WEAPON_RUNTIME.js",
     weaponTracker:"foundry/FEHA_RELOAD_TRACKER.js",
+    weaponSheet:"foundry/FEHA_WEAPON_SHEET.js",
     worldHygiene:"foundry/FEHA_WORLD_HYGIENE.js",
     marketStockPatch:"foundry/FEHA_MARKET_STOCK_PATCH.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
@@ -211,7 +212,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -308,6 +309,7 @@
     evaluate(source.weaponReadiness,files.weaponReadiness,sha);
     evaluate(source.weaponRuntime,files.weaponRuntime,sha);
     evaluate(source.weaponTracker,files.weaponTracker,sha);
+    evaluate(source.weaponSheet,files.weaponSheet,sha);
     evaluate(source.worldHygiene,files.worldHygiene,sha);
     evaluate(source.marketStockPatch,files.marketStockPatch,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
@@ -355,6 +357,7 @@
       "weaponReadiness",
       "weaponRuntime",
       "weaponTracker",
+      "weaponSheet",
       "worldHygiene",
       "marketStockPatch",
       "grenadeRuntime",
@@ -440,6 +443,11 @@
       globalThis.FEHA_WEAPON_TRACKER ??
       globalThis.FEHA_RELOAD_TRACKER ??
       globalThis.FEHA_CYBER_CORE?.module?.("weaponTracker") ??
+      null;
+
+    const weaponSheet =
+      globalThis.FEHA_WEAPON_SHEET ??
+      globalThis.FEHA_CYBER_CORE?.module?.("weaponSheet") ??
       null;
 
     const worldHygiene =
@@ -598,6 +606,12 @@
         "equippedFirearms",
         "open"
       ]
+    );
+
+    requireMethods(
+      "Weapon Sheet",
+      weaponSheet,
+      ["handles","render","buildPage"]
     );
 
     requireMethods(
@@ -1101,11 +1115,9 @@
           hygienePass?.report?.canonicalFirearmMultiAttack ?? []
         );
 
-        ui.notifications?.warn?.(
-          "FEHA cleanup: "+
-          Number(hygieneSummary.canonicalFirearmMultiAttackItems ?? 0)+
-          " canonical firearm copy/copies still have multiple stored attacks. "+
-          "Legacy rows are hidden; check the hygiene report for quarantined or ambiguous items."
+        console.info(
+          "FEHA DEV // canonical stored attack duplicates are presentation-hidden; "+
+          "players use the FEHA Weapon Sheet + Weapon Tracker instead of raw dnd5e activities."
         );
       }
 
