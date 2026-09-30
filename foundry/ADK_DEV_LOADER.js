@@ -966,14 +966,33 @@
         // Those Items are deliberately left untouched until 14.368+ rather
         // than repeatedly throwing validation toasts during hot reload.
         if (item?.type === "weapon") {
-          const rawIdentifier =
-            String(item?._source?.system?.identifier ?? "");
           const build = Number(game.release?.build ?? 0);
-          if (
-            !/^[a-z0-9_-]+$/i.test(rawIdentifier) &&
-            (!build || build < 368)
-          ) {
-            return false;
+
+          if (!build || build < 368) {
+            const root = item?._source?.system;
+            const stack = root && typeof root === "object" ? [root] : [];
+            let invalidIdentifier = false;
+
+            while (stack.length && !invalidIdentifier) {
+              const current = stack.pop();
+              if (!current || typeof current !== "object") continue;
+
+              for (const [key,value] of Object.entries(current)) {
+                if (
+                  key === "identifier" &&
+                  !/^[a-z0-9_-]+$/i.test(String(value ?? ""))
+                ) {
+                  invalidIdentifier = true;
+                  break;
+                }
+
+                if (value && typeof value === "object") {
+                  stack.push(value);
+                }
+              }
+            }
+
+            if (invalidIdentifier) return false;
           }
         }
 
