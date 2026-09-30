@@ -1,12 +1,12 @@
 {
-  "version": "0.11.54",
+  "version": "0.11.55",
   "updated": "2026-09-30",
-  "scope": "foundry-14-367-legacy-identifier-quarantine",
+  "scope": "identifier-failure-tracer",
   "notes": [
-    "Quarantines only canonical weapon Items with an invalid persisted system.identifier on Foundry builds older than 14.368.",
-    "Prevents Weapon Readiness, Weapon Catalog, Weapon Economy, and the final stale-card sweep from touching those malformed legacy Items on affected core builds.",
-    "Leaves HMG, MA70, or any equivalent malformed firearm unchanged instead of triggering repeated dnd5e SchemaField validation errors.",
-    "On Foundry 14.368 or newer, the quarantine automatically lifts and the existing identifier repair path may run.",
-    "No gameplay mechanics, manufacturer automation, observer behavior, prices, or balance values are changed."
+    "Adds a temporary hot-loader diagnostic wrapper around Item.update on Foundry builds older than 14.368.",
+    "Captures the exact Item, owner, changed paths, raw identifier, and rejected validation error for every identifier failure during one loader run.",
+    "Restores the original Item.update method before the loader exits and stores the last trace at globalThis.__FEHA_LAST_IDENTIFIER_FAILURES.",
+    "Shows one FEHA TRACE summary notification after the loader completes when failures were captured.",
+    "No gameplay, catalog, balance, manufacturer, armor, or observer behavior changes are introduced."
   ]
 }
