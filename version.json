@@ -1,11 +1,15 @@
 {
-  "version": "0.11.38",
+  "version": "0.11.39",
   "updated": "2026-09-29",
-  "scope": "force-do-these-final-gun-card-repair",
+  "scope": "unique-weapons-other-folder",
   "notes": [
-    "Forced one-time description repair for every canonical weapon inside the authoritative Do these manufacturer folders.",
-    "The repair runs from FEHA_WEAPON_READINESS after the Do these folder scan, so it does not depend on the earlier weapon-catalog migration stamp that allowed some legacy ADK WEAPON PROFILE cards to survive.",
-    "All 78 reviewed weapons keep their finalized catalog stats; this pass rewrites only the canonical final gun card presentation plus a one-time repair stamp.",
-    "FEHA_WEAPON_READINESS is now 4.1.1 and uses descriptionRepairVersion 2026-09-30-final-card-repair-1."
+    "Added FEHA_UNIQUE_WEAPON_CATALOG.js v1.0.0 for the seven one-off weapons in Do these/-Other without changing the permanent reviewed 78-gun manufacturer catalog.",
+    "Ghost Key now shorts and opens doors/locks on hit; Motor Lock stops hit vehicles dead; Optic Zero can blank electronic/cybernetic vision.",
+    "Igla Sovereign is the outlaw double-barrel: 40d2 base damage with a six-shot Sovereign Overload cycle followed by a one-turn cooldown.",
+    "Silverhand 3516 is the best-in-slot Heavy Pistol at 1d30+75 and requires Gorilla Arms to fire.",
+    "Shovel Caretaker is intentionally just a 1d6 bludgeoning shovel.",
+    "Slaughtomatic uses 100d100-9000 damage, floors negative totals to 0 by rule text, has 12 sealed shots, and cannot be reloaded.",
+    "Unique weapons are flagged Weapons_Unique and marketReady=false so they never enter ordinary random Market stock.",
+    "ADK DEV LOADER now preflights, contract-checks, migrates, and hot-rerenders the seven unique weapons."
   ]
 }
