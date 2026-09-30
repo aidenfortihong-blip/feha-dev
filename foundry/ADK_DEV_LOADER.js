@@ -23,6 +23,7 @@
     specialRetirement:"foundry/FEHA_SPECIAL_RETIREMENT.js",
     armorRuntime:"foundry/FEHA_ARMOR_RUNTIME.js",
     lumenRetirement:"foundry/FEHA_LUMEN_RETIREMENT.js",
+    derkeImport:"foundry/FEHA_DERKE_IMPORT.js",
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
     marketStockPatch:"foundry/FEHA_MARKET_STOCK_PATCH.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
@@ -179,7 +180,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -269,6 +270,7 @@
     evaluate(source.specialRetirement,files.specialRetirement,sha);
     evaluate(source.armorRuntime,files.armorRuntime,sha);
     evaluate(source.lumenRetirement,files.lumenRetirement,sha);
+    evaluate(source.derkeImport,files.derkeImport,sha);
     evaluate(source.weaponReadiness,files.weaponReadiness,sha);
     evaluate(source.marketStockPatch,files.marketStockPatch,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
@@ -312,6 +314,7 @@
       "specialRetirement",
       "armorRuntime",
       "lumenRetirement",
+      "derkeImport",
       "weaponReadiness",
       "marketStockPatch",
       "grenadeRuntime",
@@ -361,6 +364,11 @@
     const armorRuntime =
       globalThis.FEHA_ARMOR_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("armorRuntime") ??
+      null;
+
+    const derkeImport =
+      globalThis.FEHA_DERKE_IMPORT ??
+      globalThis.FEHA_CYBER_CORE?.module?.("derkeImport") ??
       null;
 
     const weaponReadiness =
@@ -443,6 +451,12 @@
         "weaponDamageReduction",
         "adjustDamage"
       ]
+    );
+
+    requireMethods(
+      "Derke Import",
+      derkeImport,
+      ["findDerke","importDerke"]
     );
 
     requireMethods(
