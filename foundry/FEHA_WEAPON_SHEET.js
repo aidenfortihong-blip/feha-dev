@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_SHEET requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.4.0";
+  const VERSION = "1.5.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
 
@@ -31,8 +31,18 @@
   }
 
   function definition(item) {
-    if (item?.documentName !== "Item" || item?.type !== "weapon") return null;
-    return weaponCatalog()?.definition?.(item) ?? null;
+    if (!item || item?.type !== "weapon") return null;
+
+    const catalog = weaponCatalog();
+    if (!catalog) return null;
+
+    const direct = catalog.definition?.(item) ?? null;
+    if (direct) return direct;
+
+    const name = String(item?.name ?? "").trim();
+    if (!name) return null;
+
+    return catalog.definition?.(name) ?? null;
   }
 
   function handles(item) {
@@ -48,13 +58,28 @@
   }
 
   function resolveItem(app) {
-    const document =
-      app?.document ??
-      app?.item ??
-      app?.object ??
-      null;
+    const candidates = [
+      app?.document,
+      app?.item,
+      app?.object,
+      app?.options?.document,
+      app?.options?.item,
+      app?.context?.document,
+      app?.context?.item
+    ].filter(Boolean);
 
-    return document?.documentName === "Item" ? document : null;
+    for (const candidate of candidates) {
+      if (candidate?.documentName === "Item") return candidate;
+      if (
+        candidate?.type === "weapon" &&
+        candidate?.id &&
+        definition(candidate)
+      ) {
+        return candidate;
+      }
+    }
+
+    return null;
   }
 
   function contentHost(root) {
@@ -301,20 +326,31 @@
       state.reload > 0 ? "is-reloading" :
       "is-ready";
 
+    const progressMax = Math.max(1,Number(state.reloadMax) || 1);
+    const progressPct = Math.max(
+      0,
+      Math.min(100,(Number(state.reload) || 0)/progressMax*100)
+    );
+
     const reloadControls = state.reloadMax > 0
       ? `
-          <div class="feha-ws-reload-row">
-            <button type="button" data-feha-ws-action="reload-action">
-              <span>RELOAD // ACTION</span>
-              <strong>+2</strong>
-            </button>
-            <button type="button" data-feha-ws-action="reload-bonus">
-              <span>RELOAD // BONUS</span>
-              <strong>+1</strong>
-            </button>
-            <div class="feha-ws-reload-state">
-              <span>PROGRESS</span>
-              <strong>${esc(state.reload)} / ${esc(state.reloadMax)} PTS</strong>
+          <div class="feha-ws-reload-cluster">
+            <div class="feha-ws-reload-buttons">
+              <button type="button" data-feha-ws-action="reload-action">
+                <span>ACTION</span>
+                <strong>+2</strong>
+              </button>
+              <button type="button" data-feha-ws-action="reload-bonus">
+                <span>BONUS</span>
+                <strong>+1</strong>
+              </button>
+            </div>
+            <div class="feha-ws-reload-meter">
+              <div>
+                <span>RELOAD</span>
+                <strong>${esc(state.reload)} / ${esc(state.reloadMax)} PTS</strong>
+              </div>
+              <i><b style="width:${progressPct}%"></b></i>
             </div>
           </div>
         `
@@ -334,47 +370,51 @@
           <span class="${statusClass}">${esc(status)}</span>
         </div>
 
-        <div class="feha-ws-ammo">
-          <div class="feha-ws-ammo-heading">
-            <div>
-              <small>ATTACKS REMAINING</small>
-              <strong>${esc(state.remaining)} / ${esc(state.capacity)}</strong>
+        <div class="feha-ws-console">
+          <div class="feha-ws-readiness">
+            <div class="feha-ws-readiness-count">
+              <small>ATTACKS READY</small>
+              <strong>${esc(state.remaining)}<em>/${esc(state.capacity)}</em></strong>
             </div>
-            <div class="feha-ws-ammo-meta">
-              <span>FIRED <b>${esc(state.used)} / ${esc(state.capacity)}</b></span>
+
+            <div class="feha-ws-segments">${segmentBar(state.remaining,state.capacity)}</div>
+
+            <div class="feha-ws-readiness-meta">
+              <span>FIRED <b>${esc(state.used)}</b></span>
               <span>DAMAGE <b>${esc(def?.damage ?? "—")}</b></span>
               <span>RANGE <b>${esc(rangeLabel(def))}</b></span>
             </div>
           </div>
-          <div class="feha-ws-segments">${segmentBar(state.remaining,state.capacity)}</div>
-        </div>
 
-        <div class="feha-ws-primary-actions">
-          <button
-            type="button"
-            class="feha-ws-attack"
-            data-feha-ws-action="attack"
-            ${ctx.attack ? "" : "disabled"}
-          >
-            <span>ATTACK</span>
-            <small>ROLL TO HIT</small>
-          </button>
-          <button
-            type="button"
-            class="feha-ws-damage"
-            data-feha-ws-action="damage"
-            ${ctx.damage ? "" : "disabled"}
-          >
-            <span>DAMAGE</span>
-            <small>${esc(def?.damage ?? "—")}</small>
-          </button>
-        </div>
+          <div class="feha-ws-controls">
+            <div class="feha-ws-primary-actions">
+              <button
+                type="button"
+                class="feha-ws-attack"
+                data-feha-ws-action="attack"
+                ${ctx.attack ? "" : "disabled"}
+              >
+                <span>ATTACK</span>
+                <small>DEX // ROLL TO HIT</small>
+              </button>
+              <button
+                type="button"
+                class="feha-ws-damage"
+                data-feha-ws-action="damage"
+                ${ctx.damage ? "" : "disabled"}
+              >
+                <span>DAMAGE</span>
+                <small>${esc(def?.damage ?? "—")}</small>
+              </button>
+            </div>
 
-        ${reloadControls}
+            ${reloadControls}
 
-        <div class="feha-ws-corrections">
-          <button type="button" data-feha-ws-action="undo">UNDO SHOT</button>
-          <button type="button" data-feha-ws-action="reset">RESET TRACKER</button>
+            <div class="feha-ws-corrections">
+              <button type="button" data-feha-ws-action="undo">UNDO SHOT</button>
+              <button type="button" data-feha-ws-action="reset">RESET TRACKER</button>
+            </div>
+          </div>
         </div>
       </section>
     `;
@@ -649,12 +689,11 @@
         [data-feha-canonical-weapon-sheet] .feha-ws-combat {
           margin-top:12px;
           padding:12px;
-          border:1px solid #2c6978;
+          border:1px solid #285864;
           background:
-            linear-gradient(180deg,rgba(8,26,32,.98),rgba(4,12,16,.98));
-          box-shadow:
-            inset 0 0 34px #27dfff0a,
-            0 10px 24px #0005;
+            radial-gradient(circle at 12% 0%,rgba(70,224,255,.07),transparent 34%),
+            linear-gradient(180deg,#07171c,#040c0f);
+          box-shadow:inset 0 0 30px #27dfff08,0 10px 24px #0005;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-combat.is-unavailable {
@@ -666,27 +705,23 @@
           align-items:center;
           justify-content:space-between;
           gap:12px;
-          padding-bottom:9px;
-          border-bottom:1px solid #1d414a;
-        }
-
-        [data-feha-canonical-weapon-sheet] .feha-ws-combat-top div {
-          min-width:0;
+          padding:0 1px 9px;
+          border-bottom:1px solid #17353d;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-combat-top small {
           display:block;
           color:#68e0f7;
-          font-size:9px;
+          font-size:8px;
           font-weight:1000;
-          letter-spacing:.13em;
+          letter-spacing:.14em;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-combat-top strong {
           display:block;
           margin-top:3px;
           color:#f7fdff;
-          font-size:11px;
+          font-size:10px;
           letter-spacing:.03em;
         }
 
@@ -694,11 +729,11 @@
           flex:0 0 auto;
           padding:5px 8px;
           border:1px solid #35515a;
-          background:#071116;
+          background:#061014;
           color:#99aeb5;
-          font-size:9px;
+          font-size:8px;
           font-weight:1000;
-          letter-spacing:.08em;
+          letter-spacing:.09em;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-combat-top > span.is-ready {
@@ -716,76 +751,99 @@
           color:#ff7d8b;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-ammo {
-          margin-top:9px;
-          padding:10px;
-          border:1px solid #1d424c;
-          background:#040d11;
+        [data-feha-canonical-weapon-sheet] .feha-ws-console {
+          display:grid;
+          grid-template-columns:minmax(205px,.72fr) minmax(0,1.8fr);
+          gap:10px;
+          margin-top:10px;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-ammo-heading {
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness {
           display:flex;
+          flex-direction:column;
           justify-content:space-between;
-          align-items:flex-end;
-          gap:16px;
+          min-width:0;
+          padding:11px;
+          border:1px solid #1b414a;
+          background:#030b0e;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-ammo-heading small {
-          display:block;
-          color:#738991;
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness-count {
+          display:flex;
+          align-items:flex-end;
+          justify-content:space-between;
+          gap:10px;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness-count small {
+          color:#728890;
           font-size:8px;
           font-weight:1000;
           letter-spacing:.08em;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-ammo-heading > div:first-child strong {
-          display:block;
-          margin-top:2px;
-          color:#f7fcfe;
-          font-size:20px;
-          line-height:1;
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness-count strong {
+          color:#f8fdff;
+          font-size:29px;
+          line-height:.9;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-ammo-meta {
-          display:flex;
-          gap:12px;
-          flex-wrap:wrap;
-          justify-content:flex-end;
-          color:#728890;
-          font-size:8px;
-          letter-spacing:.04em;
-        }
-
-        [data-feha-canonical-weapon-sheet] .feha-ws-ammo-meta b {
-          color:#eef8fb;
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness-count em {
+          margin-left:2px;
+          color:#6f858d;
+          font-size:13px;
+          font-style:normal;
+          font-weight:900;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-segments {
           display:flex;
-          gap:3px;
-          margin-top:8px;
+          gap:4px;
+          margin:12px 0 9px;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-seg {
           display:block;
           flex:1;
           min-width:4px;
-          height:9px;
-          background:#1b2e34;
-          border:1px solid #243c44;
+          height:13px;
+          background:#16282e;
+          border:1px solid #213a42;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-seg.is-on {
-          background:#61e6ff;
-          border-color:#7beaff;
-          box-shadow:0 0 9px #3fe1ff55;
+          background:linear-gradient(180deg,#74ecff,#48bfd4);
+          border-color:#84efff;
+          box-shadow:0 0 9px #3fe1ff44;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness-meta {
+          display:grid;
+          grid-template-columns:repeat(3,minmax(0,1fr));
+          gap:5px;
+          color:#667d85;
+          font-size:7px;
+          letter-spacing:.04em;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness-meta span {
+          min-width:0;
+          white-space:nowrap;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-readiness-meta b {
+          color:#eaf5f8;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-controls {
+          min-width:0;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-primary-actions {
           display:grid;
           grid-template-columns:1.7fr 1fr;
-          gap:8px;
-          margin-top:9px;
+          gap:7px;
+          margin:0;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-primary-actions button {
@@ -803,60 +861,90 @@
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-primary-actions small {
-          font-size:8px;
-          opacity:.78;
+          font-size:7px;
+          opacity:.74;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-attack {
           border:1px solid #57e3ff;
-          background:
-            linear-gradient(180deg,#0d3c48,#0a2a33);
+          background:linear-gradient(180deg,#0d3c48,#09262f);
           color:#f7feff;
           box-shadow:inset 0 0 22px #25dfff18;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-damage {
           border:1px solid #c9a04a;
-          background:
-            linear-gradient(180deg,#3b2b13,#2c210f);
+          background:linear-gradient(180deg,#392a13,#281e0e);
           color:#fff5dd;
           box-shadow:inset 0 0 18px #f1b73b12;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-reload-row {
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-cluster {
           display:grid;
-          grid-template-columns:1fr 1fr minmax(160px,.8fr);
-          gap:6px;
+          grid-template-columns:1.25fr .9fr;
+          gap:7px;
           margin-top:7px;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-reload-row button,
-        [data-feha-canonical-weapon-sheet] .feha-ws-reload-state {
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-buttons {
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:6px;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-buttons button {
           display:flex;
           align-items:center;
           justify-content:space-between;
-          gap:8px;
           min-height:34px;
-          padding:7px 9px;
-          border:1px solid #304d56;
-          background:#08161b;
+          padding:6px 8px;
+          border:1px solid #2e4d56;
+          background:#08171b;
           color:#dce9ed;
           font-size:8px;
           font-weight:900;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-reload-row button strong {
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-buttons strong {
           color:#f1cd61;
           font-size:11px;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-reload-state {
-          border-color:#243a41;
-          color:#71868d;
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-meter {
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
+          gap:5px;
+          padding:6px 8px;
+          border:1px solid #263d44;
+          background:#061115;
         }
 
-        [data-feha-canonical-weapon-sheet] .feha-ws-reload-state strong {
-          color:#eef8fb;
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-meter > div {
+          display:flex;
+          justify-content:space-between;
+          gap:8px;
+          color:#70858c;
+          font-size:7px;
+          font-weight:900;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-meter strong {
+          color:#e8f4f7;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-meter i {
+          display:block;
+          height:4px;
+          overflow:hidden;
+          background:#16262c;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-meter b {
+          display:block;
+          height:100%;
+          background:#e0b84f;
+          box-shadow:0 0 7px #e0b84f55;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-corrections {
@@ -868,14 +956,14 @@
 
         [data-feha-canonical-weapon-sheet] .feha-ws-corrections button,
         [data-feha-canonical-weapon-sheet] .feha-ws-full-reset {
-          min-height:30px;
-          padding:6px 8px;
-          border:1px solid #263f46;
-          background:#071115;
-          color:#82979e;
-          font-size:8px;
+          min-height:27px;
+          padding:5px 8px;
+          border:1px solid #213940;
+          background:#050e11;
+          color:#71878f;
+          font-size:7px;
           font-weight:900;
-          letter-spacing:.05em;
+          letter-spacing:.06em;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-full-reset {
@@ -925,20 +1013,17 @@
           }
         }
 
+        @container fehaWeapon (max-width:760px) {
+          [data-feha-canonical-weapon-sheet] .feha-ws-console {
+            grid-template-columns:1fr;
+          }
+        }
+
         @container fehaWeapon (max-width:620px) {
           [data-feha-canonical-weapon-sheet] .feha-ws-rules,
           [data-feha-canonical-weapon-sheet] .feha-ws-primary-actions,
-          [data-feha-canonical-weapon-sheet] .feha-ws-reload-row {
+          [data-feha-canonical-weapon-sheet] .feha-ws-reload-cluster {
             grid-template-columns:1fr;
-          }
-
-          [data-feha-canonical-weapon-sheet] .feha-ws-ammo-heading {
-            align-items:flex-start;
-            flex-direction:column;
-          }
-
-          [data-feha-canonical-weapon-sheet] .feha-ws-ammo-meta {
-            justify-content:flex-start;
           }
         }
       </style>
@@ -1129,24 +1214,80 @@
     return true;
   }
 
+  const observedApps = new WeakMap();
+
+  function ensurePersistentRender(app,html) {
+    const item = resolveItem(app);
+    if (!item || !definition(item)) return;
+
+    const run = () => {
+      try { render(app,html); }
+      catch (error) {
+        console.warn("FEHA WEAPON SHEET // render failed",error);
+      }
+    };
+
+    run();
+
+    // Some legacy/problem-patch Item windows finish their own dnd5e render
+    // after the generic hook. Re-assert the FEHA surface on the next turns.
+    for (const delay of [0,40,120,300]) {
+      setTimeout(() => {
+        const liveRoot = renderedRoot(null,app);
+        if (!liveRoot?.isConnected) return;
+        const host = contentHost(liveRoot);
+        if (!host?.querySelector?.("[data-feha-canonical-weapon-sheet]")) {
+          try { render(app,liveRoot); } catch {}
+        }
+      },delay);
+    }
+
+    const root = renderedRoot(html,app);
+    if (!root || observedApps.has(app)) return;
+
+    const observer = new MutationObserver(() => {
+      const liveRoot = renderedRoot(null,app);
+      if (!liveRoot?.isConnected) return;
+
+      const host = contentHost(liveRoot);
+      if (
+        host &&
+        !host.querySelector?.("[data-feha-canonical-weapon-sheet]") &&
+        resolveItem(app) &&
+        definition(resolveItem(app))
+      ) {
+        try { render(app,liveRoot); } catch {}
+      }
+    });
+
+    observer.observe(root,{childList:true,subtree:true});
+    observedApps.set(app,observer);
+  }
+
   function installHooks() {
     if (!globalThis.Hooks?.on || hooks.length) return;
 
     for (const event of [
       "renderItemSheet",
       "renderItemSheetV2",
-      "renderApplicationV2"
+      "renderApplicationV2",
+      "renderDocumentSheet"
     ]) {
       hooks.push([
         event,
         Hooks.on(event,(app,html) => {
-          try { render(app,html); }
-          catch (error) {
-            console.warn("FEHA WEAPON SHEET // render failed",error);
-          }
+          ensurePersistentRender(app,html);
         })
       ]);
     }
+
+    hooks.push([
+      "closeApplication",
+      Hooks.on("closeApplication",app => {
+        try { observedApps.get(app)?.disconnect?.(); } catch {}
+        observedApps.delete(app);
+      })
+    ]);
   }
 
   function removeHooks() {
@@ -1173,6 +1314,13 @@
 
     async destroy() {
       removeHooks();
+      for (const app of [
+        ...Object.values(ui?.windows ?? {}),
+        ...(globalThis.foundry?.applications?.instances ?? [])
+      ]) {
+        try { observedApps.get(app)?.disconnect?.(); } catch {}
+        try { observedApps.delete(app); } catch {}
+      }
       if (game?.adk?.weaponSheet === api) delete game.adk.weaponSheet;
       if (globalThis.FEHA_WEAPON_SHEET === api) delete globalThis.FEHA_WEAPON_SHEET;
     }
