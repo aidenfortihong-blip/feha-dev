@@ -887,7 +887,11 @@
     const amount =
       Math.max(0,Math.floor(Number(roll.total ?? 0)));
 
-    await damageLocal(actor,amount);
+    await damageLocal(
+      actor,
+      amount,
+      tick.damageType ?? ""
+    );
 
     try {
       await ChatMessage.create({
@@ -1158,7 +1162,17 @@
 
       // Smoke remains an environmental visibility problem even for Vektor.
       // Other grenade zones cannot directly mark/reveal a Grenade Null wearer.
-      if (grenadeImmune && zone.kind !== "smoke") continue;
+      if (grenadeImmune && zone.kind !== "smoke") {
+        for (const effect of list(actor.effects)) {
+          if (
+            String(effect?.flags?.[FLAG]?.grenadeZoneId ?? "") ===
+            String(template.id)
+          ) {
+            try { await effect.delete(); } catch {}
+          }
+        }
+        continue;
+      }
 
       try {
         await ensureZoneMarker(actor,template.id,label);
