@@ -170,11 +170,29 @@
 
   function legacyIdentifierQuarantined(item) {
     if (item?.type !== "weapon") return false;
-    const rawIdentifier =
-      String(item?._source?.system?.identifier ?? "");
-    if (/^[a-z0-9_-]+$/i.test(rawIdentifier)) return false;
+
     const build = Number(game.release?.build ?? 0);
-    return !build || build < 368;
+    if (build >= 368) return false;
+
+    const root = item?._source?.system;
+    if (!root || typeof root !== "object") return false;
+
+    const stack = [root];
+    while (stack.length) {
+      const current = stack.pop();
+      if (!current || typeof current !== "object") continue;
+
+      for (const [key,value] of Object.entries(current)) {
+        if (key === "identifier") {
+          const text = String(value ?? "");
+          if (!/^[a-z0-9_-]+$/i.test(text)) return true;
+        }
+
+        if (value && typeof value === "object") stack.push(value);
+      }
+    }
+
+    return false;
   }
 
   async function migrateItem(item) {
