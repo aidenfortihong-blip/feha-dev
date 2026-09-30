@@ -607,6 +607,7 @@
         "scan",
         "runFullPass",
         "cleanupLegacyWeaponActivities",
+        "deleteActivityFromItem",
         "attackCleanupPlan",
         "identifierIssues",
         "hideLegacyActivityRows"
