@@ -4,7 +4,7 @@
    Scope: #adk-market-15 only. The Market DOM and behavior come from the
    installed module / world macro; this file only restyles it.
 
-   Specificity: the doubled id (html body #adk-market-15#adk-market-15#adk-market-15) beats the
+   Specificity: html body + tripled id outranks every older Market layer
    (latest-dev.css uses body + doubled id; the runtime neon theme uses a
    doubled id), all with !important. This skin is the final authority.
    ========================================================================== */
