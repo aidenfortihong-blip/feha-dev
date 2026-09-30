@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WORLD_HYGIENE requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const FLAG = "fleshEnshrouded";
 
   const list = collection => {
@@ -50,15 +50,19 @@
   }
 
   function legacyAttackStub(activity) {
-    if (String(activity?.type ?? "").toLowerCase() !== "attack") return false;
+    const source = activity?._source ?? activity ?? {};
+    if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") return false;
 
-    const name = String(activity?.name ?? "").trim();
-    const sort = Number(activity?.sort ?? 0) || 0;
-    const activation = activity?.activation ?? {};
-    const range = activity?.range ?? {};
-    const damage = activity?.damage ?? {};
+    // dnd5e prepares an unnamed legacy activity as "Attack", which made the
+    // original hygiene pass mistake the empty stub for a legitimate attack.
+    // Classify from persisted source data whenever available.
+    const name = String(source?.name ?? "").trim();
+    const sort = Number(source?.sort ?? activity?.sort ?? 0) || 0;
+    const activation = source?.activation ?? {};
+    const range = source?.range ?? {};
+    const damage = source?.damage ?? {};
     const parts = list(damage?.parts);
-    const effects = list(activity?.effects);
+    const effects = list(source?.effects);
 
     const value = range?.value;
     const emptyRangeValue =
@@ -77,12 +81,13 @@
   }
 
   function realAttack(activity) {
-    if (String(activity?.type ?? "").toLowerCase() !== "attack") return false;
+    const source = activity?._source ?? activity ?? {};
+    if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") return false;
     if (legacyAttackStub(activity)) return false;
 
-    const name = String(activity?.name ?? "").trim();
-    const sort = Number(activity?.sort ?? 0) || 0;
-    const range = activity?.range ?? {};
+    const name = String(source?.name ?? activity?.name ?? "").trim();
+    const sort = Number(source?.sort ?? activity?.sort ?? 0) || 0;
+    const range = source?.range ?? activity?.range ?? {};
     const rangeValue = Number(range?.value ?? 0) || 0;
 
     return Boolean(name || sort > 0 || rangeValue > 0);
