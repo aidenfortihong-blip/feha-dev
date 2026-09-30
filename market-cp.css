@@ -348,7 +348,36 @@ html body #adk-market-15#adk-market-15#adk-market-15 .results-scroll {
 }
 
 html body #adk-market-15#adk-market-15#adk-market-15 .results-grid {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
   gap: 8px !important;
+}
+
+/* CP inventory density: short art strip, compact body. */
+html body #adk-market-15#adk-market-15#adk-market-15 .item-art-wrap {
+  height: 118px !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+}
+
+html body #adk-market-15#adk-market-15#adk-market-15 .item-art {
+  max-height: 100px !important;
+  object-fit: contain !important;
+}
+
+html body #adk-market-15#adk-market-15#adk-market-15 .item-body {
+  gap: 6px !important;
+  padding: 10px 12px 12px !important;
+}
+
+html body #adk-market-15#adk-market-15#adk-market-15 .item-actions {
+  gap: 6px !important;
+}
+
+html body #adk-market-15#adk-market-15#adk-market-15 .detail-btn,
+html body #adk-market-15#adk-market-15#adk-market-15 .buy-btn {
+  min-height: 32px !important;
+  height: auto !important;
+  padding: 6px 10px !important;
 }
 
 html body #adk-market-15#adk-market-15#adk-market-15 .item-card {
