@@ -3,8 +3,8 @@
 // This pass intentionally avoids complicated runtime mechanics.
 
 (() => {
-  const VERSION = "1.1.0";
-  const REWRITE = "1.0";
+  const VERSION = "1.2.0";
+  const REWRITE = "1.1";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "06 — CONSUMABLES";
 
@@ -401,7 +401,21 @@
     ];
   }
 
+  function permanentConsumable(def) {
+    return def?.key === "corvus-neural-adaptation-kit";
+  }
+
+  function useLimitText(def) {
+    return permanentConsumable(def)
+      ? "ONE-TIME PERMANENT"
+      : "ONCE / SHORT REST";
+  }
+
   function rewriteDescription(def) {
+    const restRule = permanentConsumable(def)
+      ? "This is a permanent one-time treatment."
+      : "A character can benefit from this specific product only once per Short Rest. The item is still consumed when used.";
+
     return (
       '<section data-feha-consumable-card="'+REWRITE+'" '+
       'style="border:1px solid #33424a;background:#081015;padding:12px 14px;color:#dce8ec !important">'+
@@ -423,12 +437,16 @@
           '<span style="color:#516872">•</span>'+
           '<span style="font-size:12px;color:#7ee6ff !important;font-weight:900">BONUS ACTION IN COMBAT</span>'+
           '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#aebfc6 !important">1 USE</span>'+
+          '<span style="font-size:12px;color:#aebfc6 !important;font-weight:900">'+esc(useLimitText(def))+'</span>'+
         '</div>'+
         '<div style="color:#dce8ec !important">'+
           '<small style="display:block;color:#8ca2ac !important;font-size:10px;font-weight:900;'+
           'letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
           '<p style="margin:0;line-height:1.55;color:#dce8ec !important">'+esc(def.effectText)+'</p>'+
+        '</div>'+
+        '<div style="margin-top:10px;padding:8px 10px;border-left:3px solid #4b7180;background:#0a151a">'+
+          '<small style="display:block;color:#7ee6ff;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:4px">USE LIMIT</small>'+
+          '<p style="margin:0;line-height:1.45;color:#b9cbd2 !important">'+esc(restRule)+'</p>'+
         '</div>'+
       '</section>'
     );
@@ -536,7 +554,10 @@
       availability:def.availability,
       availabilityText:availabilityText(def),
       actionType:"bonus",
-      bonusAction:true
+      bonusAction:true,
+      consumableRestLimit:permanentConsumable(def) ? null : "short",
+      consumableRestLimitScope:permanentConsumable(def) ? null : "product",
+      consumableOneTimePermanent:permanentConsumable(def)
     };
 
     for (const [key,value] of Object.entries(flagValues)) {
