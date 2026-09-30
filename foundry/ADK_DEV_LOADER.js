@@ -794,7 +794,20 @@
         const html =
           String(item.system.description.value ?? "");
 
-        if (!html || html.includes('data-feha-ui="item-card-v1"')) {
+        if (!html) {
+          return false;
+        }
+
+        const staleReviewWrapper =
+          /FINAL GUN|REVIEW STATUS|GM REVIEW NOTES|Final reviewed values synced|GUN REVIEW/i.test(html);
+
+        // A stale card can already carry the unified-shell marker if an older
+        // partial rewrite wrapped legacy inner HTML. Never trust the marker
+        // alone; explicit legacy review text always wins and forces repair.
+        if (
+          html.includes('data-feha-ui="item-card-v1"') &&
+          !staleReviewWrapper
+        ) {
           return false;
         }
 
@@ -802,7 +815,26 @@
         let def = null;
         let next = null;
 
+        const forceGunNames = new Set([
+          "Osprey Prototype",
+          "Iron Psalm",
+          "Hercules Prototype",
+          "Long Vigil",
+          "Razor Choir",
+          "Twin Viper",
+          "Rasetsu Prototype",
+          "Black Requiem",
+          "Monarch Zero",
+          "Pale Kestrel",
+          "Red Wisp"
+        ]);
+
         try {
+          if (forceGunNames.has(String(item.name ?? ""))) {
+            catalog = globalThis.FEHA_WEAPON_CATALOG;
+            def = catalog?.definition?.(item) ?? null;
+            if (def) next = catalog.rewriteDescription(def);
+          } else 
           if (
             /data-feha-unique-weapon-card=/i.test(html)
           ) {
