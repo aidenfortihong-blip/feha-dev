@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.1.1";
   const REWRITE = "unique-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "Do these";
@@ -296,6 +296,37 @@
     };
   }
 
+  function enforceDexAttackUpdates(item,update) {
+    const activities = item?.system?.activities;
+    let rows = [];
+
+    if (Array.isArray(activities)) rows = activities;
+    else if (Array.isArray(activities?.contents)) rows = activities.contents;
+    else if (typeof activities?.values === "function") {
+      try { rows = [...activities.values()]; } catch {}
+    } else if (activities && typeof activities === "object") {
+      rows = Object.values(activities);
+    }
+
+    for (const activity of rows) {
+      const source = activity?._source ?? activity ?? {};
+      if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") continue;
+
+      const id = String(activity?.id ?? activity?._id ?? "");
+      if (!id) continue;
+
+      const ability = String(
+        source?.attack?.ability ??
+        activity?.attack?.ability ??
+        ""
+      ).trim().toLowerCase();
+
+      if (ability !== "dex") {
+        update["system.activities."+id+".attack.ability"] = "dex";
+      }
+    }
+  }
+
   async function migrateItem(item) {
     if (!item || item.type !== "weapon") return false;
     const d = definition(item);
@@ -306,6 +337,7 @@
 
     const flags = item.flags?.[FLAG] ?? {};
     const update = {};
+    enforceDexAttackUpdates(item,update);
     const values = flagValues(d);
 
     for (const stale of [
