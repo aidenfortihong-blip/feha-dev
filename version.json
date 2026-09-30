@@ -1,11 +1,12 @@
 {
-  "version": "0.11.53",
+  "version": "0.11.54",
   "updated": "2026-09-30",
-  "scope": "legacy-firearm-identifier-source-repair",
+  "scope": "foundry-14-367-legacy-identifier-quarantine",
   "notes": [
-    "Repairs legacy canonical firearm source identifiers before ordinary partial system updates.",
-    "For an invalid persisted firearm identifier only, performs one controlled full-system replacement with the canonical slug.",
-    "Removes only blank legacy activity visibility identifiers during that repair so dnd5e SchemaField validation cannot block the parent Item fix.",
-    "Leaves valid firearms, manufacturer rules, weapon observer behavior, armor behavior, and all other gameplay systems unchanged."
+    "Quarantines only canonical weapon Items with an invalid persisted system.identifier on Foundry builds older than 14.368.",
+    "Prevents Weapon Readiness, Weapon Catalog, Weapon Economy, and the final stale-card sweep from touching those malformed legacy Items on affected core builds.",
+    "Leaves HMG, MA70, or any equivalent malformed firearm unchanged instead of triggering repeated dnd5e SchemaField validation errors.",
+    "On Foundry 14.368 or newer, the quarantine automatically lifts and the existing identifier repair path may run.",
+    "No gameplay mechanics, manufacturer automation, observer behavior, prices, or balance values are changed."
   ]
 }
