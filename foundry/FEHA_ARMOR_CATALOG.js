@@ -307,7 +307,7 @@
           '<div><small style="color:#8ca2ac">ARMOR CLASS</small><br><strong style="color:#fff">'+def.ac+'</strong></div>'+
           '<div><small style="color:#8ca2ac">DEX CONTRIBUTION</small><br><strong style="color:#fff">'+esc(dexText(def))+'</strong></div>'+
           '<div><small style="color:#8ca2ac">WEIGHT</small><br><strong style="color:#fff">'+def.weight+' lb</strong></div>'+
-          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">€$'+Number(def.price).toLocaleString()+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">CR '+Number(def.price).toLocaleString()+'</strong></div>'+
           '<div><small style="color:#8ca2ac">AVAILABILITY</small><br><strong style="color:#fff">'+esc(def.availability)+'</strong></div>'+
         '</div>'+
         '<div style="margin-top:10px;padding:10px;border:1px solid #24404a;background:#09171c">'+

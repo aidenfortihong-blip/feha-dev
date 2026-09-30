@@ -4141,8 +4141,10 @@
       const roots = [];
 
       if (scope instanceof Element) {
+        // Market/Chrome rerender cards and the wallet readout inside an
+        // already-open root, so a scope *inside* a root must be rewritten too.
         if (
-          scope.matches?.(
+          scope.closest?.(
             "#adk-market-15,#adk-chrome-manager-34,#adk-cyberdeck-terminal,#feha-cyberdeck-v2,#feha-credits-wallet"
           )
         ) {
@@ -4588,6 +4590,11 @@
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes ?? []) {
           if (node instanceof Element) refreshCreditLabels(node);
+          else if (node.nodeType === Node.TEXT_NODE && node.parentElement) {
+            // textContent writes (e.g. the Market wallet readout) add bare
+            // text nodes rather than elements.
+            refreshCreditLabels(node.parentElement);
+          }
         }
       }
     });

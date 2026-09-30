@@ -1,11 +1,11 @@
 {
-  "version": "0.11.79",
+  "version": "0.11.80",
   "updated": "2026-09-30",
-  "scope": "roster-selector-backend-sync",
+  "scope": "credits-cr-label",
   "notes": [
-    "Fixes Market and Chrome Manager opening on a hidden off-roster actor (e.g. Cael) while the selector displayed Derke.",
-    "Root cause: the playable-roster filter removed the selected off-roster option, so the browser silently showed the next actor without firing change, leaving each app's backend on the hidden actor.",
-    "The roster filter now fires the app's own change path when it removes the selected option, so the backend follows the visible selector.",
-    "No prices, stock, balance, credits, chrome data, or world documents changed."
+    "Market, Chrome, Cyberdeck and wallet now show CR instead of the legacy €$ everywhere, including prices and balances redrawn inside an already-open window.",
+    "Root cause: the credit-label rewrite only ran when a whole FEHA window was added, so card/wallet rerenders inside an open Market kept the legacy €$ glyph.",
+    "Armor, consumable, grenade and Quickhack catalog descriptions now print CR; each affected item description is rewritten once by the existing canonical migration.",
+    "No prices, stock, balances, balance rules or other item data changed."
   ]
 }

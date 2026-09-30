@@ -298,7 +298,7 @@
           '<div><small style="color:#8ca2ac">DAMAGE</small><br><strong style="color:#fff">'+esc(damage)+'</strong></div>'+
           '<div><small style="color:#8ca2ac">RANGE</small><br><strong style="color:#fff">'+esc(range)+'</strong></div>'+
           '<div><small style="color:#8ca2ac">AREA</small><br><strong style="color:#fff">'+esc(area)+'</strong></div>'+
-          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">€$'+Number(def.price).toLocaleString()+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">CR '+Number(def.price).toLocaleString()+'</strong></div>'+
           '<div><small style="color:#8ca2ac">ACTIVATION</small><br><strong style="color:#fff">BONUS ACTION</strong></div>'+
         '</div>'+
         '<div style="margin-top:10px;padding:10px;border:1px solid #24404a;background:#09171c">'+

@@ -316,7 +316,7 @@
       .replace(/"/g,"&quot;")
       .replace(/'/g,"&#039;");
 
-    const price = "€$" + Number(tier.price).toLocaleString();
+    const price = "CR " + Number(tier.price).toLocaleString();
 
     return (
       '<section data-feha-ui="item-card-v1" data-feha-qh-card="'+REWRITE+'" '+

@@ -429,7 +429,7 @@
         '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
           '<div><small style="color:#8ca2ac">TYPE</small><br><strong style="color:#fff">'+esc(String(def.kind).toUpperCase())+'</strong></div>'+
           '<div><small style="color:#8ca2ac">AVAILABILITY</small><br><strong style="color:#fff">'+esc(def.availability)+'</strong></div>'+
-          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">€$'+Number(def.price).toLocaleString()+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">CR '+Number(def.price).toLocaleString()+'</strong></div>'+
           '<div><small style="color:#8ca2ac">ACTIVATION</small><br><strong style="color:#fff">BONUS ACTION IN COMBAT</strong></div>'+
           '<div><small style="color:#8ca2ac">USE LIMIT</small><br><strong style="color:#fff">'+esc(useLimitText(def))+'</strong></div>'+
         '</div>'+
