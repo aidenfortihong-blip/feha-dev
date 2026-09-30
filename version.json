@@ -1,12 +1,12 @@
 {
-  "version": "0.11.56",
+  "version": "0.11.57",
   "updated": "2026-09-30",
-  "scope": "identifier-notification-phase-tracer",
+  "scope": "foundry-core-error-hook-identifier-trace",
   "notes": [
-    "Extends the temporary identifier diagnostic to trace the loader phase that emits each validation toast.",
-    "Tags module evaluation, Cyber Core initialization, each canonical item migration, V3 evaluation, and the stale-card sweep.",
-    "Stores captured validation notices at globalThis.__FEHA_LAST_IDENTIFIER_NOTICES and shows one persistent FEHA TRACE PHASES summary.",
-    "Retains the prior Item.update failure tracer and restores all wrapped methods before the loader exits.",
-    "No gameplay, catalog, balance, manufacturer, armor, or observer behavior changes are introduced."
+    "Adds a temporary listener to Foundry's official error hook during the ADK DEV LOADER run.",
+    "Captures identifier validation errors even when they bypass Item.update and ui.notifications.error.",
+    "Records loader phase, Foundry error location, message, notify level, hook data, and stack at globalThis.__FEHA_LAST_FOUNDRY_IDENTIFIER_ERRORS.",
+    "Removes the temporary error hook before the loader exits.",
+    "No gameplay, balance, catalog, manufacturer, armor, or observer behavior changes are introduced."
   ]
 }
