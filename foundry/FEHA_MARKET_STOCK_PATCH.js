@@ -6,13 +6,14 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
   const STOCK_KEY = "adkMarketStockV16";
   const START = "/* FEHA MARKET STOCK PATCH START */";
   const END = "/* FEHA MARKET STOCK PATCH END */";
+  let noMkObserver = null;
 
   const PATCH_BLOCK = [
     START,
@@ -261,6 +262,73 @@
     );
   }
 
+  function weaponItemForCard(card) {
+    const node =
+      card?.querySelector?.("[data-buy-item]") ??
+      card?.querySelector?.("[data-open-item]") ??
+      null;
+
+    const id =
+      String(
+        node?.dataset?.buyItem ??
+        node?.dataset?.openItem ??
+        ""
+      );
+
+    if (!id) return null;
+
+    return game.items?.get?.(id) ?? null;
+  }
+
+  function stripWeaponMkBadges() {
+    const root =
+      document.getElementById("adk-market-15");
+
+    if (!root) return;
+
+    for (const card of root.querySelectorAll(".item-card")) {
+      const item = weaponItemForCard(card);
+
+      if (item?.type !== "weapon") continue;
+
+      card.classList.add("feha-weapon-card");
+
+      for (const badge of card.querySelectorAll(".item-mk")) {
+        badge.remove();
+      }
+    }
+  }
+
+  function installNoMkGuard() {
+    if (noMkObserver) {
+      stripWeaponMkBadges();
+      return;
+    }
+
+    noMkObserver =
+      new MutationObserver(() => {
+        queueMicrotask(stripWeaponMkBadges);
+      });
+
+    noMkObserver.observe(
+      document.body,
+      {
+        childList:true,
+        subtree:true
+      }
+    );
+
+    stripWeaponMkBadges();
+  }
+
+  function removeNoMkGuard() {
+    try {
+      noMkObserver?.disconnect?.();
+    } catch {}
+
+    noMkObserver = null;
+  }
+
   async function resetPersistentStock() {
     const full = "world."+STOCK_KEY;
 
@@ -404,12 +472,17 @@
       game.adk ??= {};
       game.adk.marketStockPatch = api;
 
+      installNoMkGuard();
+
       if (game.user?.isGM) {
         await patchMarketMacro();
       }
+
+      stripWeaponMkBadges();
     },
 
     async destroy() {
+      removeNoMkGuard();
       if (game?.adk?.marketStockPatch === api) {
         delete game.adk.marketStockPatch;
       }
