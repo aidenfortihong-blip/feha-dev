@@ -24,6 +24,7 @@
     armorRuntime:"foundry/FEHA_ARMOR_RUNTIME.js",
     lumenRetirement:"foundry/FEHA_LUMEN_RETIREMENT.js",
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
+    marketStockPatch:"foundry/FEHA_MARKET_STOCK_PATCH.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
     quickhackRuntime:"foundry/cyberdeck/FEHA_QUICKHACK_RUNTIME.js",
@@ -178,7 +179,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","weaponReadiness","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -269,6 +270,7 @@
     evaluate(source.armorRuntime,files.armorRuntime,sha);
     evaluate(source.lumenRetirement,files.lumenRetirement,sha);
     evaluate(source.weaponReadiness,files.weaponReadiness,sha);
+    evaluate(source.marketStockPatch,files.marketStockPatch,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
@@ -311,6 +313,7 @@
       "armorRuntime",
       "lumenRetirement",
       "weaponReadiness",
+      "marketStockPatch",
       "grenadeRuntime",
       "quickhacks",
       "quickhackAuthority",
@@ -363,6 +366,11 @@
     const weaponReadiness =
       globalThis.FEHA_WEAPON_READINESS ??
       globalThis.FEHA_CYBER_CORE?.module?.("weaponReadiness") ??
+      null;
+
+    const marketStockPatch =
+      globalThis.FEHA_MARKET_STOCK_PATCH ??
+      globalThis.FEHA_CYBER_CORE?.module?.("marketStockPatch") ??
       null;
 
     const grenadeRuntime =
@@ -451,6 +459,12 @@
         "Weapon Readiness expected exactly 16 approved Market weapons."
       );
     }
+
+    requireMethods(
+      "Market Stock Patch",
+      marketStockPatch,
+      ["patchMarketMacro"]
+    );
 
     requireMethods(
       "Grenade Runtime",
