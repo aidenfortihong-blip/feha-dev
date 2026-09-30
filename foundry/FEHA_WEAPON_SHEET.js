@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_SHEET requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.5.0";
+  const VERSION = "1.6.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
 
@@ -128,11 +128,9 @@
 
   function desiredWindowSize() {
     const vw = Math.max(0,Number(globalThis.innerWidth ?? 0));
-    const vh = Math.max(0,Number(globalThis.innerHeight ?? 0));
 
     return {
-      width:vw ? Math.min(1060,Math.max(820,vw-90)) : 980,
-      height:vh ? Math.min(880,Math.max(700,vh-90)) : 820
+      width:vw ? Math.min(1060,Math.max(820,vw-90)) : 980
     };
   }
 
@@ -144,26 +142,16 @@
       Number(app?.position?.width ?? 0) ||
       Number(root?.getBoundingClientRect?.().width ?? 0) ||
       0;
-    const currentHeight =
-      Number(app?.position?.height ?? 0) ||
-      Number(root?.getBoundingClientRect?.().height ?? 0) ||
-      0;
 
-    if (
-      currentWidth >= target.width * 0.92 &&
-      currentHeight >= Math.min(target.height,740) * 0.90
-    ) return;
+    if (currentWidth >= target.width * 0.92) return;
 
     app._fehaWeaponSizing = true;
 
-    const next = {
-      width:Math.max(currentWidth,target.width),
-      height:Math.max(currentHeight,target.height)
-    };
-
     try {
       if (typeof app.setPosition === "function") {
-        app.setPosition(next);
+        app.setPosition({
+          width:Math.max(currentWidth,target.width)
+        });
       } else {
         const windowEl =
           root?.closest?.(".application") ??
@@ -171,20 +159,94 @@
           root;
 
         if (windowEl?.style) {
-          windowEl.style.width = next.width+"px";
-          windowEl.style.height = next.height+"px";
+          windowEl.style.width = Math.max(currentWidth,target.width)+"px";
           windowEl.style.maxWidth = "calc(100vw - 24px)";
-          windowEl.style.maxHeight = "calc(100vh - 24px)";
         }
       }
     } catch (error) {
-      console.debug("FEHA WEAPON SHEET // window sizing fallback",error);
+      console.debug("FEHA WEAPON SHEET // width sizing fallback",error);
     } finally {
       queueMicrotask(() => {
         try { delete app._fehaWeaponSizing; }
         catch { app._fehaWeaponSizing = false; }
       });
     }
+  }
+
+  function fitWindowToContent(app,root,host) {
+    if (!app || !root || !host || app._fehaWeaponHeightFit) return;
+
+    const page =
+      host.querySelector?.("[data-feha-canonical-weapon-sheet]") ??
+      null;
+
+    if (!page) return;
+
+    const run = () => {
+      if (!page.isConnected) return;
+
+      const windowEl =
+        root.closest?.(".application") ??
+        root.closest?.(".window-app") ??
+        root;
+
+      const header =
+        windowEl?.querySelector?.(".window-header") ??
+        windowEl?.querySelector?.("header.window-header") ??
+        null;
+
+      const headerHeight =
+        Number(header?.getBoundingClientRect?.().height ?? 0) || 36;
+
+      const contentHeight =
+        Math.ceil(
+          Math.max(
+            page.scrollHeight || 0,
+            page.getBoundingClientRect?.().height || 0
+          )
+        );
+
+      if (!contentHeight) return;
+
+      const viewport =
+        Math.max(520,Number(globalThis.innerHeight ?? 900)-36);
+
+      const desiredHeight =
+        Math.max(
+          500,
+          Math.min(
+            viewport,
+            contentHeight + headerHeight + 10
+          )
+        );
+
+      const currentHeight =
+        Number(app?.position?.height ?? 0) ||
+        Number(windowEl?.getBoundingClientRect?.().height ?? 0) ||
+        0;
+
+      if (Math.abs(currentHeight-desiredHeight) < 12) return;
+
+      app._fehaWeaponHeightFit = true;
+
+      try {
+        if (typeof app.setPosition === "function") {
+          app.setPosition({height:desiredHeight});
+        } else if (windowEl?.style) {
+          windowEl.style.height = desiredHeight+"px";
+          windowEl.style.maxHeight = "calc(100vh - 24px)";
+        }
+      } catch (error) {
+        console.debug("FEHA WEAPON SHEET // content height fit failed",error);
+      } finally {
+        setTimeout(() => {
+          try { delete app._fehaWeaponHeightFit; }
+          catch { app._fehaWeaponHeightFit = false; }
+        },50);
+      }
+    };
+
+    requestAnimationFrame(() => requestAnimationFrame(run));
   }
 
   function segmentBar(remaining,max) {
@@ -456,8 +518,8 @@
           box-sizing:border-box;
           container-name:fehaWeapon;
           container-type:inline-size;
-          min-height:100%;
-          height:100%;
+          min-height:0;
+          height:auto;
           padding:18px;
           overflow:auto;
           scrollbar-gutter:stable;
@@ -1211,10 +1273,163 @@
     });
 
     bindCombatControls(app,host,item,def);
+    fitWindowToContent(app,root,host);
+
+    for (const delay of [80,220]) {
+      setTimeout(() => {
+        const liveRoot = renderedRoot(null,app);
+        if (!liveRoot?.isConnected) return;
+        const liveHost = contentHost(liveRoot);
+        if (liveHost) fitWindowToContent(app,liveRoot,liveHost);
+      },delay);
+    }
+
     return true;
   }
 
   const observedApps = new WeakMap();
+  let inventoryClickHandler = null;
+
+  function appElement(app) {
+    if (globalThis.HTMLElement && app?.element instanceof HTMLElement) return app.element;
+    if (globalThis.HTMLElement && app?.element?.[0] instanceof HTMLElement) return app.element[0];
+    return null;
+  }
+
+  function actorAppForNode(node) {
+    const apps = new Set();
+
+    try {
+      for (const app of Object.values(ui?.windows ?? {})) {
+        if (app) apps.add(app);
+      }
+    } catch {}
+
+    try {
+      for (const app of globalThis.foundry?.applications?.instances ?? []) {
+        if (app) apps.add(app);
+      }
+    } catch {}
+
+    for (const app of apps) {
+      const actor =
+        app?.document?.documentName === "Actor"
+          ? app.document
+          : app?.actor?.documentName === "Actor"
+            ? app.actor
+            : null;
+
+      if (!actor) continue;
+
+      const element = appElement(app);
+      if (element?.contains?.(node)) {
+        return {app,actor};
+      }
+    }
+
+    return null;
+  }
+
+  function canonicalItemFromInventoryClick(event) {
+    const target = event?.target;
+    if (!(target instanceof Element)) return null;
+
+    const row =
+      target.closest?.(
+        '[data-item-id], [data-entry-id], .item[data-id], .item[data-document-id]'
+      ) ??
+      null;
+
+    if (!row) return null;
+
+    const actorContext = actorAppForNode(row);
+    if (!actorContext?.actor) return null;
+
+    const itemId = String(
+      row?.dataset?.itemId ??
+      row?.dataset?.entryId ??
+      row?.dataset?.id ??
+      row?.dataset?.documentId ??
+      ""
+    );
+
+    if (!itemId) return null;
+
+    const item =
+      actorContext.actor.items?.get?.(itemId) ??
+      null;
+
+    if (!item || !definition(item)) return null;
+
+    return {
+      item,
+      row,
+      actor:actorContext.actor,
+      app:actorContext.app
+    };
+  }
+
+  function clickShouldOpenWeaponSheet(event,context) {
+    const target = event?.target;
+    if (!(target instanceof Element)) return false;
+
+    // Never steal clicks from explicit inventory management controls.
+    if (
+      target.closest?.(
+        '[data-action="edit"],[data-action="delete"],[data-action="equip"],'+
+        '[data-action="quantity"],input,select,textarea,.item-controls,.controls'
+      )
+    ) {
+      return false;
+    }
+
+    // Dnd5e weapon rows commonly bind "use"/"roll" to the name or image.
+    // Those are exactly the clicks FEHA wants to reinterpret as "open weapon UI".
+    if (
+      target.closest?.(
+        '[data-action="use"],[data-action="roll"],[data-action="activate"],'+
+        '.item-name,.item-image,.name,.item-name-row'
+      )
+    ) {
+      return true;
+    }
+
+    // Some of the old/problem-patch rows bind the whole visible label area.
+    // Treat a plain left click on the row background/text as open-sheet too.
+    return event.button == null || event.button === 0;
+  }
+
+  function installInventoryOpenBridge() {
+    if (inventoryClickHandler) return;
+
+    inventoryClickHandler = event => {
+      const context = canonicalItemFromInventoryClick(event);
+      if (!context) return;
+      if (!clickShouldOpenWeaponSheet(event,context)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+
+      try {
+        context.item.sheet?.render?.(true);
+      } catch (error) {
+        console.warn(
+          "FEHA WEAPON SHEET // inventory open bridge failed",
+          context.item?.name,
+          error
+        );
+      }
+    };
+
+    document.addEventListener("click",inventoryClickHandler,true);
+  }
+
+  function removeInventoryOpenBridge() {
+    if (!inventoryClickHandler) return;
+    document.removeEventListener("click",inventoryClickHandler,true);
+    inventoryClickHandler = null;
+  }
 
   function ensurePersistentRender(app,html) {
     const item = resolveItem(app);
@@ -1267,6 +1482,8 @@
   function installHooks() {
     if (!globalThis.Hooks?.on || hooks.length) return;
 
+    installInventoryOpenBridge();
+
     for (const event of [
       "renderItemSheet",
       "renderItemSheetV2",
@@ -1314,6 +1531,7 @@
 
     async destroy() {
       removeHooks();
+      removeInventoryOpenBridge();
       for (const app of [
         ...Object.values(ui?.windows ?? {}),
         ...(globalThis.foundry?.applications?.instances ?? [])
