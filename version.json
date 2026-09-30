@@ -1,14 +1,14 @@
 {
-  "version": "0.11.30",
+  "version": "0.11.31",
   "updated": "2026-09-29",
-  "scope": "derke-actor-import",
+  "scope": "derke-power-level-2-build",
   "notes": [
-    "Added an idempotent Derke actor importer to the ADK loader.",
-    "If Derke already exists, his existing stats, inventory, cyberware, ownership, and other character data are preserved; the importer only repairs canonical identity and ADK scaffolding.",
-    "If Derke is missing, the loader creates a character actor using the canonical Derke identity, DK-02 roster code, current Forge portrait, linked 1x1 token art, and ADK playable flags.",
-    "Derke is placed under ADK Campaign PCs / OMEGA — Streetkids, creating those Actor folders if necessary.",
-    "The importer guarantees Derke has a Cyberware Cache without duplicating an existing cache.",
-    "The existing ADK roster and Entry Gateway already recognize Derke, so the imported actor becomes available to the ADK character selectors using the canonical derke roster key.",
-    "No unsupported Derke personality, combat stats, class build, gear, or cyberware were invented by this migration."
+    "Derke now uses the same lightweight OMEGA PC structure as Ponyboy and Zach rather than remaining an all-10s empty actor shell.",
+    "Derke is Power Level 2 with 24 HP, AC 15, 30 ft Speed, STR 14, DEX 16, CON 14, INT 12, WIS 13, CHA 10.",
+    "Derke has Dexterity and Constitution save proficiency and one trained skill: Acrobatics.",
+    "Derke receives exactly one generated personal feature: Kinetic Shift.",
+    "Kinetic Shift: 2/Long Rest; after Derke hits with an attack, he can move up to 10 ft without provoking opportunity attacks.",
+    "Derke starts with Cyberware Capacity 3 and zero installed chrome in the one-time build migration. Future loader runs preserve his live chrome progression and current HP/stat edits instead of resetting them.",
+    "The build is versioned and only applies the canonical baseline once; the importer still repairs identity, folder, portrait, token, cache, and ADK roster scaffolding afterward."
   ]
 }
