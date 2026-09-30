@@ -505,12 +505,8 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-socket
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .port-socket {
   position: relative !important;
-  border: 0 !important;
-  background:
-    linear-gradient(var(--cp-red), var(--cp-red)) 0 0 / 7px 1px no-repeat,
-    linear-gradient(var(--cp-red), var(--cp-red)) 0 0 / 1px 7px no-repeat,
-    linear-gradient(var(--cp-red), var(--cp-red)) 100% 100% / 7px 1px no-repeat,
-    linear-gradient(var(--cp-red), var(--cp-red)) 100% 100% / 1px 7px no-repeat !important;
+  border: 1px dashed var(--cp-red-dim) !important;
+  background: transparent !important;
 }
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .port-socket i {
