@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
@@ -188,6 +188,45 @@
 
   function patchCommand(command) {
     let source = String(command ?? "");
+
+    // Weapons do not use Mk. Keep a hidden marketBand only for vendor-quality
+    // gating, and never expose it as rating/tier/Mk in the Market.
+    const tierStart = source.indexOf("function tier(item) {");
+    const manufacturerStart = source.indexOf(
+      "function manufacturer(item)",
+      tierStart
+    );
+
+    if (tierStart >= 0 && manufacturerStart > tierStart) {
+      source =
+        source.slice(0,tierStart) +
+        [
+          "function tier(item) {",
+          "  const flags = item?.flags?.[FLAG] ?? {};",
+          "  const raw =",
+          "    category(item) === \"Weapons\"",
+          "      ? (flags.marketBand ?? 1)",
+          "      : (flags.rating ?? flags.tier ?? 1);",
+          "",
+          "  return clamp(raw,1,5);",
+          "}",
+          "",
+          ""
+        ].join("\n") +
+        source.slice(manufacturerStart);
+    }
+
+    // Tag weapon cards so CSS can remove the Mk badge completely.
+    source = source.replace(
+      'class="item-card"',
+      'class="item-card ${c === "Weapons" ? "feha-weapon-card" : ""}"'
+    );
+
+    // Mk filter chips should not hide/show guns because guns have no Mk.
+    source = source.replace(
+      /if \(\s*state\.itemTier\s*&&\s*tier\(\s*item\s*\)\s*!==\s*state\.itemTier\s*\) \{/m,
+      'if (state.itemTier && category(item) !== "Weapons" && tier(item) !== state.itemTier) {'
+    );
 
     const markedStart = source.indexOf(START);
     const markedEnd = source.indexOf(END);
