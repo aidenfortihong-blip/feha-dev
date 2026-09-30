@@ -1,10 +1,14 @@
 {
-  "version": "0.11.42",
+  "version": "0.11.43",
   "updated": "2026-09-30",
-  "scope": "catalog-power-tuning",
+  "scope": "weapon-pricing-shop-bands-and-rarity",
   "notes": [
-    "Errata now uses uncapped same-turn Thermal Runaway scaling: each prior same-target hit adds another +4d8 fire to the next hit, with armor reduction bypass beginning on the third hit.",
-    "Rasetsu Prototype retains its existing damage and recharge cost but now has 4 attacks before recharge instead of 8.",
-    "All other reviewed firearm and melee entries are intentionally unchanged so the completed power audit can be used as the basis for later pricing."
+    "Added FEHA_WEAPON_ECONOMY.js using the completed 1-100 weapon power audit as the pricing source of truth.",
+    "Weapons still have no Mk. A hidden marketBand 1-5 now gates stronger and more expensive weapons behind higher-tier shops.",
+    "Price curve is power-based, while iconic/prototype/true-unique gear receives rarity premiums rather than arbitrary stat changes.",
+    "Errata, Chainsword Legendary, Dildo Stout, select prototypes/iconics, and all seven true unique weapons use reduced stock weights so they appear much less often.",
+    "True unique weapons are now allowed to appear rarely in arms, black-market, and corporate shops instead of being permanently excluded.",
+    "Market stock patch 1.4.0 now enforces weapon shop-tier gating, explicit allowed shops, and fractional rarity weights.",
+    "Normal weapons remain common within their eligible tier; higher cost corresponds to higher required vendor tier."
   ]
 }
