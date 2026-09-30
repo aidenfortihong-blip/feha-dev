@@ -354,8 +354,10 @@ html body #adk-market-15#adk-market-15#adk-market-15 .results-grid {
 
 /* CP inventory density: short art strip, compact body. */
 html body #adk-market-15#adk-market-15#adk-market-15 .item-art-wrap {
+  flex: 0 0 118px !important;
   height: 118px !important;
   min-height: 0 !important;
+  padding: 8px !important;
   aspect-ratio: auto !important;
 }
 
