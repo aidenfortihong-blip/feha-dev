@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.2.1";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -387,10 +387,9 @@
           const actor = token?.actor ?? null;
           if (!actor) return;
 
-          if (actor.flags?.[FLAG]?.forgeLineBraced === true) {
-            await setForgeBraced(actor,false,null);
-          }
-
+          // Anchor Plating is earned by not moving during YOUR turn and
+          // lasts until the start of your next turn. Movement outside your turn
+          // (including forced movement) must not erase the already-earned AC.
           if (
             activeForgeTurn?.actorId === actor.id &&
             activeForgeTurn?.stamp
