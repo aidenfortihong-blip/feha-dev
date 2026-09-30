@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.5.3";
+  const VERSION = "1.6.0";
   const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -429,30 +429,49 @@
     style = document.createElement("style");
     style.id = MARKET_STYLE_ID;
     style.textContent = `
+      #adk-market-15 .feha-weapon-card {
+        align-self:start !important;
+        height:auto !important;
+        min-height:0 !important;
+        max-height:none !important;
+      }
+
+      #adk-market-15 .feha-weapon-card .item-actions,
+      #adk-market-15 .feha-weapon-card .card-actions,
+      #adk-market-15 .feha-weapon-card .actions {
+        position:static !important;
+        inset:auto !important;
+        margin-top:10px !important;
+      }
+
       #adk-market-15 .feha-market-weapon-copy {
-        margin:8px 0 10px;
-        padding:9px 10px;
-        border:1px solid rgba(80,205,228,.20);
-        background:rgba(4,15,19,.72);
+        order:initial;
+        width:100%;
+        margin:8px 0 0;
+        padding:10px 11px;
+        border:1px solid rgba(80,205,228,.24);
+        background:
+          linear-gradient(180deg,rgba(5,19,24,.92),rgba(3,12,16,.92));
+        box-shadow:inset 0 0 20px rgba(46,205,233,.035);
       }
 
       #adk-market-15 .feha-market-weapon-copy > p {
         margin:0;
-        color:#aabcc2;
+        color:#bccbd0;
         font-size:10px;
-        line-height:1.42;
+        line-height:1.45;
       }
 
       #adk-market-15 .feha-market-weapon-stats {
         display:flex;
         flex-wrap:wrap;
-        gap:5px 10px;
-        margin-top:7px;
+        gap:5px 12px;
+        margin-top:8px;
         padding-top:7px;
-        border-top:1px solid rgba(80,205,228,.12);
+        border-top:1px solid rgba(80,205,228,.14);
         color:#6edff3;
         font-size:8px;
-        font-weight:900;
+        font-weight:1000;
         letter-spacing:.055em;
       }
 
@@ -465,7 +484,12 @@
     return style;
   }
 
-  function staleWeaponDescriptionNode(card) {
+  function legacyWeaponDescriptionNodes(card,item) {
+    const copy = marketWeaponCopy(item);
+    const primary = String(copy.primary ?? "")
+      .replace(/\s+/g," ")
+      .trim();
+
     const blocked = node =>
       node?.closest?.(
         ".feha-market-weapon-copy,.item-actions,.card-actions,.actions,"+
@@ -477,34 +501,11 @@
         .replace(/\s+/g," ")
         .trim();
 
-    const obviousSelectors =
-      ".item-description,.item-desc,.description,.desc,"+
-      ".item-summary,.item-flavor,.flavor,p";
-
-    const obvious = [
-      ...card.querySelectorAll(obviousSelectors)
-    ].filter(node => !blocked(node));
-
-    const stale = obvious.find(node => {
-      const text = textOf(node);
-      return (
-        /base damage|ability modifier|\bdamage\s+\d+d\d+/i.test(text) ||
-        (
-          /FEHA\s*\/\//i.test(text) &&
-          /(DAMAGE|REACH|RANGE|STR REQUIREMENT|CLASS DIE)/i.test(text)
-        )
-      );
-    });
-
-    if (stale) return stale;
-
-    // Some Market builds render the item's rich HTML inside an unclassed div.
-    // That is what produced the concatenated "FEHA // ... DAMAGE3d6..." block
-    // seen on melee cards. Search every generic content node, then choose the
-    // deepest/smallest matching node so we replace only the legacy description
-    // and never the whole item card.
-    const generic = [
-      ...card.querySelectorAll("div,section,article,span")
+    const candidates = [
+      ...card.querySelectorAll(
+        ".item-description,.item-desc,.description,.desc,.item-summary,"+
+        ".item-flavor,.flavor,p,div,section,article,span"
+      )
     ]
       .filter(node =>
         node !== card &&
@@ -514,35 +515,63 @@
         node,
         text:textOf(node)
       }))
-      .filter(entry =>
-        entry.text.length >= 24 &&
-        entry.text.length <= 1200 &&
-        /FEHA\s*\/\//i.test(entry.text) &&
-        /(DAMAGE|REACH|RANGE|STR REQUIREMENT|CLASS DIE|ONE STRIKE)/i.test(entry.text)
-      )
-      .sort((a,b) => {
-        const depth = node => {
-          let d = 0;
-          let current = node;
-          while (current && current !== card) {
-            d++;
-            current = current.parentElement;
-          }
-          return d;
-        };
+      .filter(entry => {
+        const text = entry.text;
+        if (!text || text.length < 18 || text.length > 1400) return false;
 
-        return (
-          depth(b.node)-depth(a.node) ||
-          a.text.length-b.text.length
-        );
+        const exactPrimary =
+          primary.length >= 24 &&
+          (
+            text === primary ||
+            text.startsWith(primary) ||
+            primary.startsWith(text)
+          );
+
+        const genericOld =
+          /base damage|ability modifier|\bdamage\s+\d+d\d+/i.test(text);
+
+        const flattenedFeha =
+          /FEHA\s*\/\//i.test(text) &&
+          /(DAMAGE|REACH|RANGE|STR REQUIREMENT|CLASS DIE|ONE STRIKE)/i.test(text);
+
+        return exactPrimary || genericOld || flattenedFeha;
       });
 
-    if (generic.length) return generic[0].node;
+    // Keep deepest/smallest matches. Parent wrappers often repeat a child's
+    // textContent; replacing the parent is what caused oversized/duplicated
+    // Market cards in earlier builds.
+    const depth = node => {
+      let d = 0;
+      let current = node;
+      while (current && current !== card) {
+        d++;
+        current = current.parentElement;
+      }
+      return d;
+    };
 
-    return obvious.find(node => {
-      const text = textOf(node);
-      return text && text.length < 420;
-    }) ?? null;
+    candidates.sort((a,b) =>
+      depth(b.node)-depth(a.node) ||
+      a.text.length-b.text.length
+    );
+
+    const chosen = [];
+
+    for (const entry of candidates) {
+      if (
+        chosen.some(node =>
+          node === entry.node ||
+          node.contains?.(entry.node) ||
+          entry.node.contains?.(node)
+        )
+      ) {
+        continue;
+      }
+
+      chosen.push(entry.node);
+    }
+
+    return chosen;
   }
 
   function weaponSummarySignature(item) {
@@ -600,60 +629,58 @@
         }
 
         const signature = weaponSummarySignature(item);
-        const existing =
+        let summary =
           card.querySelector(".feha-market-weapon-copy");
-        const stale = staleWeaponDescriptionNode(card);
 
-        // If an older build appended the new FEHA summary after the buttons
-        // while leaving the original rich description in place, repair both
-        // problems at once: move/replace the summary into the legacy slot.
         if (
-          existing &&
-          existing.dataset.fehaWeaponSignature === signature &&
-          stale
+          !summary ||
+          summary.dataset.fehaWeaponSignature !== signature
         ) {
-          stale.replaceWith(existing);
-          continue;
+          const fresh = weaponSummaryElement(item);
+
+          if (summary) summary.replaceWith(fresh);
+          summary = fresh;
         }
 
-        // Critical: do not rewrite an already-correct card.
-        if (
-          existing &&
-          existing.dataset.fehaWeaponSignature === signature
-        ) {
-          continue;
+        const legacyNodes =
+          legacyWeaponDescriptionNodes(card,item);
+
+        for (const node of legacyNodes) {
+          if (node === summary || node.contains?.(summary)) continue;
+          node.remove();
         }
 
-        const fresh = weaponSummaryElement(item);
-
-        if (existing && stale) {
-          stale.replaceWith(fresh);
-          existing.remove();
-          continue;
+        // Remove accidental duplicate FEHA summaries from older patches.
+        for (const duplicate of card.querySelectorAll(".feha-market-weapon-copy")) {
+          if (duplicate !== summary) duplicate.remove();
         }
 
-        if (existing) {
-          existing.replaceWith(fresh);
-          continue;
-        }
-
-        if (stale) {
-          stale.replaceWith(fresh);
-          continue;
-        }
-
-        const actions =
-          card.querySelector(".item-actions,.card-actions,.actions,[data-buy-item]") ??
+        const actionButton =
+          card.querySelector("[data-buy-item],[data-open-item]") ??
           null;
 
         const actionRow =
-          actions?.closest?.(".item-actions,.card-actions,.actions") ??
-          actions;
+          actionButton?.closest?.(
+            ".item-actions,.card-actions,.actions"
+          ) ??
+          card.querySelector(
+            ".item-actions,.card-actions,.actions"
+          ) ??
+          actionButton;
 
-        if (actionRow?.parentElement === card) {
-          card.insertBefore(fresh,actionRow);
-        } else {
-          card.appendChild(fresh);
+        // Canonical placement is directly before the Market buttons. Moving
+        // an already-correct node is harmless and prevents the huge blank gap
+        // caused by old summaries being appended after bottom-pinned actions.
+        if (summary) {
+          if (actionRow && actionRow.parentElement) {
+            if (summary.nextElementSibling !== actionRow) {
+              actionRow.parentElement.insertBefore(summary,actionRow);
+            }
+          } else if (summary.parentElement !== card) {
+            card.appendChild(summary);
+          } else if (!summary.isConnected) {
+            card.appendChild(summary);
+          }
         }
       }
     } finally {
