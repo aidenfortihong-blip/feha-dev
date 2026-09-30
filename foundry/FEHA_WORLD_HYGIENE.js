@@ -487,6 +487,19 @@
       });
     }
 
+    const canonicalFirearmMultiAttack =
+      duplicateAttackActivities.filter(entry => {
+        const uuid = String(entry.uuid ?? "");
+        let item = null;
+        try {
+          item = globalThis.fromUuidSync?.(uuid) ?? null;
+        } catch {}
+        return Boolean(
+          item &&
+          globalThis.FEHA_WEAPON_CATALOG?.definition?.(item)
+        );
+      });
+
     const legacyActorFlags = [];
     for (const actor of list(game.actors)) {
       const f = actor?.flags?.[FLAG] ?? {};
@@ -580,6 +593,7 @@
       duplicateAttackActivities,
       safeLegacyAttackCleanup,
       ambiguousMultiAttack,
+      canonicalFirearmMultiAttack,
       invalidIdentifiers,
       staleDescriptions,
       duplicateWorldNames,
@@ -595,6 +609,7 @@
       duplicateAttackItems:duplicateAttackActivities.length,
       safeLegacyAttackItems:safeLegacyAttackCleanup.length,
       ambiguousMultiAttackItems:ambiguousMultiAttack.length,
+      canonicalFirearmMultiAttackItems:canonicalFirearmMultiAttack.length,
       invalidIdentifierItems:invalidIdentifiers.length,
       staleDescriptionItems:staleDescriptions.length,
       duplicateWorldNameGroups:duplicateWorldNames.length,
