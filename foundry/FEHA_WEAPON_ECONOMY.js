@@ -4,7 +4,7 @@
 (() => {
   try { globalThis.FEHA_WEAPON_ECONOMY?.destroy?.(); } catch {}
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.2.1";
   const FLAG = "fleshEnshrouded";
   const POWER_AUDIT = "manufacturer-passives-bastion-kill-surge-2026-09-30";
   // Ratings include the finalized manufacturer passives: Kurohane Dead Silent,
@@ -168,9 +168,19 @@
     };
   }
 
+  function legacyIdentifierQuarantined(item) {
+    if (item?.type !== "weapon") return false;
+    const rawIdentifier =
+      String(item?._source?.system?.identifier ?? "");
+    if (/^[a-z0-9_-]+$/i.test(rawIdentifier)) return false;
+    const build = Number(game.release?.build ?? 0);
+    return !build || build < 368;
+  }
+
   async function migrateItem(item) {
     const p = profile(item);
     if (!p) return false;
+    if (legacyIdentifierQuarantined(item)) return false;
 
     const flags = item.flags?.[FLAG] ?? {};
     const update = {};
