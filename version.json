@@ -1,12 +1,14 @@
 {
-  "version": "0.11.67",
+  "version": "0.11.68",
   "updated": "2026-09-30",
-  "scope": "persistent-adk-hotbar-loader-repair",
+  "scope": "integrated-canonical-weapon-controls",
   "notes": [
-    "Repairs the ADK DEV LOADER world Macro so each hotbar click performs its own fresh cache-busted fetch of main/foundry/ADK_DEV_LOADER.js.",
-    "Removes the old Macro.prototype.execute interception bridge that could become stale across hot reloads and make the ADK button appear dead until a browser refresh.",
-    "The repaired Macro is persisted as a normal Foundry script Macro by the GM, so future clicks no longer depend on already-loaded FEHA runtime globals.",
-    "Internal game.adk.reload helpers remain available for debugging and manual reloads.",
-    "No gameplay, weapon, armor, cyberware, grenade, Quickhack, or UI layout rules changed."
+    "Canonical FEHA firearm sheets now include the live Weapon Tracker controls directly inside the designed weapon page.",
+    "The sheet exposes ATTACK and DAMAGE through the same configured internal dnd5e activity used by the centered Weapon Tracker; raw activity rows remain hidden.",
+    "Reload controls are integrated in-sheet using the locked tabletop model: Action +2 reload points, Bonus Action +1 reload point, with live progress and attacks-remaining state.",
+    "UNDO SHOT, RESET TRACKER, and OPEN FLOATING HUD are available from the same page.",
+    "Actor-owned sheets use their own weapon copy. World/library weapon sheets resolve to the selected token or assigned character's matching owned canonical copy, preferring an equipped copy.",
+    "The in-sheet state refreshes after actions so remaining shots and reload progress update without closing the weapon page.",
+    "No firearm balance, manufacturer rules, armor, cyberware, grenade, or Quickhack rules changed."
   ]
 }
