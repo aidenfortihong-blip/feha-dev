@@ -467,10 +467,10 @@
 
     if (
       !Array.isArray(weaponReadiness.doneNames) ||
-      weaponReadiness.doneNames.length !== 81
+      weaponReadiness.doneNames.length < 1
     ) {
       throw new Error(
-        "Weapon Readiness expected exactly 81 canonical mega-review weapons."
+        "Weapon Readiness found no finalized guns in the Do these folders."
       );
     }
 
