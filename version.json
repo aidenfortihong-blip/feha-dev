@@ -1,12 +1,12 @@
 {
-  "version": "0.11.82",
+  "version": "0.11.83",
   "updated": "2026-09-30",
-  "scope": "market-cp2077-skin",
+  "scope": "chrome-cp2077-ripperdoc",
   "notes": [
-    "Market restyled after the Cyberpunk 2077 inventory/vendor screen: red-on-black HUD with crosshair grid, red header rule, cyan active states, yellow CR balance, condensed Rajdhani display type.",
-    "Item cards get a rarity stripe and Mk badge colour from the item's dnd5e rarity (common grey, uncommon green, rare blue, very rare purple, legendary orange), a cut corner and a cyan hover state; denser 4-up grid with a short art strip.",
-    "Storefront directory, filters, pagination and buttons share the same skin. BUY is solid red, DETAILS is a cyan outline.",
-    "New market-cp.css is loaded by ADK_DEV_LOADER as its own style sheet and outranks the older Market theme layers; Market Stock Patch 1.6.1 tags cards with data-feha-rarity.",
-    "Styling only: no prices, stock, balances, buttons, filters or Market behavior changed. Text colours pass WCAG AA contrast."
+    "Chrome Manager rebuilt as a Cyberpunk 2077 ripperdoc screen around the character portrait: all ten body systems sit left and right of the subject, each with a red label, an AVAILABLE ITEMS count and a row of square slot tiles.",
+    "Installed chrome shows as a teal image tile with a cyan corner; empty ports are red dashed '+' tiles. Clicking an empty tile opens the owned-chrome cache for that system; clicking an installed tile opens it in the inspector with EJECT.",
+    "Inspector restyled as the CP item tooltip (teal status bar, salmon title with orange rule); red-on-black HUD, radar ring behind the portrait, yellow CR balance matching the Market.",
+    "New FEHA_CHROME_RIPPERDOC.js is presentation only and routes every action through the installed module's own install/eject/use buttons; latest-dev.js markRoot() calls it after each Chrome render. chrome-cp.css is loaded with market-cp.css.",
+    "Verified on the GM client: install and eject of Ponyboy's Dense Marrow round-tripped with identical item data and capacity. No install rules, capacity, slots, prices or balances changed."
   ]
 }

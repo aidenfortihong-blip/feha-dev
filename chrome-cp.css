@@ -1,0 +1,997 @@
+/* ==========================================================================
+   FEHA // CHROME MANAGER — CP2077 RIPPERDOC SKIN
+   Loaded by ADK_DEV_LOADER in <style id="feha-market-cp-css">, after
+   market-cp.css. Scope: #adk-chrome-manager-34 only. The DOM and
+   behavior come from the installed module + latest-dev.js; this file only
+   restyles it.
+
+   Specificity: html body + doubled id outranks latest-dev.css, whose
+   Chrome selectors use a single id plus attribute/class qualifiers.
+   ========================================================================== */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 {
+  --cp-bg: #0c0608;
+  --cp-bg-2: #140a0d;
+  --cp-panel: #180b0f;
+  --cp-panel-2: #1f0e13;
+  --cp-tip: #0d1518;
+  --cp-red: #ff5e57;
+  --cp-red-soft: #e0605a;
+  --cp-red-dim: rgba(255, 94, 87, .30);
+  --cp-red-faint: rgba(255, 94, 87, .12);
+  --cp-cyan: #5ef2ff;
+  --cp-teal: #3fd6c6;
+  --cp-cyan-dim: rgba(94, 242, 255, .35);
+  --cp-cyan-faint: rgba(94, 242, 255, .10);
+  --cp-yellow: #f3e600;
+  --cp-text: #f1e6e3;
+  --cp-muted: #c39c98;
+  --cp-display: "Rajdhani", "Roboto Condensed", "Arial Narrow", sans-serif;
+  --cp-body: "Rajdhani", "Roboto Condensed", "Segoe UI", sans-serif;
+
+  /* Retarget the per-character runtime theme so accents follow CP red/cyan. */
+  --adk-primary: #5ef2ff !important;
+  --adk-primary-rgb: 94, 242, 255 !important;
+  --adk-secondary: #ff5e57 !important;
+  --adk-secondary-rgb: 255, 94, 87 !important;
+
+  background: var(--cp-bg) !important;
+  color: var(--cp-text) !important;
+  font-family: var(--cp-body) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app {
+  background:
+    linear-gradient(90deg, transparent 0 calc(100% - 1px), rgba(255,94,87,.05) 0) 0 0 / 88px 88px,
+    linear-gradient(0deg, transparent 0 calc(100% - 1px), rgba(255,94,87,.05) 0) 0 0 / 88px 88px,
+    radial-gradient(ellipse at 50% 45%, rgba(255,94,87,.13), transparent 62%),
+    var(--cp-bg) !important;
+  border: 1px solid var(--cp-red-dim) !important;
+  box-shadow: 0 0 0 1px #000, 0 24px 60px rgba(0,0,0,.75), inset 0 0 90px rgba(255,94,87,.06) !important;
+  color: var(--cp-text) !important;
+  font-family: var(--cp-body) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 button,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 select {
+  font-family: var(--cp-body) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 button:focus-visible,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 select:focus-visible {
+  outline: 1px solid var(--cp-cyan) !important;
+  outline-offset: 1px !important;
+}
+
+/* ---------- command bar -------------------------------------------------- */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-command {
+  background: linear-gradient(180deg, rgba(255,94,87,.06), transparent) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--cp-red) !important;
+  box-shadow: 0 1px 0 rgba(255,94,87,.25), 0 6px 18px -8px rgba(255,94,87,.55) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-brand > i {
+  color: var(--cp-red) !important;
+  background-color: transparent !important;
+  filter: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-brand small {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .14em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-brand b {
+  color: var(--cp-cyan) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 12px rgba(94,242,255,.45) !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-brand b::before {
+  content: "◆";
+  display: inline-block;
+  margin-right: .4em;
+  font-size: .55em;
+  vertical-align: .3em;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-capacity-head span {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-capacity-head b {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 10px rgba(255,94,87,.35) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cap-rail {
+  background: var(--cp-red-faint) !important;
+  border-color: var(--cp-red-dim) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cap-rail i {
+  background: var(--cp-cyan) !important;
+  box-shadow: 0 0 6px rgba(94,242,255,.45) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cap-rail span {
+  color: var(--cp-muted) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 #actor-select {
+  background: var(--cp-bg-2) !important;
+  color: var(--cp-red) !important;
+  border: 1px solid var(--cp-red-dim) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .04em !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 #actor-select option {
+  background: var(--cp-bg-2);
+  color: var(--cp-text);
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-command-actions .wallet {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--cp-yellow) !important;
+  font-family: var(--cp-display) !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 10px rgba(243,230,0,.35) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-command-actions .close {
+  background: transparent !important;
+  border: 1px solid var(--cp-red-dim) !important;
+  color: var(--cp-red) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-command-actions .close:hover {
+  border-color: var(--cp-cyan) !important;
+  color: var(--cp-cyan) !important;
+}
+
+/* ---------- left: body systems ------------------------------------------ */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-systems {
+  background: linear-gradient(90deg, rgba(255,94,87,.05), transparent 80%) !important;
+  border: 0 !important;
+  border-right: 1px solid var(--cp-red-faint) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-systems > header span {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .12em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-systems > header b {
+  color: var(--cp-cyan) !important;
+  font-family: var(--cp-display) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-mini {
+  background: transparent !important;
+  border: 0 !important;
+  border-left: 3px solid var(--cp-red) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-mini small {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .14em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-mini b {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .04em !important;
+  text-shadow: 0 0 14px rgba(255,94,87,.35) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-mini span {
+  color: var(--cp-cyan) !important;
+  font-family: var(--cp-display) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-left: 2px solid var(--cp-red-faint) !important;
+  box-shadow: none !important;
+  color: var(--cp-red) !important;
+  transition: background-color .12s, border-color .12s !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system:hover {
+  background: var(--cp-red-faint) !important;
+  border-left-color: var(--cp-red) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .slot-no {
+  color: var(--cp-red-dim) !important;
+  font-family: var(--cp-display) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .system-glyph {
+  background: transparent !important;
+  border: 1px solid var(--cp-red-dim) !important;
+  color: var(--cp-red) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .system-glyph svg,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .system-glyph path {
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .system-copy b {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+  text-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .system-copy small {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .08em !important;
+}
+
+/* CP "AVAILABLE ITEMS [n]" count box */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .system-count {
+  background: rgba(63,214,198,.18) !important;
+  border: 1px solid rgba(63,214,198,.55) !important;
+  color: var(--cp-teal) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system .system-state {
+  background: var(--cp-red-dim) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system.is-active {
+  background: linear-gradient(90deg, rgba(94,242,255,.16), rgba(94,242,255,.04)) !important;
+  border-color: var(--cp-cyan-dim) !important;
+  border-left: 2px solid var(--cp-cyan) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system.is-active .system-copy b,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system.is-active .system-glyph {
+  color: var(--cp-cyan) !important;
+  border-color: var(--cp-cyan-dim) !important;
+  text-shadow: 0 0 8px rgba(94,242,255,.35) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system.is-active .system-state {
+  background: var(--cp-cyan) !important;
+  box-shadow: 0 0 8px rgba(94,242,255,.6) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cache-trigger {
+  background: transparent !important;
+  border: 1px solid var(--cp-red-dim) !important;
+  box-shadow: none !important;
+  color: var(--cp-red) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cache-trigger span {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cache-trigger b {
+  background: rgba(63,214,198,.18) !important;
+  border: 1px solid rgba(63,214,198,.55) !important;
+  color: var(--cp-teal) !important;
+  font-family: var(--cp-display) !important;
+  padding: 0 .45em !important;
+  text-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cache-trigger i {
+  color: var(--cp-red) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cache-trigger:hover {
+  background: var(--cp-red-faint) !important;
+  border-color: var(--cp-red) !important;
+}
+
+/* ---------- center: subject ---------------------------------------------- */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-background {
+  background:
+    radial-gradient(ellipse at 50% 55%, rgba(255,94,87,.22), transparent 58%),
+    radial-gradient(ellipse at 50% 90%, rgba(94,242,255,.08), transparent 50%),
+    var(--cp-bg) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-shade {
+  background:
+    linear-gradient(180deg, transparent 55%, rgba(12,6,8,.85) 92%),
+    linear-gradient(90deg, rgba(12,6,8,.55), transparent 22%, transparent 78%, rgba(12,6,8,.55)) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .portrait-corners {
+  border-color: var(--cp-cyan) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .portrait-scan-grid {
+  background:
+    repeating-linear-gradient(0deg, rgba(255,94,87,.06) 0 1px, transparent 1px 4px) !important;
+  opacity: .7 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .portrait-id,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .portrait-coords,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .portrait-biometric,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
+  color: var(--cp-cyan) !important;
+  font-family: var(--cp-display) !important;
+  text-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .portrait-side-ticks {
+  background-color: var(--cp-red-dim) !important;
+  border-color: var(--cp-red-dim) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-system-title small {
+  color: var(--cp-cyan) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .14em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-system-title h1 {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .03em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 18px rgba(255,94,87,.45), 0 2px 0 #000 !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-system-title span {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .12em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-status,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .subject-status div {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  border-color: var(--cp-red-faint) !important;
+}
+
+/* ---------- right: inspector (CP item tooltip) --------------------------- */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-inspector {
+  background: linear-gradient(180deg, rgba(13,21,24,.96), rgba(12,6,8,.96)) !important;
+  border: 0 !important;
+  border-left: 1px solid rgba(63,214,198,.35) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-header {
+  background: rgba(63,214,198,.85) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #062220 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-header,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-header * {
+  color: #062220 !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  text-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-header b {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-title small {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .12em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-title h2 {
+  color: #ff8f86 !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .03em !important;
+  text-transform: uppercase !important;
+  text-shadow: none !important;
+  border-bottom: 2px solid #ff9d2e !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .port-heading span {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .12em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .port-heading b {
+  color: var(--cp-teal) !important;
+  font-family: var(--cp-display) !important;
+}
+
+/* Ports: filled = cyan-cornered tile; empty = CP red bracket "+" slot. */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port {
+  position: relative !important;
+  background: linear-gradient(180deg, rgba(63,214,198,.10), rgba(13,21,24,.6)) !important;
+  border: 1px solid rgba(63,214,198,.45) !important;
+  border-left: 3px solid var(--cp-teal) !important;
+  box-shadow: none !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+  transition: background-color .12s, border-color .12s !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, transparent 50%, var(--cp-cyan) 50%);
+  pointer-events: none;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty {
+  background: rgba(255,94,87,.04) !important;
+  border: 1px dashed var(--cp-red-dim) !important;
+  border-left: 1px dashed var(--cp-red-dim) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty::after {
+  background: linear-gradient(135deg, transparent 50%, var(--cp-red-dim) 50%);
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port:hover {
+  background: linear-gradient(180deg, rgba(94,242,255,.16), rgba(94,242,255,.04)) !important;
+  border-color: var(--cp-cyan) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-id {
+  color: var(--cp-red-soft) !important;
+  font-family: var(--cp-display) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-socket {
+  background: transparent !important;
+  border: 1px solid var(--cp-teal) !important;
+  box-shadow: none !important;
+  color: var(--cp-teal) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .port-socket {
+  position: relative !important;
+  border: 1px dashed var(--cp-red-dim) !important;
+  background: transparent !important;
+  /* Legacy CSS draws the socket as a rotated diamond; keep the CP "+" upright. */
+  transform: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .port-socket i {
+  display: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .port-socket::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--cp-red);
+  font-family: var(--cp-display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy b {
+  color: var(--cp-text) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .04em !important;
+  text-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .port-copy b {
+  color: var(--cp-red) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy small {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system-dossier {
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(63,214,198,.25) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-visual {
+  background: rgba(0,0,0,.25) !important;
+  border: 1px solid var(--cp-red-faint) !important;
+  box-shadow: none !important;
+  color: var(--cp-red) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy * {
+  color: var(--cp-red-soft) !important;
+  font-family: var(--cp-body) !important;
+  text-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy b,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy strong,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy small {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics {
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(63,214,198,.25) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics * {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .08em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics b,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics strong {
+  color: var(--cp-text) !important;
+  font-weight: 700 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics i {
+  background: var(--cp-teal) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-browse {
+  background: transparent !important;
+  border: 1px solid var(--cp-red) !important;
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .1em !important;
+  box-shadow: none !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-browse:hover {
+  background: var(--cp-red) !important;
+  color: var(--cp-bg) !important;
+}
+
+/* ---------- owned augment cache (bottom drawer) -------------------------- */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache {
+  background: linear-gradient(180deg, rgba(20,10,13,.97), rgba(12,6,8,.98)) !important;
+  border: 0 !important;
+  border-top: 1px solid var(--cp-red) !important;
+  box-shadow: 0 -8px 24px rgba(0,0,0,.6), 0 -1px 12px -4px rgba(255,94,87,.45) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache > header span {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache > header b {
+  color: var(--cp-cyan) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache > header button {
+  background: transparent !important;
+  border: 1px solid var(--cp-red-dim) !important;
+  color: var(--cp-red) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card {
+  position: relative !important;
+  background: linear-gradient(180deg, var(--cp-panel-2), var(--cp-panel)) !important;
+  border: 1px solid var(--cp-red-dim) !important;
+  border-left: 4px solid var(--cp-teal) !important;
+  box-shadow: none !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  transition: background-color .12s, border-color .12s !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, transparent 50%, var(--cp-cyan) 50%);
+  pointer-events: none;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card:hover,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card:focus-visible {
+  background: linear-gradient(180deg, rgba(94,242,255,.16), rgba(94,242,255,.04)) !important;
+  border-color: var(--cp-cyan-dim) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card .cache-code {
+  color: var(--cp-teal) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card .cache-mk {
+  color: var(--cp-red) !important;
+  border-color: var(--cp-red-dim) !important;
+  background: transparent !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card .cache-image {
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(63,214,198,.14), transparent 70%),
+    rgba(0,0,0,.35) !important;
+  border: 1px solid rgba(63,214,198,.35) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card .cache-copy small {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card .cache-copy b {
+  color: var(--cp-text) !important;
+  font-family: var(--cp-display) !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-cache-card .cache-meta i {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  font-style: normal !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cache-empty b {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cache-empty span {
+  color: var(--cp-muted) !important;
+}
+
+/* ---------- status bar --------------------------------------------------- */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-statusbar {
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid var(--cp-red-faint) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-statusbar span {
+  color: var(--cp-muted) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .12em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-statusbar b {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  letter-spacing: .12em !important;
+}
+
+/* ==========================================================================
+   RIPPERDOC BODY MAP (FEHA_CHROME_RIPPERDOC.js adds .cp-rd + .cp-rd-map)
+   All body systems sit around the portrait like the CP2077 ripperdoc:
+   red label, AVAILABLE ITEMS count, then a row of square slot tiles.
+   ========================================================================== */
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .adk-v6-main {
+  grid-template-columns: minmax(0, 1fr) 330px !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .adk-v6-systems,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .subject-system-title,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .subject-status,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .portrait-id,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .portrait-coords,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .portrait-biometric,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .portrait-side-ticks {
+  display: none !important;
+}
+
+/* Keep the portrait centred in the wider stage. */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .subject-art,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .adk-v6-portrait-overlays {
+  left: 50% !important;
+  right: auto !important;
+  width: min(560px, 62%) !important;
+  transform: translateX(-50%) !important;
+}
+
+/* CP radar ring behind the subject. */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .subject-background::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(520px, 70%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -48%);
+  border: 1px solid rgba(255,94,87,.28);
+  border-radius: 50% !important;
+  box-shadow:
+    0 0 0 18px rgba(255,94,87,.04),
+    0 0 0 19px rgba(255,94,87,.16),
+    0 0 60px rgba(255,94,87,.18) inset;
+  pointer-events: none;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-map {
+  position: absolute;
+  inset: 18px 14px 18px;
+  z-index: 18;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-col {
+  width: clamp(210px, 29%, 310px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-col.is-left {
+  align-items: flex-end;
+  padding-right: 6px;
+  background: linear-gradient(90deg, rgba(12,6,8,.88) 40%, rgba(12,6,8,0));
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-col.is-right {
+  align-items: flex-start;
+  padding-left: 6px;
+  background: linear-gradient(270deg, rgba(12,6,8,.88) 40%, rgba(12,6,8,0));
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-sys {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-sys.is-left {
+  align-items: flex-end;
+  text-align: right;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-sys.is-right {
+  align-items: flex-start;
+  text-align: left;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-label {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: inherit !important;
+  gap: 1px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  line-height: 1.1 !important;
+  min-height: 0 !important;
+  width: auto !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-label b {
+  color: var(--cp-red) !important;
+  font-family: var(--cp-display) !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 10px rgba(255,94,87,.35) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-label:hover b,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-sys.is-active .cp-rd-label b {
+  color: var(--cp-cyan) !important;
+  text-shadow: 0 0 10px rgba(94,242,255,.45) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-avail,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-none {
+  font-family: var(--cp-display) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-avail {
+  color: var(--cp-teal) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-avail i {
+  display: inline-block;
+  min-width: 1.5em;
+  margin-left: .35em;
+  padding: 0 .3em;
+  background: rgba(63,214,198,.85);
+  color: #062220;
+  font-style: normal;
+  text-align: center;
+  letter-spacing: 0;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-none {
+  color: var(--cp-muted) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tiles {
+  display: flex;
+  gap: 4px;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-sys.is-left .cp-rd-tiles {
+  flex-direction: row-reverse;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile {
+  position: relative !important;
+  width: 58px !important;
+  height: 58px !important;
+  min-height: 0 !important;
+  padding: 4px !important;
+  margin: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: background-color .12s, border-color .12s !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile.is-filled {
+  background: linear-gradient(180deg, rgba(63,214,198,.14), rgba(13,21,24,.92)) !important;
+  border: 1px solid rgba(63,214,198,.55) !important;
+  border-left: 3px solid var(--cp-teal) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile.is-filled::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, transparent 50%, var(--cp-cyan) 50%);
+  pointer-events: none;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile.is-filled img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,.7));
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile.is-empty {
+  background: rgba(40,10,14,.72) !important;
+  border: 1px dashed rgba(255,94,87,.45) !important;
+  color: var(--cp-red) !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile.is-empty span {
+  color: var(--cp-red);
+  font-family: var(--cp-display);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1;
+  opacity: .8;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile:hover,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile:focus-visible {
+  background: linear-gradient(180deg, rgba(94,242,255,.22), rgba(94,242,255,.06)) !important;
+  border-color: var(--cp-cyan) !important;
+  outline: none !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile.is-empty:hover span,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-tile.is-empty:focus-visible span {
+  color: var(--cp-cyan);
+  opacity: 1;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-label:focus-visible {
+  outline: 1px solid var(--cp-cyan) !important;
+  outline-offset: 3px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body #adk-chrome-manager-34#adk-chrome-manager-34 *,
+  html body #adk-chrome-manager-34#adk-chrome-manager-34 *::before,
+  html body #adk-chrome-manager-34#adk-chrome-manager-34 *::after {
+    transition: none !important;
+  }
+}

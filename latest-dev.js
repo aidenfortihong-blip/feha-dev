@@ -321,6 +321,8 @@
     filterActorRoster(root);
     applyActorPortraitOverride(root);
     normalizeChromeManagerTerminology(root);
+    // CP2077 ripperdoc body map (FEHA_CHROME_RIPPERDOC.js); idempotent.
+    globalThis.FEHA_CHROME_RIPPERDOC?.augment?.(root);
     return true;
   }
 
