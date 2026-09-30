@@ -9,8 +9,9 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_READINESS requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.1.0";
+  const VERSION = "4.1.1";
   const REVIEW_IMPORT = "2026-09-30-do-these-export-1";
+  const DESCRIPTION_REPAIR = "2026-09-30-final-card-repair-1";
   const FLAG = "fleshEnshrouded";
   const REVIEW_ROOT = "Do these";
   const STOCK_KEY = "adkMarketStockV16";
@@ -1380,6 +1381,41 @@
               resolveReviewed(item),
               company
             );
+
+      // 0.11.38 repair: the Do these folder tree is authoritative. Some items
+      // had the completed review/import flags but still retained the legacy
+      // "ADK WEAPON PROFILE" HTML. Repair the card from the permanent reviewed
+      // catalog once, independently of the old import stamp.
+      const catalog =
+        globalThis.FEHA_WEAPON_CATALOG ??
+        game.adk?.weapons ??
+        null;
+
+      const definition =
+        catalog?.definition?.(item) ??
+        null;
+
+      const repairedBefore =
+        String(
+          item.flags?.[FLAG]
+            ?.descriptionRepairVersion ??
+          ""
+        ) === DESCRIPTION_REPAIR;
+
+      if (
+        definition &&
+        !repairedBefore
+      ) {
+        patch["system.description.value"] =
+          catalog.rewriteDescription(
+            definition
+          );
+
+        patch[
+          "flags."+FLAG+
+          ".descriptionRepairVersion"
+        ] = DESCRIPTION_REPAIR;
+      }
 
       if (
         !Object.keys(patch).length
