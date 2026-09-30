@@ -1,12 +1,14 @@
 // FEHA // DERKE IMPORT
-// Guarantees the canonical Derke actor exists and is recognized by ADK.
-// Existing actor stats/gear are preserved; only identity/ADK scaffolding is repaired.
+// Legacy Derke recovery/import utility.
+// Deep-clean baseline: retained for explicit recovery only. It no longer runs
+// automatically on every loader cycle because its old 9.0/11.0 chrome/player
+// scaffolding would fight the upcoming unified PC rebuild.
 
 (() => {
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_DERKE_IMPORT requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
 
   const ACTOR_ID = "Vr0A1KFh8HFLdDt2";
@@ -542,9 +544,13 @@
       game.adk ??= {};
       game.adk.derkeImport = api;
 
-      if (game.user?.isGM) {
-        await importDerke();
-      }
+      // Recovery-only. Do not mutate Derke during ordinary DEV LOADER runs.
+      // The four-PC sheet rebuild will own current character scaffolding.
+      console.log(
+        "FEHA DERKE IMPORT",
+        VERSION,
+        "registered // automatic legacy repair disabled"
+      );
     },
 
     async destroy() {
