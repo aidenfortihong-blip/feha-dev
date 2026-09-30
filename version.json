@@ -1,13 +1,14 @@
 {
-  "version": "0.11.69",
+  "version": "0.11.70",
   "updated": "2026-09-30",
-  "scope": "single-canonical-weapon-tracker-ui",
+  "scope": "universal-dex-weapon-attacks",
   "notes": [
-    "Retires the old centered floating Weapon Tracker HUD as a player-facing interface.",
-    "The canonical FEHA firearm sheet is now the only weapon tracker UI for attack, damage, attacks remaining, reload progress, undo, and reset controls.",
-    "FEHA_RELOAD_TRACKER remains as a headless state/combat backend so existing attack tracking and reload logic continue to work without a second overlay.",
-    "Any legacy call to weaponTracker.open() now opens the canonical weapon sheet instead of recreating the retired floating HUD.",
-    "Loader initialization removes any already-open legacy floating tracker so hot reload immediately leaves only the new sheet tracker visible.",
-    "No firearm balance, manufacturer, armor, cyberware, grenade, or Quickhack rules changed."
+    "Every usable attack activity on every weapon Item in the live world and actor inventories is now normalized to Dexterity for to-hit.",
+    "World Hygiene performs the universal DEX pass after legacy duplicate-attack cleanup so hidden empty legacy stubs are not accidentally promoted into configured attacks.",
+    "The DEX pass covers catalog firearms, melee weapons, unique weapons, and non-catalog weapon Items with real attack activities.",
+    "Melee and Unique Weapon catalog migrations now also write DEX directly so future copies inherit the rule before the global hygiene pass.",
+    "The canonical 78-gun catalog already enforced DEX and remains unchanged.",
+    "Any failed live mutation is retained in the hygiene DEX report instead of being silently ignored.",
+    "No damage formulas, ranges, reload rules, manufacturer rules, armor, cyberware, grenades, or Quickhacks changed."
   ]
 }
