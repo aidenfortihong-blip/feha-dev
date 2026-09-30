@@ -42,19 +42,150 @@
       String(range?.units??"")==="self"&&noRange&&damage?.includeBase===true&&
       parts.length===0&&effects.length===0&&!ability&&String(attack?.bonus??"").trim()==="";
   }
-  function attackCleanupUpdate(item){
-    const attacks=activities(item).filter(a=>String(a?.type??a?._source?.type??"").toLowerCase()==="attack");
-    if(attacks.length<2)return {};
+  function attackScore(a){
+    if(legacyAttackStub(a))return -100;
+    const src=a?._source??a??{};
+    const range=src?.range??a?.range??{};
+    const attack=src?.attack??a?.attack??{};
+    let score=0;
+    if(String(src?.name??a?.name??"").trim())score+=2;
+    if((Number(src?.sort??a?.sort??0)||0)>0)score+=4;
+    if((Number(range?.value??0)||0)>0)score+=5;
+    if(String(range?.units??"")==="ft")score+=2;
+    if(String(attack?.ability??"").trim())score+=2;
+    if(a?.img||src?.img)score+=1;
+    return score;
+  }
+  function canonicalAttackUpdate(item,d){
+    const attacks=activities(item)
+      .filter(a=>String(a?.type??a?._source?.type??"").toLowerCase()==="attack");
+
+    let keeper=null;
     const stubs=attacks.filter(legacyAttackStub);
     const real=attacks.filter(a=>!legacyAttackStub(a));
-    if(!stubs.length||real.length!==1)return {};
-    const update={};
-    for(const a of stubs){
-      const id=activityId(a);
-      if(id)update["system.activities.-="+id]=null;
+
+    if(real.length===1) keeper=real[0];
+    else if(real.length>1){
+      const ranked=[...real].sort((a,b)=>attackScore(b)-attackScore(a));
+      const best=ranked[0], second=ranked[1];
+      if(attackScore(best)-attackScore(second)>=4)keeper=best;
+      else return {
+        update:{},
+        ambiguous:true,
+        attackCount:attacks.length,
+        reason:"multiple-configured-attacks"
+      };
+    } else if(stubs.length){
+      keeper=stubs[0];
     }
-    return update;
+
+    const update={};
+
+    if(!keeper){
+      const Cls=globalThis.CONFIG?.DND5E?.activityTypes?.attack?.documentClass;
+      if(!Cls)return {
+        update:{},
+        ambiguous:true,
+        attackCount:attacks.length,
+        reason:"attack-document-class-unavailable"
+      };
+
+      let source={};
+      try{
+        source=new Cls({}, {parent:item}).toObject();
+      }catch(error){
+        console.warn("FEHA WEAPON CATALOG // could not create canonical attack source",item?.name,error);
+        return {
+          update:{},
+          ambiguous:true,
+          attackCount:attacks.length,
+          reason:"attack-source-create-failed"
+        };
+      }
+
+      source._id=source._id||globalThis.foundry?.utils?.randomID?.()||Math.random().toString(36).slice(2,18);
+      source.type="attack";
+      source.name="Attack";
+      source.img=item?.img??source.img??null;
+      source.sort=100000;
+      source.activation={...(source.activation??{}),type:"action",value:1,override:false};
+      source.attack={
+        ...(source.attack??{}),
+        ability:"dex",
+        bonus:"",
+        flat:false,
+        critical:{...(source.attack?.critical??{}),threshold:20},
+        type:{value:"ranged",classification:"weapon"}
+      };
+      source.range={
+        ...(source.range??{}),
+        value:Number(d.range)||0,
+        units:"ft",
+        special:"",
+        override:true
+      };
+      source.damage={
+        ...(source.damage??{}),
+        includeBase:true,
+        parts:Array.isArray(source.damage?.parts)?source.damage.parts:[],
+        critical:{...(source.damage?.critical??{}),bonus:""}
+      };
+
+      update["system.activities."+source._id]=source;
+      keeper={id:source._id,_id:source._id,_source:source,...source};
+    }
+
+    const id=activityId(keeper);
+    if(!id)return {
+      update:{},
+      ambiguous:true,
+      attackCount:attacks.length,
+      reason:"keeper-missing-id"
+    };
+
+    const src=keeper?._source??keeper??{};
+    const set=(path,current,value)=>{
+      let same=false;
+      try{same=JSON.stringify(current??null)===JSON.stringify(value??null)}
+      catch{same=current===value}
+      if(!same)update["system.activities."+id+"."+path]=value;
+    };
+
+    set("name",src?.name??keeper?.name??"","Attack");
+    set("img",src?.img??keeper?.img??null,item?.img??null);
+    set("sort",Number(src?.sort??keeper?.sort??0)||0,100000);
+    set("activation.type",src?.activation?.type??keeper?.activation?.type??"","action");
+    set("activation.value",Number(src?.activation?.value??keeper?.activation?.value??0)||0,1);
+    set("attack.ability",src?.attack?.ability??keeper?.attack?.ability??"","dex");
+    set("attack.bonus",src?.attack?.bonus??keeper?.attack?.bonus??"","");
+    set("attack.flat",Boolean(src?.attack?.flat??keeper?.attack?.flat),false);
+    set("attack.type.value",src?.attack?.type?.value??keeper?.attack?.type?.value??"","ranged");
+    set("attack.type.classification",src?.attack?.type?.classification??keeper?.attack?.type?.classification??"","weapon");
+    set("range.value",Number(src?.range?.value??keeper?.range?.value??0)||0,Number(d.range)||0);
+    set("range.units",src?.range?.units??keeper?.range?.units??"","ft");
+    set("range.override",Boolean(src?.range?.override??keeper?.range?.override),true);
+    set("damage.includeBase",Boolean(src?.damage?.includeBase??keeper?.damage?.includeBase),true);
+
+    for(const a of attacks){
+      const otherId=activityId(a);
+      if(!otherId||otherId===id)continue;
+      if(legacyAttackStub(a)){
+        update["system.activities.-="+otherId]=null;
+      }
+    }
+
+    if(Object.keys(update).length){
+      update["flags."+FLAG+".attackActivityCleanupVersion"]="canonical-single-attack-2026-09-30";
+    }
+
+    return {
+      update,
+      ambiguous:false,
+      attackCount:attacks.length,
+      keeperId:id
+    };
   }
+
   function legacyNestedIdentifierQuarantined(item) {
     const build = Number(game.release?.build ?? 0);
     if (build >= 368) return false;
@@ -210,10 +341,16 @@
       console.warn("FEHA WEAPON CATALOG // identifier source repair failed",item?.name,error);
       throw error;
     }
-    const f=item.flags?.[FLAG]??{},u=attackCleanupUpdate(item),vals=flagValues(d);
-    if(Object.keys(u).length){
-      u["flags."+FLAG+".attackActivityCleanupVersion"]="single-attack-2026-09-30";
+    const attackPlan=canonicalAttackUpdate(item,d);
+    if(attackPlan.ambiguous){
+      console.warn(
+        "FEHA WEAPON CATALOG // preserved ambiguous attack activities",
+        item?.name,
+        item?.uuid??item?.id,
+        attackPlan
+      );
     }
+    const f=item.flags?.[FLAG]??{},u={...(attackPlan.update??{})},vals=flagValues(d);
     for(const stale of ["mk","rating","tier","ratingLabel","marketTier"])if(Object.prototype.hasOwnProperty.call(f,stale))u["flags."+FLAG+".-="+stale]=null;
     for(const [k,v] of Object.entries(vals)){let same=false;try{same=JSON.stringify(f[k]??null)===JSON.stringify(v)}catch{same=f[k]===v}if(!same)u["flags."+FLAG+"."+k]=v}
     const desc=String(item.system?.description?.value??"");
@@ -245,6 +382,6 @@
     const result={world,owned,canonicalCount:definitions.length,missing,skipped:false}; console.log("FEHA WEAPON CATALOG",VERSION,"final reviewed catalog canonicalized",result);
     if(missing.length)ui?.notifications?.warn?.("FEHA Final Gun Catalog: "+missing.length+" canonical gun(s) missing. Check console."); try{globalThis.ADKMarket?.refresh?.()}catch{} return result;
   }
-  const api={version:VERSION,rewriteVersion:REWRITE,reviewSeed:REVIEW_SEED,definitions:Object.freeze(Object.fromEntries(definitions.map(d=>[d.key,Object.freeze({...d,special:d.special?Object.freeze({...d.special}):null})]))),list:()=>definitions.map(d=>({...d,special:d.special?{...d.special}:null})),definition,rewriteDescription,migrateItem,migrateAll,destroy(){if(globalThis.FEHA_WEAPON_CATALOG===api)delete globalThis.FEHA_WEAPON_CATALOG;if(game?.adk?.weapons===api)delete game.adk.weapons;}};
+  const api={version:VERSION,rewriteVersion:REWRITE,reviewSeed:REVIEW_SEED,definitions:Object.freeze(Object.fromEntries(definitions.map(d=>[d.key,Object.freeze({...d,special:d.special?Object.freeze({...d.special}):null})]))),list:()=>definitions.map(d=>({...d,special:d.special?{...d.special}:null})),definition,rewriteDescription,legacyAttackStub,canonicalAttackUpdate,migrateItem,migrateAll,destroy(){if(globalThis.FEHA_WEAPON_CATALOG===api)delete globalThis.FEHA_WEAPON_CATALOG;if(game?.adk?.weapons===api)delete game.adk.weapons;}};
   game.adk??={}; game.adk.weapons=api; globalThis.FEHA_WEAPON_CATALOG=api; console.log("FEHA WEAPON CATALOG",VERSION,"ready //",definitions.length,"final reviewed guns");
 })();
