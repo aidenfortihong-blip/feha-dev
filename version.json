@@ -1,13 +1,12 @@
 {
-  "version": "0.11.59",
+  "version": "0.11.60",
   "updated": "2026-09-30",
-  "scope": "simplified-weapons-armor-and-manual-reload",
+  "scope": "full-world-hygiene-audit-and-safe-legacy-attack-cleanup",
   "notes": [
-    "Simplifies firearm manufacturer rules for tabletop reliability: Bastion extra attack is manual, Corvus RAM Thief is manual and restores 1d2/1d3/1d4/1d6/1d8 RAM by the wielder's Cyberdeck Mk only when the killed enemy had an installed Cyberdeck, and Helix/Jade/Vektor/Kurohane/ForgeLine weapon traits remain player-tracked.",
-    "Reframes weapon reload values as reload points: Action +2, Bonus Action +1. Adds a small actor-side manual reload tracker with +Action, +Bonus, -1, and Reset controls without spending actions or refilling ammo automatically.",
-    "ForgeLine Rivet Work Armor Anchor Plating now grants universal AC +1/+1/+2/+2/+3 after a no-move turn until the start of the wearer's next turn.",
-    "Bastion Combat Plate Take the Bullet now uses flat firearm DR 5/10/15/20/30 instead of removing damage dice.",
-    "Removes the temporary 0.11.55-0.11.57 identifier tracing infrastructure while retaining the 14.367 nested-identifier quarantine proven by the trace.",
-    "Weapon ratings/prices are intentionally retained for now; Corvus balance will be rechecked after Cyberdeck Mk/RAM values are finalized."
+    "Adds FEHA_WORLD_HYGIENE, a comprehensive live audit covering world/actor item counts, duplicate attack activities, invalid identifier fields, stale item descriptions, duplicate world/actor item names, duplicate actor cyberware source copies, retired/legacy content, and catalog coverage.",
+    "Automatically removes only a proven-safe legacy dnd5e attack stub when the same weapon already has a separate real attack activity; ambiguous multi-attack weapons are reported and left untouched.",
+    "Foundry 14.367 malformed-identifier quarantine is respected, so a weapon with invalid persisted identifiers is skipped rather than triggering validation spam.",
+    "Stores the full live report at globalThis.__FEHA_WORLD_HYGIENE_REPORT and the complete pass at globalThis.__FEHA_WORLD_HYGIENE_LAST_PASS.",
+    "No cyberware redesign, balance changes, folder deletions, actor-item deletions, or broad automatic cleanup is performed."
   ]
 }
