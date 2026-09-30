@@ -1,12 +1,12 @@
 {
-  "version": "0.11.28",
+  "version": "0.11.29",
   "updated": "2026-09-29",
-  "scope": "weapon-mk-label-removal",
+  "scope": "hard-remove-weapon-mk-badges",
   "notes": [
-    "Weapons have no Mk designation.",
-    "ADK Market now omits the Mk badge from weapon-card HTML entirely instead of merely hiding it with CSS.",
-    "Finished weapon sheets continue to strip stale mk, rating, tier, ratingLabel, and marketTier metadata.",
-    "Internal marketBand remains a non-display vendor stocking control only and is never presented as a weapon Mk or player-facing weapon stat.",
-    "Mk presentation remains unchanged for equipment categories that actually use Mk progression."
+    "Weapon cards can no longer display Mk badges.",
+    "Market stock patch now installs a MutationObserver that identifies rendered weapon cards by their item IDs and physically removes any .item-mk node from those cards.",
+    "The runtime guard works even if an older cached Market template still emits Mk markup.",
+    "World Market macro patching still omits Mk markup for weapons at the source, so the DOM guard is a defensive fallback rather than the primary presentation.",
+    "Finished gun sheets remain free of mk, rating, tier, ratingLabel, and marketTier metadata."
   ]
 }
