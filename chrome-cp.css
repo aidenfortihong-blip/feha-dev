@@ -507,6 +507,8 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .po
   position: relative !important;
   border: 1px dashed var(--cp-red-dim) !important;
   background: transparent !important;
+  /* Legacy CSS draws the socket as a rotated diamond; keep the CP "+" upright. */
+  transform: none !important;
 }
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port.is-empty .port-socket i {
