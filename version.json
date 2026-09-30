@@ -1,12 +1,12 @@
 {
-  "version": "0.11.33",
+  "version": "0.11.34",
   "updated": "2026-09-29",
-  "scope": "mega-gun-review-readiness-fix",
+  "scope": "flat-weapon-folder-organization",
   "notes": [
-    "Fixed the mega gun pass so only exact base-model names can resolve to the canonical weapon catalog.",
-    "Stale weaponCatalogKey/originalLibraryName flags on reskins can no longer promote suffixed variants into DONE.",
-    "Weapon Readiness now scans only the seven real manufacturer roots and explicitly excludes -1reskin/archive roots.",
-    "The readiness contract now carries the raw 81 canonical names instead of deriving the loader count from a normalized Set.",
-    "A rerun repairs the failed pass by moving suffixed/reskin weapons back to NOT DONE while keeping the 81 base guns canonical."
+    "Canonical mega-pass guns now live directly in their manufacturer folders.",
+    "DONE and NOT DONE status folders are no longer used.",
+    "Melee items are consolidated into MELEE.",
+    "All remaining non-canonical items under 01 — WEAPONS are parked in OTHER for later review.",
+    "Empty legacy organizer folders are removed after their contents are moved."
   ]
 }
