@@ -1,14 +1,12 @@
 {
-  "version": "0.11.36",
+  "version": "0.11.37",
   "updated": "2026-09-29",
-  "scope": "do-these-reviewed-gun-import",
+  "scope": "repair-final-gun-world-copies",
   "notes": [
-    "Imported the completed Do these review workflow from the 78-weapon export.",
-    "The first 4.1 review pass reconciles edits made directly inside the review card with live Foundry damage/range fields and FEHA weapon flags.",
-    "The four explicit GM notes are applied: Crusher to 5 shells, Igla to 16d2, Liberty to a 4-round magazine with 2 attacks, and Tactician to 5 shells.",
-    "Inline review-card edits are honored, including the ForgeLine, Helix, Jade Arc, and Quietus changes from the completed pass.",
-    "Previously skipped repaired entries are accepted from their Do these folders even when their names or old profiles differ from the original 81-model seed.",
-    "Metel uses the reviewed Tracker rule and Razor Choir uses the reviewed Truesight 30 ft identity.",
-    "The mechanical reconciliation is versioned and runs once per weapon; later ADK DEV LOADER runs keep the finalized live mechanics instead of reimporting the review text."
+    "Repair pass for finalized gun source items that still showed the old ADK WEAPON PROFILE card.",
+    "FEHA_WEAPON_CATALOG 3.0.1 now canonicalizes managed/finalized world copies in addition to items still physically under Do these and actor-owned copies.",
+    "Market-ready/finalized canonical guns such as Monarch Zero, Black Requiem, and Twin Viper are repaired even when their source item is no longer inside the Do these folder tree.",
+    "The final-card rewrite now verifies the actual description marker as well as the migration seed, so a stale or partially stamped description cannot be skipped.",
+    "The permanent reviewed 78-gun stats remain unchanged; this pass repairs migration coverage and presentation/mechanics synchronization only."
   ]
 }
