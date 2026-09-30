@@ -1,11 +1,11 @@
 {
-  "version": "0.11.52",
+  "version": "0.11.53",
   "updated": "2026-09-30",
-  "scope": "weapon-identifier-validation-hotfix",
+  "scope": "legacy-firearm-identifier-source-repair",
   "notes": [
-    "Hardens canonical firearm migration against legacy blank dnd5e item identifiers.",
-    "Compares persisted source identifiers instead of only prepared system values, so HMG, MA70, and any similar legacy firearm are repaired before later system updates.",
-    "Uses Foundry fallback handling only while repairing an invalid persisted firearm identifier.",
-    "Weapon runtime remains observer-only; no manufacturer automation or gameplay rule changes are added."
+    "Repairs legacy canonical firearm source identifiers before ordinary partial system updates.",
+    "For an invalid persisted firearm identifier only, performs one controlled full-system replacement with the canonical slug.",
+    "Removes only blank legacy activity visibility identifiers during that repair so dnd5e SchemaField validation cannot block the parent Item fix.",
+    "Leaves valid firearms, manufacturer rules, weapon observer behavior, armor behavior, and all other gameplay systems unchanged."
   ]
 }
