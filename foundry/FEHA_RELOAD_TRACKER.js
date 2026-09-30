@@ -7,11 +7,13 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.1.0";
+  const VERSION = "2.2.0";
   const FLAG = "fleshEnshrouded";
   const HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
-  const recentUses = new Map();
+  const recentRolls = new Map();
+  const lastAttackByWeapon = new Map();
+  const lastWeaponByActor = new Map();
   let hideTimer = null;
 
   function definition(item) {
@@ -22,6 +24,11 @@
 
   function actorFor(item) {
     return item?.parent?.documentName === "Actor" ? item.parent : null;
+  }
+
+  function weaponKey(item) {
+    const actor = actorFor(item);
+    return String(actor?.id ?? "")+":"+String(item?.id ?? "");
   }
 
   function activityItem(activity) {
@@ -191,14 +198,21 @@
 
   function resolveOpenTarget(input=null) {
     if (input?.documentName === "Item") return input;
-    if (input?.documentName === "Actor") {
-      const items = equippedFirearms(input);
-      return items[0] ?? null;
-    }
 
-    const actor = selectedActor();
+    const actor =
+      input?.documentName === "Actor"
+        ? input
+        : selectedActor();
+
     const items = equippedFirearms(actor);
-    return items[0] ?? null;
+    if (!items.length) return null;
+
+    const lastId =
+      String(lastWeaponByActor.get(String(actor?.id ?? "")) ?? "");
+
+    return items.find(item => String(item.id) === lastId) ??
+      items[0] ??
+      null;
   }
   function activities(item) {
     const collection = item?.system?.activities;
@@ -293,18 +307,73 @@
   async function rollDamage(item,event=null) {
     const activity = primaryAttack(item);
     if (!activity || typeof activity.rollDamage !== "function") {
-      ui.notifications?.warn?.("FEHA Weapon Tracker // no damage action found for "+String(item?.name ?? "weapon")+".");
+      ui.notifications?.warn?.(
+        "FEHA Weapon Tracker // no damage action found for "+
+        String(item?.name ?? "weapon")+"."
+      );
       return {ok:false,reason:"no-damage-action"};
     }
 
+    const context =
+      lastAttackByWeapon.get(weaponKey(item)) ??
+      null;
+
+    const config = {event};
+    if (context?.attackMode) config.attackMode = context.attackMode;
+    if (context?.isCritical === true) config.isCritical = true;
+    if (context?.ammunition) config.ammunition = context.ammunition;
+
     try {
-      const result = await activity.rollDamage({event});
-      return {ok:true,result,activity};
+      const result = await activity.rollDamage(config);
+      return {ok:true,result,activity,context};
     } catch (error) {
-      console.warn("FEHA WEAPON TRACKER // damage roll failed",item?.name,error);
-      ui.notifications?.warn?.("FEHA Weapon Tracker // damage roll failed. Check console.");
+      console.warn(
+        "FEHA WEAPON TRACKER // damage roll failed",
+        item?.name,
+        error
+      );
+      ui.notifications?.warn?.(
+        "FEHA Weapon Tracker // damage roll failed. Check console."
+      );
       return {ok:false,reason:"damage-failed",error};
     }
+  }
+
+  function rememberAttackContext(item,rolls=[]) {
+    const first =
+      Array.isArray(rolls)
+        ? rolls[0]
+        : rolls?.[0] ?? null;
+
+    const options = first?.options ?? {};
+    const actor = actorFor(item);
+
+    let ammunition = null;
+    const ammoId =
+      String(options?.ammunition ?? "").trim();
+
+    if (ammoId && actor?.items?.get) {
+      ammunition = actor.items.get(ammoId) ?? null;
+    }
+
+    const context = {
+      at:Date.now(),
+      attackMode:String(options?.attackMode ?? "") || null,
+      isCritical:Boolean(first?.isCritical),
+      ammunition,
+      rollId:String(first?.id ?? first?._id ?? "")
+    };
+
+    lastAttackByWeapon.set(weaponKey(item),context);
+
+    if (actor?.id) {
+      lastWeaponByActor.set(
+        String(actor.id),
+        String(item.id)
+      );
+    }
+
+    return context;
   }
 
 
@@ -373,6 +442,34 @@
     root.dataset.actorId = String(actor?.id ?? "");
     root.dataset.itemId = String(item.id ?? "");
 
+    if (actor?.id) {
+      lastWeaponByActor.set(String(actor.id),String(item.id));
+    }
+
+    const equipped = equippedFirearms(actor);
+    const weaponTabs = equipped.length > 1
+      ? (
+        '<div style="display:flex;gap:5px;flex-wrap:wrap;margin:0 0 9px">' +
+        equipped.map(weapon => {
+          const active = String(weapon.id) === String(item.id);
+          const safeName = String(weapon.name ?? "Weapon")
+            .replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;");
+          return '<button type="button" data-feha-wt="weapon" data-weapon-id="'+
+            String(weapon.id).replace(/"/g,"&quot;")+
+            '" style="padding:5px 8px;background:'+
+            (active ? '#163844' : '#091317')+
+            ';border:1px solid '+(active ? '#5ee7ff' : '#2b4249')+
+            ';color:'+(active ? '#fff' : '#9ab0b8')+
+            ';font-size:10px;font-weight:800">'+
+            safeName+
+            '</button>';
+        }).join("")+
+        '</div>'
+      )
+      : "";
+
     const status =
       current.empty ? "RELOAD REQUIRED" :
       current.reload > 0 ? "RELOADING" :
@@ -413,6 +510,7 @@
 
     root.innerHTML =
       '<div style="padding:10px 12px 11px">' +
+        weaponTabs +
         '<div style="display:flex;align-items:center;gap:10px">' +
           '<img src="'+String(item.img ?? "icons/svg/item-bag.svg").replace(/"/g,"&quot;")+'" style="width:48px;height:48px;object-fit:cover;border:1px solid #356473;background:#02090c">' +
           '<div style="min-width:0;flex:1">' +
@@ -471,6 +569,17 @@
       }
 
       const liveActor = game.actors?.get?.(root.dataset.actorId);
+
+      if (action === "weapon") {
+        const next =
+          liveActor?.items?.get?.(button.dataset.weaponId);
+
+        if (next && isTrackable(next)) {
+          show(next,{flash:"WEAPON SELECTED"});
+        }
+        return;
+      }
+
       const liveItem = liveActor?.items?.get?.(root.dataset.itemId);
       if (!liveItem) {
         root.remove();
@@ -503,45 +612,86 @@
     return root;
   }
 
-  function useKey(activity,item) {
-    const actor = actorFor(item);
-    return [
-      String(actor?.id ?? ""),
-      String(item?.id ?? ""),
-      String(activity?.id ?? activity?._id ?? "")
-    ].join(":");
+  function rollKey(item,rolls=[]) {
+    const first =
+      Array.isArray(rolls)
+        ? rolls[0]
+        : rolls?.[0] ?? null;
+
+    const stamp =
+      String(first?.id ?? first?._id ?? "") ||
+      String(first?.options?.dialogOptions?.id ?? "") ||
+      String(Date.now());
+
+    return weaponKey(item)+":"+stamp;
   }
 
-  function onPostUseActivity(activity) {
+  function onPostRollAttack(rolls,data={}) {
+    const activity = data?.subject ?? null;
     const item = activityItem(activity);
     if (!isTrackable(item)) return;
 
     const actor = actorFor(item);
     if (!actor || actor.isOwner === false) return;
 
-    const activityType = String(activity?.type ?? "").toLowerCase();
-    if (activityType && activityType !== "attack") return;
-
-    const key = useKey(activity,item);
+    const key = rollKey(item,rolls);
     const now = Date.now();
-    const last = Number(recentUses.get(key) ?? 0);
+    const last = Number(recentRolls.get(key) ?? 0);
 
-    if (now-last < 400) return;
-    recentUses.set(key,now);
+    if (now-last < 1000) return;
+    recentRolls.set(key,now);
 
-    for (const [entry,time] of recentUses) {
-      if (now-time > 5000) recentUses.delete(entry);
+    for (const [entry,time] of recentRolls) {
+      if (now-time > 10000) recentRolls.delete(entry);
     }
 
+    rememberAttackContext(item,rolls);
+
     void recordShot(item).catch(error => {
-      console.warn("FEHA WEAPON TRACKER // shot tracking failed",item?.name,error);
+      console.warn(
+        "FEHA WEAPON TRACKER // shot tracking failed",
+        item?.name,
+        error
+      );
     });
+  }
+
+  async function cleanupLegacyState() {
+    if (!game.user?.isGM) return {actors:0};
+
+    let actors = 0;
+
+    for (const actor of game.actors?.contents ?? []) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          actor.flags?.[FLAG] ?? {},
+          "reloadTracker"
+        )
+      ) {
+        continue;
+      }
+
+      try {
+        await actor.update({
+          ["flags."+FLAG+".-=reloadTracker"]:null
+        });
+        actors++;
+      } catch (error) {
+        console.warn(
+          "FEHA WEAPON TRACKER // legacy reload state cleanup failed",
+          actor?.name,
+          error
+        );
+      }
+    }
+
+    return {actors};
   }
 
   function installHooks() {
     hooks.push([
-      "dnd5e.postUseActivity",
-      Hooks.on("dnd5e.postUseActivity",onPostUseActivity)
+      "dnd5e.postRollAttack",
+      Hooks.on("dnd5e.postRollAttack",onPostRollAttack)
     ]);
   }
 
@@ -554,6 +704,8 @@
     primaryAttack,
     useAttack,
     rollDamage,
+    rememberAttackContext,
+    cleanupLegacyState,
     recordShot,
     undoShot,
     addReload,
@@ -563,6 +715,7 @@
 
     async init() {
       purgeLegacyPanels();
+      await cleanupLegacyState();
       installHooks();
       game.adk ??= {};
       game.adk.weaponTracker = api;
@@ -585,7 +738,9 @@
         try { Hooks.off(event,id); } catch {}
       }
 
-      recentUses.clear();
+      recentRolls.clear();
+      lastAttackByWeapon.clear();
+      lastWeaponByActor.clear();
       purgeLegacyPanels();
       document.getElementById(HUD_ID)?.remove?.();
 
