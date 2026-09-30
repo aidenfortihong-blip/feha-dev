@@ -305,7 +305,7 @@
     marketSkin.id = "feha-market-cp-css";
     marketSkin.dataset.adkCommit = sha.slice(0,7);
     marketSkin.textContent =
-      '@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@500;600;700&family=Share+Tech+Mono&display=swap");\n' +
+      '@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@500;600;700&family=Share+Tech+Mono&family=Dela+Gothic+One&display=swap");\n' +
       source.marketSkinCss + "\n\n" + source.chromeSkinCss + "\n\n" + source.cyberdeckSkinCss;
     document.head.appendChild(marketSkin);
 

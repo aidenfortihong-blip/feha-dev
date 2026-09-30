@@ -1,12 +1,12 @@
 {
   "version": "0.11.84",
   "updated": "2026-09-30",
-  "scope": "cyberdeck-fui-skin",
+  "scope": "cyberdeck-fui-tile-sheet",
   "notes": [
-    "Cyberdeck loadout restyled after the monochrome HUD / FUI reference: white on black, flat grey panels with hairline outlines and corner ticks, no magenta/yellow accents.",
-    "Blocky Chakra Petch display type with an outlined 'OS' in the CYBERDECK OS logotype; Share Tech Mono for small labels (':NETRUNNER LOADOUT:', '_DECK MEMORY').",
-    "RAM pips are ring glyphs that fill white; empty software slots show a ring '+'; the offline reticle is concentric rings; the operator portrait is greyscale.",
-    "JACK IN is a solid white bar with black type that inverts on hover (light grey while hardware is offline).",
-    "New cyberdeck-cp.css is loaded with the Market and Chrome skins. Styling only: no RAM, Quickhack load/eject, Short Rest or JACK IN behavior changed. Text passes WCAG AA contrast."
+    "Cyberdeck loadout rebuilt as the monochrome 'HUD / FUI ELEMENTS' tile sheet: text-only header (':CYBERDECK OS:', '_RAM', '_DECK', '_SOFTWARE'), a two-row strip of numbered square tiles (L1-L24) with ring glyphs, a CYBERDECK logo tile, then big panels.",
+    "RAM is the ring strip: available RAM shows solid white ring designs that vary like the reference's L1-L12, spent RAM shows outlined rings.",
+    "Operator portrait gets its own greyscale panel; the Quickhack / software panel carries a giant outlined サイバーデッキ; the deck-passive tile carries a stacked CYBER / DECK mark.",
+    "JACK IN is a full-width yellow bar with a cut corner, inverting to black on hover. Below 1180px wide the side tiles drop under the software panel.",
+    "Pure CSS re-flow of the existing loadout DOM (cyberdeck-cp.css); fonts Chakra Petch, Share Tech Mono and Dela Gothic One added to the shared import. No RAM, Quickhack, Short Rest or JACK IN behavior changed."
   ]
 }

@@ -907,6 +907,11 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:foc
   color: var(--fui-yellow) !important;
 }
 
+/* Telemetry diagram is SVG-coloured; keep it monochrome with the sheet. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-stage {
+  filter: grayscale(1) contrast(1.15) !important;
+}
+
 /* Narrow windows: side tiles drop below the software panel. */
 @media (max-width: 1180px) {
   html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 {
