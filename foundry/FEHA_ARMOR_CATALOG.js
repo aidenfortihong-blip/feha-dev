@@ -105,7 +105,7 @@
       armorType:"medium",
       dexCap:0,
       ac:[14,16,18,20,22],
-      price:[950,2300,4950,12750,30000],
+      price:[700,1700,4500,12000,30000],
       weight:[11,12,14,16,18],
       effect:mk => ({
         key:"neural-isolation",
@@ -123,7 +123,7 @@
       armorType:"medium",
       dexCap:0,
       ac:[14,16,17,19,21],
-      price:[700,1700,4500,12000,30000],
+      price:[950,2300,4950,12750,30000],
       weight:[12,14,16,18,20],
       effect:mk => ({
         key:"grenade-null",
@@ -155,7 +155,7 @@
     {
       company:"Kurohane Group",
       line:"Ghostweave Suit",
-      flavor:"Low-profile Arasaka-style covert armor built around speed, silence, and avoiding the shot instead of trying to become heavier than it.",
+      flavor:"Low-profile covert armor built around speed, silence, and avoiding the shot instead of trying to become heavier than it.",
       armorType:"light",
       dexCap:null,
       ac:[13,15,16,18,20],
