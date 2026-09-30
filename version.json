@@ -1,13 +1,14 @@
 {
   "version": "0.11.36",
   "updated": "2026-09-29",
-  "scope": "permanent-reviewed-gun-catalog",
+  "scope": "do-these-reviewed-gun-import",
   "notes": [
-    "Rebuilt the permanent weapon catalog from the GM-reviewed Do these export: 78 finished weapons across seven manufacturers.",
-    "Applied both styles of review edits: explicit GM REVIEW NOTES and direct edits made inside the displayed weapon profile.",
-    "Final review changes include the Bastion shell/mag adjustments, the Corvus Tracker and Truesight edits, ForgeLine profile edits, Helix capacity/damage edits, Jade Arc profile edits, Quietus becoming a Bow, and the reviewed Vektor legacy profiles.",
-    "The permanent catalog now follows the actual Do these membership rather than the older 81-name draft; Ticon is final, HMG belongs to Jade Arc, and Zhuo, Nue, and Sor22 are not in the finalized set.",
-    "Catalog migration now updates only world weapons inside Do these plus matching actor-owned copies, preventing obsolete outside variants from being promoted again.",
-    "Weapon integration validates that the permanent catalog count exactly matches the live Do these finished set."
+    "Imported the completed Do these review workflow from the 78-weapon export.",
+    "The first 4.1 review pass reconciles edits made directly inside the review card with live Foundry damage/range fields and FEHA weapon flags.",
+    "The four explicit GM notes are applied: Crusher to 5 shells, Igla to 16d2, Liberty to a 4-round magazine with 2 attacks, and Tactician to 5 shells.",
+    "Inline review-card edits are honored, including the ForgeLine, Helix, Jade Arc, and Quietus changes from the completed pass.",
+    "Previously skipped repaired entries are accepted from their Do these folders even when their names or old profiles differ from the original 81-model seed.",
+    "Metel uses the reviewed Tracker rule and Razor Choir uses the reviewed Truesight 30 ft identity.",
+    "The mechanical reconciliation is versioned and runs once per weapon; later ADK DEV LOADER runs keep the finalized live mechanics instead of reimporting the review text."
   ]
 }
