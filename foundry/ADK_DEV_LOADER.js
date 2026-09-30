@@ -497,10 +497,7 @@
     requireMethods(
       "Consumable Catalog",
       consumableCatalog,
-      [
-        "list","definition","migrateAll","rewriteDescription",
-        "legacyAttackStub","canonicalAttackUpdate"
-      ]
+      ["list","definition","migrateAll","rewriteDescription"]
     );
 
     requireMethods(
@@ -512,7 +509,10 @@
     requireMethods(
       "Weapon Catalog",
       weaponCatalog,
-      ["list","definition","migrateAll","rewriteDescription"]
+      [
+        "list","definition","migrateAll","rewriteDescription",
+        "legacyAttackStub","canonicalAttackUpdate"
+      ]
     );
 
     requireMethods(
