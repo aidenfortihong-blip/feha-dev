@@ -1,12 +1,11 @@
 {
-  "version": "0.11.51",
+  "version": "0.11.52",
   "updated": "2026-09-30",
-  "scope": "weapon-runtime-observer-foundation",
+  "scope": "weapon-identifier-validation-hotfix",
   "notes": [
-    "Adds the hot-reload-safe weapon runtime observer and integrates it into the ADK DEV LOADER.",
-    "Observes combat turns, active-turn movement, canonical firearm use, attack and damage rolls, HP damage and zero-HP transitions, native ammunition updates, capacity-related Item updates, native rests, equipped firearms, and FEHA Bonus Action flags.",
-    "Exposes diagnostics and disabled future-feature switches at game.adk.weaponRuntime.",
-    "No manufacturer passive, armor enforcement, consumable runtime, roll, Actor, Item, Token, or Combat mutation is introduced by this observer build.",
-    "Cyberware remains excluded."
+    "Hardens canonical firearm migration against legacy blank dnd5e item identifiers.",
+    "Compares persisted source identifiers instead of only prepared system values, so HMG, MA70, and any similar legacy firearm are repaired before later system updates.",
+    "Uses Foundry fallback handling only while repairing an invalid persisted firearm identifier.",
+    "Weapon runtime remains observer-only; no manufacturer automation or gameplay rule changes are added."
   ]
 }
