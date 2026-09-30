@@ -512,7 +512,11 @@
         "equippedDefinition",
         "quickhackSaveBonus",
         "empSaveAdvantage",
-        "weaponDamageReduction",
+        "empImmune",
+        "grenadeImmune",
+        "helixSpeedBonus",
+        "forgeLineRangedAcBonus",
+        "bastionBulletProfile",
         "adjustDamage"
       ]
     );
