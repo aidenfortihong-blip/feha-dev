@@ -17,6 +17,7 @@
     consumables:"foundry/FEHA_CONSUMABLE_CATALOG.js",
     armor:"foundry/FEHA_ARMOR_CATALOG.js",
     weapons:"foundry/FEHA_WEAPON_CATALOG.js",
+    uniqueWeapons:"foundry/FEHA_UNIQUE_WEAPON_CATALOG.js",
     grenadeRuntime:"foundry/FEHA_GRENADE_RUNTIME.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
@@ -180,7 +181,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","uniqueWeapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -265,6 +266,7 @@
     evaluate(source.consumables,files.consumables,sha);
     evaluate(source.armor,files.armor,sha);
     evaluate(source.weapons,files.weapons,sha);
+    evaluate(source.uniqueWeapons,files.uniqueWeapons,sha);
     evaluate(source.core,files.core,sha);
     evaluate(source.modRetirement,files.modRetirement,sha);
     evaluate(source.specialRetirement,files.specialRetirement,sha);
@@ -361,6 +363,11 @@
       game.adk?.weapons ??
       null;
 
+    const uniqueWeaponCatalog =
+      globalThis.FEHA_UNIQUE_WEAPON_CATALOG ??
+      game.adk?.uniqueWeapons ??
+      null;
+
     const armorRuntime =
       globalThis.FEHA_ARMOR_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("armorRuntime") ??
@@ -438,6 +445,12 @@
     requireMethods(
       "Weapon Catalog",
       weaponCatalog,
+      ["list","definition","migrateAll","rewriteDescription"]
+    );
+
+    requireMethods(
+      "Unique Weapon Catalog",
+      uniqueWeaponCatalog,
       ["list","definition","migrateAll","rewriteDescription"]
     );
 
@@ -529,6 +542,9 @@
     const weaponDefs =
       weaponCatalog.list?.() ?? [];
 
+    const uniqueWeaponDefs =
+      uniqueWeaponCatalog.list?.() ?? [];
+
     const quickhackDefs =
       quickhackCatalog.list?.() ?? [];
 
@@ -561,6 +577,13 @@
       );
     }
 
+    if (uniqueWeaponDefs.length !== 7) {
+      throw new Error(
+        "Unique Weapon integration expected 7 one-off weapons but found "+
+        uniqueWeaponDefs.length+"."
+      );
+    }
+
     if (quickhackDefs.length !== 20) {
       throw new Error(
         "Quickhack integration expected 20 canonical Quickhacks but found "+
@@ -583,6 +606,7 @@
       consumableDefs.length+" consumables // "+
       armorDefs.length+" armor // "+
       weaponDefs.length+" weapons // "+
+      uniqueWeaponDefs.length+" unique weapons // "+
       quickhackDefs.length+" quickhacks"
     );
 
@@ -641,6 +665,16 @@
         console.info(
           "FEHA DEV // WEAPON CATALOG CANONICALIZED",
           weaponMigration
+        );
+      }
+
+      const uniqueWeaponMigration =
+        await globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.migrateAll?.();
+
+      if (uniqueWeaponMigration) {
+        console.info(
+          "FEHA DEV // UNIQUE WEAPON CATALOG CANONICALIZED",
+          uniqueWeaponMigration
         );
       }
 
