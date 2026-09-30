@@ -1,14 +1,12 @@
 {
-  "version": "0.11.27",
+  "version": "0.11.28",
   "updated": "2026-09-29",
-  "scope": "remove-weapon-mk-semantics",
+  "scope": "weapon-mk-label-removal",
   "notes": [
-    "Finished guns no longer use Mk/rating/tier presentation anywhere.",
-    "Canonical DONE weapon migration deletes stale mk, rating, tier, ratingLabel, and marketTier flags from world and actor-owned weapon copies.",
-    "Weapon vendor progression now uses a hidden marketBand field only for vendor-quality gating; marketBand is not presented as a weapon stat.",
-    "ADK Market weapon cards are tagged separately and their Mk badge is hidden completely.",
-    "Mk filter chips no longer filter weapon results because guns are not Mk equipment.",
-    "Armor, grenades, consumables, Quickhacks, and other Mk-based equipment retain their existing Mk behavior.",
-    "Market stock patch version 1.1.0 re-patches the world Market macro and resets saved vendor stock once so open shops immediately reflect the Mk-free weapon behavior."
+    "Weapons have no Mk designation.",
+    "ADK Market now omits the Mk badge from weapon-card HTML entirely instead of merely hiding it with CSS.",
+    "Finished weapon sheets continue to strip stale mk, rating, tier, ratingLabel, and marketTier metadata.",
+    "Internal marketBand remains a non-display vendor stocking control only and is never presented as a weapon Mk or player-facing weapon stat.",
+    "Mk presentation remains unchanged for equipment categories that actually use Mk progression."
   ]
 }
