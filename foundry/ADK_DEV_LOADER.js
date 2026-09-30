@@ -467,10 +467,10 @@
 
     if (
       !Array.isArray(weaponReadiness.doneNames) ||
-      weaponReadiness.doneNames.length !== 16
+      weaponReadiness.doneNames.length !== 81
     ) {
       throw new Error(
-        "Weapon Readiness expected exactly 16 approved Market weapons."
+        "Weapon Readiness expected exactly 81 canonical mega-review weapons."
       );
     }
 
@@ -553,9 +553,9 @@
       );
     }
 
-    if (weaponDefs.length !== 16) {
+    if (weaponDefs.length !== 81) {
       throw new Error(
-        "Weapon integration expected 16 canonical DONE weapons but found "+
+        "Weapon integration expected 81 canonical mega-review weapons but found "+
         weaponDefs.length+"."
       );
     }
