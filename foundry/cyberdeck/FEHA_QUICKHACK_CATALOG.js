@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.3.0";
+  const VERSION = "4.3.1";
   const FLAG = "fleshEnshrouded";
   const REWRITE = "4.2";
 
@@ -351,6 +351,26 @@
     );
   }
 
+  function inUniqueFolder(item) {
+    let folder = item?.folder ?? null;
+    let guard = 0;
+
+    while (folder && guard++ < 50) {
+      const name = String(folder?.name ?? "").trim().toLowerCase();
+      if (
+        name === "-other" ||
+        name === "other" ||
+        name === "-unique" ||
+        name === "unique"
+      ) {
+        return true;
+      }
+      folder = folder?.folder ?? folder?.parent ?? null;
+    }
+
+    return false;
+  }
+
   function looksLikeQuickhack(item) {
     const flags = item?.flags?.[FLAG] ?? {};
     const sourceCategory = String(
@@ -358,6 +378,16 @@
       flags.category ??
       ""
     ).toLowerCase();
+
+    // Unique weapons can intentionally share names with Quickhacks
+    // (Motor Lock / Optic Zero). Folder/flag identity wins over name matching.
+    if (
+      flags.uniqueWeapon === true ||
+      sourceCategory === "weapons_unique" ||
+      inUniqueFolder(item)
+    ) {
+      return false;
+    }
 
     return Boolean(
       definition(item) ||
