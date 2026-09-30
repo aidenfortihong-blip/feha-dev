@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.5.2";
+  const VERSION = "1.5.3";
   const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -466,25 +466,81 @@
   }
 
   function staleWeaponDescriptionNode(card) {
-    const candidates = [
-      ...card.querySelectorAll(
-        ".item-description,.item-desc,.description,.desc,.item-summary,.item-flavor,.flavor,p"
-      )
-    ].filter(node =>
-      !node.classList?.contains?.("feha-market-weapon-copy") &&
-      !node.querySelector?.("button,[data-buy-item],[data-open-item]")
-    );
+    const blocked = node =>
+      node?.closest?.(
+        ".feha-market-weapon-copy,.item-actions,.card-actions,.actions,"+
+        "button,[data-buy-item],[data-open-item]"
+      );
 
-    const stale = candidates.find(node =>
-      /base damage|ability modifier|\bdamage\s+\d+d\d+/i.test(
-        String(node.textContent ?? "")
-      )
-    );
+    const textOf = node =>
+      String(node?.textContent ?? "")
+        .replace(/\s+/g," ")
+        .trim();
+
+    const obviousSelectors =
+      ".item-description,.item-desc,.description,.desc,"+
+      ".item-summary,.item-flavor,.flavor,p";
+
+    const obvious = [
+      ...card.querySelectorAll(obviousSelectors)
+    ].filter(node => !blocked(node));
+
+    const stale = obvious.find(node => {
+      const text = textOf(node);
+      return (
+        /base damage|ability modifier|\bdamage\s+\d+d\d+/i.test(text) ||
+        (
+          /FEHA\s*\/\//i.test(text) &&
+          /(DAMAGE|REACH|RANGE|STR REQUIREMENT|CLASS DIE)/i.test(text)
+        )
+      );
+    });
 
     if (stale) return stale;
 
-    return candidates.find(node => {
-      const text = String(node.textContent ?? "").replace(/\s+/g," ").trim();
+    // Some Market builds render the item's rich HTML inside an unclassed div.
+    // That is what produced the concatenated "FEHA // ... DAMAGE3d6..." block
+    // seen on melee cards. Search every generic content node, then choose the
+    // deepest/smallest matching node so we replace only the legacy description
+    // and never the whole item card.
+    const generic = [
+      ...card.querySelectorAll("div,section,article,span")
+    ]
+      .filter(node =>
+        node !== card &&
+        !blocked(node)
+      )
+      .map(node => ({
+        node,
+        text:textOf(node)
+      }))
+      .filter(entry =>
+        entry.text.length >= 24 &&
+        entry.text.length <= 1200 &&
+        /FEHA\s*\/\//i.test(entry.text) &&
+        /(DAMAGE|REACH|RANGE|STR REQUIREMENT|CLASS DIE|ONE STRIKE)/i.test(entry.text)
+      )
+      .sort((a,b) => {
+        const depth = node => {
+          let d = 0;
+          let current = node;
+          while (current && current !== card) {
+            d++;
+            current = current.parentElement;
+          }
+          return d;
+        };
+
+        return (
+          depth(b.node)-depth(a.node) ||
+          a.text.length-b.text.length
+        );
+      });
+
+    if (generic.length) return generic[0].node;
+
+    return obvious.find(node => {
+      const text = textOf(node);
       return text && text.length < 420;
     }) ?? null;
   }
@@ -546,10 +602,21 @@
         const signature = weaponSummarySignature(item);
         const existing =
           card.querySelector(".feha-market-weapon-copy");
+        const stale = staleWeaponDescriptionNode(card);
 
-        // Critical: do not rewrite an already-correct card. Replacing the
-        // node on every observer pass causes a self-sustaining MutationObserver
-        // loop that can freeze Foundry when the Market opens.
+        // If an older build appended the new FEHA summary after the buttons
+        // while leaving the original rich description in place, repair both
+        // problems at once: move/replace the summary into the legacy slot.
+        if (
+          existing &&
+          existing.dataset.fehaWeaponSignature === signature &&
+          stale
+        ) {
+          stale.replaceWith(existing);
+          continue;
+        }
+
+        // Critical: do not rewrite an already-correct card.
         if (
           existing &&
           existing.dataset.fehaWeaponSignature === signature
@@ -559,12 +626,16 @@
 
         const fresh = weaponSummaryElement(item);
 
+        if (existing && stale) {
+          stale.replaceWith(fresh);
+          existing.remove();
+          continue;
+        }
+
         if (existing) {
           existing.replaceWith(fresh);
           continue;
         }
-
-        const stale = staleWeaponDescriptionNode(card);
 
         if (stale) {
           stale.replaceWith(fresh);
