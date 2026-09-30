@@ -554,6 +554,30 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar.is-
   opacity: 1 !important;
 }
 
+/* ---------- strip the old magenta/yellow accents ------------------------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head::before {
+  background: var(--fui-white) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-empty-message::before {
+  color: var(--fui-muted) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-right > section::after,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-bus-panel::after {
+  background: linear-gradient(90deg, var(--fui-white), transparent) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram > div,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-deck-summary,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-head b,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jack-state {
+  border-left-color: var(--fui-line) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *,
   html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::before,
