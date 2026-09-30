@@ -164,6 +164,52 @@
   const identifierNotices = [];
   let restoreIdentifierNoticeTrace = () => {};
 
+  const foundryIdentifierErrors = [];
+  let foundryErrorHookId = null;
+
+  const installFoundryErrorTrace = () => {
+    if (!isGM || foundryErrorHookId != null) return;
+    foundryErrorHookId = Hooks.on(
+      "error",
+      (location,error,data={}) => {
+        const message =
+          String(
+            error?.message ??
+            data?.msg ??
+            data?.message ??
+            ""
+          );
+        const stack = String(error?.stack ?? "");
+
+        if (
+          !/identifier can only contain/i.test(message) &&
+          !/SchemaField#?_updateDiff/i.test(message + " " + stack)
+        ) {
+          return;
+        }
+
+        const row = {
+          phase:tracePhase,
+          location:String(location ?? ""),
+          message,
+          notify:String(data?.notify ?? ""),
+          msg:String(data?.msg ?? ""),
+          data,
+          stack
+        };
+
+        foundryIdentifierErrors.push(row);
+        console.error("FEHA FOUNDRY ERROR TRACE",row,error);
+      }
+    );
+  };
+
+  const restoreFoundryErrorTrace = () => {
+    if (foundryErrorHookId == null) return;
+    try { Hooks.off("error",foundryErrorHookId); } catch {}
+    foundryErrorHookId = null;
+  };
+
   const installIdentifierNoticeTrace = () => {
     if (!isGM || !ui?.notifications) return;
     const originalError = ui.notifications.error;
@@ -253,6 +299,7 @@
     muteInfoToasts();
     installItemUpdateTrace();
     installIdentifierNoticeTrace();
+    installFoundryErrorTrace();
     setTracePhase("loader:fetch-preflight");
     console.info(
       isGM
@@ -1277,6 +1324,42 @@
 
     restoreItemUpdateTrace();
     restoreIdentifierNoticeTrace();
+    restoreFoundryErrorTrace();
+
+    if (foundryIdentifierErrors.length) {
+      globalThis.__FEHA_LAST_FOUNDRY_IDENTIFIER_ERRORS =
+        foundryIdentifierErrors.map(row => ({
+          ...row,
+          data:row.data ? {...row.data} : {}
+        }));
+
+      const phaseCounts = {};
+      for (const row of foundryIdentifierErrors) {
+        const key =
+          (row.phase || "unknown") +
+          (row.location ? " @ " + row.location : "");
+        phaseCounts[key] = (phaseCounts[key] ?? 0) + 1;
+      }
+
+      console.table(
+        foundryIdentifierErrors.map(row => ({
+          phase:row.phase,
+          location:row.location,
+          message:row.message
+        }))
+      );
+      console.warn("FEHA FOUNDRY IDENTIFIER ERROR PHASES",phaseCounts);
+
+      ui.notifications.warn(
+        "FEHA CORE TRACE // " +
+        Object.entries(phaseCounts)
+          .map(([phase,count]) => phase + " x" + count)
+          .join(" | "),
+        {permanent:true}
+      );
+    } else {
+      delete globalThis.__FEHA_LAST_FOUNDRY_IDENTIFIER_ERRORS;
+    }
 
     if (identifierNotices.length) {
       globalThis.__FEHA_LAST_IDENTIFIER_NOTICES =
@@ -1364,6 +1447,7 @@
   } catch (err) {
     restoreItemUpdateTrace();
     restoreIdentifierNoticeTrace();
+    restoreFoundryErrorTrace();
     if (identifierFailures.length) {
       globalThis.__FEHA_LAST_IDENTIFIER_FAILURES =
         identifierFailures.map(row => ({...row,paths:[...row.paths]}));
