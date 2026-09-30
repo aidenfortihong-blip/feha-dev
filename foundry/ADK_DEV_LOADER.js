@@ -160,6 +160,44 @@
   const identifierFailures = [];
   let restoreItemUpdateTrace = () => {};
 
+  let tracePhase = "loader:start";
+  const identifierNotices = [];
+  let restoreIdentifierNoticeTrace = () => {};
+
+  const installIdentifierNoticeTrace = () => {
+    if (!isGM || !ui?.notifications) return;
+    const originalError = ui.notifications.error;
+    if (typeof originalError !== "function") return;
+
+    const wrapper = function(message,...args) {
+      const text = String(message ?? "");
+      if (/identifier can only contain/i.test(text)) {
+        const stack = String(new Error("FEHA identifier notice trace").stack ?? "");
+        const row = {
+          phase:tracePhase,
+          message:text,
+          stack
+        };
+        identifierNotices.push(row);
+        console.error("FEHA IDENTIFIER NOTICE TRACE",row);
+      }
+      return originalError.call(this,message,...args);
+    };
+
+    ui.notifications.error = wrapper;
+    restoreIdentifierNoticeTrace = () => {
+      try {
+        if (ui.notifications.error === wrapper) {
+          ui.notifications.error = originalError;
+        }
+      } catch {}
+    };
+  };
+
+  const setTracePhase = phase => {
+    tracePhase = String(phase ?? "unknown");
+  };
+
   const installItemUpdateTrace = () => {
     if (!isGM) return;
     const build = Number(game.release?.build ?? 0);
@@ -214,6 +252,8 @@
   try {
     muteInfoToasts();
     installItemUpdateTrace();
+    installIdentifierNoticeTrace();
+    setTracePhase("loader:fetch-preflight");
     console.info(
       isGM
         ? "FEHA DEV // resolving latest modular build..."
@@ -348,37 +388,27 @@
     document.head.appendChild(style);
     injectedStyle = style;
 
-    evaluate(source.baseJs,files.baseJs,sha);
-    evaluate(source.grenades,files.grenades,sha);
-    evaluate(source.consumables,files.consumables,sha);
-    evaluate(source.armor,files.armor,sha);
-    evaluate(source.weapons,files.weapons,sha);
-    evaluate(source.melee,files.melee,sha);
-    evaluate(source.uniqueWeapons,files.uniqueWeapons,sha);
-    evaluate(source.weaponEconomy,files.weaponEconomy,sha);
-    evaluate(source.core,files.core,sha);
-    evaluate(source.modRetirement,files.modRetirement,sha);
-    evaluate(source.specialRetirement,files.specialRetirement,sha);
-    evaluate(source.armorRuntime,files.armorRuntime,sha);
-    evaluate(source.lumenRetirement,files.lumenRetirement,sha);
-    evaluate(source.derkeImport,files.derkeImport,sha);
-    evaluate(source.weaponReadiness,files.weaponReadiness,sha);
-    evaluate(source.weaponRuntime,files.weaponRuntime,sha);
-    evaluate(source.marketStockPatch,files.marketStockPatch,sha);
-    evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
-    evaluate(source.quickhacks,files.quickhacks,sha);
-    evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
-    evaluate(source.quickhackRuntime,files.quickhackRuntime,sha);
-    evaluate(source.devices,files.devices,sha);
-    evaluate(source.actions,files.actions,sha);
-    evaluate(source.approvals,files.approvals,sha);
-    evaluate(source.cameras,files.cameras,sha);
-    evaluate(source.sync,files.sync,sha);
+    const evaluateTracked = key => {
+      setTracePhase("evaluate:"+key);
+      evaluate(source[key],files[key],sha);
+    };
+
+    for (const key of [
+      "baseJs","grenades","consumables","armor","weapons","melee",
+      "uniqueWeapons","weaponEconomy","core","modRetirement",
+      "specialRetirement","armorRuntime","lumenRetirement","derkeImport",
+      "weaponReadiness","weaponRuntime","marketStockPatch","grenadeRuntime",
+      "quickhacks","quickhackAuthority","quickhackRuntime","devices",
+      "actions","approvals","cameras","sync"
+    ]) {
+      evaluateTracked(key);
+    }
 
     if (!globalThis.FEHA_CYBER_CORE) {
       throw new Error("Cyberdeck Core did not install.");
     }
 
+    setTracePhase("core:init");
     await globalThis.FEHA_CYBER_CORE.init();
 
     const qhAuthorityModule =
@@ -759,6 +789,7 @@
       quickhackDefs.length+" quickhacks"
     );
 
+    setTracePhase("evaluate:v3");
     evaluate(source.v3,files.v3,sha);
 
     const loadedVersion =
@@ -777,6 +808,7 @@
     // This prevents legacy world-item descriptions/effects from surviving an
     // otherwise successful hot reload.
     if (isGM) {
+      setTracePhase("migrate:grenades");
       const grenadeMigration =
         await globalThis.FEHA_GRENADE_CATALOG?.migrateAll?.();
 
@@ -787,6 +819,7 @@
         );
       }
 
+      setTracePhase("migrate:consumables");
       const consumableMigration =
         await globalThis.FEHA_CONSUMABLE_CATALOG?.migrateAll?.();
 
@@ -797,6 +830,7 @@
         );
       }
 
+      setTracePhase("migrate:armor");
       const armorMigration =
         await globalThis.FEHA_ARMOR_CATALOG?.migrateAll?.();
 
@@ -807,6 +841,7 @@
         );
       }
 
+      setTracePhase("migrate:weapons");
       const weaponMigration =
         await globalThis.FEHA_WEAPON_CATALOG?.migrateAll?.();
 
@@ -817,6 +852,7 @@
         );
       }
 
+      setTracePhase("migrate:melee");
       const meleeMigration =
         await globalThis.FEHA_MELEE_CATALOG?.migrateAll?.();
 
@@ -827,6 +863,7 @@
         );
       }
 
+      setTracePhase("migrate:quickhacks");
       const quickhackMigration =
         await globalThis.FEHA_QUICKHACK_CATALOG?.migrateAll?.();
 
@@ -839,6 +876,7 @@
 
       // Run uniques after Quickhacks so one-off weapon identity always wins
       // for deliberate shared names such as Motor Lock and Optic Zero.
+      setTracePhase("migrate:uniqueWeapons");
       const uniqueWeaponMigration =
         await globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.migrateAll?.();
 
@@ -849,6 +887,7 @@
         );
       }
 
+      setTracePhase("migrate:weaponEconomy");
       const weaponEconomyMigration =
         await globalThis.FEHA_WEAPON_ECONOMY?.migrateAll?.();
 
@@ -865,6 +904,7 @@
       // ONLY its description using the matching canonical catalog. This is
       // deliberately description-only: it cannot move folders, alter stats,
       // inventory, ownership, or combat data.
+      setTracePhase("migrate:staleCardSweep");
       const staleCardSweep = {
         world:0,
         owned:0,
@@ -1236,6 +1276,28 @@
     }
 
     restoreItemUpdateTrace();
+    restoreIdentifierNoticeTrace();
+
+    if (identifierNotices.length) {
+      globalThis.__FEHA_LAST_IDENTIFIER_NOTICES =
+        identifierNotices.map(row => ({...row}));
+
+      const phaseCounts = {};
+      for (const row of identifierNotices) {
+        phaseCounts[row.phase] = (phaseCounts[row.phase] ?? 0) + 1;
+      }
+      console.table(identifierNotices);
+      console.warn("FEHA IDENTIFIER NOTICE PHASES",phaseCounts);
+      ui.notifications.warn(
+        "FEHA TRACE PHASES // " +
+        Object.entries(phaseCounts)
+          .map(([phase,count]) => phase + " x" + count)
+          .join(" | "),
+        {permanent:true}
+      );
+    } else {
+      delete globalThis.__FEHA_LAST_IDENTIFIER_NOTICES;
+    }
 
     if (identifierFailures.length) {
       globalThis.__FEHA_LAST_IDENTIFIER_FAILURES =
@@ -1301,6 +1363,7 @@
     );
   } catch (err) {
     restoreItemUpdateTrace();
+    restoreIdentifierNoticeTrace();
     if (identifierFailures.length) {
       globalThis.__FEHA_LAST_IDENTIFIER_FAILURES =
         identifierFailures.map(row => ({...row,paths:[...row.paths]}));
