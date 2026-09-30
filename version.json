@@ -1,12 +1,12 @@
 {
-  "version": "0.11.50",
+  "version": "0.11.51",
   "updated": "2026-09-30",
-  "scope": "force-repair-remaining-stale-firearm-sheets",
+  "scope": "weapon-runtime-observer-foundation",
   "notes": [
-    "Force-repairs the remaining stale firearm sheets identified in the live world: Osprey Prototype, Iron Psalm, Hercules Prototype, Long Vigil, Razor Choir, Twin Viper, Rasetsu Prototype, Black Requiem, Monarch Zero, Pale Kestrel, and Red Wisp.",
-    "Bumped the firearm review seed so managed canonical gun copies are rewritten again from the current unified firearm card.",
-    "Fixed the stale-card sweep so an old card is not skipped merely because it already carries the unified-shell data marker; legacy FINAL GUN / REVIEW STATUS / GM REVIEW NOTES text now always forces repair.",
-    "The targeted repair changes description HTML only during the final sweep; firearm stats, prices, folders, ownership, ammo, and combat state are untouched.",
+    "Adds the hot-reload-safe weapon runtime observer and integrates it into the ADK DEV LOADER.",
+    "Observes combat turns, active-turn movement, canonical firearm use, attack and damage rolls, HP damage and zero-HP transitions, native ammunition updates, capacity-related Item updates, native rests, equipped firearms, and FEHA Bonus Action flags.",
+    "Exposes diagnostics and disabled future-feature switches at game.adk.weaponRuntime.",
+    "No manufacturer passive, armor enforcement, consumable runtime, roll, Actor, Item, Token, or Combat mutation is introduced by this observer build.",
     "Cyberware remains excluded."
   ]
 }

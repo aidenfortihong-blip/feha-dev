@@ -28,6 +28,7 @@
     lumenRetirement:"foundry/FEHA_LUMEN_RETIREMENT.js",
     derkeImport:"foundry/FEHA_DERKE_IMPORT.js",
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
+    weaponRuntime:"foundry/FEHA_WEAPON_RUNTIME.js",
     marketStockPatch:"foundry/FEHA_MARKET_STOCK_PATCH.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
@@ -208,7 +209,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -303,6 +304,7 @@
     evaluate(source.lumenRetirement,files.lumenRetirement,sha);
     evaluate(source.derkeImport,files.derkeImport,sha);
     evaluate(source.weaponReadiness,files.weaponReadiness,sha);
+    evaluate(source.weaponRuntime,files.weaponRuntime,sha);
     evaluate(source.marketStockPatch,files.marketStockPatch,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
@@ -347,6 +349,7 @@
       "lumenRetirement",
       "derkeImport",
       "weaponReadiness",
+      "weaponRuntime",
       "marketStockPatch",
       "grenadeRuntime",
       "quickhacks",
@@ -420,6 +423,11 @@
     const weaponReadiness =
       globalThis.FEHA_WEAPON_READINESS ??
       globalThis.FEHA_CYBER_CORE?.module?.("weaponReadiness") ??
+      null;
+
+    const weaponRuntime =
+      globalThis.FEHA_WEAPON_RUNTIME ??
+      globalThis.FEHA_CYBER_CORE?.module?.("weaponRuntime") ??
       null;
 
     const marketStockPatch =
@@ -531,6 +539,22 @@
       "Weapon Readiness",
       weaponReadiness,
       ["isDoneWeapon","migrate"]
+    );
+
+    requireMethods(
+      "Weapon Runtime",
+      weaponRuntime,
+      [
+        "status",
+        "diagnostics",
+        "enableDiagnostics",
+        "disableDiagnostics",
+        "features",
+        "enable",
+        "disable",
+        "disableAll",
+        "destroy"
+      ]
     );
 
     if (
