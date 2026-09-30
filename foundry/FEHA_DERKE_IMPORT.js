@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_DERKE_IMPORT requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
 
   const ACTOR_ID = "Vr0A1KFh8HFLdDt2";
@@ -18,6 +18,8 @@
 
   const ROOT_FOLDER = "ADK Campaign PCs";
   const PC_FOLDER = "OMEGA — Streetkids";
+  const BUILD_VERSION = "1.0";
+  const PERSONAL_FEATURE = "Kinetic Shift";
 
   const list = collection => {
     if (!collection) return [];
@@ -120,6 +122,16 @@
     if (!Object.prototype.hasOwnProperty.call(flags,"ramCurrent")) {
       update["flags."+FLAG+".ramCurrent"] = 0;
     }
+
+    // Match the lightweight OMEGA PC structure used by Ponyboy/Zach.
+    update["flags."+FLAG+".adkBuilder"] = true;
+    update["flags."+FLAG+".adkVersion"] = "9.0";
+    update["flags."+FLAG+".adkLoadoutVersion"] = "11.0";
+    update["flags."+FLAG+".chromeCapacity"] = 3;
+    update["flags."+FLAG+".chromeMax"] = 3;
+    update["flags."+FLAG+".chromeUsed"] = 0;
+    update["flags."+FLAG+".chromeRulesVersion"] = "12.0";
+    update["flags."+FLAG+".team"] = "OMEGA";
 
     Object.assign(update,tokenPatch(actor));
 
@@ -259,6 +271,181 @@
     return created ?? null;
   }
 
+  function needsBuild(actor) {
+    return String(
+      actor?.flags?.[FLAG]?.derkeBuildVersion ?? ""
+    ) !== BUILD_VERSION;
+  }
+
+  function buildPatch() {
+    return {
+      ["system.abilities.str.value"]:14,
+      ["system.abilities.dex.value"]:16,
+      ["system.abilities.con.value"]:14,
+      ["system.abilities.int.value"]:12,
+      ["system.abilities.wis.value"]:13,
+      ["system.abilities.cha.value"]:10,
+
+      ["system.abilities.str.proficient"]:0,
+      ["system.abilities.dex.proficient"]:1,
+      ["system.abilities.con.proficient"]:1,
+      ["system.abilities.int.proficient"]:0,
+      ["system.abilities.wis.proficient"]:0,
+      ["system.abilities.cha.proficient"]:0,
+
+      ["system.skills.acr.value"]:2,
+      ["system.skills.ani.value"]:0,
+      ["system.skills.arc.value"]:0,
+      ["system.skills.ath.value"]:0,
+      ["system.skills.dec.value"]:0,
+      ["system.skills.his.value"]:0,
+      ["system.skills.ins.value"]:0,
+      ["system.skills.itm.value"]:0,
+      ["system.skills.inv.value"]:0,
+      ["system.skills.med.value"]:0,
+      ["system.skills.nat.value"]:0,
+      ["system.skills.prc.value"]:0,
+      ["system.skills.prf.value"]:0,
+      ["system.skills.per.value"]:0,
+      ["system.skills.rel.value"]:0,
+      ["system.skills.slt.value"]:0,
+      ["system.skills.ste.value"]:0,
+      ["system.skills.sur.value"]:0,
+
+      ["system.attributes.ac.calc"]:"flat",
+      ["system.attributes.ac.flat"]:15,
+      ["system.attributes.hp.max"]:24,
+      ["system.attributes.hp.value"]:24,
+      ["system.attributes.movement.walk"]:30,
+      ["system.attributes.movement.units"]:"ft",
+
+      ["system.resources.primary.value"]:2,
+      ["system.resources.primary.max"]:0,
+      ["system.resources.primary.label"]:"Power Level",
+      ["system.resources.secondary.value"]:0,
+      ["system.resources.secondary.max"]:0,
+      ["system.resources.secondary.label"]:"",
+      ["system.resources.tertiary.value"]:0,
+      ["system.resources.tertiary.max"]:0,
+      ["system.resources.tertiary.label"]:"Chrome",
+
+      ["flags."+FLAG+".derkeBuildVersion"]:BUILD_VERSION
+    };
+  }
+
+  async function ensurePersonalFeature(actor) {
+    if (!actor) return null;
+
+    const personal =
+      list(actor.items).filter(item =>
+        item.type === "feat" &&
+        item.flags?.[FLAG]?.kind === "personal-feature"
+      );
+
+    let feature =
+      personal.find(item =>
+        norm(item.name) === norm(PERSONAL_FEATURE)
+      ) ??
+      null;
+
+    // Derke should have one defining personal skill, same broad structure as
+    // Ponyboy's Dark Horse / Zach's Counterfighter.
+    for (const item of personal) {
+      if (feature && item.id === feature.id) continue;
+
+      if (item.flags?.[FLAG]?.adkGenerated === true) {
+        await item.delete();
+      }
+    }
+
+    const data = {
+      name:PERSONAL_FEATURE,
+      type:"feat",
+      img:"icons/skills/movement/feet-winged-boots-glowing-yellow.webp",
+      system:{
+        description:{
+          value:
+            "<h2>Kinetic Shift</h2>"+
+            "<p><strong>2/Long Rest.</strong> After you hit with an attack, move up to 10 ft without provoking opportunity attacks.</p>",
+          chat:""
+        },
+        uses:{
+          spent:0,
+          max:"2",
+          recovery:[
+            {
+              period:"lr",
+              type:"recoverAll"
+            }
+          ]
+        },
+        activities:{},
+        advancement:{},
+        identifier:"kinetic-shift",
+        source:{
+          revision:1,
+          rules:"2024"
+        },
+        prerequisites:{
+          items:[],
+          repeatable:false
+        },
+        properties:[],
+        requirements:"",
+        type:{
+          value:"",
+          subtype:""
+        }
+      },
+      flags:{
+        [FLAG]:{
+          adkGenerated:true,
+          adkBuilder:true,
+          adkVersion:"9.0",
+          kind:"personal-feature",
+          derkeFeatureVersion:BUILD_VERSION
+        }
+      }
+    };
+
+    if (!feature) {
+      const [created] =
+        await actor.createEmbeddedDocuments(
+          "Item",
+          [data]
+        );
+
+      return created ?? null;
+    }
+
+    await feature.update({
+      name:data.name,
+      img:data.img,
+      "system.description.value":data.system.description.value,
+      "system.uses.max":"2",
+      "system.uses.recovery":data.system.uses.recovery,
+      "system.identifier":"kinetic-shift",
+      ["flags."+FLAG+".adkGenerated"]:true,
+      ["flags."+FLAG+".adkBuilder"]:true,
+      ["flags."+FLAG+".adkVersion"]:"9.0",
+      ["flags."+FLAG+".kind"]:"personal-feature",
+      ["flags."+FLAG+".derkeFeatureVersion"]:BUILD_VERSION
+    });
+
+    return feature;
+  }
+
+  async function buildDerke(actor) {
+    if (!actor) return false;
+
+    if (needsBuild(actor)) {
+      await actor.update(buildPatch());
+    }
+
+    await ensurePersonalFeature(actor);
+    return true;
+  }
+
   async function importDerke() {
     if (!game.user?.isGM) {
       return {
@@ -287,6 +474,7 @@
     );
 
     await ensureCyberwareCache(actor);
+    await buildDerke(actor);
 
     try {
       globalThis.ADKChromeBackend?.refreshActors?.();
@@ -300,6 +488,9 @@
       skipped:false,
       created,
       repaired:true,
+      built:true,
+      powerLevel:2,
+      personalFeature:PERSONAL_FEATURE,
       actorId:actor.id,
       name:actor.name,
       folder:folder.name,
@@ -327,7 +518,10 @@
     rosterKey:ROSTER_KEY,
     rosterCode:ROSTER_CODE,
     portrait:PORTRAIT,
+    buildVersion:BUILD_VERSION,
+    personalFeature:PERSONAL_FEATURE,
     findDerke,
+    buildDerke,
     importDerke,
 
     async init() {
