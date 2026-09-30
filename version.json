@@ -1,14 +1,14 @@
 {
-  "version": "0.11.31",
+  "version": "0.11.32",
   "updated": "2026-09-29",
-  "scope": "derke-power-level-2-build",
+  "scope": "mega-gun-review-81",
   "notes": [
-    "Derke now uses the same lightweight OMEGA PC structure as Ponyboy and Zach rather than remaining an all-10s empty actor shell.",
-    "Derke is Power Level 2 with 24 HP, AC 15, 30 ft Speed, STR 14, DEX 16, CON 14, INT 12, WIS 13, CHA 10.",
-    "Derke has Dexterity and Constitution save proficiency and one trained skill: Acrobatics.",
-    "Derke receives exactly one generated personal feature: Kinetic Shift.",
-    "Kinetic Shift: 2/Long Rest; after Derke hits with an attack, he can move up to 10 ft without provoking opportunity attacks.",
-    "Derke starts with Cyberware Capacity 3 and zero installed chrome in the one-time build migration. Future loader runs preserve his live chrome progression and current HP/stat edits instead of resetting them.",
-    "The build is versioned and only applies the canonical baseline once; the importer still repairs identity, folder, portrait, token, cache, and ADK roster scaffolding afterward."
+    "Expanded the canonical firearm catalog from 16 to 81 base-model guns across Bastion, Corvus, ForgeLine, Helix, Jade Arc, Kurohane, and Vektor.",
+    "Gun class dice remain consistent while dice count, physical magazine, functional attacks, range, reload, and STR carry most model identity.",
+    "Ballistic magazines track physical capacity separately from attacks-before-reload; shotgun d2 values represent pellets and consume shells rather than one round per die.",
+    "Helix uses ENERGY EFFICIENCY, Jade Arc uses OVERDRIVEN ENERGY, and Kurohane uses LOW SIGNATURE as manufacturer-wide doctrines.",
+    "Corvus remains the deliberate exception: all seven Corvus guns have bespoke neural/network subsystems.",
+    "Weapon descriptions now contain an editable GM REVIEW NOTES block and are seeded only once per review seed so manual Foundry edits survive ordinary loader reloads.",
+    "Suffixed/reskin variants remain outside the canonical 81-gun catalog and stay NOT DONE."
   ]
 }
