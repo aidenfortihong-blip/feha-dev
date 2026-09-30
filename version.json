@@ -1,14 +1,13 @@
 {
-  "version": "0.11.68",
+  "version": "0.11.69",
   "updated": "2026-09-30",
-  "scope": "integrated-canonical-weapon-controls",
+  "scope": "single-canonical-weapon-tracker-ui",
   "notes": [
-    "Canonical FEHA firearm sheets now include the live Weapon Tracker controls directly inside the designed weapon page.",
-    "The sheet exposes ATTACK and DAMAGE through the same configured internal dnd5e activity used by the centered Weapon Tracker; raw activity rows remain hidden.",
-    "Reload controls are integrated in-sheet using the locked tabletop model: Action +2 reload points, Bonus Action +1 reload point, with live progress and attacks-remaining state.",
-    "UNDO SHOT, RESET TRACKER, and OPEN FLOATING HUD are available from the same page.",
-    "Actor-owned sheets use their own weapon copy. World/library weapon sheets resolve to the selected token or assigned character's matching owned canonical copy, preferring an equipped copy.",
-    "The in-sheet state refreshes after actions so remaining shots and reload progress update without closing the weapon page.",
-    "No firearm balance, manufacturer rules, armor, cyberware, grenade, or Quickhack rules changed."
+    "Retires the old centered floating Weapon Tracker HUD as a player-facing interface.",
+    "The canonical FEHA firearm sheet is now the only weapon tracker UI for attack, damage, attacks remaining, reload progress, undo, and reset controls.",
+    "FEHA_RELOAD_TRACKER remains as a headless state/combat backend so existing attack tracking and reload logic continue to work without a second overlay.",
+    "Any legacy call to weaponTracker.open() now opens the canonical weapon sheet instead of recreating the retired floating HUD.",
+    "Loader initialization removes any already-open legacy floating tracker so hot reload immediately leaves only the new sheet tracker visible.",
+    "No firearm balance, manufacturer, armor, cyberware, grenade, or Quickhack rules changed."
   ]
 }
