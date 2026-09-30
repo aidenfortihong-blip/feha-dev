@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.0";
-  const REWRITE = "unique-1.0-a";
+  const VERSION = "1.0.1";
+  const REWRITE = "unique-1.0-b";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "Do these";
   const UNIQUE_FOLDERS = new Set(["-other","other","-unique","unique"]);
@@ -214,9 +214,14 @@
   function isUniqueSource(item) {
     if (!item?.folder) return false;
     const chain = ancestorChain(item.folder);
-    const hasRoot = chain.some(f => norm(f?.name) === norm(ROOT_NAME));
-    const hasUnique = chain.some(f => UNIQUE_FOLDERS.has(String(f?.name ?? "").trim().toLowerCase()));
-    return hasRoot && hasUnique;
+    // The actual world authority is the unique folder itself. Do not require
+    // it to be nested under Do these; the user's current world keeps -Other
+    // as its own folder.
+    return chain.some(
+      f => UNIQUE_FOLDERS.has(
+        String(f?.name ?? "").trim().toLowerCase()
+      )
+    );
   }
 
   function rangeText(d) {
@@ -281,7 +286,13 @@
       marketReady:false,
       weaponReadiness:"unique",
       needsReview:false,
-      noMk:true
+      noMk:true,
+      quickhack:false,
+      ramCost:null,
+      priceCredits:null,
+      marketPrice:null,
+      availability:null,
+      tierIdentity:null
     };
   }
 
@@ -297,7 +308,10 @@
     const update = {};
     const values = flagValues(d);
 
-    for (const stale of ["mk","rating","tier","ratingLabel","marketTier"]) {
+    for (const stale of [
+      "mk","rating","tier","ratingLabel","marketTier",
+      "quickhackRewriteVersion"
+    ]) {
       if (Object.prototype.hasOwnProperty.call(flags,stale)) {
         update["flags."+FLAG+".-="+stale] = null;
       }
@@ -348,6 +362,15 @@
     }
     if (String(item.system?.identifier ?? "") !== slug(d.name)) {
       update["system.identifier"] = slug(d.name);
+    }
+
+    // These are one-off rewards, not Quickhack shop entries. Clear any
+    // leftover price written by the old name-collision migration.
+    if (
+      item.system?.price &&
+      Number(item.system.price.value ?? 0) !== 0
+    ) {
+      update["system.price.value"] = 0;
     }
 
     if (!Object.keys(update).length) return false;
