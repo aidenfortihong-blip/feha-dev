@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_MELEE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.0";
-  const REWRITE = "melee-1.0-a";
+  const VERSION = "1.0.1";
+  const REWRITE = "melee-1.0-b";
   const FLAG = "fleshEnshrouded";
   const MELEE_FOLDERS = new Set(["melee","-melee"]);
 
@@ -24,13 +24,11 @@
     "Errata":{
       key:"thermal-runaway",
       name:"THERMAL RUNAWAY",
-      text:"Errata remembers heat during your turn. First hit: normal. Second consecutive hit against the same target: +2d8 fire. Third and later consecutive hits against that target: +4d8 fire and treat worn armor's weapon-damage reduction as 0 for the hit. Runaway resets at the end of your turn or when you attack a different target.",
+      text:"Errata compounds heat during the wielder's turn. The first successful hit is normal. Each consecutive successful hit against the same target adds +4d8 fire damage for every previous Errata hit that turn: hit 2 adds +4d8, hit 3 adds +8d8, hit 4 adds +12d8, continuing without a cap. From the third hit onward, worn armor's weapon-damage reduction is treated as 0 for that hit. The chain resets at end of turn or when a different target is chosen.",
       automation:"manual",
-      stages:[
-        {hit:1,bonus:null},
-        {hit:2,bonus:"2d8 fire"},
-        {hit:3,bonus:"4d8 fire",ignoresWornArmorReduction:true}
-      ],
+      bonusPerPreviousHit:"4d8 fire",
+      uncapped:true,
+      ignoresWornArmorReductionFromHit:3,
       resets:"end-turn-or-target-change"
     },
     "Neurotoxin Knife":{
