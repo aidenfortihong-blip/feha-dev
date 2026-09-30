@@ -6,7 +6,8 @@ Private Cyberpunk UI/audio assets stay in the user's Forge/browser asset map and
 
 ## Current dev build
 
-**0.10.121 — Player Join Bridge + Deep Stability**
+See `version.json` for the current build and
+`HANDOFF/FEHA_MASTER_HANDOFF_2026-09-30.md` for the authoritative handoff.
 
 Cyberdeck V3 is active. V2 remains recovery fallback only.
 

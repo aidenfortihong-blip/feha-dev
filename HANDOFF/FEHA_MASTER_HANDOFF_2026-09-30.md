@@ -1,0 +1,135 @@
+# FEHA / ADK MASTER HANDOFF — 2026-09-30
+
+**Project:** Flesh Enshrouded Heart Ablaze / ADK
+**Repository:** `aidenfortihong-blip/feha-dev` · branch `main`
+**Live world:** `caradactyl.forge-vtt.com` (Forge)
+**Foundry baseline:** 14.367 · dnd5e 5.3.3
+**Current verified build:** **0.11.80** (`8fe57ec`)
+**Known-good checkpoint:** branch `checkpoint-before-claude` (`eeebb69`, build 0.11.78)
+
+This supersedes `FEHA_MASTER_HANDOFF_2026-09-28.md` (build 0.10.79). The older
+handoffs remain the reference for Gateway, JACK IN, Quickhack RAM rules, Network
+Devices, Cameras, canonical roster and visual constitution — none of those rules
+changed. `README.md` "current build" line is not authoritative; `version.json` is.
+
+---
+
+## 1. How FEHA runs (read before editing)
+
+1. The only thing installed in Foundry from this repo is the **FEHA Live Dev
+   Bridge** module (`module.json`, `foundry/FEHA_CLIENT_BOOTSTRAP.js`).
+2. On `ready`, every client (GM and players) fetches
+   `foundry/ADK_DEV_LOADER.js` from `main`.
+3. The loader resolves `main` to a commit SHA, fetches ~30 JS files + 2 CSS,
+   syntax-checks all of them, refuses to run if `version.json.version` ≠
+   `FEHA_TABLETOP_UI_V3.js` `VERSION`, then `eval`s them in order and finally
+   runs catalog migrations **on the GM client only**.
+4. Modules talk through globals (`globalThis.FEHA_*`, `game.adk.*`) and Foundry
+   hooks, not imports. A static dependency graph (`graphify-out/`, untracked)
+   shows each file as its own island — cross-system breakage shows up at runtime.
+
+**Consequence:** a push to `main` is a production deploy to every player on next
+join, and a GM load rewrites world items via migrations.
+
+### Load order (ADK_DEV_LOADER.js)
+
+`latest-dev.js` → grenade / consumable / armor / weapon / melee / unique-weapon
+catalogs → weapon economy → Cyber Core → mod / special retirement → armor runtime
+→ lumen retirement → Derke import → weapon readiness → weapon runtime → reload
+tracker → weapon sheet → world hygiene → Market stock patch → grenade runtime →
+Quickhack catalog / authority / runtime → network devices → device actions →
+network approvals → cameras → multiplayer sync → **V3 UI last** → GM migrations.
+
+### Code that is NOT in this repo
+
+- **Installed module `flesh-enshrouded-heart-ablaze` 0.6.0** (on Forge): legacy
+  Chrome Manager (`scripts/legacy/chrome-legacy.js`), `game.adk.openChrome`
+  entry, Market/Chrome backends (`ADKMarket`, `ADKChromeBackend`).
+- **World macros:** `ADK CORE`, `ADK // MARKET`, `ADK // CHROME`,
+  `ADK // CYBERDECK`, `ADK // ENTRY GATEWAY`, `ADK RELOADER`.
+- `FEHA_MARKET_STOCK_PATCH.js` edits Market macro source by string surgery, then
+  post-processes rendered Market cards after clicks (deliberately no
+  MutationObserver — an earlier observer froze the Shop).
+
+---
+
+## 2. Release workflow (current)
+
+1. Branch from `main`, make one conceptual change.
+2. Bump **both** `version.json` and `FEHA_TABLETOP_UI_V3.js` `VERSION`.
+3. Syntax-check changed JS (`new Function(source)` in Node).
+4. Push the branch and test it **on the GM client only**: fetch the branch's
+   `ADK_DEV_LOADER.js`, replace `API + "/commits/main?t="` with the branch ref,
+   and `eval` it in the live world. Players stay on `main`.
+5. Reproduce the original bug, verify the fix, check the console.
+6. Fast-forward `main`, push, then `game.adk.reload()` and re-verify.
+
+This PC has no global git identity; commits use
+`-c user.name=aidenfortihong-blip -c user.email=aidenfortihong@gmail.com`.
+
+---
+
+## 3. What changed since 0.10.79 (summary)
+
+- **0.10.121–0.10.137** — Live Dev Bridge (all clients load repo build),
+  multiplayer sync, player-safe reloader, Quickhack GM authority + chat approval,
+  Quickhack catalog rewrite/rebalance.
+- **0.11.x early** — operator/zoom polish, gun repair, unique weapons, melee and
+  armor balance, weapon economy, manufacturer passives, unified item sheets.
+- **0.11.52–0.11.58** — Foundry 14.367 nested-identifier bug: weapon updates with
+  invalid persisted `visibility.identifier` fail in `preUpdateDocumentArray`.
+  Affected items are **quarantined** (skipped) until Foundry ≥ 14.368.
+- **0.11.59–0.11.64** — reload points, manual manufacturer rules, world hygiene
+  audit + safe duplicate-attack cleanup (uses dnd5e `deleteActivity`).
+- **0.11.65–0.11.72** — custom FEHA weapon sheet; the weapon sheet is the only
+  player-facing firearm tracker UI (reload tracker is headless). Universal DEX
+  weapon attacks.
+- **0.11.73–0.11.78** — Market weapon cards: one canonical description, no Mk on
+  weapons, compact stat row; Shop freeze fixed by removing the Market observer.
+- **0.11.79** — Market and Chrome Manager opened on a hidden off-roster actor
+  (Cael) while the selector showed Derke → purchases/installs hit Cael. The
+  roster filter removed the selected `<option>` without firing `change`; it now
+  dispatches `change` so each app's backend follows the visible selector.
+- **0.11.80** — Credits show **CR** everywhere. The CR rewrite only ran when a
+  whole FEHA root was added; now it also rewrites rerenders inside an open root
+  and bare text-node writes. Armor/consumable/grenade/Quickhack catalogs print
+  `CR`. A one-off world pass also relabelled the 101 world + 25 owned cyberware
+  descriptions (`Market: €$ N` → `Market: CR N`); no `€$` remains in item data.
+
+---
+
+## 4. Open issues
+
+1. **Foundry 14.368 needed.** 51 canonical firearms still carry a duplicate
+   legacy attack activity (52 are marked cleanup-safe) and 147 items have
+   invalid nested identifiers. Presentation hides them; world hygiene will clean
+   them automatically on the first GM load under Foundry ≥ 14.368. Do not force
+   a workaround on 14.367.
+2. **Installed module bug:** `chrome-legacy.js` `repairChromeData()` calls
+   `Item.updateDocuments(...)` for actor-owned cyberware **without
+   `{parent: actor}`**, so it throws "Item id … does not exist in the Items5e
+   collection" whenever the opened actor has stashed/uninstalled chrome
+   (e.g. Ponyboy, Cael). Harmless today (the repo's `repairCacheMetadata`
+   already writes the same flags correctly) but noisy. Fix belongs in the
+   installed module source.
+3. **Bridge module on Forge is 0.10.121**; repo manifest is 0.10.125. Update it
+   through Forge's module manager.
+4. Ponyboy's Chrome Manager showed `OWNED CHROME 0` while he owns 3 uninstalled
+   cyberware items — unverified whether that count is intended.
+5. Old macro backups (29) were moved into the macro folder
+   `🗑 DELETE ME — old ADK macro backups` for the user to delete.
+6. Handoff debt from 0.10.79 still stands: camera FOV/editing, turret adapter,
+   non-damage Quickhack Active Effects, CSS override debt, Gateway timer
+   lifecycle, multi-GM authority.
+
+---
+
+## 5. Regression checklist additions
+
+- Market/Chrome selector actor === backend actor
+  (`ADKMarket.state.actorId`, `ADKChromeBackend.getActor()`), never Cael.
+- Market wallet shows the selected actor's credits as `CR N`; no `€$` anywhere.
+- Market weapon cards: one description, no Mk badge, DETAILS opens FEHA weapon
+  sheet (≈1 s render delay is normal).
+- Load log ends with `FEHA DEV integrity pass … preflight: passed, postflight:
+  passed`.

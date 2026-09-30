@@ -1,4 +1,4 @@
-# FEHA / ADK NEW CHAT STARTER — 2026-09-28
+# FEHA / ADK NEW CHAT STARTER — 2026-09-30
 
 Continue the FEHA / ADK Foundry project from:
 
@@ -8,13 +8,13 @@ Continue the FEHA / ADK Foundry project from:
 
 Read:
 
-`HANDOFF/FEHA_MASTER_HANDOFF_2026-09-28.md`
+`HANDOFF/FEHA_MASTER_HANDOFF_2026-09-30.md` (current), then `HANDOFF/FEHA_MASTER_HANDOFF_2026-09-28.md` for Gateway / JACK IN / roster rules
 
 Then inspect the current repo before making any changes.
 
 ## Current build
 
-**0.10.79**
+**0.11.80** (see `version.json`)
 
 ## Non-negotiable working rules
 
@@ -26,11 +26,9 @@ Then inspect the current repo before making any changes.
 - Do not surface Jing.
 - Preserve working Market / Wallet / Cyberdeck / JACK IN behavior unless I ask to change it.
 
-## Current task / Gateway state
+## Gateway state (unchanged since 0.10.79)
 
-Current focus is the Entry Gateway cinematic handoff.
-
-Current 0.10.79 flow:
+Gateway behavior is unchanged since 0.10.79:
 
 1. Gateway preloads YouTube video id `mH2wmyeiIpA`.
 2. Exact typed valid name attempts to start the YouTube audio.
@@ -59,6 +57,8 @@ Old private MP3 match-track importer is removed.
 - no Jing
 - no relays in JACK IN
 - RUN preview does not spend RAM
-- Credits/CR remains canonical
+- Credits/CR remains canonical (no €$ anywhere)
+- Market/Chrome selector actor must equal the backend actor (never Cael)
+- Test on a branch on the GM client before pushing main — main is live for players
 
 If I send a screenshot with one problem, patch that one problem directly.
