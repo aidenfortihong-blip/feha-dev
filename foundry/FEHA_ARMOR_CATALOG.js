@@ -4,8 +4,8 @@
 (() => {
   try { globalThis.FEHA_ARMOR_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.1.0";
-  const REWRITE = "1.1";
+  const VERSION = "1.2.0";
+  const REWRITE = "1.2";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "03 — ARMOR";
 
@@ -31,54 +31,61 @@
     {
       company:"ForgeLine Industries",
       line:"Rivet Work Armor",
-      flavor:"Overbuilt industrial armor with no concern for weight, subtlety, or comfort. ForgeLine solves incoming fire by putting more material between it and you.",
+      flavor:"Overbuilt industrial armor that becomes brutally hard to hit with ranged fire once the wearer plants their feet.",
       armorType:"heavy",
       dexCap:0,
       ac:[16,18,20,23,25],
       price:[900,2200,6000,16000,40000],
       weight:[35,45,60,80,110],
       effect:mk => ({
-        key:"powered-bracing",
-        name:"Powered Bracing",
-        value:mk >= 4 ? 3 : 2,
+        key:"anchor-plating",
+        name:"Anchor Plating",
+        value:mk,
         text:
-          "Powered Bracing: +" + (mk >= 4 ? 3 : 2) +
-          " to Strength checks and Strength saving throws."
+          "Anchor Plating: if you do not move during your turn, until the start of your next turn you gain +" +
+          mk +
+          " AC against ranged weapon attacks."
       })
     },
     {
       company:"Bastion Strategic",
       line:"Bastion Combat Plate",
-      flavor:"Measured military combat plate: still heavy and built for serious calibers, but engineered to stay tactical instead of becoming a walking bunker.",
+      flavor:"Military plate designed to eat conventional gunfire instead of merely trying to turn it aside.",
       armorType:"heavy",
       dexCap:0,
       ac:[15,17,19,22,24],
       price:[850,2000,5500,15000,36000],
       weight:[24,30,37,45,56],
       effect:mk => ({
-        key:"tactical-layering",
-        name:"Tactical Layering",
+        key:"take-the-bullet",
+        name:"Take the Bullet",
         value:mk,
+        maxDie:8,
         text:
-          "Tactical Layering: reduce damage from weapon attacks by " +
-          mk + "."
+          "Take the Bullet: when hit by a firearm whose base damage die is d8 or smaller, remove up to " +
+          mk +
+          " base weapon damage " +
+          (mk === 1 ? "die" : "dice") +
+          " from that hit, to a minimum of 0 base dice. Flat bonuses and separate special damage are unaffected."
       })
     },
     {
       company:"Jade Arc Systems",
       line:"Fire-Control Harness",
-      flavor:"Heavy energy-combat armor built around rail systems, insulated power routing, and hard protection for operators working around violent electrical discharge.",
+      flavor:"Heat-shielded combat armor built to survive incendiary weapons and shut down electromagnetic disruption.",
       armorType:"heavy",
       dexCap:0,
       ac:[15,17,19,21,23],
       price:[900,2100,6000,16000,38000],
       weight:[22,28,35,43,52],
       effect:mk => ({
-        key:"faraday-armor",
-        name:"Faraday Armor",
+        key:"thermal-faraday",
+        name:"Thermal Faraday",
         value:mk,
         text:
-          "Faraday Armor: resistance to lightning damage and advantage on saving throws against EMP effects."
+          mk >= 3
+            ? "Thermal Faraday: resistance to fire damage and immunity to EMP effects."
+            : "Thermal Faraday: resistance to fire damage and advantage on saving throws against EMP effects."
       })
     },
     {
@@ -102,35 +109,36 @@
     {
       company:"Vektor Dynamics",
       line:"Flexweave Mobility Suit",
-      flavor:"Adaptive multi-role armor designed to stay quick, take a hit, and work across changing combat situations without overcommitting to a single specialty.",
+      flavor:"A stripped-down combat shell built around blast isolation instead of Dexterity-assisted protection.",
       armorType:"medium",
-      dexCap:2,
+      dexCap:0,
       ac:[14,16,17,19,21],
       price:[700,1700,4500,12000,30000],
       weight:[12,14,16,18,20],
       effect:mk => ({
-        key:"adaptive-flexplate",
-        name:"Adaptive Flexplate",
-        value:2,
+        key:"grenade-null",
+        name:"Grenade Null",
+        value:mk,
         text:
-          "Adaptive Flexplate: add your Dexterity modifier to AC, to a maximum of +2."
+          "Grenade Null: you are immune to direct damage, conditions, forced movement, scans, and other direct effects caused by grenades. Environmental smoke still obscures vision normally."
       })
     },
     {
       company:"Helix Vitae",
       line:"Living Dermal Suit",
-      flavor:"Fast-response bio-integrated armor built for movement. Helix accepts less raw plating to keep the wearer accelerating, repositioning, and acting quickly.",
+      flavor:"Bio-integrated armor that synchronizes with Helix weapon telemetry and turns a matched loadout into pure movement.",
       armorType:"medium",
       dexCap:1,
       ac:[13,15,17,19,21],
       price:[750,1800,5000,13000,32000],
       weight:[8,9,10,11,12],
       effect:mk => ({
-        key:"kinetic-assist",
-        name:"Kinetic Assist",
-        value:[5,5,10,10,15][mk-1],
+        key:"kinetic-sync",
+        name:"Kinetic Sync",
+        value:5 * mk,
         text:
-          "Kinetic Assist: +" + [5,5,10,10,15][mk-1] +
+          "Kinetic Sync: while actively wielding a Helix Vitae firearm, gain +" +
+          (5 * mk) +
           " ft walking Speed."
       })
     },
@@ -308,36 +316,14 @@
   function activeEffectSpec(def) {
     const changes = [];
 
-    if (def.company === "ForgeLine Industries") {
-      changes.push(
-        {
-          key:"system.abilities.str.bonuses.check",
-          value:String(def.signature.value),
-          type:"add",
-          priority:null
-        },
-        {
-          key:"system.abilities.str.bonuses.save",
-          value:String(def.signature.value),
-          type:"add",
-          priority:null
-        }
-      );
-    }
+    // Runtime-conditional armor passives (ForgeLine, Bastion, Corvus,
+    // Vektor, Helix) are handled by FEHA_ARMOR_RUNTIME instead of a
+    // permanently transferred item effect.
 
     if (def.company === "Jade Arc Systems") {
       changes.push({
         key:"system.traits.dr.value",
-        value:"lightning",
-        type:"add",
-        priority:null
-      });
-    }
-
-    if (def.company === "Helix Vitae") {
-      changes.push({
-        key:"system.attributes.movement.walk",
-        value:String(def.signature.value),
+        value:"fire",
         type:"add",
         priority:null
       });
@@ -524,7 +510,7 @@
       bodyArmor:true,
       curatedCatalogV10:true,
       catalogEnabled:true,
-      marketPass:"armor-1.1",
+      marketPass:"armor-1.2",
       marketCategory:"Armor_Outer",
       marketPrice:def.price,
       bodyArmorBaseAC:def.ac,
