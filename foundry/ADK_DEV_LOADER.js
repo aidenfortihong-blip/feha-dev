@@ -497,7 +497,10 @@
     requireMethods(
       "Consumable Catalog",
       consumableCatalog,
-      ["list","definition","migrateAll","rewriteDescription"]
+      [
+        "list","definition","migrateAll","rewriteDescription",
+        "legacyAttackStub","canonicalAttackUpdate"
+      ]
     );
 
     requireMethods(
@@ -586,6 +589,8 @@
         "primaryAttack",
         "useAttack",
         "rollDamage",
+        "rememberAttackContext",
+        "cleanupLegacyState",
         "recordShot",
         "undoShot",
         "addReload",
@@ -602,7 +607,9 @@
         "scan",
         "runFullPass",
         "cleanupLegacyWeaponActivities",
-        "identifierIssues"
+        "attackCleanupPlan",
+        "identifierIssues",
+        "hideLegacyActivityRows"
       ]
     );
 
@@ -700,6 +707,20 @@
       );
     }
 
+    if (weaponDefs.length !== 78) {
+      throw new Error(
+        "Weapon integration expected exactly 78 canonical firearms but found "+
+        weaponDefs.length+"."
+      );
+    }
+
+    if (weaponReadiness.doneNames.length !== 78) {
+      throw new Error(
+        "Weapon readiness expected exactly 78 finalized Do these guns but found "+
+        weaponReadiness.doneNames.length+"."
+      );
+    }
+
     if (weaponDefs.length !== weaponReadiness.doneNames.length) {
       throw new Error(
         "Weapon integration expected the permanent catalog to match the Do these set ("+
@@ -735,6 +756,31 @@
     ) {
       throw new Error(
         "Grenade / Quickhack bridge identities failed postflight."
+      );
+    }
+
+    const observerFeatures =
+      weaponRuntime.features?.() ?? {};
+
+    const unsafeObserverFeatures =
+      Object.entries(observerFeatures).filter(([,feature]) =>
+        feature?.implemented === true ||
+        feature?.enabled === true
+      );
+
+    if (unsafeObserverFeatures.length) {
+      throw new Error(
+        "Weapon Runtime observer safety failed; gameplay feature(s) unexpectedly active: "+
+        unsafeObserverFeatures.map(([name]) => name).join(", ")
+      );
+    }
+
+    const observerStatus =
+      weaponRuntime.status?.() ?? {};
+
+    if (observerStatus.observerOnly !== true) {
+      throw new Error(
+        "Weapon Runtime expected observerOnly=true in the clean baseline."
       );
     }
 
@@ -1042,6 +1088,32 @@
         "FEHA DEV // WORLD HYGIENE PASS",
         hygienePass
       );
+
+      const hygieneSummary =
+        hygienePass?.after ??
+        hygienePass?.report?.summary ??
+        {};
+
+      if (Number(hygieneSummary.canonicalFirearmMultiAttackItems ?? 0) > 0) {
+        console.warn(
+          "FEHA DEV // canonical firearms still contain multiple attack activities",
+          hygienePass?.report?.canonicalFirearmMultiAttack ?? []
+        );
+
+        ui.notifications?.warn?.(
+          "FEHA cleanup: "+
+          Number(hygieneSummary.canonicalFirearmMultiAttackItems ?? 0)+
+          " canonical firearm copy/copies still have multiple stored attacks. "+
+          "Legacy rows are hidden; check the hygiene report for quarantined or ambiguous items."
+        );
+      }
+
+      if (Number(hygieneSummary.runtimeTracerGlobals ?? 0) > 0) {
+        console.warn(
+          "FEHA DEV // stale diagnostic globals remain from an earlier session",
+          hygienePass?.report?.runtimeHealth?.temporaryTracerGlobals ?? []
+        );
+      }
 
       // Hot-reload visibility pass: Foundry can keep already-open item sheets
       // rendered from their old HTML even after the underlying document updates.
