@@ -1504,6 +1504,8 @@
     let changed = 0;
 
     for (const select of selects) {
+      let removedSelected = false;
+
       for (const option of [...select.options]) {
         const actor =
           game?.actors?.get?.(String(option.value ?? "")) ??
@@ -1514,6 +1516,7 @@
         );
 
         if (!FEHA_PLAYABLE_ROSTER_SET.has(key)) {
+          if (option.selected) removedSelected = true;
           option.remove();
           changed++;
           continue;
@@ -1526,6 +1529,18 @@
           option.label = display;
           changed++;
         }
+      }
+
+      // Removing the selected (off-roster) option makes the browser silently
+      // show the next actor while the app's backend stays on the hidden one,
+      // so Market purchases / Chrome installs would hit the wrong actor.
+      // Fire the app's own change path so its backend follows the selector.
+      if (removedSelected && select.options.length) {
+        setTimeout(() => {
+          if (select.isConnected) {
+            select.dispatchEvent(new Event("change",{bubbles:true}));
+          }
+        },0);
       }
     }
 

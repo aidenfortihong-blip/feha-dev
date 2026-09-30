@@ -1,15 +1,11 @@
 {
-  "version": "0.11.78",
+  "version": "0.11.79",
   "updated": "2026-09-30",
-  "scope": "compact-market-weapon-cards",
+  "scope": "roster-selector-backend-sync",
   "notes": [
-    "Reworks Market weapon cards so the canonical FEHA summary is the only weapon description shown.",
-    "Duplicate legacy rich-description blocks are removed even when they match the canonical effect text rather than containing the old generic base-damage wording.",
-    "The canonical weapon summary is placed directly before the Market action buttons instead of being appended below bottom-pinned controls.",
-    "Weapon cards now opt out of equal-height stretching and force action rows back into normal document flow, removing the huge empty vertical gaps visible on cards such as Knife Kurtz.",
-    "Neurotoxin Knife and other effect-heavy weapons now keep one clean effect summary plus the compact FEHA stat row, rather than showing the same text twice.",
-    "The Market remains MutationObserver-free, preserving the Shop freeze fix.",
-    "Market Stock Patch advances to 1.6.0.",
-    "No prices, stock, weapon balance, DEX rules, reload cadence, armor, cyberware, grenades, or Quickhacks changed."
+    "Fixes Market and Chrome Manager opening on a hidden off-roster actor (e.g. Cael) while the selector displayed Derke.",
+    "Root cause: the playable-roster filter removed the selected off-roster option, so the browser silently showed the next actor without firing change, leaving each app's backend on the hidden actor.",
+    "The roster filter now fires the app's own change path when it removes the selected option, so the backend follows the visible selector.",
+    "No prices, stock, balance, credits, chrome data, or world documents changed."
   ]
 }
