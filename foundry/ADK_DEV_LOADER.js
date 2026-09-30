@@ -456,7 +456,7 @@
     requireMethods(
       "Derke Import",
       derkeImport,
-      ["findDerke","importDerke"]
+      ["findDerke","buildDerke","importDerke"]
     );
 
     requireMethods(
