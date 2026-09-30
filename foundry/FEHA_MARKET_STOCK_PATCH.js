@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.4.0";
+  const VERSION = "1.4.1";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
@@ -375,6 +375,17 @@
     }
 
     registerSetting();
+
+    // Price / rarity flags must exist before a stock reset or first roll.
+    // This keeps first-load stock from briefly treating every weapon as Band 1.
+    try {
+      await globalThis.FEHA_WEAPON_ECONOMY?.migrateAll?.();
+    } catch (error) {
+      console.warn(
+        "FEHA MARKET STOCK PATCH // weapon economy pre-stock migration failed",
+        error
+      );
+    }
 
     const macros = marketMacros();
 
