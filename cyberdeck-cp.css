@@ -612,6 +612,12 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-main {
   display: contents !important;
 }
 
+/* Its legacy decorative pseudo-elements would now span the whole window. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-main::before,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-main::after {
+  display: none !important;
+}
+
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram { grid-area: ram !important; }
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-scroll { grid-area: scroll !important; }
 
