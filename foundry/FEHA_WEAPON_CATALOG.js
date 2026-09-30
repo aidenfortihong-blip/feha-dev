@@ -5,14 +5,15 @@
 (() => {
   try { globalThis.FEHA_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.1.0";
-  const REWRITE = "1.1";
+  const VERSION = "1.2.0";
+  const REWRITE = "1.2";
   const FLAG = "fleshEnshrouded";
 
   const definitions = [
     {
       key:"breachhound",
       name:"Breachhound",
+      tier:2,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"14d2",
@@ -22,14 +23,15 @@
       magazineSize:7,
       strengthRequirement:"12",
       multiattack:1,
-      price:2000,
-      availability:"Restricted",
+      price:1500,
+      availability:"Professional",
       technology:"Power",
       identity:"Bastion breach shotgun built around brutal close-range output without going fully ForgeLine-heavy."
     },
     {
       key:"crusher",
       name:"Crusher",
+      tier:3,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"20d2",
@@ -38,14 +40,15 @@
       reloadActions:2,
       magazineSize:5,
       strengthRequirement:null,
-      price:800,
-      availability:"Professional",
+      price:3400,
+      availability:"Restricted",
       technology:"Power",
       identity:"Compact Bastion combat shotgun: high-caliber stopping power in a tactical package."
     },
     {
       key:"hexburst",
       name:"Hexburst",
+      tier:3,
       company:"Bastion Strategic",
       weaponClass:"Assault Rifle",
       damage:"6d8",
@@ -54,7 +57,7 @@
       reloadActions:2,
       magazineSize:5,
       strengthRequirement:"11",
-      price:2000,
+      price:3000,
       availability:"Restricted",
       technology:"Power",
       identity:"Burst-pattern Bastion rifle that trades magazine depth for a harder-hitting assault profile."
@@ -62,6 +65,7 @@
     {
       key:"igla",
       name:"Igla",
+      tier:2,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"12d2",
@@ -71,14 +75,15 @@
       magazineSize:2,
       strengthRequirement:"11",
       multiattack:1,
-      price:2000,
-      availability:"Restricted",
+      price:1100,
+      availability:"Professional",
       technology:"Power",
       identity:"Compact tactical shotgun with a tiny magazine and fast, violent close-range handling."
     },
     {
       key:"lexington",
       name:"Lexington",
+      tier:1,
       company:"Bastion Strategic",
       weaponClass:"Pistol",
       damage:"4d6",
@@ -87,14 +92,15 @@
       reloadActions:1,
       magazineSize:4,
       strengthRequirement:null,
-      price:2000,
-      availability:"Restricted",
+      price:450,
+      availability:"Common",
       technology:"Power",
       identity:"Bastion service pistol tuned above ordinary sidearm output while staying practical and mobile."
     },
     {
       key:"liberty",
       name:"Liberty",
+      tier:1,
       company:"Bastion Strategic",
       weaponClass:"Heavy Pistol",
       damage:"1d30",
@@ -103,14 +109,15 @@
       reloadActions:1,
       magazineSize:5,
       strengthRequirement:null,
-      price:800,
-      availability:"Professional",
+      price:650,
+      availability:"Common",
       technology:"Power",
       identity:"Heavy-caliber Bastion sidearm with an intentionally swingy single-die damage profile."
     },
     {
       key:"overture",
       name:"Overture",
+      tier:2,
       company:"Bastion Strategic",
       weaponClass:"Heavy Pistol",
       damage:"2d20",
@@ -119,14 +126,15 @@
       reloadActions:2,
       magazineSize:3,
       strengthRequirement:null,
-      price:2000,
-      availability:"Restricted",
+      price:1800,
+      availability:"Professional",
       technology:"Power",
       identity:"Long-reaching heavy pistol with only three shots and a deliberately slow reload."
     },
     {
       key:"saratoga",
       name:"Saratoga",
+      tier:3,
       company:"Bastion Strategic",
       weaponClass:"SMG",
       damage:"8d6",
@@ -135,14 +143,15 @@
       reloadActions:1,
       magazineSize:5,
       strengthRequirement:null,
-      price:800,
-      availability:"Professional",
+      price:3800,
+      availability:"Restricted",
       technology:"Power",
       identity:"Aggressive Bastion SMG built for high close-range output and fast tactical handling."
     },
     {
       key:"tactician",
       name:"Tactician",
+      tier:4,
       company:"Bastion Strategic",
       weaponClass:"Shotgun",
       damage:"30d2",
@@ -151,14 +160,15 @@
       reloadActions:5,
       magazineSize:5,
       strengthRequirement:"12",
-      price:2000,
-      availability:"Restricted",
+      price:7200,
+      availability:"Elite",
       technology:"Power",
       identity:"A huge tactical shotgun that hits extremely hard but pays for it with bulk and a punishing reload."
     },
     {
       key:"umbra",
       name:"Umbra",
+      tier:1,
       company:"Bastion Strategic",
       weaponClass:"Assault Rifle",
       damage:"3d8",
@@ -168,13 +178,14 @@
       magazineSize:10,
       strengthRequirement:null,
       price:800,
-      availability:"Professional",
+      availability:"Common",
       technology:"Power",
       identity:"Balanced Bastion assault rifle: practical range, useful magazine depth, and no exotic subsystem."
     },
     {
       key:"unity",
       name:"Unity",
+      tier:2,
       company:"Bastion Strategic",
       weaponClass:"Pistol",
       damage:"5d6",
@@ -183,14 +194,15 @@
       reloadActions:1,
       magazineSize:3,
       strengthRequirement:null,
-      price:5000,
-      availability:"Black Market",
+      price:1700,
+      availability:"Professional",
       technology:"Power",
       identity:"High-grade Bastion pistol packing unusually large damage into a very small magazine."
     },
     {
       key:"warwake",
       name:"Warwake",
+      tier:4,
       company:"Bastion Strategic",
       weaponClass:"LMG",
       damage:"8d10",
@@ -199,14 +211,15 @@
       reloadActions:8,
       magazineSize:8,
       strengthRequirement:"16",
-      price:5000,
-      availability:"Restricted",
+      price:8200,
+      availability:"Elite",
       technology:"Power",
       identity:"Bastion's heaviest approved gun: enormous sustained-fire output without crossing into ForgeLine immobility."
     },
     {
       key:"ashura",
       name:"Ashura",
+      tier:2,
       company:"Corvus Neural",
       weaponClass:"Sniper Rifle",
       damage:"3d12",
@@ -215,7 +228,7 @@
       reloadActions:1,
       magazineSize:1,
       strengthRequirement:"11",
-      price:800,
+      price:2600,
       availability:"Professional",
       technology:"Smart",
       identity:"Corvus single-shot smart sniper built around an integrated neural optic.",
@@ -230,6 +243,7 @@
     {
       key:"dian",
       name:"Dian",
+      tier:3,
       company:"Corvus Neural",
       weaponClass:"SMG",
       damage:"5d6",
@@ -238,7 +252,7 @@
       reloadActions:1,
       magazineSize:6,
       strengthRequirement:null,
-      price:2000,
+      price:4500,
       availability:"Restricted",
       technology:"Smart",
       identity:"Quirky Corvus smart SMG built to turn its own shots into network access.",
@@ -252,6 +266,7 @@
     {
       key:"kyokokukamusari",
       name:"Kyokokukamusari",
+      tier:4,
       company:"Corvus Neural",
       weaponClass:"Assault Rifle",
       damage:"4d8",
@@ -260,8 +275,8 @@
       reloadActions:1,
       magazineSize:4,
       strengthRequirement:"11/12",
-      price:5000,
-      availability:"Black Market",
+      price:6800,
+      availability:"Elite",
       technology:"Smart",
       identity:"Eccentric Corvus rifle whose reload system doubles as a flashbang delivery mechanism.",
       special:{
@@ -274,6 +289,7 @@
     {
       key:"masamune",
       name:"Masamune",
+      tier:5,
       company:"Corvus Neural",
       weaponClass:"Assault Rifle",
       damage:"5d8",
@@ -282,7 +298,7 @@
       reloadActions:2,
       magazineSize:6,
       strengthRequirement:"11/12",
-      price:12000,
+      price:14000,
       availability:"Prototype",
       technology:"Smart",
       identity:"Expensive Corvus prototype rifle built as both a firearm and a neural intrusion relay.",
@@ -512,6 +528,10 @@
       marketCategory:"Weapons",
       marketPrice:def.price,
       priceCredits:def.price,
+      marketTier:def.tier,
+      rating:def.tier,
+      tier:def.tier,
+      ratingLabel:"Tier "+["","I","II","III","IV","V"][def.tier],
       availability:def.availability,
       bodyArmor:false,
       quickhack:false,
