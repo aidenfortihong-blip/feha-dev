@@ -1,15 +1,14 @@
 {
-  "version": "0.11.39",
+  "version": "0.11.40",
   "updated": "2026-09-29",
-  "scope": "unique-weapons-other-folder",
+  "scope": "unique-name-collision-hot-reload-cleanup",
   "notes": [
-    "Added FEHA_UNIQUE_WEAPON_CATALOG.js v1.0.0 for the seven one-off weapons in Do these/-Other without changing the permanent reviewed 78-gun manufacturer catalog.",
-    "Ghost Key now shorts and opens doors/locks on hit; Motor Lock stops hit vehicles dead; Optic Zero can blank electronic/cybernetic vision.",
-    "Igla Sovereign is the outlaw double-barrel: 40d2 base damage with a six-shot Sovereign Overload cycle followed by a one-turn cooldown.",
-    "Silverhand 3516 is the best-in-slot Heavy Pistol at 1d30+75 and requires Gorilla Arms to fire.",
-    "Shovel Caretaker is intentionally just a 1d6 bludgeoning shovel.",
-    "Slaughtomatic uses 100d100-9000 damage, floors negative totals to 0 by rule text, has 12 sealed shots, and cannot be reloaded.",
-    "Unique weapons are flagged Weapons_Unique and marketReady=false so they never enter ordinary random Market stock.",
-    "ADK DEV LOADER now preflights, contract-checks, migrates, and hot-rerenders the seven unique weapons."
+    "Fixed Motor Lock and Optic Zero unique weapons being mistaken for same-named Quickhacks.",
+    "Quickhack migration now refuses unique-folder/unique-flagged items even when their names match canonical Quickhacks.",
+    "The -Other folder itself is now authoritative for unique weapon migration; it no longer has to be nested under Do these.",
+    "Unique migration clears stale Quickhack flags/price data and runs after Quickhack migration so the unique weapon identity wins.",
+    "ADK hot reload now explicitly rerenders unique item sheets and the Items sidebar, so normal updates should not require a browser page reload.",
+    "Startup info-toast spam is suppressed during module initialization; warnings/errors still show and a single final build-loaded toast remains.",
+    "Unique weapon catalog is now 1.0.1 and Quickhack catalog is now 4.3.1."
   ]
 }
