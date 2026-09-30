@@ -4,10 +4,15 @@
 (() => {
   try { globalThis.FEHA_WEAPON_ECONOMY?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
+  const POWER_AUDIT = "manufacturer-passives-2026-09-30";
+  // Ratings include the agreed manufacturer passives: Kurohane Dead Silent,
+  // Bastion Action Surge 1/LR, Corvus RAM Thief, ForgeLine Anchor,
+  // Helix full-mag recharge after a no-fire turn, Jade Arc kill-chain,
+  // and Vektor Cunning Action.
 
-  const GUN_RATINGS = Object.freeze({"Breachhound":42,"Crusher":52,"Hexburst":55,"Igla":46,"Lexington":40,"Liberty":45,"Overture":55,"Saratoga":56,"Tactician":57,"Umbra":60,"Unity":30,"Warwake":67,"Ashura":62,"Dian":50,"Kyokokukamusari":51,"Masamune":49,"Metel":56,"Palica":48,"Razor Choir":83,"Borg4a":72,"Burya":57,"Carnage":63,"Deadrail":61,"Defender":72,"Grad":81,"Iron Psalm":63,"Mirefang":49,"Monarch Zero":86,"Nova":53,"Osprey Prototype":77,"Watchtower":70,"Arcspike":46,"Cinderjack":43,"Grit":31,"Guillotine":63,"Kappa":47,"Omaha":37,"Quasar":41,"Senkoh":44,"Shingen":43,"Starforge":60,"Ticon":37,"Triskelion":46,"Twin Viper":64,"Warden":44,"Achilles":59,"Black Requiem":84,"Choirbreaker":73,"Gravetide":62,"Hercules Prototype":67,"HMG":75,"MA70":74,"Nekomata":83,"Nemora":58,"Nullstorm":65,"Rasetsu Prototype":97,"Satara":62,"Sunlance":77,"Testera":67,"Trucebreaker":61,"Chao":34,"Cinder-20":28,"Copperhead":48,"Dreadline":54,"Kenshin":29,"Quickscar":50,"Quietus":39,"Sidewinder":43,"Yukimura":34,"Ajax":50,"Arcflash":43,"Kolac":50,"Kyubi":42,"Long Vigil":65,"Pale Kestrel":43,"Pozhar":46,"Pulsar":48,"Red Wisp":53});
+  const GUN_RATINGS = Object.freeze({"Breachhound":47,"Crusher":57,"Hexburst":60,"Igla":51,"Lexington":45,"Liberty":50,"Overture":59,"Saratoga":61,"Tactician":62,"Umbra":64,"Unity":35,"Warwake":71,"Ashura":67,"Dian":56,"Kyokokukamusari":57,"Masamune":55,"Metel":62,"Palica":55,"Razor Choir":85,"Borg4a":78,"Burya":63,"Carnage":69,"Deadrail":67,"Defender":80,"Grad":87,"Iron Psalm":71,"Mirefang":54,"Monarch Zero":92,"Nova":59,"Osprey Prototype":84,"Watchtower":76,"Arcspike":48,"Cinderjack":45,"Grit":33,"Guillotine":64,"Kappa":48,"Omaha":38,"Quasar":42,"Senkoh":45,"Shingen":45,"Starforge":62,"Ticon":38,"Triskelion":47,"Twin Viper":65,"Warden":45,"Achilles":61,"Black Requiem":90,"Choirbreaker":79,"Gravetide":66,"Hercules Prototype":70,"HMG":82,"MA70":80,"Nekomata":88,"Nemora":60,"Nullstorm":68,"Rasetsu Prototype":100,"Satara":66,"Sunlance":82,"Testera":72,"Trucebreaker":65,"Chao":43,"Cinder-20":38,"Copperhead":56,"Dreadline":61,"Kenshin":39,"Quickscar":57,"Quietus":41,"Sidewinder":51,"Yukimura":43,"Ajax":62,"Arcflash":59,"Kolac":65,"Kyubi":56,"Long Vigil":76,"Pale Kestrel":59,"Pozhar":61,"Pulsar":62,"Red Wisp":65});
   const MELEE_RATINGS = Object.freeze({"Baseball Bat":29,"Baton Beta":26,"Baton Murphy":35,"Baton Tinker Bell":26,"Butcher's Knife":29,"Cane Fingers":21,"Chainsword Legendary":81,"Chef's Knife":21,"Crowbar":26,"Dildo Stout":84,"Errata":88,"Fanged Axe Military":48,"Hammer":39,"Iron Pipe":26,"Kanabo":53,"Katana":44,"Katana Go G":44,"Katana Takemura":54,"Knife Kurtz":29,"Knife Military":29,"Knife Stinger":29,"Kukri":35,"Kukri Voodoo":35,"Machete":35,"Machete Maelstrom":41,"Machete Valentinos":43,"Neurotoxin Knife":45,"Punk Knife Pimp":29,"Sword Witcher":49,"Tanto":29,"Tire Iron":26,"Tomahawk":42,"VB Axe":57});
   const UNIQUE_RATINGS = Object.freeze({"Ghost Key":67,"Igla Sovereign":88,"Motor Lock":73,"Optic Zero":52,"Shovel Caretaker":10,"Silverhand 3516":92,"Slaughtomatic":1});
 
