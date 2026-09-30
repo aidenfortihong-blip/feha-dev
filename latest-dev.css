@@ -20099,3 +20099,9 @@ body #adk-market-15#adk-market-15 #top-directory {
     text-shadow:none!important;
   }
 }
+
+
+/* FEHA WEAPONS // NO MK BADGES */
+#adk-market-15 .item-card.feha-weapon-card .item-mk {
+  display: none !important;
+}
