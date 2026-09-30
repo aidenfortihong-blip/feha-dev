@@ -1,12 +1,14 @@
 {
-  "version": "0.11.60",
+  "version": "0.11.61",
   "updated": "2026-09-30",
-  "scope": "full-world-hygiene-audit-and-safe-legacy-attack-cleanup",
+  "scope": "automatic-weapon-tracker-hud",
   "notes": [
-    "Adds FEHA_WORLD_HYGIENE, a comprehensive live audit covering world/actor item counts, duplicate attack activities, invalid identifier fields, stale item descriptions, duplicate world/actor item names, duplicate actor cyberware source copies, retired/legacy content, and catalog coverage.",
-    "Automatically removes only a proven-safe legacy dnd5e attack stub when the same weapon already has a separate real attack activity; ambiguous multi-attack weapons are reported and left untouched.",
-    "Foundry 14.367 malformed-identifier quarantine is respected, so a weapon with invalid persisted identifiers is skipped rather than triggering validation spam.",
-    "Stores the full live report at globalThis.__FEHA_WORLD_HYGIENE_REPORT and the complete pass at globalThis.__FEHA_WORLD_HYGIENE_LAST_PASS.",
-    "No cyberware redesign, balance changes, folder deletions, actor-item deletions, or broad automatic cleanup is performed."
+    "Replaces the item-sheet reload widget with an automatic floating Weapon Tracker HUD.",
+    "Each completed canonical firearm attack increments that actor's tracked attacks-used count for the fired weapon and opens the HUD with weapon image, manufacturer, class, attacks remaining, attacks fired, and physical magazine/capacity context.",
+    "Reload progress remains player-confirmed: Action adds 2 points and Bonus Action adds 1 point; reaching the weapon's reload-point requirement automatically resets its attacks-used counter.",
+    "The tracker never spends actions, blocks an attack, or mutates real ammunition. It includes Undo Shot and Reset Tracker controls for table corrections.",
+    "game.adk.weaponTracker.open() manually opens the tracker for the selected actor or user character's first equipped canonical firearm. game.adk.reloadTracker remains a compatibility alias.",
+    "Firearm item cards now explain the automatic shot counter and manual reload-progress model.",
+    "No cyberware work is included."
   ]
 }
