@@ -3,8 +3,8 @@
 // This pass intentionally avoids complicated runtime mechanics.
 
 (() => {
-  const VERSION = "1.2.0";
-  const REWRITE = "1.1";
+  const VERSION = "1.3.0";
+  const REWRITE = "1.2-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "06 — CONSUMABLES";
 
@@ -417,35 +417,28 @@
       : "A character can benefit from this specific product only once per Short Rest. The item is still consumed when used.";
 
     return (
-      '<section data-feha-consumable-card="'+REWRITE+'" '+
-      'style="border:1px solid #33424a;background:#081015;padding:12px 14px;color:#dce8ec !important">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;'+
-        'padding-bottom:9px;border-bottom:1px solid #263941">'+
-          '<small style="color:#f0c85a;font-size:10px;font-weight:900;letter-spacing:.12em">'+
-            esc(def.company.toUpperCase())+' // CONSUMABLE'+
+      '<section data-feha-ui="item-card-v1" data-feha-consumable-card="'+REWRITE+'" '+
+      'style="border:1px solid #2b5662;background:#071116;padding:13px 14px;color:#dce8ec !important">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #263941">'+
+          '<small style="color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.12em">'+
+            'FEHA // '+esc(def.company.toUpperCase())+' // CONSUMABLE'+
           '</small>'+
-          '<strong style="color:#eefaff;font-size:12px">'+
-            esc(mkLabel(def.mk))+
-          '</strong>'+
+          '<strong style="color:#eefaff;font-size:12px">'+esc(mkLabel(def.mk))+'</strong>'+
         '</div>'+
-        '<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;align-items:center;color:#9fb3bc !important">'+
-          '<span style="font-size:12px;color:#eefaff !important"><strong>'+esc(String(def.kind).toUpperCase())+'</strong></span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#aebfc6 !important">'+esc(def.availability)+'</span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#f2d76f;font-weight:900">€$'+Number(def.price).toLocaleString()+'</span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#7ee6ff !important;font-weight:900">BONUS ACTION IN COMBAT</span>'+
-          '<span style="color:#516872">•</span>'+
-          '<span style="font-size:12px;color:#aebfc6 !important;font-weight:900">'+esc(useLimitText(def))+'</span>'+
+        '<h2 style="margin:10px 0 4px;color:#fff">'+esc(def.name)+'</h2>'+
+        '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
+          '<div><small style="color:#8ca2ac">TYPE</small><br><strong style="color:#fff">'+esc(String(def.kind).toUpperCase())+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">AVAILABILITY</small><br><strong style="color:#fff">'+esc(def.availability)+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">€$'+Number(def.price).toLocaleString()+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">ACTIVATION</small><br><strong style="color:#fff">BONUS ACTION IN COMBAT</strong></div>'+
+          '<div><small style="color:#8ca2ac">USE LIMIT</small><br><strong style="color:#fff">'+esc(useLimitText(def))+'</strong></div>'+
         '</div>'+
-        '<div style="color:#dce8ec !important">'+
-          '<small style="display:block;color:#8ca2ac !important;font-size:10px;font-weight:900;'+
-          'letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
-          '<p style="margin:0;line-height:1.55;color:#dce8ec !important">'+esc(def.effectText)+'</p>'+
+        '<div style="margin-top:10px;padding:10px;border:1px solid #24404a;background:#09171c">'+
+          '<small style="display:block;color:#72dff2;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:5px">EFFECT</small>'+
+          '<p style="margin:0;line-height:1.5;color:#dce8ec !important">'+esc(def.effectText)+'</p>'+
         '</div>'+
-        '<div style="margin-top:10px;padding:8px 10px;border-left:3px solid #4b7180;background:#0a151a">'+
-          '<small style="display:block;color:#7ee6ff;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:4px">USE LIMIT</small>'+
+        '<div style="margin-top:10px;padding:9px 10px;border-left:3px solid #4b7180;background:#0a151a">'+
+          '<small style="display:block;color:#7ee6ff;font-size:10px;font-weight:900;letter-spacing:.11em;margin-bottom:4px">USE RULE</small>'+
           '<p style="margin:0;line-height:1.45;color:#b9cbd2 !important">'+esc(restRule)+'</p>'+
         '</div>'+
       '</section>'
