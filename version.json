@@ -1,12 +1,12 @@
 {
-  "version": "0.11.49",
+  "version": "0.11.50",
   "updated": "2026-09-30",
-  "scope": "unified-item-sheet-stale-copy-sweep",
+  "scope": "force-repair-remaining-stale-firearm-sheets",
   "notes": [
-    "Fixed stale FEHA item descriptions that survived outside the current curated folders after the 0.11.48 unified-sheet pass.",
-    "The loader now performs a final description-only sweep across world and actor-owned items. Old FEHA weapon, melee, unique, armor, grenade, consumable, and Quickhack wrappers are rewritten with the matching canonical unified card.",
-    "The stale-card sweep intentionally changes descriptions only; it does not move folders, alter stats, inventory, ownership, prices, or combat state.",
-    "Canonical firearm migration now also recognizes old FEHA gun wrappers outside Do these, including legacy FINAL GUN / REVIEW STATUS / GM REVIEW NOTES cards such as stale Razor Choir copies.",
-    "Cyberware remains excluded and untouched."
+    "Force-repairs the remaining stale firearm sheets identified in the live world: Osprey Prototype, Iron Psalm, Hercules Prototype, Long Vigil, Razor Choir, Twin Viper, Rasetsu Prototype, Black Requiem, Monarch Zero, Pale Kestrel, and Red Wisp.",
+    "Bumped the firearm review seed so managed canonical gun copies are rewritten again from the current unified firearm card.",
+    "Fixed the stale-card sweep so an old card is not skipped merely because it already carries the unified-shell data marker; legacy FINAL GUN / REVIEW STATUS / GM REVIEW NOTES text now always forces repair.",
+    "The targeted repair changes description HTML only during the final sweep; firearm stats, prices, folders, ownership, ammo, and combat state are untouched.",
+    "Cyberware remains excluded."
   ]
 }
