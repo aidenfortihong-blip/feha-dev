@@ -13,6 +13,33 @@
   const slug=v=>norm(v).replace(/\\s+/g,"-");
   const list=c=>Array.isArray(c)?c:Array.isArray(c?.contents)?c.contents:(()=>{try{return [...(c??[])]}catch{return []}})();
   const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\x27/g,"&#039;");
+  function legacyNestedIdentifierQuarantined(item) {
+    const build = Number(game.release?.build ?? 0);
+    if (build >= 368) return false;
+
+    const root = item?._source?.system;
+    if (!root || typeof root !== "object") return false;
+
+    const stack = [root];
+    while (stack.length) {
+      const current = stack.pop();
+      if (!current || typeof current !== "object") continue;
+
+      for (const [key,value] of Object.entries(current)) {
+        if (key === "identifier") {
+          const text = String(value ?? "");
+          if (!/^[a-z0-9_-]+$/i.test(text)) return true;
+        }
+
+        if (value && typeof value === "object") {
+          stack.push(value);
+        }
+      }
+    }
+
+    return false;
+  }
+
   const definitions=ROWS.map(r=>{ const [name,cc,weaponClass,damage,range,longRange,physicalCapacity,functionalAttacks,reloadActions,strengthRequirement,tc,cap]=r; const co=COMPANY[cc],sp=SPECIALS[name]??null; return {key:slug(name),name,company:co.name,weaponClass,damage,range,longRange,physicalCapacity,functionalAttacks,reloadActions,strengthRequirement,technology:TECH[tc],capacityType:CAP[cap],doctrine:co.doctrine,familyTraitName:co.trait?.[0]??null,familyTraitText:co.trait?.[1]??null,special:sp?{...sp}:null}; });
   const byName=new Map(definitions.map(d=>[norm(d.name),d])), byKey=new Map(definitions.map(d=>[norm(d.key),d]));
   function definition(v){ if(!v)return null; if(typeof v==="string")return byKey.get(norm(v))??byName.get(norm(v))??null; return byName.get(norm(v.name))??null; }
@@ -117,16 +144,15 @@
       String(item?._source?.system?.identifier ?? "");
     const coreBuild = Number(game.release?.build ?? 0);
 
-    // Foundry <=14.367 can reject otherwise harmless system updates when a
-    // legacy dnd5e weapon still has a blank persisted identifier. Quarantine
-    // only those malformed Items on affected core builds. Foundry 14.368+
-    // fixed the _updateDiff validation path, where the repair below may run.
-    if (
-      !/^[a-z0-9_-]+$/i.test(rawIdentifier) &&
-      (!coreBuild || coreBuild < 368)
-    ) {
+    // Foundry <=14.367 can validate unrelated nested identifier fields while
+    // diffing a weapon update. The exact live trace for 0.11.57 showed all
+    // failures inside migrate:weapons at preUpdateDocumentArray. Quarantine any
+    // canonical weapon whose persisted system tree contains an invalid
+    // identifier until 14.368+, where Foundry fixed the _updateDiff model-state
+    // validation path.
+    if (legacyNestedIdentifierQuarantined(item)) {
       console.warn(
-        "FEHA WEAPON CATALOG // quarantined invalid legacy identifier until Foundry 14.368+",
+        "FEHA WEAPON CATALOG // quarantined legacy nested identifier until Foundry 14.368+",
         item?.name,
         item?.uuid ?? item?.id
       );
