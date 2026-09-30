@@ -1,16 +1,10 @@
 {
-  "version": "0.11.41",
-  "updated": "2026-09-29",
-  "scope": "melee-balance-and-iconic-effects",
+  "version": "0.11.42",
+  "updated": "2026-09-30",
+  "scope": "catalog-power-tuning",
   "notes": [
-    "Added FEHA_MELEE_CATALOG.js v1.0.0 covering all 33 weapons in the MELEE folder.",
-    "Melee is balanced around one Action = one strike so Sandevistan extra Actions scale the style instead of forcing gun-level damage onto every swing.",
-    "Gorilla Arms satisfy all melee STR requirements; heavy melee uses higher STR gates while knives/light weapons usually have none.",
-    "Most melee weapons intentionally have no bespoke passive: damage, STR, reach, and thrown stats carry their identity.",
-    "Chainsword Legendary gets REDLINE // TEETH IN THE WOUND: once per turn, a second same-turn hit on the same target adds 3d10 and ignores worn-armor weapon damage reduction for that hit.",
-    "Errata gets THERMAL RUNAWAY: consecutive same-turn hits on one target escalate from normal to +2d8 fire, then +4d8 fire with worn-armor reduction ignored from the third hit onward.",
-    "Neurotoxin Knife gets BLACKOUT DOSE: failed CON save poisons and removes reactions; a repeat failed dose while poisoned crashes the nervous system into Stunned.",
-    "Dildo Stout is intentionally just 1d100 bludgeoning damage with no extra passive.",
-    "ADK DEV LOADER now preflights, contract-checks, migrates, and hot-rerenders the melee catalog."
+    "Errata now uses uncapped same-turn Thermal Runaway scaling: each prior same-target hit adds another +4d8 fire to the next hit, with armor reduction bypass beginning on the third hit.",
+    "Rasetsu Prototype retains its existing damage and recharge cost but now has 4 attacks before recharge instead of 8.",
+    "All other reviewed firearm and melee entries are intentionally unchanged so the completed power audit can be used as the basis for later pricing."
   ]
 }
