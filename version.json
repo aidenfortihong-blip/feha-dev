@@ -1,13 +1,12 @@
 {
-  "version": "0.11.74",
+  "version": "0.11.75",
   "updated": "2026-09-30",
-  "scope": "actor-weapon-open-routing-and-sheet-autofit",
+  "scope": "market-freeze-fix-and-weapon-footer-trim",
   "notes": [
-    "Canonical weapon clicks from dnd5e Actor inventory rows now open the FEHA weapon interface instead of immediately invoking the stock dnd5e attack/use flow.",
-    "The bridge resolves the clicked owned Item from the containing Actor application and only intercepts canonical FEHA weapons, leaving explicit inventory management controls alone.",
-    "Problem-patch weapons such as Black Requiem, Achilles, Razor Choir, Monarch Zero, and the other canonical catalog guns therefore route into the same FEHA weapon page from the Actor sheet.",
-    "Weapon windows no longer force a tall fixed height. They widen when needed, then auto-fit their height to the rendered FEHA content and clamp to the viewport.",
-    "The FEHA page root no longer uses 100% height, removing the large empty black area beneath shorter weapon pages.",
-    "No weapon damage, DEX rules, shot tracking, reload cadence, Market stock, armor, cyberware, grenade, or Quickhack rules changed."
+    "Fixes the Market hard-freeze caused by the weapon-description MutationObserver rewriting already-correct weapon cards on every observer pass.",
+    "Market weapon-card synchronization is now idempotent using a content signature and requestAnimationFrame scheduling, so rerenders update only changed cards and the observer settles instead of recursively mutating forever.",
+    "Removes the visible empty black strip beneath FEHA weapon sheets by trimming the outer Foundry window against the actual rendered FEHA page bottom rather than using approximate header/scroll-height math.",
+    "Weapon Sheet advances to 1.6.1 and Market Stock Patch advances to 1.5.1.",
+    "No Market stock, prices, weapon balance, DEX rules, reload cadence, armor, cyberware, grenade, or Quickhack rules changed."
   ]
 }
