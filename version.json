@@ -1,13 +1,14 @@
 {
-  "version": "0.11.63",
+  "version": "0.11.64",
   "updated": "2026-09-30",
-  "scope": "centered-weapon-combat-panel",
+  "scope": "canonical-firearm-duplicate-attack-repair",
   "notes": [
-    "Moves the Weapon Tracker into the center of the screen as a larger combat panel.",
-    "Adds ATTACK and DAMAGE controls directly to the Weapon Tracker. ATTACK invokes the best configured non-legacy dnd5e attack activity for the equipped canonical firearm; DAMAGE invokes that activity's native dnd5e damage roll.",
-    "The tracker scores attack activities and avoids legacy empty/self-range attack stubs even when dnd5e displays them as Attack.",
-    "Attack usage still feeds the automatic shots-used counter through dnd5e.postUseActivity; DAMAGE does not consume another tracked shot.",
-    "The panel also shows canonical damage formula and range, keeps reload progress controls, Undo Shot, and Reset Tracker, and remains open longer for active combat use.",
-    "No cyberware work is included."
+    "Fixes the root cause of duplicate Attack buttons on canonical firearms such as Lexington and Achilles.",
+    "FEHA World Hygiene now removes legacy dnd5e attack pseudo-documents through the official Item5e.deleteActivity API instead of generic object-deletion syntax, which did not reliably mutate dnd5e's ActivitiesField.",
+    "Cleanup runs across world weapons and actor-owned copies, deletes each confirmed legacy stub individually, and verifies the deleted activity IDs are actually gone before reporting success.",
+    "Ambiguous multiple-real-attack weapons remain untouched and are reported rather than guessed.",
+    "Foundry 14.367 malformed-identifier quarantine is preserved. Quarantined items are not database-mutated, while the sheet guard still hides confirmed legacy stubs in rendered item/actor sheets.",
+    "Adds a renderApplicationV2 fallback to the legacy-activity UI guard so modern dnd5e sheets are covered as well.",
+    "No cyberware work or weapon balance changes are included."
   ]
 }
