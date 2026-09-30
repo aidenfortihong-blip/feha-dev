@@ -1,12 +1,13 @@
 {
-  "version": "0.11.62",
+  "version": "0.11.63",
   "updated": "2026-09-30",
-  "scope": "stale-reload-panel-purge-and-legacy-attack-stub-fix",
+  "scope": "centered-weapon-combat-panel",
   "notes": [
-    "Purges the obsolete item-sheet FEHA Reload Tracker panel when the new Weapon Tracker initializes, so hot-reloaded sheets cannot keep the old 0/x box stuck in their DOM.",
-    "Fixes world hygiene legacy-attack detection to inspect persisted activity source data. dnd5e prepares unnamed legacy attack stubs with the visible label Attack, which caused 0.11.60 to miss the exact duplicate shown on Achilles/Lexington.",
-    "The hygiene pass will now remove only the unnamed/self-range/empty legacy stub when a separate configured real attack exists.",
-    "Automatic floating Weapon Tracker behavior from 0.11.61 is unchanged.",
+    "Moves the Weapon Tracker into the center of the screen as a larger combat panel.",
+    "Adds ATTACK and DAMAGE controls directly to the Weapon Tracker. ATTACK invokes the best configured non-legacy dnd5e attack activity for the equipped canonical firearm; DAMAGE invokes that activity's native dnd5e damage roll.",
+    "The tracker scores attack activities and avoids legacy empty/self-range attack stubs even when dnd5e displays them as Attack.",
+    "Attack usage still feeds the automatic shots-used counter through dnd5e.postUseActivity; DAMAGE does not consume another tracked shot.",
+    "The panel also shows canonical damage formula and range, keeps reload progress controls, Undo Shot, and Reset Tracker, and remains open longer for active combat use.",
     "No cyberware work is included."
   ]
 }
