@@ -9,12 +9,35 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_READINESS requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.1.1";
+  const VERSION = "4.1.2";
   const REVIEW_IMPORT = "2026-09-30-do-these-export-1";
   const DESCRIPTION_REPAIR = "2026-09-30-final-card-repair-1";
   const FLAG = "fleshEnshrouded";
   const REVIEW_ROOT = "Do these";
   const STOCK_KEY = "adkMarketStockV16";
+  const quarantinedIdentifierWarnings = new Set();
+
+  function legacyIdentifierQuarantined(item) {
+    if (item?.type !== "weapon") return false;
+    const rawIdentifier =
+      String(item?._source?.system?.identifier ?? "");
+    if (/^[a-z0-9_-]+$/i.test(rawIdentifier)) return false;
+
+    const build = Number(game.release?.build ?? 0);
+    const blocked = !build || build < 368;
+
+    if (blocked && !quarantinedIdentifierWarnings.has(String(item?.uuid ?? item?.id ?? item?.name))) {
+      quarantinedIdentifierWarnings.add(String(item?.uuid ?? item?.id ?? item?.name));
+      console.warn(
+        "FEHA WEAPON READINESS // quarantined legacy invalid identifier until Foundry 14.368+",
+        item?.name,
+        item?.uuid ?? item?.id,
+        rawIdentifier
+      );
+    }
+
+    return blocked;
+  }
 
   const COMPANY_BY_FOLDER = Object.freeze({
     "-Bastion":"Bastion Strategic",
@@ -1053,6 +1076,7 @@
         );
 
       if (!managed) continue;
+      if (legacyIdentifierQuarantined(item)) continue;
 
       await item.update({
         ["flags."+FLAG+".marketReady"]:false,
@@ -1362,6 +1386,7 @@
         );
 
       if (!company) continue;
+      if (legacyIdentifierQuarantined(item)) continue;
 
       const importedBefore =
         String(
