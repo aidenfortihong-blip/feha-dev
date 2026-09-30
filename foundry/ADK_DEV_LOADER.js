@@ -12,6 +12,7 @@
   const files = {
     baseCss:"latest-dev.css",
     v3Css:"cyberdeck-v3.css",
+    marketSkinCss:"market-cp.css",
     baseJs:"latest-dev.js",
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
     consumables:"foundry/FEHA_CONSUMABLE_CATALOG.js",
@@ -219,6 +220,7 @@
 
     cssBraceCheck(source.baseCss,files.baseCss);
     cssBraceCheck(source.v3Css,files.v3Css);
+    cssBraceCheck(source.marketSkinCss,files.marketSkinCss);
 
     let buildManifest = null;
     try {
@@ -291,6 +293,16 @@
     style.textContent = source.baseCss + "\n\n" + source.v3Css;
     document.head.appendChild(style);
     injectedStyle = style;
+
+    // CP2077 Market skin is its own sheet so its font @import stays first.
+    document.getElementById("feha-market-cp-css")?.remove();
+    const marketSkin = document.createElement("style");
+    marketSkin.id = "feha-market-cp-css";
+    marketSkin.dataset.adkCommit = sha.slice(0,7);
+    marketSkin.textContent =
+      '@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap");\n' +
+      source.marketSkinCss;
+    document.head.appendChild(marketSkin);
 
     evaluate(source.baseJs,files.baseJs,sha);
     evaluate(source.grenades,files.grenades,sha);
@@ -1444,6 +1456,7 @@
         } catch {}
 
         injectedStyle?.remove?.();
+        document.getElementById("feha-market-cp-css")?.remove();
       }
     }
 

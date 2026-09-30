@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.6.0";
+  const VERSION = "1.6.1";
   const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -620,6 +620,13 @@
 
       for (const card of root.querySelectorAll(".item-card")) {
         const item = weaponItemForCard(card);
+
+        // Rarity drives the CP2077 skin's card stripe (market-cp.css).
+        const rarity = String(item?.system?.rarity ?? "");
+        if (rarity && card.dataset.fehaRarity !== rarity) {
+          card.dataset.fehaRarity = rarity;
+        }
+
         if (item?.type !== "weapon") continue;
 
         card.classList.add("feha-weapon-card");

@@ -1,13 +1,12 @@
 {
-  "version": "0.11.81",
+  "version": "0.11.82",
   "updated": "2026-09-30",
-  "scope": "weapon-identifier-root-cause",
+  "scope": "market-cp2077-skin",
   "notes": [
-    "Root cause of the long-running 'Foundry 14.367 identifier bug': FEHA_WEAPON_CATALOG's norm/slug helpers had double-escaped regexes. norm stripped capitals and digits before lowercasing (Achilles -> 'chilles', MA70/HMG -> blank) and slug never replaced spaces, so the catalog wrote invalid identifiers like 'osprey prototype' and Foundry correctly rejected the update.",
-    "Fixed norm, slug, diceParts and the damage-field comparison in FEHA_WEAPON_CATALOG (same four double-escaped regex literals).",
-    "The nested identifier checks also treated unset optional fields (undefined) as invalid, quarantining 143 healthy items; they now skip unset values.",
-    "World hygiene removes the cleanup-safe legacy attack stubs (empty default attacks beside the real DEX attack).",
-    "All 135 weapons were backed up to compendium world.feha-weapon-backup-2026-09-30 before this build loaded.",
-    "No weapon damage, balance, stock, DEX rules or reload cadence changed; previously-skipped weapons receive the existing canonical catalog and economy values."
+    "Market restyled after the Cyberpunk 2077 inventory/vendor screen: red-on-black HUD with crosshair grid, red header rule, cyan active states, yellow CR balance, condensed Rajdhani display type.",
+    "Item cards get a rarity stripe and Mk badge colour from the item's dnd5e rarity (common grey, uncommon green, rare blue, very rare purple, legendary orange), a cut corner and a cyan hover state; denser 4-up grid with a short art strip.",
+    "Storefront directory, filters, pagination and buttons share the same skin. BUY is solid red, DETAILS is a cyan outline.",
+    "New market-cp.css is loaded by ADK_DEV_LOADER as its own style sheet and outranks the older Market theme layers; Market Stock Patch 1.6.1 tags cards with data-feha-rarity.",
+    "Styling only: no prices, stock, balances, buttons, filters or Market behavior changed. Text colours pass WCAG AA contrast."
   ]
 }
