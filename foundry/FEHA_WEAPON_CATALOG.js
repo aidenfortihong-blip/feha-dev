@@ -45,6 +45,7 @@
   async function migrateItem(item){
     if(!item||item.type!=="weapon")return false;
     if(item.documentName==="Item"&&insideDoThese(item))return false;
+    if(item.flags?.[FLAG]?.doTheseFinalized===true)return false;
     const d=definition(item); if(!d)return false; const f=item.flags?.[FLAG]??{},u={},vals=flagValues(d);
     for(const stale of ["mk","rating","tier","ratingLabel","marketTier"])if(Object.prototype.hasOwnProperty.call(f,stale))u["flags."+FLAG+".-="+stale]=null;
     for(const [k,v] of Object.entries(vals)){let same=false;try{same=JSON.stringify(f[k]??null)===JSON.stringify(v)}catch{same=f[k]===v}if(!same)u["flags."+FLAG+"."+k]=v}
