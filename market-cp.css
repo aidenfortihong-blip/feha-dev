@@ -34,6 +34,16 @@ html body #adk-market-15#adk-market-15#adk-market-15 {
   --r-legendary: #ff9d2e;
   --r-artifact: #f3e600;
 
+  /* Retarget the per-character theme variables (set inline on the root by
+     the runtime theme) so leftover accents follow the CP palette. */
+  --adk-primary: #5ef2ff !important;
+  --adk-primary-rgb: 94, 242, 255 !important;
+  --adk-secondary: #ff5e57 !important;
+  --adk-secondary-rgb: 255, 94, 87 !important;
+  --mx-red: #ff5e57 !important;
+  --mx-gold: #f3e600 !important;
+  --mx-yellow: #f3e600 !important;
+
   background:
     linear-gradient(90deg, transparent 0 calc(100% - 1px), rgba(255,94,87,.05) 0) 0 0 / 88px 88px,
     linear-gradient(0deg, transparent 0 calc(100% - 1px), rgba(255,94,87,.05) 0) 0 0 / 88px 88px,
