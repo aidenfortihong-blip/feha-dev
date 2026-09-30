@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_READINESS requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.0.0";
+  const VERSION = "2.0.1";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "01 — WEAPONS";
   const DONE_NAME = "DONE";
@@ -15,18 +15,31 @@
   let marketObserver = null;
   let marketClickGuard = null;
 
-  // Canonical finished weapons come directly from the mega-review catalog.
-  // Exact normalized names only; suffixed/reskin editions remain NOT DONE.
+  // Canonical base models come directly from the mega-review catalog.
+  // Keep the raw list for the 81-gun contract; use normalized names only for
+  // exact item-name matching. Stale catalog flags on reskins are ignored.
+  const DONE_NAMES =
+    (globalThis.FEHA_WEAPON_CATALOG?.list?.() ?? [])
+      .map(def => String(def?.name ?? "").trim())
+      .filter(Boolean);
+
   const DONE_WEAPONS = new Set(
-    (globalThis.FEHA_WEAPON_CATALOG?.list?.() ?? []).map(def =>
-      String(def?.name ?? "")
+    DONE_NAMES.map(name =>
+      String(name)
         .normalize("NFKD")
-        .replace(/[\\u0300-\\u036f]/g,"")
+        .replace(/[\u0300-\u036f]/g,"")
         .replace(/[^a-zA-Z0-9]+/g," ")
         .trim()
         .toLowerCase()
     )
   );
+
+  if (DONE_NAMES.length !== 81) {
+    throw new Error(
+      "FEHA Weapon Readiness expected 81 catalog definitions but received " +
+      DONE_NAMES.length + "."
+    );
+  }
 
   const list = collection => {
     if (!collection) return [];
@@ -72,12 +85,20 @@
   function manufacturerFolders(root) {
     if (!root) return [];
 
+    const allowed = new Set([
+      "-Bastion",
+      "-Corvus",
+      "-Forgeline",
+      "-Helix",
+      "-Jade Arc",
+      "-Kurohane",
+      "-Vektor"
+    ]);
+
     return list(game.folders).filter(folder =>
       String(folder?.type ?? "") === "Item" &&
       folderParentId(folder) === String(root.id) &&
-      ![DONE_NAME,NOT_DONE_NAME].includes(
-        String(folder?.name ?? "").toUpperCase()
-      )
+      allowed.has(String(folder?.name ?? ""))
     );
   }
 
@@ -126,9 +147,7 @@
   }
 
   function isDoneWeapon(item) {
-    return Boolean(
-      globalThis.FEHA_WEAPON_CATALOG?.definition?.(item)
-    ) || DONE_WEAPONS.has(norm(item?.name));
+    return DONE_WEAPONS.has(norm(item?.name));
   }
 
   async function ensureStatusFolder(company,name) {
@@ -495,10 +514,10 @@
       result
     );
 
-    if (doneCount !== DONE_WEAPONS.size) {
+    if (doneCount !== DONE_NAMES.length) {
       ui.notifications?.warn?.(
         "FEHA Weapon Readiness expected "+
-        DONE_WEAPONS.size+
+        DONE_NAMES.length+
         " finished weapons but found "+
         doneCount+
         ". Check console for missing catalog entries."
@@ -518,7 +537,7 @@
 
   const api = {
     version:VERSION,
-    doneNames:[...DONE_WEAPONS],
+    doneNames:[...DONE_NAMES],
     isDoneWeapon,
     migrate,
 
