@@ -1,13 +1,13 @@
 {
-  "version": "0.11.73",
+  "version": "0.11.74",
   "updated": "2026-09-30",
-  "scope": "market-weapon-description-sync",
+  "scope": "actor-weapon-open-routing-and-sheet-autofit",
   "notes": [
-    "Market weapon cards now replace stale generic text such as 'Base damage 2d6 + ability modifier' with canonical FEHA weapon information.",
-    "Shop copy is generated from the live firearm, unique-weapon, and melee catalogs and shows the current doctrine/effect plus compact damage, range, attacks-per-reload, reload-point, and TO HIT DEX data where applicable.",
-    "A Market DOM observer keeps weapon descriptions synchronized after vendor rerolls, filtering, card expansion, and other Market rerenders.",
-    "Weapon Mk badges remain suppressed.",
-    "The Market Stock Patch code version advances to 1.5.0 while the stock schema remains 1.4.3, so this visual/content update does not force an unnecessary vendor-stock reset.",
-    "No prices, rarity, stock composition, firearm balance, armor, cyberware, grenade, or Quickhack rules changed."
+    "Canonical weapon clicks from dnd5e Actor inventory rows now open the FEHA weapon interface instead of immediately invoking the stock dnd5e attack/use flow.",
+    "The bridge resolves the clicked owned Item from the containing Actor application and only intercepts canonical FEHA weapons, leaving explicit inventory management controls alone.",
+    "Problem-patch weapons such as Black Requiem, Achilles, Razor Choir, Monarch Zero, and the other canonical catalog guns therefore route into the same FEHA weapon page from the Actor sheet.",
+    "Weapon windows no longer force a tall fixed height. They widen when needed, then auto-fit their height to the rendered FEHA content and clamp to the viewport.",
+    "The FEHA page root no longer uses 100% height, removing the large empty black area beneath shorter weapon pages.",
+    "No weapon damage, DEX rules, shot tracking, reload cadence, Market stock, armor, cyberware, grenade, or Quickhack rules changed."
   ]
 }
