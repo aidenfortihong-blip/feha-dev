@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_SHEET requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
 
@@ -335,7 +335,6 @@
         <div class="feha-ws-corrections">
           <button type="button" data-feha-ws-action="undo">UNDO SHOT</button>
           <button type="button" data-feha-ws-action="reset">RESET TRACKER</button>
-          <button type="button" data-feha-ws-action="hud">OPEN FLOATING HUD</button>
         </div>
       </section>
     `;
@@ -679,7 +678,7 @@
 
         [data-feha-canonical-weapon-sheet] .feha-ws-corrections {
           display:grid;
-          grid-template-columns:1fr 1fr 1.25fr;
+          grid-template-columns:1fr 1fr;
           gap:6px;
           margin-top:7px;
         }
@@ -874,9 +873,6 @@
         else if (action === "reset") {
           await tracker.reset?.(item);
         }
-        else if (action === "hud") {
-          tracker.open?.(item,{flash:"OPENED FROM WEAPON SHEET"});
-        }
       } catch (error) {
         console.warn(
           "FEHA WEAPON SHEET // combat action failed",
@@ -891,16 +887,14 @@
         button.disabled = false;
       }
 
-      if (action !== "hud") {
-        await new Promise(resolve => setTimeout(resolve,100));
-        refresh(app);
+      await new Promise(resolve => setTimeout(resolve,100));
+      refresh(app);
 
-        // dnd5e postRollAttack can finish its tracking mutation just after
-        // activity.use resolves. A second tiny refresh keeps remaining shots
-        // visually exact without requiring the user to close/reopen the sheet.
-        if (action === "attack") {
-          setTimeout(() => refresh(app),350);
-        }
+      // dnd5e postRollAttack can finish its tracking mutation just after
+      // activity.use resolves. A second tiny refresh keeps remaining shots
+      // visually exact without requiring the user to close/reopen the sheet.
+      if (action === "attack") {
+        setTimeout(() => refresh(app),350);
       }
     };
   }
