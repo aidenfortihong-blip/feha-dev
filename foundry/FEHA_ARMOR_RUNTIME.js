@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.2.1";
+  const VERSION = "1.2.2";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -271,12 +271,24 @@
       origin?.item,
       origin?.parent?.documentName === "Item" ? origin.parent : null,
       origin?.documentName === "Item" ? origin : null,
-      options.originatingMessage?.item ?? null
+      options.originatingMessage?.item ?? null,
+      (() => {
+        try {
+          return options.originatingMessage
+            ?.getAssociatedActivity?.()
+            ?.item ?? null;
+        } catch {
+          return null;
+        }
+      })()
     ].filter(Boolean);
 
     if (candidates.length) return candidates[0];
 
     const uuidCandidates = [
+      // dnd5e 5.3.3 ActivityMixin.messageFlags stores the canonical Item UUID
+      // here on both attack and damage roll messages.
+      options.originatingMessage?.flags?.dnd5e?.item?.uuid,
       options.originatingMessage?.system?.context?.item?.uuid,
       options.originatingMessage?.system?.context?.itemUuid,
       options.originatingMessage?.flags?.dnd5e?.itemUuid,
