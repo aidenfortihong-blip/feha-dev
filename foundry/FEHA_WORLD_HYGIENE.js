@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WORLD_HYGIENE requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
 
   const list = collection => {
@@ -49,48 +49,148 @@
     return String(activity?.id ?? activity?._id ?? "");
   }
 
+  function attackSource(activity) {
+    return activity?._source ?? activity ?? {};
+  }
+
   function legacyAttackStub(activity) {
-    const source = activity?._source ?? activity ?? {};
+    const source = attackSource(activity);
     if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") return false;
 
-    // dnd5e prepares an unnamed legacy activity as "Attack", which made the
-    // original hygiene pass mistake the empty stub for a legitimate attack.
-    // Classify from persisted source data whenever available.
-    const name = String(source?.name ?? "").trim();
+    // dnd5e can prepare an unnamed old activity with the visible label
+    // "Attack". Treat either a blank persisted name OR the generic prepared
+    // Attack name as legacy only when every other structural signal matches
+    // the old empty self-range stub.
+    const name = String(source?.name ?? activity?.name ?? "").trim();
+    const genericName = !name || name.toLowerCase() === "attack";
     const sort = Number(source?.sort ?? activity?.sort ?? 0) || 0;
-    const activation = source?.activation ?? {};
-    const range = source?.range ?? {};
-    const damage = source?.damage ?? {};
+    const activation = source?.activation ?? activity?.activation ?? {};
+    const range = source?.range ?? activity?.range ?? {};
+    const damage = source?.damage ?? activity?.damage ?? {};
+    const attack = source?.attack ?? activity?.attack ?? {};
     const parts = list(damage?.parts);
-    const effects = list(source?.effects);
+    const effects = list(source?.effects ?? activity?.effects);
 
     const value = range?.value;
     const emptyRangeValue =
       value == null || value === "" || Number(value) === 0;
 
+    const attackAbility =
+      String(
+        attack?.ability ??
+        list(attack?.abilities)?.join?.("") ??
+        ""
+      ).trim();
+
     return (
-      !name &&
+      genericName &&
       sort === 0 &&
       String(activation?.type ?? "action") === "action" &&
       String(range?.units ?? "") === "self" &&
       emptyRangeValue &&
       damage?.includeBase === true &&
       parts.length === 0 &&
-      effects.length === 0
+      effects.length === 0 &&
+      !attackAbility &&
+      String(attack?.bonus ?? "").trim() === ""
     );
   }
 
-  function realAttack(activity) {
-    const source = activity?._source ?? activity ?? {};
-    if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") return false;
-    if (legacyAttackStub(activity)) return false;
+  function attackScore(activity) {
+    if (legacyAttackStub(activity)) return -100;
+
+    const source = attackSource(activity);
+    if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") {
+      return -1000;
+    }
 
     const name = String(source?.name ?? activity?.name ?? "").trim();
     const sort = Number(source?.sort ?? activity?.sort ?? 0) || 0;
     const range = source?.range ?? activity?.range ?? {};
-    const rangeValue = Number(range?.value ?? 0) || 0;
+    const attack = source?.attack ?? activity?.attack ?? {};
+    const damage = source?.damage ?? activity?.damage ?? {};
 
-    return Boolean(name || sort > 0 || rangeValue > 0);
+    let score = 0;
+    if (name) score += 2;
+    if (name.toLowerCase() === "attack") score += 1;
+    if (sort > 0) score += 4;
+    if ((Number(range?.value ?? 0) || 0) > 0) score += 5;
+    if (String(range?.units ?? "") === "ft") score += 2;
+    if (String(attack?.ability ?? "").trim()) score += 2;
+    if (list(attack?.abilities).length) score += 2;
+    if (damage?.includeBase === true) score += 1;
+    if (activity?.img || source?.img) score += 1;
+
+    return score;
+  }
+
+  function realAttack(activity) {
+    return attackScore(activity) > 0;
+  }
+
+  function attackCleanupPlan(item) {
+    const attacks = attackActivities(item);
+    if (attacks.length < 2) {
+      return {
+        attacks,
+        keeper:attacks[0] ?? null,
+        remove:[],
+        safe:true,
+        reason:"single-or-none"
+      };
+    }
+
+    const ranked = attacks
+      .map(activity => ({activity,score:attackScore(activity)}))
+      .sort((a,b) => b.score-a.score);
+
+    const explicitStubs = ranked
+      .filter(entry => legacyAttackStub(entry.activity))
+      .map(entry => entry.activity);
+
+    const real = ranked
+      .filter(entry => entry.score > 0)
+      .map(entry => entry.activity);
+
+    // Exact old-world pattern: one or more empty default attack stubs plus one
+    // configured attack. This is safe on canonical and non-canonical weapons.
+    if (explicitStubs.length && real.length === 1) {
+      return {
+        attacks,
+        keeper:real[0],
+        remove:explicitStubs,
+        safe:true,
+        reason:"legacy-stub-plus-real"
+      };
+    }
+
+    // If there is one clearly dominant configured attack and every other
+    // activity is an exact legacy stub, removal remains safe.
+    if (
+      ranked[0]?.score >= 6 &&
+      ranked.slice(1).every(entry => legacyAttackStub(entry.activity))
+    ) {
+      return {
+        attacks,
+        keeper:ranked[0].activity,
+        remove:ranked.slice(1).map(entry => entry.activity),
+        safe:true,
+        reason:"dominant-real-plus-stubs"
+      };
+    }
+
+    return {
+      attacks,
+      keeper:ranked[0]?.activity ?? null,
+      remove:[],
+      safe:false,
+      reason:"ambiguous-multiple-real-attacks",
+      ranked:ranked.map(entry => ({
+        id:activityId(entry.activity),
+        name:String(entry.activity?.name ?? ""),
+        score:entry.score
+      }))
+    };
   }
 
   function identifierIssues(root) {
@@ -249,6 +349,7 @@
 
       const attacks = attackActivities(item);
       if (attacks.length > 1) {
+        const plan = attackCleanupPlan(item);
         const stubs = attacks.filter(legacyAttackStub);
         const real = attacks.filter(realAttack);
 
@@ -260,15 +361,22 @@
           attackCount:attacks.length,
           legacyStubCount:stubs.length,
           realAttackCount:real.length,
+          cleanupSafe:Boolean(plan.safe && plan.remove.length),
+          cleanupReason:plan.reason,
+          keeperId:activityId(plan.keeper),
+          removeIds:plan.remove.map(activityId).filter(Boolean),
           folder:folderPath(item)
         };
 
         duplicateAttackActivities.push(info);
 
-        if (stubs.length > 0 && real.length > 0) {
+        if (plan.safe && plan.remove.length) {
           safeLegacyAttackCleanup.push(info);
         } else {
-          ambiguousMultiAttack.push(info);
+          ambiguousMultiAttack.push({
+            ...info,
+            ranked:plan.ranked ?? []
+          });
         }
       }
 
@@ -379,6 +487,69 @@
       });
     }
 
+    const legacyActorFlags = [];
+    for (const actor of list(game.actors)) {
+      const f = actor?.flags?.[FLAG] ?? {};
+      const stale = {};
+      for (const key of [
+        "chromeCapacity","chromeUsed","chromeMax","chromeTierCosts",
+        "chromeRulesVersion","humanity","heat","adkVersion",
+        "adkLoadoutVersion"
+      ]) {
+        if (Object.prototype.hasOwnProperty.call(f,key)) stale[key] = f[key];
+      }
+      const worldDeck = actor?.flags?.world?.cyberdeck ?? null;
+      if (worldDeck && (
+        Object.prototype.hasOwnProperty.call(worldDeck,"humanity") ||
+        Object.prototype.hasOwnProperty.call(worldDeck,"heat")
+      )) {
+        stale["world.cyberdeck"] = {
+          humanity:worldDeck.humanity,
+          heat:worldDeck.heat
+        };
+      }
+      if (Object.keys(stale).length) {
+        legacyActorFlags.push({
+          actor:String(actor.name ?? ""),
+          uuid:String(actor.uuid ?? actor.id ?? ""),
+          stale
+        });
+      }
+    }
+
+    const weaponRuntimeStatus =
+      globalThis.FEHA_WEAPON_RUNTIME?.status?.() ??
+      game.adk?.weaponRuntime?.status?.() ??
+      null;
+
+    const weaponRuntimeFeatures =
+      globalThis.FEHA_WEAPON_RUNTIME?.features?.() ??
+      game.adk?.weaponRuntime?.features?.() ??
+      null;
+
+    const moduleNames =
+      globalThis.FEHA_CYBER_CORE?.modules
+        ? [...globalThis.FEHA_CYBER_CORE.modules().keys()]
+        : [];
+
+    const runtimeHealth = {
+      build:String(globalThis.FEHA_TABLETOP_UI_V3?.version ?? ""),
+      cyberCore:String(globalThis.FEHA_CYBER_CORE?.version ?? ""),
+      modules:moduleNames,
+      weaponRuntime:weaponRuntimeStatus,
+      weaponFeatures:weaponRuntimeFeatures,
+      weaponTracker:String(globalThis.FEHA_WEAPON_TRACKER?.version ?? ""),
+      armorRuntime:String(globalThis.FEHA_ARMOR_RUNTIME?.version ?? ""),
+      grenadeRuntime:String(globalThis.FEHA_GRENADE_RUNTIME?.version ?? ""),
+      quickhackAuthority:String(globalThis.FEHA_QUICKHACK_AUTHORITY?.version ?? ""),
+      quickhackRuntime:String(globalThis.FEHA_QUICKHACK_RUNTIME?.version ?? ""),
+      temporaryTracerGlobals:[
+        "__FEHA_LAST_IDENTIFIER_FAILURES",
+        "__FEHA_LAST_IDENTIFIER_NOTICES",
+        "__FEHA_LAST_FOUNDRY_IDENTIFIER_ERRORS"
+      ].filter(key => globalThis[key] != null)
+    };
+
     const catalogs = [
       catalogCoverage(globalThis.FEHA_WEAPON_CATALOG ?? game.adk?.weapons,"weapons"),
       catalogCoverage(globalThis.FEHA_MELEE_CATALOG ?? game.adk?.melee,"melee"),
@@ -415,6 +586,8 @@
       duplicateActorNames,
       duplicateActorCyberwareSource,
       retiredOrLegacyWorld,
+      legacyActorFlags,
+      runtimeHealth,
       catalogs
     };
 
@@ -428,6 +601,8 @@
       duplicateActorNameGroups:duplicateActorNames.length,
       duplicateActorCyberwareSourceGroups:duplicateActorCyberwareSource.length,
       retiredOrLegacyWorldItems:retiredOrLegacyWorld.length,
+      legacyActorFlagActors:legacyActorFlags.length,
+      runtimeTracerGlobals:runtimeHealth.temporaryTracerGlobals.length,
       catalogMissingTotal:catalogs.reduce((sum,row) => sum + row.missing.length,0),
       catalogDuplicateTotal:catalogs.reduce((sum,row) => sum + row.duplicates.length,0)
     };
@@ -456,12 +631,8 @@
       const item = row.item;
       if (item?.type !== "weapon") continue;
 
-      const attacks = attackActivities(item);
-      if (attacks.length < 2) continue;
-
-      const stubs = attacks.filter(legacyAttackStub);
-      const real = attacks.filter(realAttack);
-      if (!stubs.length || !real.length) continue;
+      const plan = attackCleanupPlan(item);
+      if (!plan.safe || !plan.remove.length) continue;
 
       if (hasInvalidPersistedIdentifier(item)) {
         skipped.push({
@@ -475,7 +646,7 @@
       }
 
       const update = {};
-      const ids = stubs.map(activityId).filter(Boolean);
+      const ids = plan.remove.map(activityId).filter(Boolean);
       if (!ids.length) continue;
 
       for (const id of ids) {
@@ -571,6 +742,8 @@
     runFullPass,
     cleanupLegacyWeaponActivities,
     legacyAttackStub,
+    attackScore,
+    attackCleanupPlan,
     realAttack,
     identifierIssues,
 
