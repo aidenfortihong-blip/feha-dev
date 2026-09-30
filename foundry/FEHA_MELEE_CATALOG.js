@@ -5,8 +5,8 @@
 (() => {
   try { globalThis.FEHA_MELEE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.0.1";
-  const REWRITE = "melee-1.0-b";
+  const VERSION = "1.0.2";
+  const REWRITE = "melee-1.0-c";
   const FLAG = "fleshEnshrouded";
   const MELEE_FOLDERS = new Set(["melee","-melee"]);
 
@@ -178,7 +178,7 @@
         '<div><small>REACH</small><br><strong>'+esc(def.reach)+' ft</strong></div>'+
         '<div><small>STR REQUIREMENT</small><br><strong>'+esc(def.strengthRequirement ?? "—")+'</strong></div>'+
         '<div><small>THROWN</small><br><strong>'+esc(thrown)+'</strong></div>'+
-        '<div><small>CUSTOM EFFECT</small><br><strong style="color:'+(def.special?"#ff7a61":"#9aa6aa")+'">'+(def.special?"YES":"—")+'</strong></div>'+
+        '<div><small>DAMAGE TYPE</small><br><strong>'+esc(String(def.damageType ?? "—").toUpperCase())+'</strong></div>'+
       '</div>'+gorilla+special+
     '</section>';
   }
