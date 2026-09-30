@@ -1,12 +1,11 @@
 {
-  "version": "0.11.75",
+  "version": "0.11.76",
   "updated": "2026-09-30",
-  "scope": "market-freeze-fix-and-weapon-footer-trim",
+  "scope": "market-freeze-hard-fix",
   "notes": [
-    "Fixes the Market hard-freeze caused by the weapon-description MutationObserver rewriting already-correct weapon cards on every observer pass.",
-    "Market weapon-card synchronization is now idempotent using a content signature and requestAnimationFrame scheduling, so rerenders update only changed cards and the observer settles instead of recursively mutating forever.",
-    "Removes the visible empty black strip beneath FEHA weapon sheets by trimming the outer Foundry window against the actual rendered FEHA page bottom rather than using approximate header/scroll-height math.",
-    "Weapon Sheet advances to 1.6.1 and Market Stock Patch advances to 1.5.1.",
+    "Removes the Market weapon-description MutationObserver entirely. Watching document.body during Market construction could still produce a mutation storm and lock the Foundry client even after card writes were made idempotent.",
+    "Weapon-description synchronization now runs only in short scheduled bursts after user clicks and on module initialization, which still catches Shop open, DETAILS, filters, rerolls, and shop changes without observing its own DOM writes.",
+    "Canonical FEHA weapon descriptions and Mk suppression remain active in the Market.",
     "No Market stock, prices, weapon balance, DEX rules, reload cadence, armor, cyberware, grenade, or Quickhack rules changed."
   ]
 }
