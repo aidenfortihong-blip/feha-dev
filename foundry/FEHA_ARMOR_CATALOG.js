@@ -4,7 +4,7 @@
 (() => {
   try { globalThis.FEHA_ARMOR_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.2.1";
   const REWRITE = "1.2";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "03 — ARMOR";
@@ -27,6 +27,16 @@
     5:"Prototype"
   };
 
+  const POWER_RATINGS = Object.freeze({
+    "ForgeLine Industries":[28,45,61,84,100],
+    "Bastion Strategic":[23,40,57,81,98],
+    "Jade Arc Systems":[31,43,62,74,87],
+    "Corvus Neural":[15,27,43,56,71],
+    "Vektor Dynamics":[27,40,46,59,71],
+    "Helix Vitae":[15,31,46,62,77],
+    "Kurohane Group":[34,46,56,68,84]
+  });
+
   const profiles = [
     {
       company:"ForgeLine Industries",
@@ -35,7 +45,7 @@
       armorType:"heavy",
       dexCap:0,
       ac:[16,18,20,23,25],
-      price:[900,2200,6000,16000,40000],
+      price:[950,2550,7350,19000,50000],
       weight:[35,45,60,80,110],
       effect:mk => ({
         key:"anchor-plating",
@@ -54,7 +64,7 @@
       armorType:"heavy",
       dexCap:0,
       ac:[15,17,19,22,24],
-      price:[850,2000,5500,15000,36000],
+      price:[850,2300,6700,18250,48600],
       weight:[24,30,37,45,56],
       effect:mk => ({
         key:"take-the-bullet",
@@ -76,7 +86,7 @@
       armorType:"heavy",
       dexCap:0,
       ac:[15,17,19,21,23],
-      price:[900,2100,6000,16000,38000],
+      price:[1050,2450,7500,16500,41050],
       weight:[22,28,35,43,52],
       effect:mk => ({
         key:"thermal-faraday",
@@ -95,7 +105,7 @@
       armorType:"medium",
       dexCap:0,
       ac:[14,16,18,20,22],
-      price:[950,2300,6500,17000,42000],
+      price:[950,2300,4950,12750,30000],
       weight:[11,12,14,16,18],
       effect:mk => ({
         key:"neural-isolation",
@@ -130,7 +140,7 @@
       armorType:"medium",
       dexCap:1,
       ac:[13,15,17,19,21],
-      price:[750,1800,5000,13000,32000],
+      price:[700,1900,4950,13500,34150],
       weight:[8,9,10,11,12],
       effect:mk => ({
         key:"kinetic-sync",
@@ -149,7 +159,7 @@
       armorType:"light",
       dexCap:null,
       ac:[13,15,16,18,20],
-      price:[800,1900,5000,14000,34000],
+      price:[1100,2600,6550,15000,38950],
       weight:[5,6,7,8,9],
       effect:mk => ({
         key:"ghostweave",
@@ -180,6 +190,7 @@
         availability:availabilityByMk[mk],
         ac:profile.ac[mk-1],
         price:profile.price[mk-1],
+        powerRating:POWER_RATINGS[profile.company]?.[mk-1] ?? null,
         weight:profile.weight[mk-1],
         armorType:profile.armorType,
         dexCap:profile.dexCap,
@@ -513,6 +524,7 @@
       marketPass:"armor-1.2",
       marketCategory:"Armor_Outer",
       marketPrice:def.price,
+      armorPowerRating:def.powerRating,
       bodyArmorBaseAC:def.ac,
       bodyArmorAC:def.ac,
       effectText:def.signature.text,
