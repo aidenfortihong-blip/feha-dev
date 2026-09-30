@@ -553,9 +553,10 @@
       );
     }
 
-    if (weaponDefs.length !== 81) {
+    if (weaponDefs.length !== weaponReadiness.doneNames.length) {
       throw new Error(
-        "Weapon integration expected 81 canonical mega-review weapons but found "+
+        "Weapon integration expected the permanent catalog to match the Do these set ("+
+        weaponReadiness.doneNames.length+") but found "+
         weaponDefs.length+"."
       );
     }
