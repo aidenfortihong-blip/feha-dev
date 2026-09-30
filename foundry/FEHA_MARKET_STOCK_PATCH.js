@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.5.0";
+  const VERSION = "1.5.1";
   const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -15,6 +15,8 @@
   const START = "/* FEHA MARKET STOCK PATCH START */";
   const END = "/* FEHA MARKET STOCK PATCH END */";
   let noMkObserver = null;
+  let marketSyncScheduled = false;
+  let marketSyncRunning = false;
   const MARKET_STYLE_ID = "feha-market-weapon-description-style";
 
   const PATCH_BLOCK = [
@@ -487,11 +489,21 @@
     }) ?? null;
   }
 
+  function weaponSummarySignature(item) {
+    const copy = marketWeaponCopy(item);
+    return JSON.stringify({
+      id:String(item?.id ?? ""),
+      primary:copy.primary,
+      stats:copy.stats
+    });
+  }
+
   function weaponSummaryElement(item) {
     const copy = marketWeaponCopy(item);
     const node = document.createElement("div");
     node.className = "feha-market-weapon-copy";
     node.dataset.fehaWeaponDescription = String(item?.id ?? "");
+    node.dataset.fehaWeaponSignature = weaponSummarySignature(item);
 
     const p = document.createElement("p");
     p.textContent = copy.primary;
@@ -511,51 +523,81 @@
   }
 
   function syncWeaponMarketCards() {
+    if (marketSyncRunning) return;
+
     const root = document.getElementById("adk-market-15");
     if (!root) return;
 
-    ensureMarketWeaponStyles();
+    marketSyncRunning = true;
 
-    for (const card of root.querySelectorAll(".item-card")) {
-      const item = weaponItemForCard(card);
-      if (item?.type !== "weapon") continue;
+    try {
+      ensureMarketWeaponStyles();
 
-      card.classList.add("feha-weapon-card");
+      for (const card of root.querySelectorAll(".item-card")) {
+        const item = weaponItemForCard(card);
+        if (item?.type !== "weapon") continue;
 
-      for (const badge of card.querySelectorAll(".item-mk")) {
-        badge.remove();
+        card.classList.add("feha-weapon-card");
+
+        for (const badge of card.querySelectorAll(".item-mk")) {
+          badge.remove();
+        }
+
+        const signature = weaponSummarySignature(item);
+        const existing =
+          card.querySelector(".feha-market-weapon-copy");
+
+        // Critical: do not rewrite an already-correct card. Replacing the
+        // node on every observer pass causes a self-sustaining MutationObserver
+        // loop that can freeze Foundry when the Market opens.
+        if (
+          existing &&
+          existing.dataset.fehaWeaponSignature === signature
+        ) {
+          continue;
+        }
+
+        const fresh = weaponSummaryElement(item);
+
+        if (existing) {
+          existing.replaceWith(fresh);
+          continue;
+        }
+
+        const stale = staleWeaponDescriptionNode(card);
+
+        if (stale) {
+          stale.replaceWith(fresh);
+          continue;
+        }
+
+        const actions =
+          card.querySelector(".item-actions,.card-actions,.actions,[data-buy-item]") ??
+          null;
+
+        const actionRow =
+          actions?.closest?.(".item-actions,.card-actions,.actions") ??
+          actions;
+
+        if (actionRow?.parentElement === card) {
+          card.insertBefore(fresh,actionRow);
+        } else {
+          card.appendChild(fresh);
+        }
       }
-
-      const fresh = weaponSummaryElement(item);
-      const existing =
-        card.querySelector(".feha-market-weapon-copy");
-
-      if (existing) {
-        existing.replaceWith(fresh);
-        continue;
-      }
-
-      const stale = staleWeaponDescriptionNode(card);
-
-      if (stale) {
-        stale.replaceWith(fresh);
-        continue;
-      }
-
-      const actions =
-        card.querySelector(".item-actions,.card-actions,.actions,[data-buy-item]") ??
-        null;
-
-      const actionRow =
-        actions?.closest?.(".item-actions,.card-actions,.actions") ??
-        actions;
-
-      if (actionRow?.parentElement === card) {
-        card.insertBefore(fresh,actionRow);
-      } else {
-        card.appendChild(fresh);
-      }
+    } finally {
+      marketSyncRunning = false;
     }
+  }
+
+  function scheduleWeaponMarketSync() {
+    if (marketSyncScheduled) return;
+    marketSyncScheduled = true;
+
+    requestAnimationFrame(() => {
+      marketSyncScheduled = false;
+      syncWeaponMarketCards();
+    });
   }
 
   function stripWeaponMkBadges() {
@@ -570,7 +612,7 @@
 
     noMkObserver =
       new MutationObserver(() => {
-        queueMicrotask(syncWeaponMarketCards);
+        scheduleWeaponMarketSync();
       });
 
     noMkObserver.observe(
@@ -590,6 +632,8 @@
     } catch {}
 
     noMkObserver = null;
+    marketSyncScheduled = false;
+    marketSyncRunning = false;
     document.getElementById(MARKET_STYLE_ID)?.remove?.();
   }
 
