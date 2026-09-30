@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WORLD_HYGIENE requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.1.1";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const sheetHooks = [];
 
@@ -689,7 +689,8 @@
       "renderItemSheet",
       "renderItemSheetV2",
       "renderActorSheet",
-      "renderActorSheetV2"
+      "renderActorSheetV2",
+      "renderApplicationV2"
     ]) {
       sheetHooks.push([
         event,
@@ -712,6 +713,38 @@
     const build = Number(game.release?.build ?? 0);
     if (build >= 368) return false;
     return identifierIssues(item?._source?.system ?? {}).length > 0;
+  }
+
+  async function deleteActivityFromItem(item,activity) {
+    const id = activityId(activity);
+    if (!item || !id) {
+      return {ok:false,reason:"missing-item-or-id",id};
+    }
+
+    // dnd5e 5.x Activities are pseudo-documents stored inside
+    // system.activities. The supported deletion path is Item5e.deleteActivity,
+    // NOT Foundry's generic "-=key" object deletion syntax. The latter was the
+    // reason earlier FEHA hygiene passes reported success without actually
+    // removing the second Attack button.
+    if (typeof item.deleteActivity === "function") {
+      await item.deleteActivity(id);
+      return {
+        ok:!item.system?.activities?.get?.(id),
+        method:"item.deleteActivity",
+        id
+      };
+    }
+
+    if (typeof activity?.delete === "function") {
+      await activity.delete();
+      return {
+        ok:!item.system?.activities?.get?.(id),
+        method:"activity.delete",
+        id
+      };
+    }
+
+    return {ok:false,reason:"dnd5e-delete-api-unavailable",id};
   }
 
   async function cleanupLegacyWeaponActivities({notify=false}={}) {
@@ -742,17 +775,39 @@
         continue;
       }
 
-      const update = {};
       const ids = plan.remove.map(activityId).filter(Boolean);
       if (!ids.length) continue;
 
-      for (const id of ids) {
-        update["system.activities.-="+id] = null;
-      }
+      let removedHere = 0;
 
       try {
-        await item.update(update);
-        removed += ids.length;
+        // Delete through dnd5e's own pseudo-document API one at a time so the
+        // ActivitiesField stays internally synchronized.
+        for (const activity of plan.remove) {
+          const result = await deleteActivityFromItem(item,activity);
+          if (!result.ok) {
+            throw new Error(
+              "Activity "+String(result.id ?? "?")+
+              " was not removed via "+String(result.method ?? result.reason ?? "unknown method")
+            );
+          }
+          removedHere++;
+        }
+
+        // Hard verification: do not claim success until the live Item now has
+        // exactly one or zero attack activities and none of the deleted IDs.
+        const remaining = attackActivities(item);
+        const survivingDeletedIds = ids.filter(id =>
+          remaining.some(activity => activityId(activity) === id)
+        );
+
+        if (survivingDeletedIds.length) {
+          throw new Error(
+            "Deleted activity IDs still present: "+survivingDeletedIds.join(", ")
+          );
+        }
+
+        removed += removedHere;
         itemsChanged++;
       } catch (error) {
         failures.push({
@@ -761,6 +816,8 @@
           name:String(item.name ?? ""),
           uuid:String(item.uuid ?? item.id ?? ""),
           ids,
+          removedBeforeFailure:removedHere,
+          remainingAttackIds:attackActivities(item).map(activityId).filter(Boolean),
           error:String(error?.message ?? error)
         });
       }
@@ -838,6 +895,7 @@
     scan,
     runFullPass,
     cleanupLegacyWeaponActivities,
+    deleteActivityFromItem,
     legacyAttackStub,
     attackScore,
     attackCleanupPlan,
