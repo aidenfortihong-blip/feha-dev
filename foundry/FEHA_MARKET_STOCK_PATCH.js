@@ -6,7 +6,8 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.4.3";
+  const VERSION = "1.5.0";
+  const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
@@ -14,6 +15,7 @@
   const START = "/* FEHA MARKET STOCK PATCH START */";
   const END = "/* FEHA MARKET STOCK PATCH END */";
   let noMkObserver = null;
+  const MARKET_STYLE_ID = "feha-market-weapon-description-style";
 
   const PATCH_BLOCK = [
     START,
@@ -299,15 +301,223 @@
     return game.items?.get?.(id) ?? null;
   }
 
-  function stripWeaponMkBadges() {
-    const root =
-      document.getElementById("adk-market-15");
+  function catalogDefinition(item) {
+    return (
+      globalThis.FEHA_WEAPON_CATALOG?.definition?.(item) ??
+      globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.definition?.(item) ??
+      globalThis.FEHA_MELEE_CATALOG?.definition?.(item) ??
+      null
+    );
+  }
 
+  function marketRangeText(def,item) {
+    if (def?.reach && !def?.range) {
+      const thrown =
+        def?.thrownRange != null
+          ? " // THROWN "+String(def.thrownRange)+
+            (def?.thrownLong != null ? "/"+String(def.thrownLong) : "")+
+            " FT"
+          : "";
+
+      return String(def.reach)+" FT REACH"+thrown;
+    }
+
+    const range =
+      def?.range ??
+      item?.flags?.[FLAG]?.rangeFt ??
+      item?.system?.range?.value ??
+      null;
+
+    const long =
+      def?.longRange ??
+      item?.flags?.[FLAG]?.longRangeFt ??
+      item?.system?.range?.long ??
+      null;
+
+    if (range == null) return "—";
+    return long != null
+      ? String(range)+"/"+String(long)+" FT"
+      : String(range)+" FT";
+  }
+
+  function marketWeaponCopy(item) {
+    const def = catalogDefinition(item);
+    const f = item?.flags?.[FLAG] ?? {};
+
+    const weaponClass =
+      String(
+        def?.weaponClass ??
+        f.weaponClass ??
+        item?.system?.type?.value ??
+        "WEAPON"
+      ).toUpperCase();
+
+    const damage =
+      String(
+        def?.damage ??
+        f.damageFormula ??
+        f.baseDamageFormula ??
+        item?.system?.damage?.base?.custom?.formula ??
+        "—"
+      );
+
+    const doctrine =
+      String(
+        def?.doctrine ??
+        def?.effect?.text ??
+        def?.special?.text ??
+        f.effectText ??
+        ""
+      ).trim();
+
+    const attacks =
+      Number(
+        def?.functionalAttacks ??
+        f.functionalMagazine ??
+        f.magazineSize ??
+        0
+      ) || 0;
+
+    const reload =
+      Number(
+        def?.reloadPoints ??
+        def?.reloadActions ??
+        f.reloadPoints ??
+        f.reloadActions ??
+        0
+      ) || 0;
+
+    const isMelee =
+      String(def?.weaponKind ?? f.weaponKind ?? "").toLowerCase() === "melee" ||
+      Boolean(f.meleeWeapon);
+
+    const primary =
+      doctrine ||
+      (
+        isMelee
+          ? weaponClass+" built for close combat."
+          : weaponClass+" // canonical FEHA weapon profile."
+      );
+
+    const stats = [
+      damage !== "—" ? "DMG "+damage : null,
+      "RANGE "+marketRangeText(def,item),
+      !isMelee && attacks > 0 ? attacks+" ATTACK"+(attacks===1?"":"S")+" / RELOAD" : null,
+      !isMelee && reload > 0 ? "RELOAD "+reload+" PT"+(reload===1?"":"S") : null,
+      "TO HIT DEX"
+    ].filter(Boolean);
+
+    return {
+      primary,
+      stats,
+      weaponClass,
+      manufacturer:String(
+        def?.company ??
+        f.manufacturer ??
+        f.company ??
+        ""
+      )
+    };
+  }
+
+  function ensureMarketWeaponStyles() {
+    let style = document.getElementById(MARKET_STYLE_ID);
+    if (style) return style;
+
+    style = document.createElement("style");
+    style.id = MARKET_STYLE_ID;
+    style.textContent = `
+      #adk-market-15 .feha-market-weapon-copy {
+        margin:8px 0 10px;
+        padding:9px 10px;
+        border:1px solid rgba(80,205,228,.20);
+        background:rgba(4,15,19,.72);
+      }
+
+      #adk-market-15 .feha-market-weapon-copy > p {
+        margin:0;
+        color:#aabcc2;
+        font-size:10px;
+        line-height:1.42;
+      }
+
+      #adk-market-15 .feha-market-weapon-stats {
+        display:flex;
+        flex-wrap:wrap;
+        gap:5px 10px;
+        margin-top:7px;
+        padding-top:7px;
+        border-top:1px solid rgba(80,205,228,.12);
+        color:#6edff3;
+        font-size:8px;
+        font-weight:900;
+        letter-spacing:.055em;
+      }
+
+      #adk-market-15 .feha-market-weapon-stats span {
+        white-space:nowrap;
+      }
+    `;
+
+    document.head.appendChild(style);
+    return style;
+  }
+
+  function staleWeaponDescriptionNode(card) {
+    const candidates = [
+      ...card.querySelectorAll(
+        ".item-description,.item-desc,.description,.desc,.item-summary,.item-flavor,.flavor,p"
+      )
+    ].filter(node =>
+      !node.classList?.contains?.("feha-market-weapon-copy") &&
+      !node.querySelector?.("button,[data-buy-item],[data-open-item]")
+    );
+
+    const stale = candidates.find(node =>
+      /base damage|ability modifier|\bdamage\s+\d+d\d+/i.test(
+        String(node.textContent ?? "")
+      )
+    );
+
+    if (stale) return stale;
+
+    return candidates.find(node => {
+      const text = String(node.textContent ?? "").replace(/\s+/g," ").trim();
+      return text && text.length < 420;
+    }) ?? null;
+  }
+
+  function weaponSummaryElement(item) {
+    const copy = marketWeaponCopy(item);
+    const node = document.createElement("div");
+    node.className = "feha-market-weapon-copy";
+    node.dataset.fehaWeaponDescription = String(item?.id ?? "");
+
+    const p = document.createElement("p");
+    p.textContent = copy.primary;
+    node.appendChild(p);
+
+    const stats = document.createElement("div");
+    stats.className = "feha-market-weapon-stats";
+
+    for (const value of copy.stats) {
+      const span = document.createElement("span");
+      span.textContent = value;
+      stats.appendChild(span);
+    }
+
+    node.appendChild(stats);
+    return node;
+  }
+
+  function syncWeaponMarketCards() {
+    const root = document.getElementById("adk-market-15");
     if (!root) return;
+
+    ensureMarketWeaponStyles();
 
     for (const card of root.querySelectorAll(".item-card")) {
       const item = weaponItemForCard(card);
-
       if (item?.type !== "weapon") continue;
 
       card.classList.add("feha-weapon-card");
@@ -315,7 +525,41 @@
       for (const badge of card.querySelectorAll(".item-mk")) {
         badge.remove();
       }
+
+      const fresh = weaponSummaryElement(item);
+      const existing =
+        card.querySelector(".feha-market-weapon-copy");
+
+      if (existing) {
+        existing.replaceWith(fresh);
+        continue;
+      }
+
+      const stale = staleWeaponDescriptionNode(card);
+
+      if (stale) {
+        stale.replaceWith(fresh);
+        continue;
+      }
+
+      const actions =
+        card.querySelector(".item-actions,.card-actions,.actions,[data-buy-item]") ??
+        null;
+
+      const actionRow =
+        actions?.closest?.(".item-actions,.card-actions,.actions") ??
+        actions;
+
+      if (actionRow?.parentElement === card) {
+        card.insertBefore(fresh,actionRow);
+      } else {
+        card.appendChild(fresh);
+      }
     }
+  }
+
+  function stripWeaponMkBadges() {
+    syncWeaponMarketCards();
   }
 
   function installNoMkGuard() {
@@ -326,7 +570,7 @@
 
     noMkObserver =
       new MutationObserver(() => {
-        queueMicrotask(stripWeaponMkBadges);
+        queueMicrotask(syncWeaponMarketCards);
       });
 
     noMkObserver.observe(
@@ -346,6 +590,7 @@
     } catch {}
 
     noMkObserver = null;
+    document.getElementById(MARKET_STYLE_ID)?.remove?.();
   }
 
   async function resetPersistentStock() {
@@ -424,7 +669,7 @@
       );
 
     const needsReset =
-      currentVersion !== VERSION;
+      currentVersion !== STOCK_SCHEMA_VERSION;
 
     const wasOpen =
       Boolean(
@@ -442,7 +687,7 @@
       await game.settings.set(
         PACKAGE,
         VERSION_KEY,
-        VERSION
+        STOCK_SCHEMA_VERSION
       );
 
       if (wasOpen) {
@@ -495,7 +740,10 @@
 
   const api = {
     version:VERSION,
+    stockSchemaVersion:STOCK_SCHEMA_VERSION,
     patchMarketMacro,
+    syncWeaponMarketCards,
+    marketWeaponCopy,
 
     async init() {
       globalThis.FEHA_MARKET_STOCK_PATCH = api;
@@ -508,7 +756,7 @@
         await patchMarketMacro();
       }
 
-      stripWeaponMkBadges();
+      syncWeaponMarketCards();
     },
 
     async destroy() {
