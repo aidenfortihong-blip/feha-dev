@@ -1,14 +1,12 @@
 {
-  "version": "0.11.64",
+  "version": "0.11.65",
   "updated": "2026-09-30",
-  "scope": "canonical-firearm-duplicate-attack-repair",
+  "scope": "canonical-weapon-display-sheet",
   "notes": [
-    "Fixes the root cause of duplicate Attack buttons on canonical firearms such as Lexington and Achilles.",
-    "FEHA World Hygiene now removes legacy dnd5e attack pseudo-documents through the official Item5e.deleteActivity API instead of generic object-deletion syntax, which did not reliably mutate dnd5e's ActivitiesField.",
-    "Cleanup runs across world weapons and actor-owned copies, deletes each confirmed legacy stub individually, and verifies the deleted activity IDs are actually gone before reporting success.",
-    "Ambiguous multiple-real-attack weapons remain untouched and are reported rather than guessed.",
-    "Foundry 14.367 malformed-identifier quarantine is preserved. Quarantined items are not database-mutated, while the sheet guard still hides confirmed legacy stubs in rendered item/actor sheets.",
-    "Adds a renderApplicationV2 fallback to the legacy-activity UI guard so modern dnd5e sheets are covered as well.",
-    "No cyberware work or weapon balance changes are included."
+    "Canonical FEHA weapons now open as a presentation-only FEHA weapon page instead of exposing the raw dnd5e Item activity interface.",
+    "The custom page renders canonical catalog data and weapon art while hiding all raw Attack/activity controls.",
+    "Stored dnd5e attack activities remain internal so the centered Weapon Tracker can still execute the configured attack and damage flow.",
+    "The previous on-screen warning about canonical weapons retaining multiple stored activities is suppressed because those activities are no longer player-facing; the hygiene report still records them for diagnostics.",
+    "No weapon balance, cyberware, armor, grenade, or Quickhack rules changed."
   ]
 }
