@@ -1282,56 +1282,93 @@
     game.adk.reloadCurrentClient = reloadLocalClient;
     globalThis.FEHA_ADK_RELOAD = reloadLocalClient;
 
-    // The hotbar Macro is a world document and may still contain the historical
-    // "GM only" guard. Do not require users to edit that world Macro. On every
-    // client, redirect ONLY the ADK DEV LOADER macro to the client-local reload
-    // function before its stale command body can execute.
-    const macroClass =
-      globalThis.CONFIG?.Macro?.documentClass ??
-      globalThis.Macro ??
+    // Older builds monkey-patched Macro.prototype.execute so the ADK hotbar
+    // button could bypass a stale world Macro body. That bridge could itself
+    // become stale after hot reloads and make the button appear dead until a
+    // full browser refresh. Retire it and restore Foundry's original execute.
+    const staleMacroBridge =
+      globalThis.__FEHA_ADK_RELOAD_MACRO_BRIDGE ??
       null;
 
-    const macroProto = macroClass?.prototype ?? null;
-    const macroBridgeKey = "__FEHA_ADK_RELOAD_MACRO_BRIDGE";
-
-    if (
-      macroProto &&
-      typeof macroProto.execute === "function"
-    ) {
-      const existingBridge = globalThis[macroBridgeKey];
-
+    try {
       if (
-        existingBridge?.proto === macroProto &&
-        macroProto.execute === existingBridge.wrapper
+        staleMacroBridge?.proto &&
+        staleMacroBridge?.original &&
+        staleMacroBridge.proto.execute === staleMacroBridge.wrapper
       ) {
-        existingBridge.reload = reloadLocalClient;
-      } else {
-        const originalExecute = macroProto.execute;
+        staleMacroBridge.proto.execute = staleMacroBridge.original;
+      }
+    } catch (bridgeError) {
+      console.warn(
+        "FEHA DEV // stale macro bridge restore failed",
+        bridgeError
+      );
+    }
 
-        const bridge = {
-          proto:macroProto,
-          original:originalExecute,
-          reload:reloadLocalClient,
-          wrapper:null
-        };
+    delete globalThis.__FEHA_ADK_RELOAD_MACRO_BRIDGE;
 
-        bridge.wrapper = function(...args) {
-          const name =
-            String(this?.name ?? "")
-              .replace(/\s+/g," ")
-              .trim();
+    // Permanently repair the world ADK DEV LOADER Macro itself. Every click
+    // now performs a fresh cache-busted fetch of main and evaluates that
+    // loader directly. This removes the dependency on any already-loaded
+    // runtime/global and makes repeated hotbar clicks work without refreshing
+    // the browser first.
+    if (isGM) {
+      const macroBootstrap = [
+        "(async () => {",
+        "  const url = \"https://raw.githubusercontent.com/" +
+          OWNER + "/" + REPO +
+          "/main/foundry/ADK_DEV_LOADER.js?t=\" + Date.now();",
+        "  const response = await fetch(url,{cache:\"no-store\"});",
+        "  if (!response.ok) throw new Error(\"ADK loader fetch failed: \" + response.status);",
+        "  const source = await response.text();",
+        "  const result = (0,eval)(source + \"\\n//# sourceURL=feha-hotbar/foundry/ADK_DEV_LOADER.js\");",
+        "  if (result?.then) await result;",
+        "})().catch(error => {",
+        "  console.error(\"ADK DEV LOADER hotbar bootstrap failed\",error);",
+        "  ui?.notifications?.error?.(\"ADK DEV LOADER failed to start. Check console.\");",
+        "});"
+      ].join("\n");
+
+      const macros =
+        game.macros?.contents ??
+        [...(game.macros ?? [])];
+
+      const loaderMacros = macros.filter(macro => {
+        const name =
+          String(macro?.name ?? "")
+            .replace(/\s+/g," ")
+            .trim();
+
+        return /^ADK DEV LOADER(?: V\d+)?$/i.test(name);
+      });
+
+      for (const macro of loaderMacros) {
+        try {
+          const currentCommand =
+            String(macro?.command ?? macro?._source?.command ?? "");
 
           if (
-            /^ADK DEV LOADER(?: V\d+)?$/i.test(name)
+            currentCommand !== macroBootstrap ||
+            String(macro?.type ?? "") !== "script"
           ) {
-            return bridge.reload();
+            await macro.update({
+              type:"script",
+              command:macroBootstrap
+            });
+
+            console.info(
+              "FEHA DEV // repaired persistent ADK hotbar loader macro",
+              macro.name,
+              macro.id
+            );
           }
-
-          return originalExecute.apply(this,args);
-        };
-
-        macroProto.execute = bridge.wrapper;
-        globalThis[macroBridgeKey] = bridge;
+        } catch (macroError) {
+          console.warn(
+            "FEHA DEV // could not repair ADK hotbar loader macro",
+            macro?.name,
+            macroError
+          );
+        }
       }
     }
 
