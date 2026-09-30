@@ -1,14 +1,12 @@
 {
-  "version": "0.11.32",
+  "version": "0.11.33",
   "updated": "2026-09-29",
-  "scope": "mega-gun-review-81",
+  "scope": "mega-gun-review-readiness-fix",
   "notes": [
-    "Expanded the canonical firearm catalog from 16 to 81 base-model guns across Bastion, Corvus, ForgeLine, Helix, Jade Arc, Kurohane, and Vektor.",
-    "Gun class dice remain consistent while dice count, physical magazine, functional attacks, range, reload, and STR carry most model identity.",
-    "Ballistic magazines track physical capacity separately from attacks-before-reload; shotgun d2 values represent pellets and consume shells rather than one round per die.",
-    "Helix uses ENERGY EFFICIENCY, Jade Arc uses OVERDRIVEN ENERGY, and Kurohane uses LOW SIGNATURE as manufacturer-wide doctrines.",
-    "Corvus remains the deliberate exception: all seven Corvus guns have bespoke neural/network subsystems.",
-    "Weapon descriptions now contain an editable GM REVIEW NOTES block and are seeded only once per review seed so manual Foundry edits survive ordinary loader reloads.",
-    "Suffixed/reskin variants remain outside the canonical 81-gun catalog and stay NOT DONE."
+    "Fixed the mega gun pass so only exact base-model names can resolve to the canonical weapon catalog.",
+    "Stale weaponCatalogKey/originalLibraryName flags on reskins can no longer promote suffixed variants into DONE.",
+    "Weapon Readiness now scans only the seven real manufacturer roots and explicitly excludes -1reskin/archive roots.",
+    "The readiness contract now carries the raw 81 canonical names instead of deriving the loader count from a normalized Set.",
+    "A rerun repairs the failed pass by moving suffixed/reskin weapons back to NOT DONE while keeping the 81 base guns canonical."
   ]
 }
