@@ -40,6 +40,12 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *,
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::before,
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::after {
   text-shadow: none !important;
+  /* Monochrome baseline; more specific rules below set white outlines. */
+  border-color: var(--fui-line) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram > div {
+  background: none !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-scanlines {
