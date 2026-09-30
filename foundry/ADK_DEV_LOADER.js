@@ -19,6 +19,7 @@
     weapons:"foundry/FEHA_WEAPON_CATALOG.js",
     melee:"foundry/FEHA_MELEE_CATALOG.js",
     uniqueWeapons:"foundry/FEHA_UNIQUE_WEAPON_CATALOG.js",
+    weaponEconomy:"foundry/FEHA_WEAPON_ECONOMY.js",
     grenadeRuntime:"foundry/FEHA_GRENADE_RUNTIME.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
@@ -207,7 +208,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -294,6 +295,7 @@
     evaluate(source.weapons,files.weapons,sha);
     evaluate(source.melee,files.melee,sha);
     evaluate(source.uniqueWeapons,files.uniqueWeapons,sha);
+    evaluate(source.weaponEconomy,files.weaponEconomy,sha);
     evaluate(source.core,files.core,sha);
     evaluate(source.modRetirement,files.modRetirement,sha);
     evaluate(source.specialRetirement,files.specialRetirement,sha);
@@ -400,6 +402,11 @@
       game.adk?.uniqueWeapons ??
       null;
 
+    const weaponEconomy =
+      globalThis.FEHA_WEAPON_ECONOMY ??
+      game.adk?.weaponEconomy ??
+      null;
+
     const armorRuntime =
       globalThis.FEHA_ARMOR_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("armorRuntime") ??
@@ -490,6 +497,12 @@
       "Unique Weapon Catalog",
       uniqueWeaponCatalog,
       ["list","definition","migrateAll","rewriteDescription"]
+    );
+
+    requireMethods(
+      "Weapon Economy",
+      weaponEconomy,
+      ["powerRating","profile","migrateAll"]
     );
 
     requireMethods(
@@ -746,6 +759,16 @@
         console.info(
           "FEHA DEV // UNIQUE WEAPON CATALOG CANONICALIZED",
           uniqueWeaponMigration
+        );
+      }
+
+      const weaponEconomyMigration =
+        await globalThis.FEHA_WEAPON_ECONOMY?.migrateAll?.();
+
+      if (weaponEconomyMigration) {
+        console.info(
+          "FEHA DEV // WEAPON ECONOMY PRICED",
+          weaponEconomyMigration
         );
       }
 
