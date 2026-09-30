@@ -30,6 +30,7 @@
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
     weaponRuntime:"foundry/FEHA_WEAPON_RUNTIME.js",
     reloadTracker:"foundry/FEHA_RELOAD_TRACKER.js",
+    worldHygiene:"foundry/FEHA_WORLD_HYGIENE.js",
     marketStockPatch:"foundry/FEHA_MARKET_STOCK_PATCH.js",
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
@@ -210,7 +211,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","reloadTracker","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","reloadTracker","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -307,6 +308,7 @@
     evaluate(source.weaponReadiness,files.weaponReadiness,sha);
     evaluate(source.weaponRuntime,files.weaponRuntime,sha);
     evaluate(source.reloadTracker,files.reloadTracker,sha);
+    evaluate(source.worldHygiene,files.worldHygiene,sha);
     evaluate(source.marketStockPatch,files.marketStockPatch,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
@@ -353,6 +355,7 @@
       "weaponReadiness",
       "weaponRuntime",
       "reloadTracker",
+      "worldHygiene",
       "marketStockPatch",
       "grenadeRuntime",
       "quickhacks",
@@ -436,6 +439,11 @@
     const reloadTracker =
       globalThis.FEHA_RELOAD_TRACKER ??
       globalThis.FEHA_CYBER_CORE?.module?.("reloadTracker") ??
+      null;
+
+    const worldHygiene =
+      globalThis.FEHA_WORLD_HYGIENE ??
+      globalThis.FEHA_CYBER_CORE?.module?.("worldHygiene") ??
       null;
 
     const marketStockPatch =
@@ -577,6 +585,17 @@
         "addAction",
         "addBonus",
         "reset"
+      ]
+    );
+
+    requireMethods(
+      "World Hygiene",
+      worldHygiene,
+      [
+        "scan",
+        "runFullPass",
+        "cleanupLegacyWeaponActivities",
+        "identifierIssues"
       ]
     );
 
@@ -1004,6 +1023,17 @@
       console.info(
         "FEHA DEV // UNIFIED ITEM CARD SWEEP",
         staleCardSweep
+      );
+
+      const hygienePass =
+        await worldHygiene.runFullPass({
+          cleanup:true,
+          notify:true
+        });
+
+      console.info(
+        "FEHA DEV // WORLD HYGIENE PASS",
+        hygienePass
       );
 
       // Hot-reload visibility pass: Foundry can keep already-open item sheets
