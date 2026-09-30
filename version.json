@@ -1,11 +1,13 @@
 {
-  "version": "0.11.80",
+  "version": "0.11.81",
   "updated": "2026-09-30",
-  "scope": "credits-cr-label",
+  "scope": "identifier-false-positive",
   "notes": [
-    "Market, Chrome, Cyberdeck and wallet now show CR instead of the legacy €$ everywhere, including prices and balances redrawn inside an already-open window.",
-    "Root cause: the credit-label rewrite only ran when a whole FEHA window was added, so card/wallet rerenders inside an open Market kept the legacy €$ glyph.",
-    "Armor, consumable, grenade and Quickhack catalog descriptions now print CR; each affected item description is rewritten once by the existing canonical migration.",
-    "No prices, stock, balances, balance rules or other item data changed."
+    "Lifts the weapon quarantine for items whose only 'invalid identifier' was an unset optional field.",
+    "Root cause: the nested identifier checks treated undefined/null (field absent) as an invalid blank string, flagging 143 of 147 items and skipping catalog migration, economy pricing, readiness and duplicate-attack cleanup for them.",
+    "Genuinely blank persisted identifiers are still quarantined on Foundry <14.368.",
+    "World hygiene can now remove the 52 cleanup-safe legacy attack stubs (empty default attacks left beside the real DEX attack).",
+    "All 135 weapons were backed up to compendium world.feha-weapon-backup-2026-09-30 before this build loaded.",
+    "No weapon balance, prices, stock, DEX rules or reload cadence changed beyond applying the existing canonical catalog."
   ]
 }

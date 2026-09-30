@@ -943,7 +943,7 @@
 
               for (const [key,value] of Object.entries(current)) {
                 if (
-                  key === "identifier" &&
+                  key === "identifier" && value != null &&
                   !/^[a-z0-9_-]+$/i.test(String(value ?? ""))
                 ) {
                   invalidIdentifier = true;

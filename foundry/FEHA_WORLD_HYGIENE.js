@@ -232,7 +232,7 @@
       for (const [key,child] of Object.entries(value)) {
         const next = path ? path+"."+key : key;
 
-        if (key === "identifier") {
+        if (key === "identifier" && child != null) {
           const text = String(child ?? "");
           if (!/^[a-z0-9_-]+$/i.test(text)) {
             issues.push({path:next,value:text});

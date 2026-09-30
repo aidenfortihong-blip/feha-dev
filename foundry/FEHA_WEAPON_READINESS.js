@@ -32,7 +32,7 @@
       if (!current || typeof current !== "object") continue;
 
       for (const [key,value] of Object.entries(current)) {
-        if (key === "identifier") {
+        if (key === "identifier" && value != null) {
           const text = String(value ?? "");
           if (!/^[a-z0-9_-]+$/i.test(text)) {
             const token = String(item?.uuid ?? item?.id ?? item?.name);
