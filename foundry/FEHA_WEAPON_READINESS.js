@@ -19,24 +19,43 @@
 
   function legacyIdentifierQuarantined(item) {
     if (item?.type !== "weapon") return false;
-    const rawIdentifier =
-      String(item?._source?.system?.identifier ?? "");
-    if (/^[a-z0-9_-]+$/i.test(rawIdentifier)) return false;
 
     const build = Number(game.release?.build ?? 0);
-    const blocked = !build || build < 368;
+    if (build >= 368) return false;
 
-    if (blocked && !quarantinedIdentifierWarnings.has(String(item?.uuid ?? item?.id ?? item?.name))) {
-      quarantinedIdentifierWarnings.add(String(item?.uuid ?? item?.id ?? item?.name));
-      console.warn(
-        "FEHA WEAPON READINESS // quarantined legacy invalid identifier until Foundry 14.368+",
-        item?.name,
-        item?.uuid ?? item?.id,
-        rawIdentifier
-      );
+    const root = item?._source?.system;
+    if (!root || typeof root !== "object") return false;
+
+    const stack = [root];
+    while (stack.length) {
+      const current = stack.pop();
+      if (!current || typeof current !== "object") continue;
+
+      for (const [key,value] of Object.entries(current)) {
+        if (key === "identifier") {
+          const text = String(value ?? "");
+          if (!/^[a-z0-9_-]+$/i.test(text)) {
+            const token = String(item?.uuid ?? item?.id ?? item?.name);
+            if (!quarantinedIdentifierWarnings.has(token)) {
+              quarantinedIdentifierWarnings.add(token);
+              console.warn(
+                "FEHA WEAPON READINESS // quarantined legacy nested identifier until Foundry 14.368+",
+                item?.name,
+                item?.uuid ?? item?.id,
+                text
+              );
+            }
+            return true;
+          }
+        }
+
+        if (value && typeof value === "object") {
+          stack.push(value);
+        }
+      }
     }
 
-    return blocked;
+    return false;
   }
 
   const COMPANY_BY_FOLDER = Object.freeze({
