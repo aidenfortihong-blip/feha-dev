@@ -1,12 +1,12 @@
 {
-  "version": "0.11.65",
+  "version": "0.11.66",
   "updated": "2026-09-30",
-  "scope": "canonical-weapon-display-sheet",
+  "scope": "canonical-weapon-sheet-layout-fix",
   "notes": [
-    "Canonical FEHA weapons now open as a presentation-only FEHA weapon page instead of exposing the raw dnd5e Item activity interface.",
-    "The custom page renders canonical catalog data and weapon art while hiding all raw Attack/activity controls.",
-    "Stored dnd5e attack activities remain internal so the centered Weapon Tracker can still execute the configured attack and damage flow.",
-    "The previous on-screen warning about canonical weapons retaining multiple stored activities is suppressed because those activities are no longer player-facing; the hygiene report still records them for diagnostics.",
-    "No weapon balance, cyberware, armor, grenade, or Quickhack rules changed."
+    "Fixes the custom canonical firearm sheet opening in an inherited narrow dnd5e window that compressed the FEHA card.",
+    "Canonical weapon sheets now grow undersized Foundry item windows toward a usable desktop footprint without shrinking already-expanded windows.",
+    "Weapon art now uses a dedicated contained preview frame so wide gun images are shown whole instead of being cropped by square cover behavior.",
+    "The layout now responds to the actual sheet/container width: normal windows use a two-column art-plus-card layout, narrow windows stack cleanly, and stat grids fall back to two or one column instead of crushing text.",
+    "No weapon mechanics, balance values, hidden attack activities, cyberware, armor, grenade, or Quickhack rules changed."
   ]
 }
