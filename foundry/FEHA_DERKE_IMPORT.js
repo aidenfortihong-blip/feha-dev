@@ -123,15 +123,25 @@
       update["flags."+FLAG+".ramCurrent"] = 0;
     }
 
-    // Match the lightweight OMEGA PC structure used by Ponyboy/Zach.
+    // Match the lightweight OMEGA PC scaffolding without resetting live
+    // progression every time the loader runs.
     update["flags."+FLAG+".adkBuilder"] = true;
     update["flags."+FLAG+".adkVersion"] = "9.0";
     update["flags."+FLAG+".adkLoadoutVersion"] = "11.0";
-    update["flags."+FLAG+".chromeCapacity"] = 3;
-    update["flags."+FLAG+".chromeMax"] = 3;
-    update["flags."+FLAG+".chromeUsed"] = 0;
     update["flags."+FLAG+".chromeRulesVersion"] = "12.0";
     update["flags."+FLAG+".team"] = "OMEGA";
+
+    if (!Object.prototype.hasOwnProperty.call(flags,"chromeCapacity")) {
+      update["flags."+FLAG+".chromeCapacity"] = 3;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(flags,"chromeMax")) {
+      update["flags."+FLAG+".chromeMax"] = 3;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(flags,"chromeUsed")) {
+      update["flags."+FLAG+".chromeUsed"] = 0;
+    }
 
     Object.assign(update,tokenPatch(actor));
 
@@ -329,6 +339,9 @@
       ["system.resources.tertiary.max"]:0,
       ["system.resources.tertiary.label"]:"Chrome",
 
+      ["flags."+FLAG+".chromeCapacity"]:3,
+      ["flags."+FLAG+".chromeMax"]:3,
+      ["flags."+FLAG+".chromeUsed"]:0,
       ["flags."+FLAG+".derkeBuildVersion"]:BUILD_VERSION
     };
   }
