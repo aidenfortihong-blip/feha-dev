@@ -1,14 +1,13 @@
 {
-  "version": "0.11.71",
+  "version": "0.11.72",
   "updated": "2026-09-30",
-  "scope": "weapon-sheet-redesign-and-shot-tracking-hardening",
+  "scope": "weapon-fire-control-polish-and-problem-patch-ui-recovery",
   "notes": [
-    "Hardens firearm shot tracking so successful FEHA sheet attacks are counted deterministically even when dnd5e.postRollAttack arrives late or cannot resolve its subject.",
-    "A short-lived pending attack token deduplicates the direct fallback against late postRollAttack hooks, preventing the reliability fix from double-spending shots.",
-    "Attacks triggered outside the FEHA weapon sheet continue to use postRollAttack tracking with roll-ID deduplication.",
-    "Redesigns the canonical firearm sheet into one compact tactical surface: weapon art and identity at top, clean stat tiles and manufacturer/special rules beside it, and the live combat controls spanning the full sheet below.",
-    "Removes the duplicate catalog-style Weapon Tracker explainer and the dead whitespace produced by keeping combat controls only in the right column.",
-    "Adds an explicit TO HIT: DEX stat to the canonical firearm sheet.",
-    "No firearm balance, damage, reload cadence, manufacturer effects, armor, cyberware, grenade, or Quickhack rules changed."
+    "Reworks the live fire-control block so it no longer reads as one stretched status bar: readiness/ammo is a compact left module while attack, damage, reload, and correction controls occupy a cleaner right-side control stack.",
+    "Reload progress is now a compact meter instead of a third full-width admin row.",
+    "Canonical weapon-sheet matching is more tolerant of legacy/problem-patch item wrappers by resolving canonical definitions from item-like objects and canonical names, not only strict documentName wrappers.",
+    "Adds delayed re-assertion and a lightweight MutationObserver so legacy dnd5e Item templates that finish rendering after FEHA can no longer overwrite the custom canonical weapon UI.",
+    "This recovery applies to the canonical problem-patch guns including Osprey Prototype, Iron Psalm, Hercules Prototype, Long Vigil, Razor Choir, Twin Viper, Rasetsu Prototype, Black Requiem, Monarch Zero, Pale Kestrel, and Red Wisp because they are already members of the 78-gun catalog.",
+    "No firearm balance, shot tracking rules, DEX normalization, armor, cyberware, grenades, or Quickhacks changed."
   ]
 }
