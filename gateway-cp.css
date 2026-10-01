@@ -338,6 +338,12 @@ html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth:disa
   opacity: 1 !important;
 }
 
+/* After the ID is accepted the button has nothing left to do; give its row
+   back to the biometric stack and console. */
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom:is(.is-granted, .is-linking) .feha-eg-auth {
+  display: none !important;
+}
+
 /* ---------- biometrics ----------------------------------------------------- */
 
 html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-biometrics:not([hidden]) {

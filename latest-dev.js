@@ -1957,6 +1957,16 @@
       try {
         player.setOption?.("cc","track",{});
       } catch {}
+
+      // Auto-generated captions ("[Music]") ignore an empty track; unloading
+      // the caption modules is what actually turns them off.
+      try {
+        player.unloadModule?.("captions");
+      } catch {}
+
+      try {
+        player.unloadModule?.("cc");
+      } catch {}
     };
 
     const requestIntroFullscreen = () => {
