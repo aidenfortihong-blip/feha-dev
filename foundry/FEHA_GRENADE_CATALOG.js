@@ -35,6 +35,13 @@
     4:"Black Market",
     5:"Black Market"
   };
+  const MK_RARITY = {
+    1:"common",
+    2:"uncommon",
+    3:"rare",
+    4:"veryRare",
+    5:"legendary"
+  };
   const BLAST = {1:"6d6",2:"8d6",3:"10d6",4:"12d6",5:"14d6"};
   const EMP_BLAST = {1:"6d6",2:"7d6",3:"8d6",4:"10d6",5:"12d6"};
   const TICK = {1:"1d6",2:"2d6",3:"2d6",4:"3d6",5:"4d6"};
@@ -627,6 +634,16 @@
     ) {
       update["system.uses.max"] = "";
       update["system.uses.spent"] = 0;
+    }
+
+    const rarity = MK_RARITY[def.mk];
+    if (
+      rarity &&
+      item.system &&
+      "rarity" in item.system &&
+      String(item.system.rarity ?? "") !== rarity
+    ) {
+      update["system.rarity"] = rarity;
     }
 
     const description = rewriteDescription(def,item);
