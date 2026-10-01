@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.92";
+  const VERSION = "0.11.93";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -1894,55 +1894,49 @@
     return {zoom,panX,panY};
   }
 
-  function syncJackOperatorTokenSize(root) {
-    const world = root?.querySelector?.(".jack-world");
-    const operator = world?.querySelector?.(".jack-operator");
-    if (!world || !operator) return;
+  // A token is drawn at its true footprint on the JACK IN map, so it covers
+  // exactly the squares it covers in the scene and grows with the map when
+  // the view zooms. Very small footprints are held at a size that can still
+  // be clicked.
+  const JACK_MIN_TOKEN_SCREEN_PX = 28;
 
-    const fixedSize = Math.max(
+  function jackTokenFootprint(world,element,zoom) {
+    const width =
+      (Number(element.dataset.tokenWidthPct) || 0) / 100 * world.clientWidth;
+    const height =
+      (Number(element.dataset.tokenHeightPct) || 0) / 100 * world.clientHeight;
+
+    return Math.max(
       1,
-      Math.round(
-        Math.max(
-          Number(operator.dataset.tokenScreenWidth) || 0,
-          Number(operator.dataset.tokenScreenHeight) || 0,
-          1
-        )
-      )
-    );
-
-    operator.style.setProperty(
-      "--jack-operator-size",
-      fixedSize+"px"
+      width,
+      height,
+      JACK_MIN_TOKEN_SCREEN_PX / Math.max(1,zoom)
     );
   }
 
-
-  function syncJackActorConstantSize(root) {
+  function syncJackTokenSizes(root,zoom) {
     const world = root?.querySelector?.(".jack-world");
     if (!world) return;
+
+    const operator = world.querySelector(".jack-operator");
+
+    if (operator) {
+      operator.style.setProperty(
+        "--jack-operator-size",
+        jackTokenFootprint(world,operator,zoom).toFixed(2)+"px"
+      );
+    }
 
     for (
       const node of
       world.querySelectorAll(".jack-node[data-token-id]")
     ) {
-      const fixedSize = Math.max(
-        1,
-        Math.round(
-          Math.max(
-            Number(node.dataset.tokenScreenWidth) || 0,
-            Number(node.dataset.tokenScreenHeight) || 0,
-            1
-          )
-        )
-      );
-
       node.style.setProperty(
         "--jack-node-size",
-        fixedSize+"px"
+        jackTokenFootprint(world,node,zoom).toFixed(2)+"px"
       );
     }
   }
-
 
   function syncJackRouteScale(root,state) {
     const zoom = Math.max(
@@ -2036,11 +2030,11 @@
         String(1/zoom)
       );
 
-      // Actor nodes are exact screen-space mirrors of their Foundry token
-      // footprint. JACK IN zoom moves their coordinates but never changes size.
+      // Actor nodes are part of the map: they scale with it (see
+      // jackTokenFootprint), so no inverse zoom is applied.
       world.style.setProperty(
         "--jack-actor-scale",
-        String(1/zoom)
+        "1"
       );
 
       world.style.setProperty(
@@ -2048,10 +2042,10 @@
         String(relayReadability/zoom)
       );
 
-      // Operator follows the exact same fixed-screen-size rule as every actor.
+      // Operator follows the same rule as every actor.
       world.style.setProperty(
         "--jack-operator-scale",
-        String(1/zoom)
+        "1"
       );
 
       world.style.setProperty(
@@ -2072,8 +2066,7 @@
       readout.textContent = Math.round(state.zoom*100)+"%";
     }
 
-    syncJackOperatorTokenSize(root);
-    syncJackActorConstantSize(root);
+    syncJackTokenSizes(root,state.zoom);
     syncJackRouteScale(root,state);
 
     return state;
@@ -2730,22 +2723,6 @@
     const selectedId = selected?.id ?? "";
 
     for (const node of root.querySelectorAll(".jack-node[data-token-id]")) {
-      if (node.dataset.jackStableSize !== "1") {
-        node.style.setProperty(
-          "width",
-          Math.round(node.offsetWidth)+"px",
-          "important"
-        );
-
-        node.style.setProperty(
-          "min-height",
-          Math.round(node.offsetHeight)+"px",
-          "important"
-        );
-
-        node.dataset.jackStableSize = "1";
-      }
-
       const active = node.dataset.tokenId === selectedId;
       node.classList.toggle("is-targeted",active);
       node.setAttribute("aria-pressed",active ? "true" : "false");
