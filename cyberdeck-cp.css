@@ -1083,11 +1083,12 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-packet
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-telemetry.is-offline .cd2-net-path {
-  stroke: rgba(255,255,255,.18) !important;
+  stroke: rgba(255,255,255,.32) !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-telemetry.is-offline .cd2-net-node:not(.is-operator) {
-  stroke: var(--fui-line-2) !important;
+  stroke: #8a8a8a !important;
+  stroke-dasharray: 3 2 !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-telemetry.is-offline .cd2-net-packet {
