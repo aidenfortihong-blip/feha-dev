@@ -1521,3 +1521,65 @@ html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:disabled > em {
   background: var(--fui-line) !important;
   color: var(--fui-muted) !important;
 }
+
+/* All loaded quickhacks visible at once instead of three per row with the
+   rest behind a scrollbar. */
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hacks {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(188px, 1fr)) !important;
+  grid-auto-rows: minmax(0, 1fr) !important;
+  gap: 8px !important;
+  overflow: hidden auto !important;
+  align-content: stretch !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack {
+  display: grid !important;
+  grid-template-columns: 40px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  align-items: center !important;
+  gap: 8px 10px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 10px !important;
+  text-align: left !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > img {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > span {
+  min-width: 0 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > span b {
+  display: block !important;
+  font-size: 16px !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > em {
+  grid-column: 1 / -1 !important;
+  justify-self: stretch !important;
+  align-self: end !important;
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 34px !important;
+  padding: 4px 8px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > em b {
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
