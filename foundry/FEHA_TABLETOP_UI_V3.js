@@ -2631,7 +2631,7 @@
             esc(item.id)+'" '+((needsTarget && !selected) || m.currentRam < cost?'disabled':'')+'>'+
             '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
             '<span><b>'+esc(item.name)+'</b><small>RAM '+cost+' // DC '+m.dc+'</small></span>'+
-            '<em><span>TO TARGET</span><b>UPLOAD</b></em>'+
+            '<em><span>UPLOAD</span><b>RUN</b></em>'+
           '</button>';
         }).join("")
       : '<div class="jack-no-hacks">NO QUICKHACKS LOADED</div>';
