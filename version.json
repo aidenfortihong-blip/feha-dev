@@ -4,8 +4,9 @@
   "scope": "cyberdeck-fui-tile-sheet",
   "notes": [
     "Cyberdeck loadout rebuilt as the monochrome 'HUD / FUI ELEMENTS' tile sheet: text-only header (':CYBERDECK OS:', '_RAM', '_DECK', '_SOFTWARE'), a two-row strip of numbered square tiles (L1-L24) with ring glyphs, a CYBERDECK logo tile, then big panels.",
-    "RAM is the ring strip: available RAM shows solid white ring designs that vary like the reference's L1-L12, spent RAM shows outlined rings.",
+    "RAM is the ring strip, one tile per RAM point (max 24): remaining RAM shows solid white ring designs with a yellow underline, spent RAM shows outlined rings; no deck shows a single red NO DECK tile.",
     "Operator portrait keeps full colour in its own panel; the CYBERDECK logo tile carries an outlined yellow サイバーデッキ line; the deck-passive tile carries a stacked CYBER / DECK mark.",
+    "Network telemetry orbit diagram replaced by four ring status tiles (OPERATOR, DECK, SOFTWARE, SCENE LINK): solid ring + yellow detail when online, outlined ring + red detail when offline.",
     "Minimal accents: yellow for brand/action (section bars, operator tag, label marks, JACK IN), red only for offline/warning states.",
     "JACK IN is a full-width yellow bar with a cut corner, inverting to black on hover. Below 1180px wide the side tiles drop under the software panel.",
     "Pure CSS re-flow of the existing loadout DOM (cyberdeck-cp.css); fonts Chakra Petch, Share Tech Mono and Dela Gothic One added to the shared import. No RAM, Quickhack, Short Rest or JACK IN behavior changed."
