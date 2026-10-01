@@ -4,7 +4,7 @@
 **Repository:** `aidenfortihong-blip/feha-dev` · branch `main`
 **Live world:** `caradactyl.forge-vtt.com` (Forge)
 **Foundry baseline:** 14.367 · dnd5e 5.3.3
-**Current verified build (live on main):** **0.11.84**
+**Current verified build (live on main):** **0.11.86**
 **Known-good checkpoint:** branch `checkpoint-before-claude` (`eeebb69`, build 0.11.78)
 
 This supersedes `FEHA_MASTER_HANDOFF_2026-09-28.md` (build 0.10.79). The older
@@ -170,3 +170,32 @@ CP2077 ripperdoc screen (Chrome Manager) and a monochrome "HUD / FUI ELEMENTS
   yellow JACK IN. Deck-installed state untested (no roster deck).
 - Known: at 1280px the Chrome body-map columns overlap the portrait edges by
   ~90px (readable; left as-is). JACK IN map (network overlay) not restyled.
+
+---
+
+## 7. Item cards (0.11.85) and lethal balance patch 1 (0.11.86) — live
+
+- **Item cards:** `item-cp.css` (loaded with the other skins) styles dnd5e item
+  sheets, catalog description cards (`section[data-feha-ui="item-card-v1"]`)
+  and the FEHA weapon sheet as the CP2077 item tooltip. 126 cyberware
+  descriptions had a leftover `₡` glyph, now `CR`.
+- **Balance philosophy (user):** lethal. A street pistol should feel scary;
+  **high armor AC is the intended counterweight**, so armor AC/prices were
+  left at their original values. Top guns ~50 per turn; big single-shot
+  snipers may exceed that per shot.
+- **Method:** expected damage per turn over a full reload cycle (one attack
+  per turn; reload = Action +2 / Bonus +1, so 1–2 reload points cost no
+  turns), vs AC 14 at +5. Curve `14 + 36*((rating-30)/70)^1.4` (melee x1.15,
+  uniques x1.1); weapons outside ±15% had dice scaled within their die type.
+  Power ratings in `FEHA_WEAPON_ECONOMY.js` re-derived from final damage, so
+  price = `150 + 7*rating^1.75` x rarity multiplier.
+- Grenades: Mk1 6d6 → Mk4 12d6 (EMP one step lighter, Ozob 15d6), priced by
+  Mk with delivery multipliers. Arc Overload 10d10. Flexweave halves grenade
+  damage below Mk V. Neural Adaptation Kit once per character (text rule).
+- Untouched by user request: manufacturer traits, magazines/reloads, joke
+  weapons (Slaughtomatic, Dildo Stout, Shovel Caretaker), all cyberware (user
+  will rework cyberware themselves).
+- Backups: compendiums `world.feha-balance-backup-2026-09-30` (all 399 items
+  pre-patch) and `world.feha-weapon-backup-2026-09-30`.
+- Revisit when characters reach level 5 (Extra Attack roughly doubles gun
+  output under this model).
