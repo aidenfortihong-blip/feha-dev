@@ -4,7 +4,7 @@
 **Repository:** `aidenfortihong-blip/feha-dev` · branch `main`
 **Live world:** `caradactyl.forge-vtt.com` (Forge)
 **Foundry baseline:** 14.367 · dnd5e 5.3.3
-**Current verified build:** **0.11.81**
+**Current verified build (live on main):** **0.11.83**
 **Known-good checkpoint:** branch `checkpoint-before-claude` (`eeebb69`, build 0.11.78)
 
 This supersedes `FEHA_MASTER_HANDOFF_2026-09-28.md` (build 0.10.79). The older
@@ -136,3 +136,38 @@ This PC has no global git identity; commits use
   sheet (≈1 s render delay is normal).
 - Load log ends with `FEHA DEV integrity pass … preflight: passed, postflight:
   passed`.
+
+---
+
+## 6. CP2077 UI redesign (0.11.82 – 0.11.84)
+
+The user supplied three references: CP2077 vendor/inventory screen (Market),
+CP2077 ripperdoc screen (Chrome Manager) and a monochrome "HUD / FUI ELEMENTS
+// CYBERDECK" tile sheet (Cyberdeck). Each app keeps its own identity.
+
+- **Skins load last** in `<style id="feha-market-cp-css">` built by the loader
+  from `market-cp.css` + `chrome-cp.css` + `cyberdeck-cp.css`, with one Google
+  Fonts @import (Rajdhani, Chakra Petch, Share Tech Mono, Dela Gothic One).
+  Selectors use `html body` + a doubled/tripled root id so they outrank the
+  older theme layers (latest-dev.css, runtime neon theme) without editing them.
+- **Market (0.11.82, live):** red-on-black HUD, cyan active states, yellow CR,
+  rarity stripe from `system.rarity` (Market Stock Patch 1.6.1 tags cards with
+  `data-feha-rarity`). Per-character accent vars are retargeted to CP colours.
+- **Chrome Manager (0.11.83, live):** `foundry/FEHA_CHROME_RIPPERDOC.js` adds a
+  body map (10 systems around the portrait, square slot tiles). It is
+  presentation only: tiles call `ADKChromeNative.selectSystem/inventory` and
+  click the module's own `[data-inspect-item]`; install/eject/use stay on the
+  module's buttons. `latest-dev.js` `markRoot()` calls `augment()`; unchanged
+  signature = no-op. The v6 renderer itself lives in the installed module
+  (`scripts/chrome-visual.js`), not in this repo. Install/eject round trip
+  verified on Ponyboy's Dense Marrow.
+- **Cyberdeck (0.11.84) — NOT LIVE, awaiting user approval:** branch
+  `release/cyberdeck-fui` (`126f95e`). Pure CSS re-flow into the tile sheet:
+  ring-tile RAM strip (L1–L24), CYBERDECK logo tile, greyscale portrait panel,
+  サイバーデッキ watermark, yellow JACK IN. `.v3-main` is `display: contents`,
+  so its legacy `::before/::after` must stay hidden (they caused a 300px
+  horizontal overflow). Below 1180px the side tiles move under the panel.
+  Deck-installed state (loaded Quickhack cards) is untested — no roster
+  character owns a deck.
+- Known: at 1280px the Chrome body-map columns overlap the portrait edges by
+  ~90px (readable; left as-is). JACK IN map (network overlay) not restyled.
