@@ -799,6 +799,22 @@
     };
   }
 
+  // The permanent weapon catalog stamps its own values on these three keys.
+  // Writing ours as well made the two modules overwrite each other on every
+  // load (156 database writes for 78 guns, ~20 s of load time).
+  function dropCatalogOwnedKeys(item,values) {
+    const catalog =
+      globalThis.FEHA_WEAPON_CATALOG ??
+      game.adk?.weapons ??
+      null;
+
+    if (!catalog?.definition?.(item)) return;
+
+    delete values.marketPass;
+    delete values.weaponReadinessVersion;
+    delete values.doTheseFinalizedVersion;
+  }
+
   function mechanicalPatch(item,resolved,company) {
     const flags =
       item.flags?.[FLAG] ??
@@ -882,22 +898,7 @@
         special.text;
     }
 
-    // The permanent weapon catalog stamps its own values on these three
-    // keys. Writing ours as well made the two modules overwrite each other
-    // on every load (156 database writes for 78 guns, ~20 s of load time).
-    const catalogOwned =
-      Boolean(
-        (
-          globalThis.FEHA_WEAPON_CATALOG ??
-          game.adk?.weapons
-        )?.definition?.(item)
-      );
-
-    if (catalogOwned) {
-      delete values.marketPass;
-      delete values.weaponReadinessVersion;
-      delete values.doTheseFinalizedVersion;
-    }
+    dropCatalogOwnedKeys(item,values);
 
     for (
       const [key,value] of
@@ -1040,6 +1041,8 @@
       doTheseFinalized:true,
       doTheseFinalizedVersion:VERSION
     };
+
+    dropCatalogOwnedKeys(item,values);
 
     for (
       const [key,value] of

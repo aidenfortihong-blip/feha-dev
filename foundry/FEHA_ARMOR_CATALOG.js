@@ -428,7 +428,10 @@
       existing.length === 1 &&
       fingerprint(
         existing[0].name,
-        existing[0].system?.changes,
+        // Stored source, not prepared data: preparation resolves a null
+        // priority to the mode default (20).
+        existing[0]._source?.system?.changes ??
+          existing[0].system?.changes,
         existing[0].description,
         existing[0].transfer,
         existing[0].flags?.[FLAG]
