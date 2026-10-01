@@ -2428,7 +2428,7 @@
               <section class="feha-eg-candidates-panel">
                 <header>
                   <span>ID CANDIDATES</span>
-                  <b>04 RECORDS</b>
+                  <b>${String(CANDIDATES.length).padStart(2,"0")} RECORDS</b>
                 </header>
 
                 <div class="feha-eg-candidates">

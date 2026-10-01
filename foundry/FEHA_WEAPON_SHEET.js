@@ -329,8 +329,8 @@
         attack:false,
         damage:false,
         reason:selectedActor()
-          ? "SELECTED ACTOR DOES NOT OWN THIS WEAPON"
-          : "SELECT A TOKEN OR ASSIGN A CHARACTER"
+          ? "THIS WEAPON IS NOT YOURS"
+          : "NO ONE IS HOLDING THIS WEAPON"
       };
     }
 
@@ -366,21 +366,21 @@
 
     if (!ctx.item || !state) {
       const actorLabel = ctx.actor?.name
-        ? "ACTIVE ACTOR // "+String(ctx.actor.name).toUpperCase()
-        : "NO ACTIVE ACTOR";
+        ? "WIELDER // "+String(ctx.actor.name).toUpperCase()
+        : "NO WIELDER";
 
       return `
         <section class="feha-ws-combat is-unavailable">
           <div class="feha-ws-combat-top">
             <div>
               <small>LIVE FIRE CONTROL</small>
-              <strong>COMBAT LINK UNAVAILABLE</strong>
+              <strong>WEAPON NOT IN HAND</strong>
             </div>
             <span>${esc(actorLabel)}</span>
           </div>
           <div class="feha-ws-combat-empty">
             <strong>${esc(ctx.reason)}</strong>
-            <span>Open an Actor-owned copy or select a token carrying this weapon.</span>
+            <span>Open this weapon from the inventory of whoever carries it.</span>
           </div>
         </section>
       `;

@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.90";
+  const VERSION = "0.11.91";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -727,7 +727,7 @@
     const saveState = !save
       ? (
           rule.saveKey
-            ? '<div class="qh-resolve-state is-manual"><small>SAVE</small><b>NO ACTOR DATA</b><span>'+esc(rule.saveLabel)+' save requires manual resolution.</span></div>'
+            ? '<div class="qh-resolve-state is-manual"><small>SAVE</small><b>NO TARGET DATA</b><span>'+esc(rule.saveLabel)+' save requires manual resolution.</span></div>'
             : '<div class="qh-resolve-state is-auto"><small>DEFENSE</small><b>AUTOMATIC</b><span>No save is specified by this Quickhack.</span></div>'
         )
       : (
@@ -772,7 +772,7 @@
     const warnings = [
       rule.conditional ? "CONDITIONAL TARGET REQUIREMENT — VERIFY BEFORE APPLYING." : "",
       rule.timedDamage ? "TIMED / LINGERING DAMAGE — USE THE DAMAGE FIELD WHEN THE RULE CALLS FOR IT." : "",
-      rule.secondaryTarget ? "SECONDARY / SPLASH TARGETS REQUIRE SEPARATE GM ADJUDICATION." : "",
+      rule.secondaryTarget ? "SECONDARY TARGETS ARE RESOLVED BY THE GM." : "",
       rule.lingeringSave && save
         ? (save.passed ? "SAVE ENDS THE LINGERING PORTION." : "SAVE FAILED — LINGERING PORTION CONTINUES.")
         : ""
@@ -1071,7 +1071,7 @@
       else cards.push(
         '<div class="cd2-empty-slot" data-slot="'+(i+1)+'">'+
           '<em>SLOT '+String(i+1).padStart(2,"0")+'</em>'+
-          '<span>+</span><b>EMPTY SLOT</b><small>ASSIGN FROM SOFTWARE LIBRARY</small>'+
+          '<span>+</span><b>EMPTY SLOT</b><small>LOAD FROM SOFTWARE LIBRARY</small>'+
         '</div>'
       );
     }
@@ -1079,7 +1079,7 @@
   }
 
   function supportCards(m) {
-    if (!m.support.length) return '<div class="cd2-empty-message">NO SUPPORT CHROME DETECTED</div>';
+    if (!m.support.length) return '<div class="cd2-empty-message">NO SUPPORT CHROME INSTALLED</div>';
     return m.support.map(item =>
       '<article class="cd2-support-card">'+
         '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
@@ -1119,7 +1119,7 @@
         <div class="cd2-brand">
           <small>NOCTURNE // NETRUNNER LOADOUT</small>
           <h1>CYBERDECK <span>OS</span></h1>
-          <div class="cd2-build">FEHA / ADK // ${VERSION}</div>
+          <div class="cd2-build">ADK // BUILD ${VERSION}</div>
         </div>
         <div class="cd2-header-status">
           <div><span>RAM</span><b>${m.currentRam}/${m.maxRam}</b></div>
@@ -1141,7 +1141,7 @@
           <div class="cd2-operator-tag">OPERATOR // ${esc(chosen.name.toUpperCase())}</div>
         </div>
         <div class="cd2-operator-meta">
-          <div><span>SUBJECT</span><b>${esc(chosen.name)}</b></div>
+          <div><span>HANDLE</span><b>${esc(chosen.name)}</b></div>
           <div><span>RAM</span><b>${m.currentRam} / ${m.maxRam}</b></div>
           <div><span>QH DC</span><b>${m.deck?m.dc:"—"}</b></div>
         </div>
@@ -1154,7 +1154,7 @@
       <main class="cd2-main v3-main">
         <section class="v3-ram">
           <div>
-            <small>ACTIVE MEMORY</small>
+            <small>RAM AVAILABLE</small>
             <strong>${m.currentRam}<em>/ ${m.maxRam}</em></strong>
             ${segments(m.currentRam,m.deck ? m.maxRam : 0)}
           </div>
@@ -1178,11 +1178,11 @@
           <section class="v3-section v3-library">
             <div class="cd2-section-head">
               <div><small>OWNED SOFTWARE</small><h3>SOFTWARE LIBRARY</h3></div>
-              <span>${m.library.length} AVAILABLE</span>
+              <span>${m.library.length} NOT LOADED</span>
             </div>
             ${m.overflow.length ? `
               <div class="v3-overflow">
-                <div class="v3-overflow-head">OVER CAPACITY // ${m.overflow.length} SOFTWARE PACKAGE${m.overflow.length===1?"":"S"} MUST BE EJECTED</div>
+                <div class="v3-overflow-head">OVER CAPACITY // EJECT ${m.overflow.length} QUICKHACK${m.overflow.length===1?"":"S"}</div>
                 <div class="cd2-library-list v3-overflow-list">
                   ${m.overflow.map(item => hackCard(item,true)).join("")}
                 </div>
@@ -1200,13 +1200,13 @@
         <section class="cd2-bus-panel cd2-net-telemetry ${m.deck ? "is-online" : "is-offline"}">
           <div class="cd2-net-head">
             <div>
-              <div class="cd2-subhead">NETWORK TELEMETRY</div>
-              <small>NEURAL BUS // LIVE ROUTING</small>
+              <div class="cd2-subhead">SIGNAL PATH</div>
+              <small>OPERATOR TO LOCAL NET</small>
             </div>
             <b>${m.deck ? "LINK ONLINE" : "LINK OFFLINE"}</b>
           </div>
 
-          <div class="cd2-net-stage" aria-label="Cyberdeck network telemetry">
+          <div class="cd2-net-stage" aria-label="Cyberdeck signal path">
             <svg class="cd2-net-svg" viewBox="0 0 320 176" preserveAspectRatio="none" aria-hidden="true">
               <path class="cd2-net-path is-a" d="M38 88 C82 88 86 42 138 42" />
               <path class="cd2-net-path is-b" d="M138 42 C190 42 190 88 230 88" />
@@ -1234,7 +1234,7 @@
             <span class="cd2-net-label is-operator">OPERATOR</span>
             <span class="cd2-net-label is-deck">DECK</span>
             <span class="cd2-net-label is-software">SOFTWARE</span>
-            <span class="cd2-net-label is-scene">SCENE LINK</span>
+            <span class="cd2-net-label is-scene">LOCAL NET</span>
 
             <i class="cd2-net-scanline"></i>
           </div>
@@ -1251,9 +1251,9 @@
 
       <footer class="v3-bottom">
         <button type="button" class="v3-jackbar" data-v3-action="jack" ${m.deck?"":"disabled"}>
-          <span class="v3-jack-state">${m.deck?"SYSTEM READY":"HARDWARE OFFLINE"}</span>
-          <span class="v3-jack-main"><small>NEURAL SCENE SWEEP</small><b>JACK IN</b></span>
-          <span class="v3-jack-meta">${m.loaded.length} LOADED // ${m.currentRam} RAM // SCENE SCAN</span>
+          <span class="v3-jack-state">${m.deck?"DECK READY":"NO DECK INSTALLED"}</span>
+          <span class="v3-jack-main"><small>SCAN THE LOCAL NET</small><b>JACK IN</b></span>
+          <span class="v3-jack-meta">${m.loaded.length} QUICKHACK${m.loaded.length===1?"":"S"} LOADED // ${m.currentRam} RAM</span>
         </button>
       </footer>
     `;
@@ -2631,15 +2631,15 @@
             esc(item.id)+'" '+((needsTarget && !selected) || m.currentRam < cost?'disabled':'')+'>'+
             '<img src="'+esc(item.img || "icons/svg/item-bag.svg")+'" alt="">'+
             '<span><b>'+esc(item.name)+'</b><small>RAM '+cost+' // DC '+m.dc+'</small></span>'+
-            '<em><span>EXECUTE</span><b>RUN</b></em>'+
+            '<em><span>TO TARGET</span><b>UPLOAD</b></em>'+
           '</button>';
         }).join("")
       : '<div class="jack-no-hacks">NO QUICKHACKS LOADED</div>';
 
     return `
       <header class="jack-header">
-        <div><small>NOCTURNE // LIVE NEURAL SPACE</small><h1>JACKED <span>IN</span></h1></div>
-        <div class="jack-head-stat"><span>SCENE</span><b>${esc(net.scene?.name ?? "NO SCENE")}</b></div>
+        <div><small>NOCTURNE // LOCAL NET // LIVE</small><h1>JACKED <span>IN</span></h1></div>
+        <div class="jack-head-stat"><span>LOCATION</span><b>${esc(net.scene?.name ?? "NO SIGNAL")}</b></div>
         <div class="jack-head-stat" data-jack-ram-stat><span>RAM</span><b data-jack-ram-readout>${m.currentRam} / ${m.maxRam}</b></div>
         <div class="jack-head-actions">
           <button type="button" data-jack-action="return-deck">RETURN TO DECK</button>
@@ -2677,10 +2677,10 @@
             <div></div>
             <div class="jack-operator-hub">${operatorPorts}</div>
             <img src="${esc(net.operator.img || portrait(actor))}" alt="">
-            <span><small>OPERATOR CORE</small><b>${esc(actor.name)}</b></span>
+            <span><small>OPERATOR</small><b>${esc(actor.name)}</b></span>
           </div>
 
-          ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
+          ${nodes || '<div class="jack-empty-scene"><b>NO SIGNATURES</b><span>Nothing on the local net is answering.</span></div>'}
           ${cameraNodes}
         </div>
 
@@ -2693,8 +2693,8 @@
         </div>
 
         <div class="jack-net-caption">
-          <small>DIRECT TRACE // WHEEL = ZOOM // RMB DRAG = PAN</small>
-          <b>${net.nodes.length} ACTORS${net.cameras.length ? " // "+net.cameras.length+" CAMERA"+(net.cameras.length===1?"":"S") : ""}</b>
+          <small>NET MAP // SCROLL = ZOOM // RIGHT-DRAG = PAN</small>
+          <b>${net.nodes.length} SIGNATURE${net.nodes.length===1?"":"S"}${net.cameras.length ? " // "+net.cameras.length+" CAMERA FEED"+(net.cameras.length===1?"":"S") : ""}</b>
         </div>
 
         <div class="jack-lock-readout${selected?" has-target is-"+selected.relation:""}">
@@ -2705,16 +2705,16 @@
           <div class="jack-lock-copy">
             <small>TARGET LOCK</small>
             <b>${selected?esc(selected.displayName):"NO TARGET"}</b>
-            <span>${selected?"LOCKED":"SELECT ACTOR"}</span>
+            <span>${selected?"LOCKED":"SELECT A SIGNATURE"}</span>
           </div>
         </div>
       </main>
 
       <footer class="jack-actions">
         <div class="jack-actions-title">
-          <small>LOADED SOFTWARE</small>
-          <b>QUICKHACK EXECUTION</b>
-          <span>${selected?"TARGET // "+esc(selected.displayName):"SELECT A TARGET NODE"}</span>
+          <small>LOADED QUICKHACKS</small>
+          <b>READY TO UPLOAD</b>
+          <span>${selected?"TARGET // "+esc(selected.displayName):"NO TARGET LOCKED"}</span>
         </div>
         <div class="jack-hacks">${hacks}</div>
       </footer>
@@ -2823,14 +2823,14 @@
 
     if (lockState) {
       lockState.textContent =
-        selected ? "LOCKED" : "SELECT ACTOR";
+        selected ? "LOCKED" : "SELECT A SIGNATURE";
     }
 
     const actionTarget = root.querySelector(".jack-actions-title > span");
     if (actionTarget) {
       actionTarget.textContent = selected
         ? "TARGET // "+selected.displayName
-        : "SELECT A TARGET NODE";
+        : "NO TARGET LOCKED";
     }
 
     for (const button of root.querySelectorAll('.jack-hack[data-jack-action="run"]')) {
@@ -2889,7 +2889,7 @@
     root.dataset.actorId = actor.id;
     root.dataset.phase = "boot";
     applyV3Assets(root);
-    root.innerHTML = '<div class="jack-boot"><div class="jack-code-rain">'+codeRain()+'</div><div class="jack-boot-core"><small>NEURAL HANDSHAKE // ACTIVE SCENE SWEEP</small><h1>JACKING IN</h1><b>SCANNING ACTOR SIGNATURES...</b><span>BUILDING TABLETOP SCENE MATRIX</span></div><div class="jack-boot-scan"></div></div>';
+    root.innerHTML = '<div class="jack-boot"><div class="jack-code-rain">'+codeRain()+'</div><div class="jack-boot-core"><small>NEURAL HANDSHAKE // LOCAL NET SWEEP</small><h1>JACKING IN</h1><b>SCANNING SIGNATURES...</b><span>MAPPING THE LOCAL NET</span></div><div class="jack-boot-scan"></div></div>';
     document.body.appendChild(root);
     globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:0});
 
