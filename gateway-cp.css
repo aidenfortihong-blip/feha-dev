@@ -559,12 +559,18 @@ html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile-n
 /* ---------- footer --------------------------------------------------------- */
 
 html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-footer {
-  min-height: 0 !important;
+  min-height: 52px !important;
   padding: 10px 0 0 !important;
   background: transparent !important;
   border: 0 !important;
   border-top: 1px solid var(--gw-red-dim) !important;
   box-shadow: none !important;
+}
+
+/* The JACK IN bar is absolutely positioned inside the footer: reserve its
+   height once access is granted so it is never pushed off-screen. */
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom:is(.is-granted, .is-linking) .feha-eg-footer {
+  min-height: 124px !important;
 }
 
 html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-footer-copy {
