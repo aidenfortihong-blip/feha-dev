@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.7.0";
+  const VERSION = "1.7.1";
   const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -14,6 +14,7 @@
   const STOCK_KEY = "adkMarketStockV16";
   const START = "/* FEHA MARKET STOCK PATCH START */";
   const END = "/* FEHA MARKET STOCK PATCH END */";
+  const MARKET_SYNC_EVENTS = ["click","input","change","keyup"];
   let marketClickSyncHandler = null;
   let marketSyncScheduled = false;
   let marketSyncRunning = false;
@@ -801,11 +802,16 @@
         scheduleMarketSyncBurst();
       };
 
-      document.addEventListener(
-        "click",
-        marketClickSyncHandler,
-        true
-      );
+      // Clicks cover shop switching and buttons. Typing in the search box
+      // and opening the Market from a hotbar key rerender it without a
+      // click, which left cards unformatted until the next click.
+      for (const type of MARKET_SYNC_EVENTS) {
+        document.addEventListener(
+          type,
+          marketClickSyncHandler,
+          true
+        );
+      }
     }
 
     scheduleMarketSyncBurst();
@@ -813,11 +819,13 @@
 
   function removeNoMkGuard() {
     if (marketClickSyncHandler) {
-      document.removeEventListener(
-        "click",
-        marketClickSyncHandler,
-        true
-      );
+      for (const type of MARKET_SYNC_EVENTS) {
+        document.removeEventListener(
+          type,
+          marketClickSyncHandler,
+          true
+        );
+      }
       marketClickSyncHandler = null;
     }
 
