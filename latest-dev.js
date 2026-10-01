@@ -2675,24 +2675,26 @@
 
       if (!bootEl || !input) return;
 
+      // Each subsystem keeps one fixed address, so the log reads the same
+      // on every boot.
       const lines = [
-        "POWER BUS ................. ONLINE",
-        "SESSION NODE .............. CONNECTED",
-        "CIVIL ID REGISTRY ......... MOUNTED",
-        "BIOMETRIC SERVICES ........ STANDBY",
-        "NEURAL HANDSHAKE .......... ARMED",
-        "IDENTITY GATE ............. READY"
+        ["01A","POWER BUS ................. ONLINE"],
+        ["02C","SESSION NODE .............. CONNECTED"],
+        ["03E","CIVIL ID REGISTRY ......... MOUNTED"],
+        ["04B","BIOMETRIC SERVICES ........ STANDBY"],
+        ["05D","NEURAL HANDSHAKE .......... WAITING FOR ID"],
+        ["06F","IDENTITY GATE ............. READY"]
       ];
 
       if (!(await sleep(160))) return;
 
-      for (const line of lines) {
+      for (const [code,line] of lines) {
         if (!root?.isConnected || sequence !== token) return;
 
         const row = document.createElement("div");
         row.innerHTML =
           "<span>" +
-          randomHex(4) +
+          code +
           "</span><b>" +
           safe(line) +
           "</b>";
@@ -2701,7 +2703,7 @@
         requestAnimationFrame(() => row.classList.add("visible"));
         followTerminalOutput({smooth:true});
 
-        log("SYS/" + randomHex(3) + " " + line);
+        log("SYS/" + code + " " + line);
         play("select",.15,55);
 
         if (!(await sleep(145))) return;
@@ -2789,7 +2791,8 @@
 
         list.appendChild(row);
         followTerminalOutput({smooth:true});
-        log("BIO/" + randomHex(4) + " " + label + " :: SCANNING");
+        const bioCode = "BIO/" + String(index + 1).padStart(2,"0");
+        log(bioCode + " " + label + " :: SCANNING");
         play("scan",.18,70);
 
         if (!(await sleep(260 + Math.floor(Math.random() * 120)))) return;
@@ -2804,7 +2807,7 @@
         progress.style.width =
           (((index + 1) / steps.length) * 100) + "%";
 
-        log("BIO/" + randomHex(4) + " " + label + " :: " + result,"good");
+        log(bioCode + " " + label + " :: " + result,"good");
         play("confirm",.21,70);
 
         if (!(await sleep(105))) return;
