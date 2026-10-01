@@ -1583,3 +1583,109 @@ html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > em b {
   font-size: 18px !important;
   line-height: 1 !important;
 }
+
+/* ---------- quickhack option picker ---------------------------------------- */
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker {
+  background: rgba(0, 0, 0, .86) !important;
+  font-family: "Chakra Petch", "Rajdhani", "Arial Narrow", sans-serif !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker > section {
+  background: #191919 !important;
+  border: 1px solid #4a4a4a !important;
+  border-top: 3px solid #f3e600 !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .7) !important;
+  padding: 20px 22px !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker header {
+  border-bottom: 1px solid #333333 !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker header small {
+  color: #9a9a9a !important;
+  font-family: "Share Tech Mono", "Consolas", monospace !important;
+  font-size: 12px !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker header h2 {
+  color: #f2f2f2 !important;
+  font-family: "Chakra Petch", "Rajdhani", sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  border: 0 !important;
+  text-shadow: none !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker header p {
+  color: #c8c8c8 !important;
+  font-size: 15px !important;
+  line-height: 1.4 !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-option] {
+  min-height: 56px !important;
+  background: #222222 !important;
+  border: 1px solid #4a4a4a !important;
+  border-left: 3px solid #4a4a4a !important;
+  color: #f2f2f2 !important;
+  font-family: "Chakra Petch", "Rajdhani", sans-serif !important;
+  font-size: 16px !important;
+  box-shadow: none !important;
+  transition: border-color .12s, background-color .12s !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-option]:hover,
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-option]:focus-visible {
+  border-color: #f2f2f2 !important;
+  outline: none !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-option][aria-pressed="true"] {
+  background: #2a2900 !important;
+  border-color: #f3e600 !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-option] small {
+  color: #9a9a9a !important;
+  font-family: "Share Tech Mono", "Consolas", monospace !important;
+  font-size: 12px !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-cancel],
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-confirm] {
+  min-height: 42px !important;
+  font-family: "Chakra Petch", "Rajdhani", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  box-shadow: none !important;
+  transition: background-color .12s, border-color .12s, color .12s !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-cancel] {
+  background: transparent !important;
+  border: 1px solid #4a4a4a !important;
+  color: #f2f2f2 !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-cancel]:hover,
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-cancel]:focus-visible {
+  border-color: #f2f2f2 !important;
+  outline: none !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-confirm] {
+  background: #f3e600 !important;
+  border: 1px solid #f3e600 !important;
+  color: #0a0a0a !important;
+}
+
+html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-confirm]:disabled {
+  background: #333333 !important;
+  border-color: #333333 !important;
+  color: #9a9a9a !important;
+  opacity: 1 !important;
+}

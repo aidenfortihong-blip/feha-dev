@@ -303,6 +303,12 @@
             const active =
               Number(button.dataset.qhOption) === selected;
 
+            // State for assistive tech and for the Cyberdeck skin.
+            button.setAttribute(
+              "aria-pressed",
+              active ? "true" : "false"
+            );
+
             button.style.borderColor =
               active
                 ? "#f5d547"

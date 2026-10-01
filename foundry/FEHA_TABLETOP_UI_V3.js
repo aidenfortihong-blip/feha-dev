@@ -1116,11 +1116,11 @@
       <main class="cd2-main v3-main">
         <section class="v3-ram">
           <div>
-            <small>ACTIVE MEMORY // SHORT REST ONLY</small>
+            <small>ACTIVE MEMORY</small>
             <strong>${m.currentRam}<em>/ ${m.maxRam}</em></strong>
             ${segments(m.currentRam,m.deck ? m.maxRam : 0)}
           </div>
-          <button type="button" class="cd2-rest" data-v3-action="rest" ${m.deck?"":"disabled"}>SHORT REST // RESTORE RAM</button>
+          <button type="button" class="cd2-rest" data-v3-action="rest" title="Short rest: restore RAM to full" ${m.deck?"":"disabled"}>SHORT REST</button>
         </section>
 
         <div class="v3-scroll">
