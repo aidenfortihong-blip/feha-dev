@@ -34,7 +34,7 @@
       aliases:["Ghost Key","Breach Protocol"],
       mk:1,
       ramCost:1,
-      effectText:"As a bonus action, choose one locked networked door directly in front of you. The door immediately unlocks and opens.",
+      effectText:"As a bonus action, choose one electronically locked door directly in front of you. The door unlocks and opens. The GM opens it on the map.",
       meta:{targetType:"door",opensLockedDoor:true,noSave:true}
     },
     {
@@ -142,7 +142,7 @@
       aliases:["Network Sweep","Ping Program"],
       mk:2,
       ramCost:2,
-      effectText:"As a bonus action, perform a network sweep in a 50-foot radius centered on you. Until the end of your next turn, you know the location of networked devices in the area, including cameras, turrets, doors, alarms, terminals, and similar systems, as well as hostile creatures in the area that possess cyberware. A revealed target cannot be hidden from you for the duration.",
+      effectText:"As a bonus action, ping everything within 50 feet of you. Until the end of your next turn, the GM tells you where the electronics in that area are (cameras, alarms, electronic locks, terminals and the like), and you know the position of every hostile creature there that has cyberware. Those creatures cannot hide from you for the duration.",
       meta:{radiusFt:50,revealDevices:true,revealCyberwareHostiles:true,durationTurns:1}
     },
     {

@@ -28,6 +28,7 @@
     uniqueWeapons:"foundry/FEHA_UNIQUE_WEAPON_CATALOG.js",
     weaponEconomy:"foundry/FEHA_WEAPON_ECONOMY.js",
     grenadeRuntime:"foundry/FEHA_GRENADE_RUNTIME.js",
+    consumableRuntime:"foundry/FEHA_CONSUMABLE_RUNTIME.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
     specialRetirement:"foundry/FEHA_SPECIAL_RETIREMENT.js",
@@ -217,7 +218,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -335,6 +336,7 @@
     evaluate(source.worldHygiene,files.worldHygiene,sha);
     evaluate(source.marketStockPatch,files.marketStockPatch,sha);
     evaluate(source.grenadeRuntime,files.grenadeRuntime,sha);
+    evaluate(source.consumableRuntime,files.consumableRuntime,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
     evaluate(source.quickhackRuntime,files.quickhackRuntime,sha);
@@ -381,6 +383,7 @@
       "worldHygiene",
       "marketStockPatch",
       "grenadeRuntime",
+      "consumableRuntime",
       "quickhacks",
       "quickhackAuthority",
       "quickhackRuntime",

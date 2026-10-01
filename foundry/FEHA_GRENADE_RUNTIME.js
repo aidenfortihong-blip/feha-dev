@@ -2465,6 +2465,20 @@
           throw error;
         }
 
+        // Catalog consumables share this one item-use bridge.
+        const consumables = core.module?.("consumableRuntime") ?? null;
+
+        if (consumables?.handles?.(this)) {
+          try {
+            return await consumables.use(this);
+          } catch (error) {
+            ui.notifications?.error?.(
+              "Consumable use failed: "+String(error?.message ?? error)
+            );
+            throw error;
+          }
+        }
+
         return original.apply(this,args);
       };
 

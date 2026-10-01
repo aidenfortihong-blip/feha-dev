@@ -945,7 +945,7 @@
         await safeChat(prepared,{
           state:"DM RUN",
           body:
-            "Force open one locked networked door directly in front of the operator."
+            "GM: open the electronically locked door directly in front of the operator."
         });
 
         return {
@@ -1051,7 +1051,7 @@
         await safeChat(prepared,{
           state:"DM RUN // 50 FT SWEEP",
           body:
-            "Reveal networked cameras, turrets, doors, alarms, terminals, similar devices, and hostile creatures with cyberware within 50 feet. The GM reveals the valid network."
+            "GM: until the end of the operator's next turn, point out the electronics within 50 feet (cameras, alarms, electronic locks, terminals) and every hostile creature there that has cyberware. Those creatures cannot hide from the operator."
         });
 
         return {
