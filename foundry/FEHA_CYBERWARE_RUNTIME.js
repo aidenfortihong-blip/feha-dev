@@ -18,13 +18,16 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.0.2";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const PASSIVE_FLAG = "cyberwarePassive";
   const ACTIVE_FLAG = "cyberwareActive";
   const MANAGER_ID = "adk-chrome-manager-34";
   const CHIP_CLASS = "feha-cw-charge";
+
+  // Forcing chrome without the charge for it: damage dice per missing charge.
+  const PUSH_DICE = 2;
 
   // Mirrors the Chrome Manager module (chrome-legacy.js).
   const CAPACITY_BASE = 12;
@@ -209,7 +212,7 @@
       content:
         "<p><strong>"+esc(def.name)+"</strong> needs "+cost+" charge and "+
         esc(actor.name)+" has "+available+".</p>"+
-        "<p>Force it anyway and take <strong>"+missing+"d6 psychic damage</strong> "+
+        "<p>Force it anyway and take <strong>"+(missing * PUSH_DICE)+"d6 psychic damage</strong> "+
         "that nothing can reduce?</p>",
       rejectClose:false
     });
@@ -274,7 +277,7 @@
     if (paid < cost) {
       if (!(await confirmPush(actor,def,cost,state.remaining))) return null;
 
-      const strain = await rollFormula(actor,(cost - paid)+"d6");
+      const strain = await rollFormula(actor,((cost - paid) * PUSH_DICE)+"d6");
       rolls.push(strain);
       hpAfter = Math.max(0,hpAfter - Number(strain.total));
       lines.push(
@@ -324,7 +327,14 @@
 
     await actor.update(update);
 
-    if (spec.duration) {
+    // A bonus against one attack only means something inside a fight; outside
+    // combat nothing would ever end it.
+    const inCombat = Boolean(
+      game.combat?.started &&
+      game.combat.combatants.some(combatant => combatant.actorId === actor.id)
+    );
+
+    if (spec.duration && (inCombat || spec.duration.units !== "turns")) {
       const previous = list(actor.effects)
         .filter(effect => flags(effect)[ACTIVE_FLAG]?.itemId === item.id)
         .map(effect => effect.id);
