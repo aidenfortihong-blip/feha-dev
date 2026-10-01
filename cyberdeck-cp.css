@@ -1689,3 +1689,64 @@ html body #feha-qh-runtime-picker#feha-qh-runtime-picker [data-qh-confirm]:disab
   color: #9a9a9a !important;
   opacity: 1 !important;
 }
+
+/* Loaded-slot cards: stacked (icon, name, cost, EJECT). The side-by-side
+   layout left 15px for the text once five slots were filled, hiding the
+   quickhack's name. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  grid-template-areas: none !important;
+  justify-items: stretch !important;
+  align-content: start !important;
+  gap: 6px !important;
+  padding: 10px !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card > * {
+  grid-column: 1 !important;
+  grid-area: auto !important;
+  position: static !important;
+  max-width: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card > img {
+  justify-self: start !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card .cd2-hack-copy {
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card .cd2-hack-copy b {
+  display: block !important;
+  width: auto !important;
+  font-size: 13px !important;
+  line-height: 1.15 !important;
+  letter-spacing: .02em !important;
+  overflow-wrap: break-word !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card .cd2-hack-copy span {
+  display: block !important;
+  width: auto !important;
+  margin-top: 2px !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card > button {
+  justify-self: stretch !important;
+  align-self: end !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 0 8px !important;
+  font-size: 11px !important;
+}
