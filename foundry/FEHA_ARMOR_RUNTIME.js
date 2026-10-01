@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.2.2";
+  const VERSION = "1.3.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -51,8 +51,36 @@
     return def?.company === "Jade Arc Systems" && Number(def.mk) >= 3;
   }
 
+  // Vektor "Grenade Null" (see FEHA_ARMOR_CATALOG): Mk.V is immune to
+  // grenades; Mk.I-IV take half grenade damage and save with advantage.
+  function grenadeNullMk(actor) {
+    const def = equippedDefinition(actor);
+    if (def?.company !== "Vektor Dynamics") return 0;
+    return Math.max(
+      1,
+      Math.floor(Number(def.mk ?? def.signature?.value ?? 1) || 1)
+    );
+  }
+
   function grenadeImmune(actor) {
-    return equippedDefinition(actor)?.company === "Vektor Dynamics";
+    return grenadeNullMk(actor) >= 5;
+  }
+
+  function grenadeResistant(actor) {
+    const mk = grenadeNullMk(actor);
+    return mk >= 1 && mk < 5;
+  }
+
+  function halveDamageDescriptions(damages) {
+    let removed = 0;
+    for (const part of damages ?? []) {
+      const current = Number(part?.value);
+      if (!Number.isFinite(current) || current <= 0) continue;
+      const next = Math.floor(current / 2);
+      removed += current - next;
+      part.value = next;
+    }
+    return removed;
   }
 
   function hasFireResistance(actor) {
@@ -345,6 +373,10 @@
       return 0;
     }
 
+    if (value > 0 && source === "grenade" && grenadeResistant(actor)) {
+      value = Math.floor(value / 2);
+    }
+
     if (value > 0 && type === "fire" && hasFireResistance(actor)) {
       value = Math.floor(value / 2);
     }
@@ -364,6 +396,11 @@
             if (removed > 0) {
               console.debug("FEHA ARMOR // VEKTOR GRENADE NULL",{actor:actor?.name,removed});
             }
+            return;
+          }
+
+          if (grenadeResistant(actor) && isGrenadeItem(item)) {
+            halveDamageDescriptions(damages);
             return;
           }
 
@@ -460,6 +497,7 @@
     empSaveAdvantage,
     empImmune,
     grenadeImmune,
+    grenadeResistant,
     hasFireResistance,
     helixSpeedBonus,
     syncHelixSpeed,

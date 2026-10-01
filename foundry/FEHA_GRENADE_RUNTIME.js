@@ -1724,12 +1724,21 @@
             )
           );
 
+        // Vektor Grenade Null below Mk.V: advantage on the grenade save
+        // (and half damage, applied in damageLocal via adjustDamage).
+        const grenadeNullAdvantage =
+          Boolean(
+            globalThis.FEHA_ARMOR_RUNTIME?.grenadeResistant?.(
+              target
+            )
+          );
+
         save = await rollSave(
           target,
           schema.save,
           {
             disadvantage,
-            advantage:empAdvantage
+            advantage:empAdvantage || grenadeNullAdvantage
           }
         );
 
@@ -1742,7 +1751,7 @@
           Math.floor(Number(damageRoll?.total ?? 0))
         );
 
-      const damage =
+      const rolledDamage =
         damageRoll
           ? (
               success && schema.halfOnSuccess
@@ -1751,12 +1760,21 @@
             )
           : 0;
 
-      if (damage > 0) {
-        await damageLocal(
-          target,
-          damage,
-          schema.damageType ?? ""
-        );
+      // Report what the target actually took: armor (fire resistance,
+      // Grenade Null) can reduce it inside damageLocal.
+      let damage = rolledDamage;
+
+      if (rolledDamage > 0) {
+        const applied =
+          await damageLocal(
+            target,
+            rolledDamage,
+            schema.damageType ?? ""
+          );
+
+        if (Number.isFinite(Number(applied?.damage))) {
+          damage = Number(applied.damage);
+        }
       }
 
       const effects = [];
