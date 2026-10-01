@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.3";
+  const VERSION = "1.0.4";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const PASSIVE_FLAG = "cyberwarePassive";
@@ -456,7 +456,7 @@
     if (value.textContent !== text) value.textContent = text;
 
     // The inspector hides the module's own USE buttons, so active chrome gets
-    // an ACTIVATE button in the item dossier, above EJECT.
+    // an ACTIVATE button in the item dossier.
     const eject = root.querySelector("button.adk-v6-primary[data-remove]");
     const item = eject ? actor.items?.get?.(eject.dataset.remove) : null;
     const def = item ? catalog.definition(item) : null;
@@ -481,7 +481,10 @@
       button.className = "adk-v6-primary feha-cw-activate";
       button.dataset.fehaActivate = item.id;
       button.innerHTML = "<span>ACTIVATE</span><small></small>";
-      eject.before(button);
+      // Directly under the effect text, so it is visible without scrolling.
+      const effectBox = eject.parentElement?.querySelector(".hardware-effect");
+      if (effectBox) effectBox.after(button);
+      else eject.before(button);
     }
 
     const small = button.querySelector("small");
