@@ -995,3 +995,73 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-label:focus-visibl
     transition: none !important;
   }
 }
+
+/* ---------- inspector readability ------------------------------------------ */
+
+/* Hardware ports as full-width rows: three side-by-side tiles could not hold
+   their labels once UI text was raised to a readable size. */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-inspector {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 94, 87, .3) transparent;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app .adk-v6-port-stack {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: none !important;
+  grid-auto-rows: auto !important;
+  align-content: start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  gap: 4px !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app .adk-v6-port-stack .adk-v6-port {
+  display: grid !important;
+  grid-template-columns: 30px 24px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  height: auto !important;
+  padding: 4px 12px !important;
+  text-align: left !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-id {
+  position: static !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-socket {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  width: 22px !important;
+  height: 22px !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy b,
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy small {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.25 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}

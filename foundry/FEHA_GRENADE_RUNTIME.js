@@ -1118,7 +1118,28 @@
     return created?.[0] ?? null;
   }
 
-  async function syncZone(template) {
+  // Zone syncs are triggered from several hooks at once (template created,
+  // detonation resolved, token moved). Run them one at a time per template:
+  // two concurrent passes both saw "no marker yet" and created duplicates.
+  const zoneSyncQueue = new Map();
+
+  function syncZone(template) {
+    const id = String(template?.id ?? "");
+    if (!id) return Promise.resolve();
+
+    const next =
+      (zoneSyncQueue.get(id) ?? Promise.resolve())
+        .catch(() => {})
+        .then(() => syncZoneNow(template));
+
+    zoneSyncQueue.set(id,next);
+
+    return next.finally(() => {
+      if (zoneSyncQueue.get(id) === next) zoneSyncQueue.delete(id);
+    });
+  }
+
+  async function syncZoneNow(template) {
     if (!game.user?.isGM || !template) return;
 
     const scene = template.parent ?? null;
