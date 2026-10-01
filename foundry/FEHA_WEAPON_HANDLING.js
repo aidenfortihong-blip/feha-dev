@@ -20,7 +20,7 @@
 // Movement limits and Brace are table rules surfaced on the sheet.
 
 (() => {
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
 
   const BONUS_RELOAD = new Set(["Pistol","Heavy Pistol","SMG","Shotgun Pistol"]);
@@ -206,9 +206,11 @@
     if (!actor?.rollAbilityCheck) return {ok:false, reason:"no-actor"};
     const {ability, dc, label} = p.reloadCheck;
     const advantage = grants(actor, "reloadAdvantage").length > 0;
+    // No configuration dialog: the DC and advantage are fixed by the rules, and
+    // a generic "Strength Ability Check" prompt hid what was being rolled.
     const rolls = await actor.rollAbilityCheck(
       {ability, target:dc, advantage},
-      {},
+      {configure:false},
       {data:{flavor:"RELOAD // " + item.name + " // " + label + " DC " + dc}}
     );
     const roll = Array.isArray(rolls) ? rolls[0] : rolls;

@@ -7,13 +7,12 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.4.0";
+  const VERSION = "2.5.0";
   const FLAG = "fleshEnshrouded";
   const LEGACY_HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
-  const recentRolls = new Map();
+  const countedRolls = new WeakSet();
   const lastAttackByWeapon = new Map();
-  const pendingAttacks = new Map();
 
   function definition(item) {
     return globalThis.FEHA_WEAPON_CATALOG?.definition?.(item) ??
@@ -276,52 +275,20 @@
       return {ok:false,reason:"no-attack-activity"};
     }
 
-    const key = weaponKey(item);
-    const pending = {
-      id:String(Date.now())+":"+String(Math.random()).slice(2),
-      startedAt:Date.now(),
-      hookSeen:false,
-      counted:false
-    };
-
-    pendingAttacks.set(key,pending);
-
+    // The shot is spent by dnd5e.postRollAttack, i.e. only when an attack
+    // roll actually happens. activity.use() resolves as soon as the usage
+    // card is posted, while the roll dialog may still be open (or get
+    // cancelled), so counting here double-spent slow clicks and charged
+    // cancelled attacks.
     try {
       const result = await activity.use({event,legacy:false});
 
-      // A cancelled dnd5e use can resolve without throwing. Do not spend a
-      // tracked shot when Foundry explicitly reports cancellation.
       if (result === false || result === null) {
-        if (pendingAttacks.get(key) === pending) pendingAttacks.delete(key);
         return {ok:false,reason:"attack-cancelled",result,activity};
       }
 
-      // dnd5e.postRollAttack normally records the shot. In practice that hook
-      // can occasionally arrive late or not identify the subject correctly.
-      // Give it one short turn, then deterministically count this successful
-      // sheet attack ourselves. The pending token stays alive briefly so a
-      // late hook can see that it was already counted instead of double-spending.
-      await new Promise(resolve => setTimeout(resolve,90));
-
-      if (!pending.counted) {
-        pending.counted = true;
-        await recordShot(item);
-      }
-
-      setTimeout(() => {
-        if (pendingAttacks.get(key) === pending) pendingAttacks.delete(key);
-      },1500);
-
-      return {
-        ok:true,
-        result,
-        activity,
-        tracked:true,
-        trackedBy:pending.hookSeen ? "postRollAttack" : "useAttack-fallback"
-      };
+      return {ok:true,result,activity};
     } catch (error) {
-      if (pendingAttacks.get(key) === pending) pendingAttacks.delete(key);
-
       console.warn(
         "FEHA WEAPON TRACKER // attack use failed",
         item?.name,
@@ -449,20 +416,6 @@
     return item;
   }
 
-  function rollKey(item,rolls=[]) {
-    const first =
-      Array.isArray(rolls)
-        ? rolls[0]
-        : rolls?.[0] ?? null;
-
-    const stamp =
-      String(first?.id ?? first?._id ?? "") ||
-      String(first?.options?.dialogOptions?.id ?? "") ||
-      String(Date.now());
-
-    return weaponKey(item)+":"+stamp;
-  }
-
   function onPostRollAttack(rolls,data={}) {
     const activity = data?.subject ?? null;
     const item = activityItem(activity);
@@ -471,43 +424,15 @@
     const actor = actorFor(item);
     if (!actor || actor.isOwner === false) return;
 
-    const key = weaponKey(item);
-    const pending = pendingAttacks.get(key) ?? null;
+    // One shot per attack roll, however the attack was started (FEHA sheet,
+    // dnd5e sheet, macro). Guard against the hook firing twice for one roll.
+    const first = Array.isArray(rolls) ? rolls[0] : rolls?.[0] ?? null;
+    if (first && typeof first === "object") {
+      if (countedRolls.has(first)) return;
+      countedRolls.add(first);
+    }
 
     rememberAttackContext(item,rolls);
-
-    if (
-      pending &&
-      Date.now()-Number(pending.startedAt ?? 0) < 3000
-    ) {
-      pending.hookSeen = true;
-
-      if (!pending.counted) {
-        pending.counted = true;
-        void recordShot(item).catch(error => {
-          console.warn(
-            "FEHA WEAPON TRACKER // shot tracking failed",
-            item?.name,
-            error
-          );
-        });
-      }
-
-      return;
-    }
-
-    // Attacks triggered outside the FEHA weapon sheet still need tracking.
-    // Roll IDs prevent duplicate dnd5e hook emissions from spending twice.
-    const rollId = rollKey(item,rolls);
-    const now = Date.now();
-    const last = Number(recentRolls.get(rollId) ?? 0);
-
-    if (now-last < 1000) return;
-    recentRolls.set(rollId,now);
-
-    for (const [entry,time] of recentRolls) {
-      if (now-time > 10000) recentRolls.delete(entry);
-    }
 
     void recordShot(item).catch(error => {
       console.warn(
@@ -601,10 +526,7 @@
       for (const [event,id] of hooks.splice(0)) {
         try { Hooks.off(event,id); } catch {}
       }
-
-      recentRolls.clear();
       lastAttackByWeapon.clear();
-      pendingAttacks.clear();
       purgeLegacyPanels();
 
       if (game?.adk?.weaponTracker === api) delete game.adk.weaponTracker;
