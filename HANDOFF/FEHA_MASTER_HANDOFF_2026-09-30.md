@@ -315,3 +315,13 @@ Everything in §11 is live, plus the user's decisions:
 - Unique weapons stay purchasable but rare: economy weight 0.02 and vendor tier 4+ only, now actually applied by the stock builder.
 - Derke got the same "Power Level 2" ActiveEffect as Ponyboy/Zach (levels in this world come from that effect: `system.details.level` override); his cyberware capacity bonus is now 3 (total 24).
 - Verified live: player-purchase stock removal (createItem hook), rest RAM restore, breach RAM cost and the not-enough-RAM refusal.
+
+## 13. 0.11.90: network devices removed (branch `remove-devices`, NOT on main yet)
+
+User decision 2026-10-01: hackable doors / turrets / terminals were never meant to be a system. The GM runs doors as roleplay and cameras as, at most, one DC check.
+
+- Deleted: `FEHA_NETWORK_DEVICES.js`, `FEHA_DEVICE_ACTIONS.js`, `FEHA_NETWORK_APPROVALS.js` (loader no longer fetches or requires them). V3 lost device nodes, the device panel, breach + `breachRamCost`, and player camera placement in JACKED IN. The recon grenade scan no longer lists devices. Dead `.jack-device-*` / `.jack-camera-ghost` CSS is still in `cyberdeck-v3.css` and `cyberdeck-cp.css` (harmless).
+- **CYBER CHECK** button in the Cyberdeck RAM panel (`data-v3-action="cyber-check"`, `rollCyberCheck` in V3): 1d20 + INT mod + proficiency, costs `CYBER_CHECK_RAM` = 1, rolled to chat with the player's normal message mode. No DC in the UI; the GM decides.
+- **Cameras are a GM tool** (`FEHA_CAMERAS.js` 0.2.0, no sockets): Token controls get a "Place camera for a player" button (`getSceneControlButtons`, tool `fehaCamera`) -> DialogV2 player picker -> `placeCameraFor(userId)` creates/reuses actor "CAMERA // <user>" (folder "Camera", owner = that user only) and drops a token with sight (60 ft, 360) at the centre of the GM's view. `Token#_isVisionSource` is wrapped so a player's own camera stays a vision source while they have their character selected (restored in `destroy`). JACKED IN still shows a CAM tile, only for cameras the viewer owns.
+- Verified live on the GM client from the branch: load with no errors, Cyber Check roll + RAM spend + re-render, JACKED IN with no devices, camera dialog + token + ownership. **Not verified: the player-side view through the camera** (needs a logged-in player).
+- Left in the world: one test camera token "CAMERA // Aiden" on "FEHA TEST ARENA"; old `flags.fleshEnshrouded` device data on that scene is now ignored.
