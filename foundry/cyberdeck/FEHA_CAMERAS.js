@@ -140,24 +140,13 @@
   }
 
   function cameraActorFlag(actor) {
-    try {
-      return (
-        actor?.getFlag?.(FLAG_SCOPE,ACTOR_FLAG) ??
-        actor?.flags?.[FLAG_SCOPE]?.[ACTOR_FLAG] ??
-        null
-      );
-    } catch {
-      return null;
-    }
+    // Direct read: getFlag throws for the "fleshEnshrouded" namespace.
+    return actor?.flags?.[FLAG_SCOPE]?.[ACTOR_FLAG] ?? null;
   }
 
   function cameraTokenFlag(token) {
     try {
-      return (
-        token?.getFlag?.(FLAG_SCOPE,TOKEN_FLAG) ??
-        token?.flags?.[FLAG_SCOPE]?.[TOKEN_FLAG] ??
-        null
-      );
+      return token?.flags?.[FLAG_SCOPE]?.[TOKEN_FLAG] ?? null;
     } catch {
       return null;
     }

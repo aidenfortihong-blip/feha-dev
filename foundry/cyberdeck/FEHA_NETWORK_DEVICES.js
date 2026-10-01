@@ -282,14 +282,11 @@
     };
   }
 
+  // Read flags directly: Document#getFlag throws for the "fleshEnshrouded"
+  // namespace (it is not a package id), which made every tagged or custom
+  // device read as "none".
   function readDeviceFlag(doc) {
-    try {
-      return doc?.getFlag?.(FLAG_SCOPE,DEVICE_FLAG) ??
-        doc?.flags?.[FLAG_SCOPE]?.[DEVICE_FLAG] ??
-        null;
-    } catch {
-      return null;
-    }
+    return doc?.flags?.[FLAG_SCOPE]?.[DEVICE_FLAG] ?? null;
   }
 
   function taggedRecord(scene,doc,origin="tagged") {
@@ -399,14 +396,8 @@
   }
 
   function customRecords(scene) {
-    let raw = [];
-
-    try {
-      raw =
-        scene?.getFlag?.(FLAG_SCOPE,SCENE_DEVICE_FLAG) ??
-        scene?.flags?.[FLAG_SCOPE]?.[SCENE_DEVICE_FLAG] ??
-        [];
-    } catch {}
+    const raw =
+      scene?.flags?.[FLAG_SCOPE]?.[SCENE_DEVICE_FLAG] ?? [];
 
     if (!Array.isArray(raw)) return [];
 

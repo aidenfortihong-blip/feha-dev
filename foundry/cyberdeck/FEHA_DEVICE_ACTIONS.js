@@ -181,10 +181,9 @@
   }
 
   async function updateDeviceFlag(source,patch) {
-    if (!source?.setFlag) return false;
+    if (!source?.update) return false;
 
     const current =
-      source.getFlag?.(FLAG_SCOPE,DEVICE_FLAG) ??
       source.flags?.[FLAG_SCOPE]?.[DEVICE_FLAG] ??
       {};
 
