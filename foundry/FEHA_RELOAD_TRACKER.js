@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.5.0";
+  const VERSION = "2.6.0";
   const FLAG = "fleshEnshrouded";
   const LEGACY_HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
@@ -91,7 +91,13 @@
     };
   }
 
-  async function writeState(item,{used,reload}) {
+  // "combatId:round:turn" of the running combat, or "" outside combat.
+  function turnStamp(combat=game.combat,round=combat?.round,turn=combat?.turn) {
+    if (!combat?.started) return "";
+    return [combat.id,Number(round ?? 0),Number(turn ?? 0)].join(":");
+  }
+
+  async function writeState(item,{used,reload,shotTurn}) {
     const actor = actorFor(item);
     if (!actor || actor.isOwner === false) {
       return {ok:false,reason:"not-owner",state:state(item)};
@@ -110,11 +116,17 @@
       Math.min(reloadMax,Math.floor(Number(reload ?? 0) || 0))
     );
 
-    await actor.update({
+    const update = {
       [statePath(item,"used")]:nextUsed,
       [statePath(item,"reload")]:nextReload,
       [statePath(item,"updatedAt")]:Date.now()
-    });
+    };
+
+    if (shotTurn !== undefined) {
+      update[statePath(item,"shotTurn")] = shotTurn;
+    }
+
+    await actor.update(update);
 
     return {ok:true,state:state(item)};
   }
@@ -131,7 +143,10 @@
 
     return writeState(item,{
       used:before.used+1,
-      reload:0
+      reload:0,
+      // Remembered so turn-end rules (Helix Self-Charging Cell) know whether
+      // this weapon fired during the wielder's turn.
+      shotTurn:turnStamp()
     });
   }
 
@@ -475,10 +490,70 @@
     return {actors};
   }
 
+  // Helix SELF-CHARGING CELL: at the end of a turn in which the wielder did
+  // not fire the Helix weapon they are wielding, it is fully restored. One
+  // GM client applies it when the turn passes.
+  async function onUpdateCombat(combat,changed) {
+    if (!("turn" in (changed ?? {})) && !("round" in (changed ?? {}))) return;
+    if (!combat?.started) return;
+    if (game.users?.activeGM?.isSelf !== true) return;
+
+    const previous = combat.previous ?? null;
+    if (!previous?.combatantId) return;
+
+    const actor =
+      combat.combatants?.get?.(previous.combatantId)?.actor ?? null;
+    if (!actor) return;
+
+    const endedTurn = turnStamp(combat,previous.round,previous.turn);
+
+    for (const item of equippedFirearms(actor)) {
+      if (definition(item)?.company !== "Helix Vitae") continue;
+
+      const current = state(item);
+      if (current.used < 1) continue;
+
+      const raw =
+        actor.flags?.[FLAG]?.weaponTracker?.[String(item.id)] ?? {};
+      if (String(raw.shotTurn ?? "") === endedTurn) continue;
+
+      try {
+        await resetWeapon(item);
+
+        await ChatMessage.create({
+          speaker:ChatMessage.getSpeaker({actor}),
+          whisper:ChatMessage.getWhisperRecipients("GM")
+            .concat(
+              game.users.filter(user =>
+                !user.isGM &&
+                actor.testUserPermission?.(user,"OWNER")
+              )
+            )
+            .map(user => user.id),
+          content:
+            "<strong>SELF-CHARGING CELL</strong> // "+
+            foundry.utils.escapeHTML(String(item.name))+
+            " recharged to full ("+current.capacity+"/"+current.capacity+")."
+        });
+      } catch (error) {
+        console.warn(
+          "FEHA WEAPON TRACKER // self-charging cell failed",
+          item?.name,
+          error
+        );
+      }
+    }
+  }
+
   function installHooks() {
     hooks.push([
       "dnd5e.postRollAttack",
       Hooks.on("dnd5e.postRollAttack",onPostRollAttack)
+    ]);
+
+    hooks.push([
+      "updateCombat",
+      Hooks.on("updateCombat",onUpdateCombat)
     ]);
   }
 

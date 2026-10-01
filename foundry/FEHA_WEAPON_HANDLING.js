@@ -11,16 +11,17 @@
 //   STR          Below a weapon's STR requirement: disadvantage and max 10 ft
 //                movement on turns you use it, unless installed cyberware
 //                negates it (STR_NEGATORS).
-//   Brace (LMG)  Disadvantage if you moved more than 10 ft this turn.
+//   Brace (LMG)  Disadvantage if you moved more than 10 ft this turn
+//                (measured from where your turn started; in combat only).
 //   Scoped       Snipers (except close-range snipers) have disadvantage
 //                against targets within 30 ft.
 //
-// Disadvantage for STR and Scoped is applied automatically through
+// Disadvantage for STR, Scoped and Brace is applied automatically through
 // dnd5e.preRollAttackV2 (every attack path, not only the sheet button).
-// Movement limits and Brace are table rules surfaced on the sheet.
+// The 10 ft movement limits themselves are table rules surfaced on the sheet.
 
 (() => {
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
 
   const BONUS_RELOAD = new Set(["Pistol","Heavy Pistol","SMG","Shotgun Pistol"]);
@@ -111,7 +112,7 @@
         " check (some feats or cyberware remove the check). On a failure the reload does not complete; try again next turn."
       );
     }
-    if (p.brace) lines.push("BRACE // Attacks have disadvantage if you moved more than 10 ft this turn.");
+    if (p.brace) lines.push("BRACE // Attacks have disadvantage if you moved more than 10 ft this turn (applied automatically in combat).");
     if (p.scoped) lines.push("SCOPED // Disadvantage against targets within 30 ft.");
     if (p.closeRange) lines.push("CLOSE-RANGE SNIPER // No scope penalty.");
     if (p.strengthRequirement) {
@@ -180,6 +181,42 @@
     });
   }
 
+  // ---- Brace (LMG) ---------------------------------------------------------
+  // Where each combatant stood when its turn began. Brace compares that spot
+  // with where the shooter is now, so "moved more than 10 ft this turn" means
+  // ended up more than 10 ft from where the turn started (walking out and
+  // back is not counted). Kept in memory per client; a client that joins
+  // mid-turn simply has no record and applies no penalty.
+  const BRACE_MAX_FT = 10;
+  let turnStart = null;
+
+  function currentTurnKey(combat=game.combat) {
+    if (!combat?.started) return "";
+    return [combat.id,combat.round,combat.turn].join(":");
+  }
+
+  function rememberTurnStart(combat=game.combat) {
+    const key = currentTurnKey(combat);
+    const tokenId = combat?.combatant?.tokenId ?? null;
+    const token = tokenId ? canvas?.tokens?.get?.(tokenId) ?? null : null;
+
+    turnStart = key && token
+      ? {key, tokenId, center:{x:token.center.x, y:token.center.y}}
+      : null;
+  }
+
+  function movedThisTurnFt(actor) {
+    if (!turnStart || turnStart.key !== currentTurnKey()) return null;
+    const token = canvas?.tokens?.get?.(turnStart.tokenId) ?? null;
+    if (!token || token.actor?.id !== actor?.id) return null;
+    try {
+      const path = canvas.grid.measurePath([turnStart.center, token.center]);
+      return Number.isFinite(path?.distance) ? path.distance : null;
+    } catch {
+      return null;
+    }
+  }
+
   // Reasons this attack must roll with disadvantage (automated rules only).
   function attackPenalties(item) {
     const actor = item?.actor ?? item?.parent ?? null;
@@ -191,6 +228,12 @@
     if (p.scoped) {
       const close = scopedTooClose(actor);
       if (close.length) reasons.push("SCOPED: target within " + SCOPED_MIN_FT + " ft");
+    }
+    if (p.brace) {
+      const moved = movedThisTurnFt(actor);
+      if (moved != null && moved > BRACE_MAX_FT + 0.01) {
+        reasons.push("BRACE: moved " + Math.round(moved) + " ft this turn");
+      }
     }
     return reasons;
   }
@@ -219,6 +262,7 @@
   }
 
   let hookId = null;
+  let combatHookIds = [];
 
   function onPreRollAttack(config) {
     try {
@@ -242,6 +286,21 @@
   function init() {
     destroy();
     hookId = Hooks.on("dnd5e.preRollAttackV2", onPreRollAttack);
+
+    const onTurn = (combat, changed) => {
+      if (changed && !("turn" in changed) && !("round" in changed)) return;
+      if (combat !== game.combat) return;
+      rememberTurnStart(combat);
+    };
+
+    combatHookIds = [
+      ["updateCombat", Hooks.on("updateCombat", onTurn)],
+      ["combatStart", Hooks.on("combatStart", combat => onTurn(combat, null))],
+      ["deleteCombat", Hooks.on("deleteCombat", () => { turnStart = null; })]
+    ];
+
+    // Loaded mid-turn: treat the current spot as the turn's start.
+    rememberTurnStart();
   }
 
   function destroy() {
@@ -249,6 +308,10 @@
       try { Hooks.off("dnd5e.preRollAttackV2", hookId); } catch {}
       hookId = null;
     }
+    for (const [event, id] of combatHookIds.splice(0)) {
+      try { Hooks.off(event, id); } catch {}
+    }
+    turnStart = null;
   }
 
   const api = {
