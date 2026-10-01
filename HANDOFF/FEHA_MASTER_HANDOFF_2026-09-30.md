@@ -273,3 +273,18 @@ Open questions for the user (not changed):
 - Credits live in three fields (system.currency.gp, flags.credits, flags.eurodollars); the Market keeps them in sync.
 
 Test artifacts left in the world: Actor folder "FEHA TEST" (TEST Gunner, TEST Dummy A/B), scene "FEHA TEST ARENA", one test combat, a handful of grenade/quickhack chat cards.
+
+### §11 additions (same branch, version bumped to 0.11.89, still NOT shipped)
+
+- **JACKED IN + quickhack picker**: monochrome FUI skin (cyberdeck-cp.css); all loaded quickhacks fit in the bar; picker options set `aria-pressed`.
+- **Cyberdeck**: loaded-slot cards stack (names were hidden with 5 slots); disabled JACK IN bar reads as unavailable; shorter memory tile labels.
+- **Chrome Manager inspector**: compact port rows, readable dossier text, BROWSE action pinned (sticky).
+- **Weapon sheet**: ammo pips use the real `.is-on` class (all pips were lit); rule cards 13px.
+- **Market**: card formatting also runs after input/change/keyup (search box, hotbar key).
+- **Vektor Grenade Null** (FEHA_ARMOR_RUNTIME 1.3.0): Mk.I-IV half grenade damage + save advantage (`grenadeResistant`), Mk.V immune (`grenadeImmune`). Before, every Mk was immune although the card (since 0.11.86) said otherwise. Grenade cards now report damage actually taken.
+- **Brace automated** (FEHA_WEAPON_HANDLING 1.2.0): turn-start position remembered per client on `updateCombat`/`combatStart`; LMG attacks get disadvantage when the shooter is >10 ft from it. Net displacement, combat only.
+- **Helix Self-Charging Cell automated** (FEHA_RELOAD_TRACKER 2.6.0): shots stamp `weaponTracker.<itemId>.shotTurn`; when a turn ends the active GM refills equipped Helix firearms that did not fire that turn and whispers a note. Weapon catalog 3.7.0 / REVIEW_SEED handling-0.11.89 updates the trait text (one-time rewrite of 91 items).
+- Verified in the test arena: attacks/penalties, ammo tracking, reload checks, 6 grenade types incl. burn tick and smoke zone cleanup, quickhacks (damage, status with picker, Cookoff, RAM/turn gating, short rest), Market purchase/stock/NO FUNDS/NO CAP, Chrome install/eject + STR negation, Bastion DR, Jade fire resistance.
+- Known, not fixable from the repo: installed module `scripts/legacy/chrome-legacy.js` `repairChromeData()` calls `Item.updateDocuments(...)` for actor-owned items without `{parent: actor}`; it throws once per Chrome Manager render and the function's second half never runs. Fix in the module: pass `{parent: state.actor}`.
+- Also in the installed module: Market button says "BUY + INSTALL" for cyberware but the purchase only stashes it (installed:false); install happens in Chrome Manager.
+- Ammo spent by silent test rolls on real PCs (Ponyboy Black Requiem, Florence Optic Zero) was reset to full.
