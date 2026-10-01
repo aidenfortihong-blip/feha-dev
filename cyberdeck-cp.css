@@ -1769,3 +1769,203 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:dis
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:disabled .v3-jack-meta {
   color: var(--fui-dim) !important;
 }
+
+/* ---------- network devices in the net view -------------------------------- */
+
+/* Compact device tiles: the old 300x106 cards covered the operator and the
+   actor nodes they sat next to. */
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node {
+  display: grid !important;
+  grid-template-columns: 30px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 204px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 8px 10px !important;
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  border-left: 3px solid var(--fui-white) !important;
+  color: var(--fui-white) !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  text-align: left !important;
+  transition: border-color .12s, background-color .12s !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node::before,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node::after {
+  display: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node.is-turret,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node.is-alarm {
+  border-left-color: var(--fui-red) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node:hover,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node:focus-visible,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node.is-selected {
+  background: var(--fui-panel-2) !important;
+  border-color: var(--fui-yellow) !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node > i {
+  display: grid !important;
+  place-items: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  background: var(--fui-panel-2) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  font-size: 13px !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node > span {
+  min-width: 0 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node b {
+  display: block !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-size: 13px !important;
+  letter-spacing: .04em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-node small {
+  display: block !important;
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* ---------- device panel ---------------------------------------------------- */
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel {
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  border-top: 3px solid var(--fui-yellow) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .7) !important;
+  clip-path: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel header {
+  border-bottom: 1px solid var(--fui-line) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel header small,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel header span {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel header h3 {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .05em !important;
+  border: 0 !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel header button {
+  background: transparent !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel header button:hover,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-panel header button:focus-visible {
+  border-color: var(--fui-red) !important;
+  color: var(--fui-red) !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-security > div {
+  background: var(--fui-panel-2) !important;
+  border: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-security small,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-security span,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-capabilities > small {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-security b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-size: 16px !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-breach {
+  background: var(--fui-yellow) !important;
+  border: 1px solid var(--fui-yellow) !important;
+  color: #0a0a0a !important;
+  font-family: var(--fui-display) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: .14em !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: background-color .12s, color .12s !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-breach:hover:not(:disabled),
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-breach:focus-visible {
+  background: #0a0a0a !important;
+  color: var(--fui-yellow) !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-breach:disabled {
+  background: var(--fui-line) !important;
+  border-color: var(--fui-line) !important;
+  color: var(--fui-muted) !important;
+  opacity: 1 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-capabilities button {
+  background: var(--fui-panel-2) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: border-color .12s, background-color .12s, color .12s !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-capabilities button:hover:not(:disabled),
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-capabilities button:focus-visible {
+  border-color: var(--fui-yellow) !important;
+  color: var(--fui-yellow) !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-capabilities button:disabled {
+  background: transparent !important;
+  border-color: var(--fui-line) !important;
+  color: #6a6a6a !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+}
