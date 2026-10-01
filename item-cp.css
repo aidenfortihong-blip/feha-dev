@@ -372,10 +372,17 @@ html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-combat {
   border-radius: 0 !important;
 }
 
-html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg.is-filled,
-html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg.is-ready,
-html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg:not(.is-empty):not(.is-spent) {
+/* Ammo pips: the sheet marks remaining shots with .is-on. Spent shots stay
+   as dim outlines so the magazine reads at a glance. */
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg {
+  background: transparent !important;
+  border: 1px solid var(--ic-line) !important;
+  box-shadow: none !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg.is-on {
   background: var(--ic-yellow) !important;
+  border-color: var(--ic-yellow) !important;
   box-shadow: 0 0 8px rgba(243,230,0,.35) !important;
 }
 
