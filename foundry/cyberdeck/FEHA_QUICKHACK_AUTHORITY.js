@@ -951,14 +951,10 @@
     await item.update(update);
 
     try {
-      await item.unsetFlag(FLAG,"chromeLockState");
-    } catch {
-      try {
-        await item.update({
-          ["flags."+FLAG+".-=chromeLockState"]:null
-        });
-      } catch {}
-    }
+      await item.update({
+        ["flags."+FLAG+".-=chromeLockState"]:null
+      });
+    } catch {}
 
     return true;
   }

@@ -777,14 +777,10 @@
     await item.update(update);
 
     try {
-      await item.unsetFlag(FLAG,"grenadeEmpState");
-    } catch {
-      try {
-        await item.update({
-          ["flags."+FLAG+".-=grenadeEmpState"]:null
-        });
-      } catch {}
-    }
+      await item.update({
+        ["flags."+FLAG+".-=grenadeEmpState"]:null
+      });
+    } catch {}
 
     return true;
   }

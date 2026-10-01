@@ -475,6 +475,15 @@
     return [...records.values()];
   }
 
+  // "fleshEnshrouded" is a flag namespace, not a package id, so
+  // Document#setFlag rejects it ("Flag scope ... is not valid"). Write the
+  // flag path directly, like the rest of FEHA.
+  async function writeSceneDevices(scene,records) {
+    return scene.update({
+      ["flags."+FLAG_SCOPE+"."+SCENE_DEVICE_FLAG]:records
+    });
+  }
+
   async function revealCustomDevices(sceneId,userId=game.user?.id) {
     if (!game.user?.isGM && userId !== game.user?.id) {
       throw new Error("Cannot reveal Network Devices for another user.");
@@ -501,11 +510,7 @@
     });
 
     if (changed) {
-      await scene.setFlag(
-        FLAG_SCOPE,
-        SCENE_DEVICE_FLAG,
-        next
-      );
+      await writeSceneDevices(scene,next);
 
       await core.emit(
         "devices:changed",
@@ -543,11 +548,7 @@
     if (index >= 0) current[index] = record;
     else current.push(record);
 
-    await scene.setFlag(
-      FLAG_SCOPE,
-      SCENE_DEVICE_FLAG,
-      current
-    );
+    await writeSceneDevices(scene,current);
 
     await core.emit("devices:changed",{sceneId,record});
     return record;
@@ -562,7 +563,7 @@
     if (!scene) return false;
 
     const next = customRecords(scene).filter(record => record.id !== id);
-    await scene.setFlag(FLAG_SCOPE,SCENE_DEVICE_FLAG,next);
+    await writeSceneDevices(scene,next);
     await core.emit("devices:changed",{sceneId,removedId:id});
     return true;
   }

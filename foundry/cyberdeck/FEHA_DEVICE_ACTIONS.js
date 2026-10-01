@@ -199,7 +199,10 @@
       ...(patch ?? {})
     };
 
-    await source.setFlag(FLAG_SCOPE,DEVICE_FLAG,config);
+    // Not setFlag: "fleshEnshrouded" is a flag namespace, not a package id.
+    await source.update({
+      ["flags."+FLAG_SCOPE+"."+DEVICE_FLAG]:config
+    });
     return true;
   }
 
