@@ -982,10 +982,16 @@
     root.dataset.v3Assets = count ? "1" : "0";
   }
 
-  function segments(value,max,count=24) {
-    const filled = max > 0 ? Math.round(Math.max(0,Math.min(1,value/max))*count) : 0;
-    return '<div class="cd2-segments is-ram">' +
-      Array.from({length:count},(_,i) => '<i class="'+(i<filled?"is-filled":"")+'"></i>').join("") +
+  // One tile per RAM point (capped at 24) so the strip reads as real RAM;
+  // no deck renders a single NO DECK tile.
+  function segments(value,max) {
+    const total = Math.max(0,Math.min(24,Math.round(Number(max) || 0)));
+    if (!total) {
+      return '<div class="cd2-segments is-ram is-nodeck"><i class="is-nodeck"><span>NO DECK</span></i></div>';
+    }
+    const filled = Math.max(0,Math.min(total,Math.round(Number(value) || 0)));
+    return '<div class="cd2-segments is-ram" style="--ram-total:'+total+'">' +
+      Array.from({length:total},(_,i) => '<i class="'+(i<filled?"is-filled":"")+'"></i>').join("") +
       '</div>';
   }
 
@@ -1101,7 +1107,7 @@
           <div>
             <small>ACTIVE MEMORY // SHORT REST ONLY</small>
             <strong>${m.currentRam}<em>/ ${m.maxRam}</em></strong>
-            ${segments(m.currentRam,Math.max(1,m.maxRam))}
+            ${segments(m.currentRam,m.deck ? m.maxRam : 0)}
           </div>
           <button type="button" class="cd2-rest" data-v3-action="rest" ${m.deck?"":"disabled"}>SHORT REST // RESTORE RAM</button>
         </section>
@@ -1146,37 +1152,19 @@
             <b>${m.deck ? "LINK ONLINE" : "LINK OFFLINE"}</b>
           </div>
 
-          <div class="cd2-net-stage" aria-label="Cyberdeck network telemetry">
-            <svg class="cd2-net-svg" viewBox="0 0 320 176" preserveAspectRatio="none" aria-hidden="true">
-              <path class="cd2-net-path is-a" d="M38 88 C82 88 86 42 138 42" />
-              <path class="cd2-net-path is-b" d="M138 42 C190 42 190 88 230 88" />
-              <path class="cd2-net-path is-c" d="M138 42 C182 42 170 136 230 136" />
-
-              <circle class="cd2-net-node is-operator" cx="38" cy="88" r="8" />
-              <circle class="cd2-net-node is-deck" cx="138" cy="42" r="9" />
-              <circle class="cd2-net-node is-software" cx="230" cy="88" r="8" />
-              <circle class="cd2-net-node is-scene" cx="230" cy="136" r="8" />
-
-              <circle class="cd2-net-packet is-p1" r="3">
-                <animateMotion dur="5.2s" calcMode="linear" repeatCount="indefinite"
-                  path="M38 88 C82 88 86 42 138 42" />
-              </circle>
-              <circle class="cd2-net-packet is-p2" r="3">
-                <animateMotion dur="6.0s" begin="-2.4s" calcMode="linear" repeatCount="indefinite"
-                  path="M138 42 C190 42 190 88 230 88" />
-              </circle>
-              <circle class="cd2-net-packet is-p3" r="3">
-                <animateMotion dur="6.8s" begin="-3.7s" calcMode="linear" repeatCount="indefinite"
-                  path="M138 42 C182 42 170 136 230 136" />
-              </circle>
-            </svg>
-
-            <span class="cd2-net-label is-operator">OPERATOR</span>
-            <span class="cd2-net-label is-deck">DECK</span>
-            <span class="cd2-net-label is-software">SOFTWARE</span>
-            <span class="cd2-net-label is-scene">SCENE LINK</span>
-
-            <i class="cd2-net-scanline"></i>
+          <div class="cd2-net-tiles" aria-label="Cyberdeck network telemetry">
+            ${[
+              ["OPERATOR", true, m.actor?.name ?? "—"],
+              ["DECK", Boolean(m.deck), m.deck ? m.deck.name : "OFFLINE"],
+              ["SOFTWARE", m.loaded.length > 0, m.deck ? m.loaded.length+" / "+(m.slots || 0)+" LOADED" : "LOCKED"],
+              ["SCENE LINK", Boolean(m.deck && globalThis.canvas?.scene), m.deck ? (globalThis.canvas?.scene?.name ?? "NO SCENE") : "OFFLINE"]
+            ].map(([label,on,detail]) =>
+              '<div class="cd2-net-tile '+(on ? "is-on" : "is-off")+'">' +
+              '<i aria-hidden="true"></i>' +
+              '<b>'+esc(label)+'</b>' +
+              '<small>'+esc(detail)+'</small>' +
+              '</div>'
+            ).join("")}
           </div>
         </section>
         <section>

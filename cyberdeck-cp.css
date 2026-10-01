@@ -1003,6 +1003,97 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck sm
   border-color: rgba(255, 94, 87, .45) !important;
 }
 
+/* ---------- RAM strip: one tile per RAM point ---------------------------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-segments {
+  grid-template-columns: repeat(12, minmax(0, 58px)) !important;
+  align-content: start !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-segments.is-nodeck {
+  grid-template-columns: 1fr !important;
+  align-content: stretch !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-segments i.is-nodeck {
+  max-width: none !important;
+  aspect-ratio: auto !important;
+  min-height: 84px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: var(--fui-ticks), var(--fui-panel) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-segments i.is-nodeck::after {
+  content: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-segments i.is-nodeck span {
+  font-family: var(--fui-display);
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .3em;
+  color: #ff5e57;
+}
+
+/* ---------- network telemetry: four ring status tiles ------------------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tile {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background: var(--fui-ticks), #111;
+  border: 1px solid var(--fui-line);
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tile i {
+  grid-row: 1 / 3;
+  width: 34px;
+  height: 34px;
+  background: radial-gradient(circle closest-side, transparent 0 58%, var(--fui-line-2) 62% 78%, transparent 82%);
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tile.is-on i {
+  background:
+    radial-gradient(circle closest-side, var(--fui-white) 0 22%, transparent 26% 56%, var(--fui-white) 60% 80%, transparent 84%);
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tile b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  letter-spacing: .12em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tile small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 9px !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tile.is-on small {
+  color: var(--fui-yellow) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-tile.is-off small {
+  color: #ff5e57 !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *,
   html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 *::before,
