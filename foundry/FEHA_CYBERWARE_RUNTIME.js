@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.4";
+  const VERSION = "1.0.5";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const PASSIVE_FLAG = "cyberwarePassive";
@@ -329,12 +329,12 @@
 
     // A bonus against one attack only means something inside a fight; outside
     // combat nothing would ever end it.
-    const inCombat = Boolean(
-      game.combat?.started &&
-      game.combat.combatants.some(combatant => combatant.actorId === actor.id)
+    const inCombat = list(game.combats).some(combat =>
+      combat.started &&
+      list(combat.combatants).some(combatant => combatant.actorId === actor.id)
     );
 
-    if (spec.duration && (inCombat || spec.duration.units !== "turns")) {
+    if (spec.duration && (inCombat || !spec.turnOnly)) {
       const previous = list(actor.effects)
         .filter(effect => flags(effect)[ACTIVE_FLAG]?.itemId === item.id)
         .map(effect => effect.id);
@@ -351,7 +351,7 @@
         system:{changes:withBaseSpeed(spec.changes ?? [])},
         statuses:spec.statuses ?? [],
         duration:spec.duration,
-        flags:{[FLAG]:{[ACTIVE_FLAG]:{itemId:item.id}}}
+        flags:{[FLAG]:{[ACTIVE_FLAG]:{itemId:item.id,turnOnly:Boolean(spec.turnOnly)}}}
       }]);
     }
 
@@ -538,15 +538,16 @@
 
     try {
       // Spent activations: Foundry marks them expired, the GM removes them.
+      // One-attack reactions end as soon as the turn they were used in ends.
       for (const combatant of list(combat.combatants)) {
         const actor = combatant.actor;
         if (!actor) continue;
 
         const expired = list(actor.effects)
-          .filter(effect =>
-            flags(effect)[ACTIVE_FLAG] &&
-            effect.duration?.expired
-          )
+          .filter(effect => {
+            const meta = flags(effect)[ACTIVE_FLAG];
+            return meta && (meta.turnOnly || effect.duration?.expired);
+          })
           .map(effect => effect.id);
 
         if (expired.length) {

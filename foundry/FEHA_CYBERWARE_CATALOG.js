@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.0.0";
+  const VERSION = "2.0.1";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
 
@@ -65,7 +65,9 @@
 
   // Durations for activated chrome.
   const untilNextTurn = {value:1,units:"rounds",expiry:"turnStart"};
-  const thisAttack = {value:1,units:"turns",expiry:"turnEnd"};
+  // Reactions against one attack: the runtime ends them when the current
+  // turn ends (turnOnly); the duration is only a fallback.
+  const thisAttack = {value:1,units:"rounds",expiry:"turnStart"};
   const forRounds = value => ({value,units:"rounds",expiry:"turnEnd"});
 
   // [name, slot, mk, maker, effect text, extras]
@@ -161,10 +163,10 @@
     ["Cyber Rotors",SKEL,3,FORGE,"Microrotors: +1 to melee attack rolls and +1d8 melee damage.",{changes:[attack("mwak",1),damage("mwak","1d8")]}],
 
     // ---- Nervous System ----------------------------------------------------
-    ["Kerenzikov",NERV,4,VEKTOR,"Reaction, when an attack targets you: time slows. Gain +4 AC against that attack, then move up to 15 ft without provoking opportunity attacks. Your next attack before the end of your next turn has advantage.",{active:{charge:2,action:"Reaction",duration:thisAttack,changes:[armorClass(4)]}}],
+    ["Kerenzikov",NERV,4,VEKTOR,"Reaction, when an attack targets you: time slows. Gain +4 AC against that attack, then move up to 15 ft without provoking opportunity attacks. Your next attack before the end of your next turn has advantage.",{active:{charge:2,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(4)]}}],
     ["Kerenzikov Boost System",NERV,4,VEKTOR,"Your Nervous System reactions (Kerenzikov, Reflex Recorder, Proximity Reducer) cost 1 less charge (minimum 1), and once per round you can use one of them without spending your reaction.",{chargeDiscount:1,discountSlots:[NERV]}],
-    ["Reflex Recorder",NERV,3,VEKTOR,"Reaction, when an attack targets you: gain +3 AC against that attack.",{active:{charge:1,action:"Reaction",duration:thisAttack,changes:[armorClass(3)]}}],
-    ["Proximity Reducer",NERV,1,VEKTOR,"Reaction, when an attack targets you: gain +2 AC against that attack.",{active:{charge:1,action:"Reaction",duration:thisAttack,changes:[armorClass(2)]}}],
+    ["Reflex Recorder",NERV,3,VEKTOR,"Reaction, when an attack targets you: gain +3 AC against that attack.",{active:{charge:1,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(3)]}}],
+    ["Proximity Reducer",NERV,1,VEKTOR,"Reaction, when an attack targets you: gain +2 AC against that attack.",{active:{charge:1,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(2)]}}],
     ["Synaptic Accelerator",NERV,3,VEKTOR,"+3 to initiative, you cannot be surprised, and you have advantage on attack rolls during the first round of combat.",{changes:[initiative(3)]}],
     ["Catch Me If You Can",NERV,2,VEKTOR,"+5 ft Speed, and opportunity attacks against you are made with disadvantage.",{changes:[speed(5)]}],
     ["Time Bank",NERV,2,VEKTOR,"Reserve capacitor: +3 cyberware charge.",{chargeBonus:3}],
