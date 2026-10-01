@@ -60,6 +60,19 @@ html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-shell::af
   display: none !important;
 }
 
+/* Legacy teal ornaments (floating tabs, stray rules) fight the red HUD. */
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-header::after,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-body::before,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-body::after,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::before,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-terminal::after,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-boot::after,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header::after,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate::before,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-footer::before {
+  display: none !important;
+}
+
 /* ---------- header --------------------------------------------------------- */
 
 html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-header {
@@ -460,7 +473,7 @@ html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate
   background: transparent !important;
   border: 0 !important;
   border-bottom: 1px solid var(--gw-red-faint) !important;
-  border-left: 3px solid transparent !important;
+  border-left: 3px solid var(--candidate, transparent) !important;
   color: var(--gw-text) !important;
   box-shadow: none !important;
   cursor: pointer !important;
@@ -507,7 +520,11 @@ html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
   flex: 1 1 0 !important;
   min-height: 0 !important;
   padding: 0 !important;
-  border-left: 3px solid var(--eg-primary, var(--gw-red)) !important;
+  border-left: 3px solid var(--gw-red-dim) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile:has(.feha-eg-profile-live:not([hidden])) {
+  border-left-color: var(--eg-primary, var(--gw-red)) !important;
 }
 
 html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty span {
