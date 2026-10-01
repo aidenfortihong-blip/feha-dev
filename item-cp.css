@@ -270,6 +270,7 @@ html body section[data-feha-ui="item-card-v1"] div[style*="grid-template-columns
 }
 
 /* Price stays yellow (the generator writes it as the gold-coloured stat). */
+html body section[data-feha-ui="item-card-v1"] div[style*="grid-template-columns"] strong[style*="#f0c85a"],
 html body section[data-feha-ui="item-card-v1"] strong[style*="#f0c85a"] {
   color: var(--ic-yellow) !important;
 }
