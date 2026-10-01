@@ -323,6 +323,9 @@
     normalizeChromeManagerTerminology(root);
     // CP2077 ripperdoc body map (FEHA_CHROME_RIPPERDOC.js); idempotent.
     globalThis.FEHA_CHROME_RIPPERDOC?.augment?.(root);
+
+    // Charge readout and USE costs (FEHA_CYBERWARE_RUNTIME.js); idempotent.
+    globalThis.FEHA_CYBERWARE_RUNTIME?.syncManager?.(root);
     return true;
   }
 

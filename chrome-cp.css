@@ -1121,3 +1121,23 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
   max-height: none !important;
   overflow: visible !important;
 }
+
+/* Charge readout beside CYBERWARE CAPACITY (FEHA_CYBERWARE_RUNTIME). Charge is
+   the capacity left unused; active chrome spends it. */
+#adk-chrome-manager-34 .adk-v6-capacity-head .feha-cw-charge {
+  display: grid;
+  gap: 2px;
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid rgba(255, 255, 255, .18);
+}
+
+#adk-chrome-manager-34 .adk-v6-capacity-head .feha-cw-charge span {
+  color: #f3e600;
+  font-size: 11px;
+  letter-spacing: .12em;
+}
+
+#adk-chrome-manager-34 .adk-v6-capacity-head .feha-cw-charge b {
+  color: #f3e600;
+}

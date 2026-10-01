@@ -2465,15 +2465,17 @@
           throw error;
         }
 
-        // Catalog consumables share this one item-use bridge.
-        const consumables = core.module?.("consumableRuntime") ?? null;
+        // Catalog consumables and active cyberware share this one
+        // item-use bridge.
+        for (const name of ["consumableRuntime","cyberwareRuntime"]) {
+          const runtime = core.module?.(name) ?? null;
+          if (!runtime?.handles?.(this)) continue;
 
-        if (consumables?.handles?.(this)) {
           try {
-            return await consumables.use(this);
+            return await runtime.use(this);
           } catch (error) {
             ui.notifications?.error?.(
-              "Consumable use failed: "+String(error?.message ?? error)
+              "Item use failed: "+String(error?.message ?? error)
             );
             throw error;
           }

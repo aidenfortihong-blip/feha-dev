@@ -1,8 +1,9 @@
 {
-  "version": "0.11.94",
+  "version": "0.11.95",
   "updated": "2026-10-01",
-  "scope": "consumables",
+  "scope": "cyberware",
   "notes": [
+    "Cyberware rebuilt to follow Cyberpunk 2077 / Edgerunners: every item has a real effect, passive bonuses apply while installed, and active chrome (Sandevistan, Berserk, Kerenzikov, Blood Pump, Optical Camo...) spends CHARGE, which is the Cyberware Capacity you have left unused. Charge returns on a rest; with too little charge you can push past the limit for psychic damage.",
     "Consumables now do what their card says when used from the character sheet: healing, temporary HP, RAM, or a timed bonus as an Active Effect. Once per Short Rest per product is enforced, a product that would be wasted is refused, and one item is used up. Ghost Key and Network Sweep are reworded as GM-run effects.",
     "Text pass: screen labels no longer use tabletop words (scene, actor, token) or developer names; one name per thing (quickhack, signature, local net, credits). Market and Chrome Manager wording is corrected on screen by FEHA_UI_TEXT.",
     "Network devices (hackable doors, turrets, terminals) are removed. The Cyberdeck has one CYBER CHECK button instead: 1d20 + Intelligence + proficiency, 1 RAM, rolled to chat; the GM sets the DC. Cameras are a GM tool: the Token controls have a Place camera button that drops a camera token owned by the chosen player, who sees through it.",

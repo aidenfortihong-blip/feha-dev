@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.94";
+  const VERSION = "0.11.95";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -199,7 +199,13 @@
   function hackDC(actor) {
     const intMod = Number(actor?.system?.abilities?.int?.mod ?? 0);
     const prof = Number(actor?.system?.attributes?.prof ?? actor?.system?.details?.prof ?? 2);
-    return 8 + prof + intMod;
+    // Installed chrome can raise the DC (flags.quickhackDcBonus).
+    const chrome = [...(actor?.items ?? [])]
+      .filter(isInstalledCyberware)
+      .reduce((total,item) =>
+        total + (Number(flags(item).quickhackDcBonus) || 0),0);
+
+    return 8 + prof + intMod + chrome;
   }
 
   const ABILITY_KEYS = {
