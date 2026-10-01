@@ -3,7 +3,7 @@
 // This pass intentionally avoids complicated runtime mechanics.
 
 (() => {
-  const VERSION = "1.3.0";
+  const VERSION = "1.4.0";
   const REWRITE = "1.2-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "06 — CONSUMABLES";
@@ -307,7 +307,7 @@
       mk:4,
       availability:"Restricted",
       price:2500,
-      effectText:"Consume permanently: increase maximum Cyberware Capacity by 1."
+      effectText:"Consume permanently: increase maximum Cyberware Capacity by 1. Each character can benefit from this kit only once."
     }
   ];
 

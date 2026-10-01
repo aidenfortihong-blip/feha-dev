@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.1.1";
+  const VERSION = "1.2.0";
   const REWRITE = "unique-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "Do these";
@@ -16,7 +16,7 @@
       key:"ghost-key",
       name:"Ghost Key",
       weaponClass:"DMR",
-      damage:"4d10+8",
+      damage:"7d10+13",
       damageType:"piercing",
       range:120,
       longRange:300,
@@ -61,7 +61,7 @@
       key:"motor-lock",
       name:"Motor Lock",
       weaponClass:"DMR",
-      damage:"5d10+6",
+      damage:"8d10+10",
       damageType:"piercing",
       range:150,
       longRange:500,
@@ -84,7 +84,7 @@
       key:"optic-zero",
       name:"Optic Zero",
       weaponClass:"Pistol",
-      damage:"4d6",
+      damage:"10d6",
       damageType:"piercing",
       range:40,
       longRange:100,

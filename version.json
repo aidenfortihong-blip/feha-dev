@@ -1,12 +1,15 @@
 {
-  "version": "0.11.85",
+  "version": "0.11.86",
   "updated": "2026-09-30",
-  "scope": "item-cards-cp2077",
+  "scope": "balance-patch-1-lethal",
   "notes": [
-    "Item sheets (armor, cyberware, consumables, grenades, Quickhacks, melee, uniques) restyled as the CP2077 item tooltip: teal top bar, salmon uppercase name over an orange rule, red labels and tabs, cyan active tab, yellow price; the D&D ampersand ornament is hidden.",
-    "FEHA catalog description cards (data-feha-ui=item-card-v1) and plain cyberware descriptions share the same tooltip styling; effect boxes get a teal stripe with salmon text.",
-    "FEHA weapon sheet brought in line: salmon title with orange rule, red stat labels, teal trait box, cyan ATTACK, red DAMAGE, yellow ammo bars.",
-    "World data: the last legacy currency glyph ('Price: ₡N' in 101 world + 25 owned cyberware descriptions) now reads 'Price: CR N'.",
-    "New item-cp.css is loaded with the other skins. Styling only: no item data, rules, prices or weapon behavior changed."
+    "Includes 0.11.85 item cards.",
+    "Lethal weapon curve: every firearm, unique and melee weapon is scored by expected damage per turn over a full reload cycle (one attack per turn, reload = Action +2 / Bonus +1, vs AC 14 at +5) and outliers beyond +/-15% are pulled onto one curve: ~14-16 per turn for street gear (street pistols ~24 per hit), ~26 mid tier, ~50 top tier; melee +15%, uniques +10%. Dice scale within their die type; magazines, reloads and every manufacturer trait unchanged.",
+    "Big single-shot snipers keep extreme alpha: Nekomata 6d20+75, Sunlance 1d20+114, Grad 1d20+74, Rasetsu 7d20+26. Black Requiem and Silverhand 3516 unchanged. Errata 16d8, Chainsword Legendary 12d10, Neurotoxin Knife 6d6 + poison.",
+    "Prices follow power: power ratings re-derived from final damage; price = 150 + 7 x rating^1.75 (x rarity multiplier).",
+    "Armor AC, prices and Bastion reduction unchanged (high AC is the intended counterweight to lethal guns). Flexweave Grenade Null halves grenade damage at Mk I-IV, immunity at Mk V.",
+    "Grenades: damage by Mk (Mk1 6d6, Mk2 8d6, Mk3 10d6, Mk4 12d6; EMP one step lighter; Ozob's Nose 15d6 at 1750 CR); prices by Mk with sticky x1.3, homing x1.6, utility x0.4.",
+    "Quickhacks: Arc Overload 12d12 -> 10d10. Consumables: Neural Adaptation Kit once per character (GM-enforced text).",
+    "Joke weapons (Slaughtomatic, Dildo Stout, Shovel Caretaker) and all cyberware untouched."
   ]
 }

@@ -4,7 +4,7 @@
 (() => {
   try { globalThis.FEHA_ARMOR_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.4.0";
+  const VERSION = "1.5.0";
   const REWRITE = "1.4-simplified-passives";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "03 — ARMOR";
@@ -127,7 +127,9 @@
         name:"Grenade Null",
         value:mk,
         text:
-          "Grenade Null: you are immune to direct damage, conditions, forced movement, scans, and other direct effects caused by grenades. Environmental smoke still obscures vision normally."
+          mk >= 5
+            ? "Grenade Null: you are immune to direct damage, conditions, forced movement, scans, and other direct effects caused by grenades. Environmental smoke still obscures vision normally."
+            : "Grenade Null: you take half damage from grenades and have advantage on saving throws against conditions and forced movement caused by grenades."
       })
     },
     {
