@@ -226,3 +226,13 @@ after latest-dev.js) owns the rules; reload points are retired.
   single hits capped near 100 avg; capped single-shot weapons keep their
   prior power rating so price reflects alpha.
 - Backup: `world.feha-handling-backup-2026-09-30` (all weapons pre-0.11.87).
+
+## 9. Balance pass 2 + Market cards + readability (0.11.88) — live
+
+- Catalog weapons carry `system.proficient = 1` (set by FEHA_WEAPON_ECONOMY 1.5.0); FEHA classes grant no weapon proficiencies. Nue Bree (Cael, non-catalog) intentionally untouched.
+- Consumables 1.5.0 rescaled (Health Booster 4d8+8 / 250 CR, temp HP 8/12/25, etc.). Effects are GM-applied text.
+- Grenades 2.6.0: 17 lines x Mk.I-V + Ozob's Nose = 86. Legacy names map to their old Mk and are renamed. Missing tiers are cloned into world folders by `createMissingTiers`. Rarity follows Mk; marketStockWeight 0.2. Loader expects 86 and key `frag-regular-mk4`.
+- Unique weapon catalog drops duplicate identical attack activities.
+- Market weapon cards (stock patch 1.7.0): DMG/RANGE/MAG/RELOAD/STR grid, manufacturer trait box (red) + weapon special box (cyan), class chip replaces WEAPONS, even row heights.
+- Readability: every 5-10px font-size in latest-dev.css, market/cyberdeck skins and the weapon sheet raised to 10-11px.
+- Backup: compendium world.feha-balance2-backup-2026-09-30 (177 items).
