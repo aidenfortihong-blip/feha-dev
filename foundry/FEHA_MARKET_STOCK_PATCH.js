@@ -1,289 +1,367 @@
-// FEHA // MARKET STOCK PATCH
-// Patches the world ADK Market macro in-place so vendors stock healthy,
-// category-aware inventories instead of 8-12 fully random items.
+// FEHA // MARKET STOCK
+// Gives vendors healthy, category-aware inventories instead of the Market
+// module's 8-12 fully random items, and formats weapon cards in the Market.
 
 (() => {
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.7.1";
-  const STOCK_SCHEMA_VERSION = "1.4.3";
+  const VERSION = "2.0.0";
+  const STOCK_SCHEMA_VERSION = "2.0.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
   const STOCK_KEY = "adkMarketStockV16";
-  const START = "/* FEHA MARKET STOCK PATCH START */";
-  const END = "/* FEHA MARKET STOCK PATCH END */";
   const MARKET_SYNC_EVENTS = ["click","input","change","keyup"];
   let marketClickSyncHandler = null;
   let marketSyncScheduled = false;
   let marketSyncRunning = false;
   const MARKET_STYLE_ID = "feha-market-weapon-description-style";
 
-  const PATCH_BLOCK = [
-    START,
-    "const FEHA_VENDOR_STOCK_RULES = {",
-    "  street: {",
-    "    min:14, max:18,",
-    "    guarantee:{Weapons:3,Armor_Outer:2,Consumables:2}",
-    "  },",
-    "  arms: {",
-    "    min:16, max:20,",
-    "    guarantee:{Weapons:7,Armor_Outer:3,Grenades:3}",
-    "  },",
-    "  chrome: {",
-    "    min:12, max:16,",
-    "    guarantee:{Cyberware:8}",
-    "  },",
-    "  net: {",
-    "    min:14, max:18,",
-    "    guarantee:{Quickhacks:6,Cyberware:4}",
-    "  },",
-    "  black: {",
-    "    min:16, max:20,",
-    "    guarantee:{Weapons:4,Quickhacks:3,Cyberware:3,Grenades:2}",
-    "  },",
-    "  corporate: {",
-    "    min:14, max:18,",
-    "    guarantee:{Weapons:3,Armor_Outer:2,Cyberware:2}",
-    "  }",
-    "};",
-    "",
-    "function fehaStockWeight(item) {",
-    "  const flags = item?.flags?.[FLAG] ?? {};",
-    "  const rarity = Math.max(0.005,Number(flags.marketStockWeight ?? 1) || 1);",
-    "  const tierWeight = Math.max(",
-    "    1,",
-    "    5 - 2 * Math.max(0,state.shopTier - tier(item))",
-    "  );",
-    "  return Math.max(0.005,tierWeight * rarity);",
-    "}",
-    "",
-    "function fehaWeaponAllowedInShop(item,shop) {",
-    "  if (item?.type !== \"weapon\") return true;",
-    "  const flags = item?.flags?.[FLAG] ?? {};",
-    "  if (flags.marketReady !== true) return false;",
-    "  if (tier(item) > state.shopTier) return false;",
-    "  const allowed = Array.isArray(flags.marketAllowedShops)",
-    "    ? flags.marketAllowedShops",
-    "    : [\"street\",\"arms\",\"black\",\"corporate\"];",
-    "  return allowed.includes(shop);",
-    "}",
-    "",
-    "function fehaDrawFrom(candidates,predicate=()=>true) {",
-    "  const eligible = candidates",
-    "    .map((item,index) => ({item,index}))",
-    "    .filter(entry => predicate(entry.item));",
-    "",
-    "  if (!eligible.length) return null;",
-    "",
-    "  const weights = eligible.map(entry => fehaStockWeight(entry.item));",
-    "  let draw = Math.random() * weights.reduce((a,b) => a+b,0);",
-    "  let local = weights.findIndex(weight => (draw -= weight) < 0);",
-    "",
-    "  if (local < 0) local = eligible.length - 1;",
-    "",
-    "  const sourceIndex = eligible[local].index;",
-    "  return candidates.splice(sourceIndex,1)[0] ?? null;",
-    "}",
-    "",
-    "function fehaStockSize(shop,poolLength) {",
-    "  const rule = FEHA_VENDOR_STOCK_RULES[shop] ?? {min:12,max:16};",
-    "  const span = Math.max(1,rule.max - rule.min + 1);",
-    "  return Math.min(",
-    "    poolLength,",
-    "    rule.min + Math.floor(Math.random() * span)",
-    "  );",
-    "}",
-    "",
-    "function fehaBuildStock(shop,pool,size) {",
-    "  const rule = FEHA_VENDOR_STOCK_RULES[shop] ?? {};",
-    "  const candidates = [...pool];",
-    "  const selected = [];",
-    "",
-    "  for (const [categoryName,count] of Object.entries(rule.guarantee ?? {})) {",
-    "    for (let i=0;i<count && selected.length<size;i++) {",
-    "      const item = fehaDrawFrom(",
-    "        candidates,",
-    "        candidate => category(candidate) === categoryName",
-    "      );",
-    "      if (!item) break;",
-    "      selected.push(item);",
-    "    }",
-    "  }",
-    "",
-    "  while (selected.length < size && candidates.length) {",
-    "    const item = fehaDrawFrom(candidates);",
-    "    if (!item) break;",
-    "    selected.push(item);",
-    "  }",
-    "",
-    "  return selected.map(item => item.id);",
-    "}",
-    "",
-    "function adkRollStock(",
-    "  shop = state.shop,",
-    "  force = false",
-    ") {",
-    "  if (!shop) return [];",
-    "",
-    "  const key = adkStockKey(shop);",
-    "  const ordinaryPool = availableInShop(shop)",
-    "    .filter(item => item?.type !== \"weapon\");",
-    "  const weaponPool = (game.items?.contents ?? [])",
-    "    .filter(item =>",
-    "      item?.type === \"weapon\" &&",
-    "      fehaWeaponAllowedInShop(item,shop)",
-    "    );",
-    "  const pool = [...new Map(",
-    "    [...ordinaryPool,...weaponPool].map(item => [item.id,item])",
-    "  ).values()];",
-    "",
-    "  const previous = adkStockCache[key] || [];",
-    "  const size = fehaStockSize(shop,pool.length);",
-    "",
-    "  if (!force && previous.length) {",
-    "    const valid = previous.filter(id =>",
-    "      pool.some(item => item.id === id)",
-    "    );",
-    "",
-    "    const rule = FEHA_VENDOR_STOCK_RULES[shop] ?? {min:12};",
-    "    const minimum = Math.min(pool.length,rule.min ?? 12);",
-    "",
-    "    if (valid.length >= minimum) {",
-    "      adkStockCache[key] = valid;",
-    "      return valid;",
-    "    }",
-    "  }",
-    "",
-    "  let selected = fehaBuildStock(shop,pool,size);",
-    "",
-    "  if (force && previous.length && pool.length > size) {",
-    "    for (let attempt=0;attempt<20;attempt++) {",
-    "      if (selected.some(id => !previous.includes(id))) break;",
-    "      selected = fehaBuildStock(shop,pool,size);",
-    "    }",
-    "  }",
-    "",
-    "  adkStockCache[key] = selected;",
-    "",
-    "  if (!force) {",
-    "    void adkSaveStock().catch(error =>",
-    "      console.error(\"ADK STOCK SAVE\",error)",
-    "    );",
-    "  }",
-    "",
-    "  return selected;",
-    "}",
-    END
-  ].join("\n");
+  // ---- Vendor stock ---------------------------------------------------------
+  // The Market runs from the installed module
+  // (scripts/legacy/market-legacy.js). Every time it opens it reads the world
+  // setting "adkMarketStockV16" and only rolls its own stock (8-12 fully
+  // random items, no guarantees, every weapon treated as Mk.I) for a
+  // "shop:tier" key that is still empty. FEHA therefore owns vendor stock by
+  // filling every key in that setting with stock built from the rules below,
+  // and by handling REROLL STOCK itself.
+  //
+  // (Before 0.11.89 this file patched the source of a world Market macro. That
+  // macro no longer exists, so none of these rules were being applied.)
+  const VENDOR_STOCK_RULES = Object.freeze({
+    street:{min:14,max:18,guarantee:{Weapons:3,Armor_Outer:2,Consumables:2}},
+    arms:{min:16,max:20,guarantee:{Weapons:7,Armor_Outer:3,Grenades:3}},
+    chrome:{min:12,max:16,guarantee:{Cyberware:8}},
+    net:{min:14,max:18,guarantee:{Quickhacks:6,Cyberware:4}},
+    black:{min:16,max:20,guarantee:{Weapons:4,Quickhacks:3,Cyberware:3,Grenades:2}},
+    corporate:{min:14,max:18,guarantee:{Weapons:3,Armor_Outer:2,Cyberware:2}}
+  });
 
-  function registerSetting() {
-    const full = PACKAGE+"."+VERSION_KEY;
-    if (game.settings?.settings?.has?.(full)) return;
+  // Mirrors SHOP_TYPES in the module; used until the Market has been opened
+  // once (ADKMarket.shops only exists after that).
+  const SHOP_CATEGORIES = Object.freeze({
+    street:["Weapons","Armor_Outer","Grenades","Consumables","Mods"],
+    arms:["Weapons","Armor_Outer","Grenades","Mods"],
+    chrome:["Cyberware"],
+    net:["Quickhacks","Cyberware"],
+    black:["Weapons","Armor_Outer","Grenades","Consumables","Mods","Cyberware","Quickhacks"],
+    corporate:["Weapons","Armor_Outer","Grenades","Consumables","Mods","Cyberware","Quickhacks"]
+  });
 
-    game.settings.register(
-      PACKAGE,
-      VERSION_KEY,
-      {
-        name:"FEHA Market Stock Patch Version",
+  const CATALOG_CATEGORIES = new Set([
+    "Weapons","Armor_Outer","Grenades","Consumables","Mods","Cyberware","Quickhacks"
+  ]);
+
+  const NET_CYBERWARE_WORDS = [
+    "cyberdeck","paraline","netdriver","tetratronic","raven","ram upgrade",
+    "ex disk","neuro matrix","self ice","self-ice","neural defense","quickhack"
+  ];
+
+  const SHOP_TIERS = [1,2,3,4,5];
+
+  const stockNorm = value => String(value ?? "")
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g,"")
+    .replace(/[^a-zA-Z0-9]+/g," ")
+    .trim()
+    .toLowerCase();
+
+  const stockClamp = (value,min,max) =>
+    Math.min(max,Math.max(min,Math.floor(Number(value) || min)));
+
+  function stockCategory(item) {
+    return String(item?.flags?.[FLAG]?.sourceCategory ?? "");
+  }
+
+  // Weapons have no Mk: their hidden marketBand gates which vendor tier may
+  // sell them. Everything else uses its Mk.
+  function stockTier(item) {
+    const flags = item?.flags?.[FLAG] ?? {};
+    return stockClamp(
+      stockCategory(item) === "Weapons"
+        ? (flags.marketBand ?? 1)
+        : (flags.rating ?? flags.tier ?? 1),
+      1,
+      5
+    );
+  }
+
+  function inCuratedFolder(item) {
+    let folder = item?.folder ?? null;
+    let guard = 0;
+
+    while (folder && guard++ < 20) {
+      const name = stockNorm(folder.name);
+      if (name.includes("adk v10") && name.includes("curated")) return true;
+      folder = folder.folder ?? null;
+    }
+
+    return false;
+  }
+
+  function isCatalogItem(item) {
+    const flags = item?.flags?.[FLAG] ?? {};
+
+    return (
+      CATALOG_CATEGORIES.has(stockCategory(item)) &&
+      (
+        flags.curatedCatalogV10 === true ||
+        flags.adkBuilder === true ||
+        flags.adkGenerated === true ||
+        Boolean(flags.sourcePath) ||
+        Boolean(flags.weaponCatalogId) ||
+        Boolean(flags.gearCatalogId) ||
+        Boolean(flags.cyberwareId) ||
+        inCuratedFolder(item)
+      )
+    );
+  }
+
+  function isNetCyberware(item) {
+    const flags = item?.flags?.[FLAG] ?? {};
+    const text = stockNorm(
+      [item?.name,flags.cyberwareSlot,flags.archetype,flags.category]
+        .filter(Boolean)
+        .join(" ")
+    );
+
+    return NET_CYBERWARE_WORDS.some(word => text.includes(stockNorm(word)));
+  }
+
+  function shopCategories(shopKey) {
+    return (
+      globalThis.ADKMarket?.shops?.[shopKey]?.categories ??
+      SHOP_CATEGORIES[shopKey] ??
+      []
+    );
+  }
+
+  function stockEligible(item,shopKey,shopTier) {
+    if (!isCatalogItem(item)) return false;
+
+    const category = stockCategory(item);
+    if (!shopCategories(shopKey).includes(category)) return false;
+    if (stockTier(item) > shopTier) return false;
+
+    if (shopKey === "net" && category === "Cyberware" && !isNetCyberware(item)) {
+      return false;
+    }
+
+    if (item.type === "weapon") {
+      const flags = item.flags?.[FLAG] ?? {};
+      if (flags.marketReady !== true) return false;
+
+      const allowed = Array.isArray(flags.marketAllowedShops)
+        ? flags.marketAllowedShops
+        : ["street","arms","black","corporate"];
+
+      if (!allowed.includes(shopKey)) return false;
+    }
+
+    return true;
+  }
+
+  // Items closer to the vendor's tier are more likely; marketStockWeight
+  // carries rarity (unique weapons, five-tier grenade lines).
+  function stockWeight(item,shopTier) {
+    const rarity = Math.max(
+      0.005,
+      Number(item?.flags?.[FLAG]?.marketStockWeight ?? 1) || 1
+    );
+    const tierWeight = Math.max(
+      1,
+      5 - 2 * Math.max(0,shopTier - stockTier(item))
+    );
+
+    return Math.max(0.005,tierWeight * rarity);
+  }
+
+  function drawStockItem(candidates,shopTier,predicate=() => true) {
+    const eligible = candidates
+      .map((item,index) => ({item,index}))
+      .filter(entry => predicate(entry.item));
+
+    if (!eligible.length) return null;
+
+    const weights = eligible.map(entry => stockWeight(entry.item,shopTier));
+    let draw = Math.random() * weights.reduce((a,b) => a + b,0);
+    let local = weights.findIndex(weight => (draw -= weight) < 0);
+    if (local < 0) local = eligible.length - 1;
+
+    return candidates.splice(eligible[local].index,1)[0] ?? null;
+  }
+
+  function buildStock(shopKey,shopTier) {
+    const rule = VENDOR_STOCK_RULES[shopKey] ?? {min:12,max:16,guarantee:{}};
+    const pool = (game.items?.contents ?? [])
+      .filter(item => stockEligible(item,shopKey,shopTier));
+
+    const span = Math.max(1,rule.max - rule.min + 1);
+    const size = Math.min(
+      pool.length,
+      rule.min + Math.floor(Math.random() * span)
+    );
+
+    const candidates = [...pool];
+    const selected = [];
+
+    for (const [category,count] of Object.entries(rule.guarantee ?? {})) {
+      for (let i = 0; i < count && selected.length < size; i++) {
+        const item = drawStockItem(
+          candidates,
+          shopTier,
+          candidate => stockCategory(candidate) === category
+        );
+        if (!item) break;
+        selected.push(item);
+      }
+    }
+
+    while (selected.length < size && candidates.length) {
+      const item = drawStockItem(candidates,shopTier);
+      if (!item) break;
+      selected.push(item);
+    }
+
+    return selected.map(item => item.id);
+  }
+
+  function registerSettings() {
+    if (!game.settings?.settings?.has?.(PACKAGE+"."+VERSION_KEY)) {
+      game.settings.register(PACKAGE,VERSION_KEY,{
+        name:"FEHA Market Stock Version",
         scope:"world",
         config:false,
         type:String,
         default:""
+      });
+    }
+
+    // Same registration the Market module performs when it first opens.
+    if (!game.settings?.settings?.has?.("world."+STOCK_KEY)) {
+      game.settings.register("world",STOCK_KEY,{
+        scope:"world",
+        config:false,
+        type:Object,
+        default:{}
+      });
+    }
+  }
+
+  function readStock() {
+    return foundry.utils.deepClone(
+      game.settings.get("world",STOCK_KEY) || {}
+    );
+  }
+
+  // Fill every shop:tier key the Market could ask for. Existing stock is kept
+  // (it is finite: bought items stay gone until the GM rerolls); a key is only
+  // rebuilt when it is empty, or once for everything when the stock rules
+  // change (STOCK_SCHEMA_VERSION).
+  async function ensureStock({force=false}={}) {
+    if (!game.user?.isGM) {
+      return {skipped:true,built:0,pruned:0};
+    }
+
+    registerSettings();
+
+    const schemaChanged =
+      String(game.settings.get(PACKAGE,VERSION_KEY) ?? "") !==
+      STOCK_SCHEMA_VERSION;
+
+    const stock = readStock();
+    let built = 0;
+    let pruned = 0;
+
+    for (const shopKey of Object.keys(VENDOR_STOCK_RULES)) {
+      for (const shopTier of SHOP_TIERS) {
+        const key = shopKey+":"+shopTier;
+        const previous = Array.isArray(stock[key]) ? stock[key] : [];
+        const alive = previous.filter(id => game.items?.has?.(id));
+
+        if (force || schemaChanged || !alive.length) {
+          stock[key] = buildStock(shopKey,shopTier);
+          built++;
+        } else if (alive.length !== previous.length) {
+          stock[key] = alive;
+          pruned++;
+        }
       }
-    );
+    }
+
+    if (built || pruned) {
+      await game.settings.set("world",STOCK_KEY,stock);
+    }
+
+    if (schemaChanged) {
+      await game.settings.set(PACKAGE,VERSION_KEY,STOCK_SCHEMA_VERSION);
+    }
+
+    const result = {
+      skipped:false,
+      built,
+      pruned,
+      schema:STOCK_SCHEMA_VERSION,
+      version:VERSION
+    };
+
+    console.log("FEHA MARKET STOCK",result);
+    return result;
   }
 
-  function marketMacros() {
-    return (game.macros?.contents ?? []).filter(macro => {
-      const command = String(macro?.command ?? "");
-      return (
-        command.includes('const ADK_STOCK_KEY = "adkMarketStockV16";') &&
-        (
-          command.includes("function adkRollStock(") ||
-          (
-            command.includes(START) &&
-            command.includes(END)
-          )
-        )
-      );
-    });
+  // REROLL STOCK for the shop on screen. The module keeps its stock cache in
+  // a closure that is only read when the Market opens, so the new stock is
+  // saved and the Market reopened on the same shop.
+  async function rerollShop(shopKey,shopTier) {
+    if (!game.user?.isGM) {
+      ui.notifications?.warn?.("Only the GM can reroll vendor stock.");
+      return null;
+    }
+
+    if (!VENDOR_STOCK_RULES[shopKey]) return null;
+
+    registerSettings();
+
+    const key = shopKey+":"+shopTier;
+    const stock = readStock();
+    const previous = Array.isArray(stock[key]) ? stock[key] : [];
+
+    let next = buildStock(shopKey,shopTier);
+    for (let attempt = 0; attempt < 20; attempt++) {
+      if (next.some(id => !previous.includes(id))) break;
+      next = buildStock(shopKey,shopTier);
+    }
+
+    stock[key] = next;
+    await game.settings.set("world",STOCK_KEY,stock);
+
+    return next;
   }
 
-  function patchCommand(command) {
-    let source = String(command ?? "");
+  async function onRerollClick(event) {
+    const button =
+      event.target?.closest?.("#adk-market-15 #reroll-stock") ?? null;
+    if (!button) return;
 
-    // Weapons do not use Mk. Keep a hidden marketBand only for vendor-quality
-    // gating, and never expose it as rating/tier/Mk in the Market.
-    const tierStart = source.indexOf("function tier(item) {");
-    const manufacturerStart = source.indexOf(
-      "function manufacturer(item)",
-      tierStart
-    );
+    // Replace the module's handler (8-12 fully random items).
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
-    if (tierStart >= 0 && manufacturerStart > tierStart) {
-      source =
-        source.slice(0,tierStart) +
-        [
-          "function tier(item) {",
-          "  const flags = item?.flags?.[FLAG] ?? {};",
-          "  const raw =",
-          "    category(item) === \"Weapons\"",
-          "      ? (flags.marketBand ?? 1)",
-          "      : (flags.rating ?? flags.tier ?? 1);",
-          "",
-          "  return clamp(raw,1,5);",
-          "}",
-          "",
-          ""
-        ].join("\n") +
-        source.slice(manufacturerStart);
+    const state = globalThis.ADKMarket?.state ?? null;
+    if (!state?.shop) return;
+
+    try {
+      const next = await rerollShop(state.shop,state.shopTier);
+      if (!next) return;
+
+      globalThis.ADKMarket?.close?.();
+      await game.adk?.openMarket?.();
+      scheduleMarketSyncBurst();
+    } catch (error) {
+      console.error("FEHA MARKET STOCK // reroll failed",error);
+      ui.notifications?.error?.("Vendor stock reroll failed. Check console.");
     }
-
-    // Tag weapon cards and remove the Mk badge from weapon HTML entirely.
-    source = source.replace(
-      'class="item-card"',
-      'class="item-card ${c === "Weapons" ? "feha-weapon-card" : ""}"'
-    );
-
-    source = source.replace(
-      /<span class="item-mk">\s*\$\{mkLabel\(itemTier\)\}\s*<\/span>/m,
-      '${c === "Weapons" ? "" : `<span class="item-mk">${mkLabel(itemTier)}</span>`}'
-    );
-
-    // Mk filter chips should not hide/show guns because guns have no Mk.
-    source = source.replace(
-      /if \(\s*state\.itemTier\s*&&\s*tier\(\s*item\s*\)\s*!==\s*state\.itemTier\s*\) \{/m,
-      'if (state.itemTier && category(item) !== "Weapons" && tier(item) !== state.itemTier) {'
-    );
-
-    const markedStart = source.indexOf(START);
-    const markedEnd = source.indexOf(END);
-
-    if (markedStart >= 0 && markedEnd > markedStart) {
-      return (
-        source.slice(0,markedStart) +
-        PATCH_BLOCK +
-        source.slice(markedEnd + END.length)
-      );
-    }
-
-    const start = source.indexOf("function adkRollStock(");
-    const next = source.indexOf("function adkCurrentStock(",start);
-
-    if (start < 0 || next < 0) {
-      throw new Error(
-        "Could not locate ADK Market stock function boundaries."
-      );
-    }
-
-    return (
-      source.slice(0,start) +
-      PATCH_BLOCK +
-      "\n\n" +
-      source.slice(next)
-    );
   }
 
   function weaponItemForCard(card) {
@@ -834,155 +912,12 @@
     document.getElementById(MARKET_STYLE_ID)?.remove?.();
   }
 
-  async function resetPersistentStock() {
-    const full = "world."+STOCK_KEY;
-
-    if (!game.settings?.settings?.has?.(full)) {
-      return false;
-    }
-
-    await game.settings.set(
-      "world",
-      STOCK_KEY,
-      {}
-    );
-
-    return true;
-  }
-
-  async function patchMarketMacro() {
-    if (!game.user?.isGM) {
-      return {
-        skipped:true,
-        patched:0,
-        reset:false,
-        restarted:false
-      };
-    }
-
-    registerSetting();
-
-    // Price / rarity flags must exist before a stock reset or first roll.
-    // This keeps first-load stock from briefly treating every weapon as Band 1.
-    try {
-      await globalThis.FEHA_WEAPON_ECONOMY?.migrateAll?.();
-    } catch (error) {
-      console.warn(
-        "FEHA MARKET STOCK PATCH // weapon economy pre-stock migration failed",
-        error
-      );
-    }
-
-    const macros = marketMacros();
-
-    if (!macros.length) {
-      console.warn(
-        "FEHA MARKET STOCK PATCH // no ADK Market macro found"
-      );
-
-      return {
-        skipped:false,
-        patched:0,
-        reset:false,
-        restarted:false,
-        missing:true
-      };
-    }
-
-    let patched = 0;
-
-    for (const macro of macros) {
-      const before = String(macro.command ?? "");
-      const after = patchCommand(before);
-
-      if (after !== before) {
-        await macro.update({command:after});
-        patched++;
-      }
-    }
-
-    const currentVersion =
-      String(
-        game.settings.get(
-          PACKAGE,
-          VERSION_KEY
-        ) ?? ""
-      );
-
-    const needsReset =
-      currentVersion !== STOCK_SCHEMA_VERSION;
-
-    const wasOpen =
-      Boolean(
-        document.getElementById(
-          "adk-market-15"
-        )
-      );
-
-    let reset = false;
-    let restarted = false;
-
-    if (needsReset) {
-      reset = await resetPersistentStock();
-
-      await game.settings.set(
-        PACKAGE,
-        VERSION_KEY,
-        STOCK_SCHEMA_VERSION
-      );
-
-      if (wasOpen) {
-        try {
-          globalThis.ADKMarket?.destroy?.();
-        } catch {}
-
-        const macro = macros[0];
-
-        setTimeout(
-          () => {
-            try {
-              macro.execute();
-            } catch (error) {
-              console.warn(
-                "FEHA MARKET STOCK PATCH // market restart failed",
-                error
-              );
-            }
-          },
-          50
-        );
-
-        restarted = true;
-      }
-    }
-
-    const result = {
-      skipped:false,
-      patched,
-      reset,
-      restarted,
-      macros:macros.length,
-      version:VERSION
-    };
-
-    console.log(
-      "FEHA MARKET STOCK PATCH",
-      result
-    );
-
-    if (patched || reset) {
-      ui.notifications?.info?.(
-        "FEHA Market stock upgraded: larger vendor inventories with category guarantees."
-      );
-    }
-
-    return result;
-  }
-
   const api = {
     version:VERSION,
     stockSchemaVersion:STOCK_SCHEMA_VERSION,
-    patchMarketMacro,
+    ensureStock,
+    rerollShop,
+    buildStock,
     syncWeaponMarketCards,
     marketWeaponCopy,
 
@@ -992,9 +927,24 @@
       game.adk.marketStockPatch = api;
 
       installNoMkGuard();
+      document.addEventListener("click",onRerollClick,true);
 
       if (game.user?.isGM) {
-        await patchMarketMacro();
+        // Price / rarity flags must exist before stock is built.
+        try {
+          await globalThis.FEHA_WEAPON_ECONOMY?.migrateAll?.();
+        } catch (error) {
+          console.warn(
+            "FEHA MARKET STOCK // weapon economy pre-stock migration failed",
+            error
+          );
+        }
+
+        try {
+          await ensureStock();
+        } catch (error) {
+          console.warn("FEHA MARKET STOCK // stock build failed",error);
+        }
       }
 
       syncWeaponMarketCards();
@@ -1002,6 +952,7 @@
 
     async destroy() {
       removeNoMkGuard();
+      document.removeEventListener("click",onRerollClick,true);
       if (game?.adk?.marketStockPatch === api) {
         delete game.adk.marketStockPatch;
       }

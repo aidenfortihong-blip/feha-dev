@@ -666,7 +666,7 @@
     requireMethods(
       "Market Stock Patch",
       marketStockPatch,
-      ["patchMarketMacro"]
+      ["ensureStock"]
     );
 
     requireMethods(
