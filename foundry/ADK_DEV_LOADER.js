@@ -725,9 +725,9 @@
     const quickhackDefs =
       quickhackCatalog.list?.() ?? [];
 
-    if (grenadeDefs.length !== 18) {
+    if (grenadeDefs.length !== 86) {
       throw new Error(
-        "Grenade integration expected 18 canonical grenades but found "+
+        "Grenade integration expected 86 canonical grenades but found "+
         grenadeDefs.length+"."
       );
     }
@@ -791,7 +791,7 @@
 
     if (
       !quickhackDefs.some(def => def?.key === "cookoff") ||
-      !grenadeDefs.some(def => def?.key === "frag-regular")
+      !grenadeDefs.some(def => def?.key === "frag-regular-mk4")
     ) {
       throw new Error(
         "Grenade / Quickhack bridge identities failed postflight."

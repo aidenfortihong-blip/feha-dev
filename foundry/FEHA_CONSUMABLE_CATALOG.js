@@ -3,7 +3,7 @@
 // This pass intentionally avoids complicated runtime mechanics.
 
 (() => {
-  const VERSION = "1.4.0";
+  const VERSION = "1.5.0";
   const REWRITE = "1.2-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "06 — CONSUMABLES";
@@ -39,7 +39,7 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:5,
+      price:15,
       effectText:"For 10 minutes, gain +1 to Dexterity (Stealth) checks."
     },
     {
@@ -50,7 +50,7 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:6,
+      price:20,
       effectText:"For 10 minutes, gain +1 to Dexterity (Stealth) checks."
     },
     {
@@ -61,7 +61,7 @@
       kind:"drink",
       mk:2,
       availability:"Common",
-      price:9,
+      price:35,
       effectText:"For 10 minutes, gain +2 to Dexterity (Stealth) checks."
     },
 
@@ -74,8 +74,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:5,
-      effectText:"Gain 3 temporary HP."
+      price:40,
+      effectText:"Gain 8 temporary HP."
     },
     {
       key:"bastion-recovery-drink",
@@ -85,8 +85,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:8,
-      effectText:"Gain 5 temporary HP."
+      price:75,
+      effectText:"Gain 12 temporary HP."
     },
     {
       key:"bastion-trauma-booster",
@@ -96,8 +96,8 @@
       kind:"booster",
       mk:3,
       availability:"Professional",
-      price:60,
-      effectText:"Gain 12 temporary HP."
+      price:400,
+      effectText:"Gain 25 temporary HP."
     },
 
     // VEKTOR FOCUS LINE // RETIRED LUMEN PRODUCTS
@@ -109,8 +109,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:6,
-      effectText:"Gain +1 to your next ranged attack roll made within 10 minutes."
+      price:25,
+      effectText:"Gain +2 to your next ranged attack roll made within 10 minutes."
     },
     {
       key:"lumen-focus-plus",
@@ -120,8 +120,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:9,
-      effectText:"For 2 rounds, gain +1 to ranged attack rolls."
+      price:60,
+      effectText:"For 3 rounds, gain +1 to ranged attack rolls."
     },
     {
       key:"lumen-clearview",
@@ -131,8 +131,8 @@
       kind:"drink",
       mk:2,
       availability:"Professional",
-      price:12,
-      effectText:"Gain +2 to your next ranged attack roll made within 10 minutes."
+      price:90,
+      effectText:"Your next ranged attack roll made within 10 minutes has advantage."
     },
 
     // VEKTOR DYNAMICS
@@ -144,8 +144,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:6,
-      effectText:"Gain 2 temporary HP and +5 ft Speed for 2 rounds."
+      price:30,
+      effectText:"Gain 5 temporary HP and +5 ft Speed for 2 rounds."
     },
     {
       key:"vektor-dual",
@@ -155,8 +155,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:8,
-      effectText:"Gain 3 temporary HP and +5 ft Speed for 2 rounds."
+      price:45,
+      effectText:"Gain 8 temporary HP and +5 ft Speed for 2 rounds."
     },
     {
       key:"vektor-mix",
@@ -166,8 +166,8 @@
       kind:"drink",
       mk:2,
       availability:"Professional",
-      price:10,
-      effectText:"Gain 4 temporary HP and +5 ft Speed for 2 rounds."
+      price:80,
+      effectText:"Gain 12 temporary HP and +10 ft Speed for 2 rounds."
     },
 
     // HELIX VITAE
@@ -179,7 +179,7 @@
       kind:"booster",
       mk:1,
       availability:"Common",
-      price:18,
+      price:40,
       effectText:"Gain +10 ft Speed for 2 rounds."
     },
     {
@@ -190,7 +190,7 @@
       kind:"booster",
       mk:2,
       availability:"Professional",
-      price:24,
+      price:60,
       effectText:"Gain +15 ft Speed for 2 rounds."
     },
     {
@@ -201,8 +201,8 @@
       kind:"booster",
       mk:2,
       availability:"Professional",
-      price:40,
-      effectText:"Regain 2d8 + 2 HP."
+      price:250,
+      effectText:"Regain 4d8 + 8 HP."
     },
 
     // FORGELINE INDUSTRIES
@@ -214,7 +214,7 @@
       kind:"booster",
       mk:2,
       availability:"Professional",
-      price:30,
+      price:60,
       effectText:"For 10 minutes, gain +2 to Strength checks."
     },
     {
@@ -225,7 +225,7 @@
       kind:"booster",
       mk:3,
       availability:"Restricted",
-      price:75,
+      price:150,
       effectText:"For 10 minutes, gain +4 to Strength checks."
     },
     {
@@ -236,7 +236,7 @@
       kind:"booster",
       mk:2,
       availability:"Professional",
-      price:45,
+      price:90,
       effectText:"For 10 minutes, gain +4 to Strength checks made to force, lift, bend, or break objects."
     },
 
@@ -249,8 +249,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:5,
-      effectText:"Gain +1 to your next saving throw against an EMP or lightning effect made within 1 hour."
+      price:20,
+      effectText:"Gain +2 to your next saving throw against an EMP or lightning effect made within 1 hour."
     },
     {
       key:"jade-arc-grounding-tonic",
@@ -260,8 +260,8 @@
       kind:"drink",
       mk:1,
       availability:"Common",
-      price:8,
-      effectText:"Gain +2 to your next saving throw against an EMP or lightning effect made within 1 hour."
+      price:40,
+      effectText:"Gain +4 to your next saving throw against an EMP or lightning effect made within 1 hour."
     },
     {
       key:"jade-arc-coolant-mix",
@@ -271,7 +271,7 @@
       kind:"drink",
       mk:2,
       availability:"Professional",
-      price:10,
+      price:60,
       effectText:"Gain resistance to lightning damage until the end of your next turn."
     },
 
@@ -284,8 +284,8 @@
       kind:"booster",
       mk:2,
       availability:"Professional",
-      price:45,
-      effectText:"Restore 2 RAM."
+      price:150,
+      effectText:"Restore 3 RAM."
     },
     {
       key:"corvus-black-memory-booster",
@@ -295,8 +295,8 @@
       kind:"booster",
       mk:3,
       availability:"Restricted",
-      price:110,
-      effectText:"Restore 4 RAM."
+      price:400,
+      effectText:"Restore 6 RAM."
     },
     {
       key:"corvus-neural-adaptation-kit",

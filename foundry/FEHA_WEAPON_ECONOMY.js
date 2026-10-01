@@ -4,7 +4,7 @@
 (() => {
   try { globalThis.FEHA_WEAPON_ECONOMY?.destroy?.(); } catch {}
 
-  const VERSION = "1.4.0";
+  const VERSION = "1.5.0";
   const FLAG = "fleshEnshrouded";
   const POWER_AUDIT = "manufacturer-passives-manual-simplification-2026-09-30";
   // Manufacturer passives are intentionally player-tracked. Current weapon
@@ -237,6 +237,17 @@
       String(item.system.price.denomination ?? "") !== "gp"
     ) {
       update["system.price.denomination"] = "gp";
+    }
+
+    // FEHA classes grant no weapon proficiencies, so catalog weapons carry
+    // proficiency themselves: every wielder adds their proficiency bonus.
+    if (
+      item.type === "weapon" &&
+      item.system &&
+      "proficient" in item.system &&
+      Number(item.system.proficient) !== 1
+    ) {
+      update["system.proficient"] = 1;
     }
 
     if (!Object.keys(update).length) return false;

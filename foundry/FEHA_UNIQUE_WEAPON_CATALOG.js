@@ -308,12 +308,29 @@
       rows = Object.values(activities);
     }
 
+    const seen = new Set();
+
     for (const activity of rows) {
       const source = activity?._source ?? activity ?? {};
       if (String(source?.type ?? activity?.type ?? "").toLowerCase() !== "attack") continue;
 
       const id = String(activity?.id ?? activity?._id ?? "");
       if (!id) continue;
+
+      // Drop exact duplicate attack activities (same name + damage) so the
+      // attack button does not ask which of two identical attacks to use.
+      let signature = "";
+      try {
+        signature = JSON.stringify([
+          source?.name ?? activity?.name ?? "",
+          (source?.damage?.parts ?? []).map(p => p?.custom?.formula ?? "")
+        ]);
+      } catch {}
+      if (signature && seen.has(signature)) {
+        update["system.activities.-="+id] = null;
+        continue;
+      }
+      if (signature) seen.add(signature);
 
       const ability = String(
         source?.attack?.ability ??
