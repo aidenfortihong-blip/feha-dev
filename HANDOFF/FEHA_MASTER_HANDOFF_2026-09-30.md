@@ -236,3 +236,11 @@ after latest-dev.js) owns the rules; reload points are retired.
 - Market weapon cards (stock patch 1.7.0): DMG/RANGE/MAG/RELOAD/STR grid, manufacturer trait box (red) + weapon special box (cyan), class chip replaces WEAPONS, even row heights.
 - Readability: every 5-10px font-size in latest-dev.css, market/cyberdeck skins and the weapon sheet raised to 10-11px.
 - Backup: compendium world.feha-balance2-backup-2026-09-30 (177 items).
+
+## 10. Character rework (world data, not repo) + next task
+
+- Ponyboy / Derke / Sasha / Zach reworked directly on the actors. Backup: compendium world.feha-character-backup-2026-09-30 (pre-change actors).
+- Two custom feats each (flag fleshEnshrouded.characterFeature), no flaws: Ponyboy Swagger + Big Brother; Derke Fake Out + Slip Away; Sasha Organizer + Pickle Jar Prepper; Zach Body Moves on Its Own + Data Analyst.
+- Abilities: Ponyboy 16/13/15/12/12/10 HP 30; Derke 15/16/13/10/12/12 HP 24; Sasha 8/14/12/16/13/14 HP 25; Zach 12/16/13/15/12/8 HP 22.
+- Cyberware capacity = 12 + 4*level + CON mod + flags.fleshEnshrouded.cyberwareCapacityBonus (installed module chrome-legacy.js maxCapacity). Targets: Ponyboy 26, Derke 24, Sasha 22, Zach 22 (bonus 4/11/-3/1). Re-tune the bonus if they level.
+- NEXT: user wants the Entry Gateway fixed (problem not yet described; ask for a screenshot/description). Entry gateway code is in the installed module scripts/entry-gateway.js and the world macro ADK // ENTRY GATEWAY.
