@@ -170,7 +170,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-portrait {
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-portrait img {
-  filter: grayscale(1) contrast(1.12) brightness(.95) !important;
+  filter: none !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-portrait-grid {
@@ -340,7 +340,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card:
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card img,
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-support-card img {
-  filter: grayscale(1) brightness(1.15) !important;
+  filter: none !important;
   background: #000 !important;
   border: 1px solid var(--fui-line) !important;
 }
@@ -682,12 +682,12 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-header-sta
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 26%) 170px !important;
-  grid-template-rows: auto auto auto !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
   grid-template-areas:
-    "tiles logo num"
+    "tiles logo label"
     "tiles logo num"
     "tiles logo rest" !important;
-  gap: 8px 10px !important;
+  gap: 0 10px !important;
   padding: 0 !important;
   background: none !important;
   min-height: 0 !important;
@@ -698,45 +698,49 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram > div {
   display: contents !important;
 }
 
+/* RAM readout: label on top, number below, one shared panel. */
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram small {
-  grid-area: num;
-  align-self: start;
-  padding: 8px 10px 0 !important;
+  grid-area: label;
+  display: block !important;
+  margin: 0 !important;
+  padding: 8px 10px 2px !important;
+  background: var(--fui-panel) !important;
   font-size: 9px !important;
+  line-height: 1.2 !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   max-width: 100% !important;
 }
 
-html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram::before {
-  content: "";
-  grid-area: num;
-  background: var(--fui-ticks), var(--fui-panel);
-  z-index: -1;
-}
-
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram strong {
   grid-area: num;
-  align-self: end;
-  padding: 0 10px 6px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 4px !important;
+  margin: 0 !important;
+  padding: 2px 10px 8px !important;
+  background: var(--fui-ticks), var(--fui-panel) !important;
   font-size: 34px !important;
   line-height: 1 !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-rest {
   grid-area: rest;
+  margin-top: 8px !important;
   min-height: 30px !important;
   font-size: 10px !important;
   padding: 4px 8px !important;
 }
 
-/* The logo tile. */
+/* The logo tile: CYBERDECK with an outlined katakana line beneath, like the
+   reference's logo blocks. ::after is the tile, ::before the katakana. */
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram::after {
   content: "CYBERDECK";
   grid-area: logo;
   display: grid;
   place-items: center;
+  padding-bottom: 24px;
   background: var(--fui-ticks), var(--fui-panel);
   color: var(--fui-white);
   font-family: var(--fui-display);
@@ -745,7 +749,24 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram::after 
   font-style: italic;
   letter-spacing: .06em;
   transform: none;
-  min-height: 84px;
+  min-height: 92px;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram::before {
+  content: "サイバーデッキ";
+  grid-area: logo;
+  align-self: end;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 10px;
+  font-family: var(--fui-kana);
+  font-size: clamp(14px, 1.3vw, 20px);
+  letter-spacing: .14em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--fui-yellow);
+  pointer-events: none;
 }
 
 /* The tile strip: 24 RAM cells as square tiles with varied ring glyphs. */
@@ -831,21 +852,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-scroll {
   isolation: isolate;
 }
 
-html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-scroll::before {
-  content: "サイバーデッキ";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: -1;
-  white-space: nowrap;
-  font-family: var(--fui-kana);
-  font-size: clamp(48px, 6.4vw, 104px);
-  line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255,255,255,.16);
-  pointer-events: none;
-}
+/* Katakana moved into the CYBERDECK logo tile (.v3-ram::before). */
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-section {
   background: transparent !important;
@@ -945,9 +952,55 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-stage 
       "tiles rest" !important;
   }
 
-  html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram::after {
+  html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram::after,
+  html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram::before {
     display: none;
   }
+}
+
+/* ---------- minimal accents: yellow = brand/action, red = warning -------- */
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head::before,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-operator-tag {
+  background: var(--fui-yellow) !important;
+  color: #000 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head small::before,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-header-status span::before,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand h1::before,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand h1::after,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand small::before,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand small::after {
+  color: var(--fui-yellow) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-section-head > span,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram strong {
+  color: var(--fui-white) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-segments i.is-filled {
+  box-shadow: inset 0 -2px 0 var(--fui-yellow) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card:hover,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card:focus-within {
+  border-color: var(--fui-yellow) !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-hack-card button:hover:not(:disabled),
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-rest:hover:not(:disabled) {
+  background: var(--fui-yellow) !important;
+  border-color: var(--fui-yellow) !important;
+  color: #000 !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-telemetry.is-offline .cd2-net-head b,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-deck-summary.is-offline .cd2-offline-copy,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-no-deck small {
+  color: #ff5e57 !important;
+  border-color: rgba(255, 94, 87, .45) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
