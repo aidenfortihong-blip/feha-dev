@@ -631,3 +631,56 @@ html body #feha-gateway-intro-stage#feha-gateway-intro-stage #feha-gateway-intro
     transition-duration: .01ms !important;
   }
 }
+
+/* ---------- short viewports (laptops ~768px tall) -------------------------- */
+
+@media (max-height: 820px) {
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+    padding: 12px 20px 14px !important;
+    gap: 10px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+    padding-bottom: 8px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-brand-logo {
+    height: 44px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+    padding: 12px 16px 14px !important;
+    gap: 8px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-boot > div {
+    min-height: 18px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+    padding: 10px 12px 12px !important;
+    gap: 6px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell {
+    min-height: 48px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell input {
+    font-size: 24px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div {
+    min-height: 24px !important;
+  }
+
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+    min-height: 44px !important;
+  }
+
+  /* Not enough room for the log once the biometric stack is showing. */
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom:is(.is-authenticating, .is-granted, .is-linking) .feha-eg-console,
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-terminal:has(.feha-eg-biometrics:not([hidden])) .feha-eg-console {
+    display: none !important;
+  }
+}
