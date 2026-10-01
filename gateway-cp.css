@@ -1,0 +1,604 @@
+/* FEHA // ENTRY GATEWAY — CP2077 skin
+   Styling-only layer over the custom Gateway in latest-dev.js/css. Brings the
+   login terminal into the same red-on-black HUD language as the Market,
+   Chrome Manager and Cyberdeck: red rules, cyan for live/interactive state,
+   yellow reserved for the JACK IN handoff. Fonts come from the shared skin
+   @import (Rajdhani / Share Tech Mono). */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom {
+  --gw-bg: #0c0608;
+  --gw-panel: #180b0f;
+  --gw-panel-2: #1f0e13;
+  --gw-red: #ff5e57;
+  --gw-red-soft: #e0605a;
+  --gw-red-dim: rgba(255, 94, 87, .30);
+  --gw-red-faint: rgba(255, 94, 87, .12);
+  --gw-cyan: #5ef2ff;
+  --gw-cyan-dim: rgba(94, 242, 255, .35);
+  --gw-cyan-faint: rgba(94, 242, 255, .10);
+  --gw-yellow: #f3e600;
+  --gw-text: #f1e6e3;
+  --gw-muted: #c39c98;
+  --gw-display: "Rajdhani", "Roboto Condensed", "Arial Narrow", sans-serif;
+  --gw-mono: "Share Tech Mono", ui-monospace, monospace;
+
+  padding: 0 !important;
+  color: var(--gw-text) !important;
+  font-family: var(--gw-display) !important;
+  background:
+    radial-gradient(ellipse at 78% -10%, rgba(255, 94, 87, .16), transparent 46%),
+    radial-gradient(ellipse at 0% 110%, rgba(255, 94, 87, .08), transparent 40%),
+    linear-gradient(rgba(255, 94, 87, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 94, 87, .028) 1px, transparent 1px),
+    var(--gw-bg) !important;
+  background-size: auto, auto, 40px 40px, 40px 40px, auto !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom button,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom input {
+  font-family: var(--gw-display) !important;
+}
+
+/* ---------- shell ---------------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-shell {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 18px 28px 20px !important;
+  gap: 14px !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-shell::before,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-shell::after {
+  display: none !important;
+}
+
+/* ---------- header --------------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-header {
+  min-height: 0 !important;
+  padding: 0 0 12px !important;
+  align-items: flex-end !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--gw-red) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-node {
+  color: var(--gw-red) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .22em !important;
+  text-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-brand-logo {
+  height: 64px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  filter: drop-shadow(0 0 18px rgba(243, 230, 0, .18)) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-state {
+  min-height: 40px !important;
+  padding: 0 16px !important;
+  background: rgba(0, 0, 0, .45) !important;
+  border: 1px solid var(--gw-red-dim) !important;
+  border-left: 3px solid var(--gw-red) !important;
+  color: var(--gw-text) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: .16em !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-state span {
+  font-size: 14px !important;
+  color: inherit !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-state i {
+  background: var(--gw-red) !important;
+  box-shadow: 0 0 10px var(--gw-red) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="ready"] i,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="auth"] i {
+  background: var(--gw-cyan) !important;
+  box-shadow: 0 0 10px var(--gw-cyan) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="granted"] {
+  border-color: var(--gw-yellow) !important;
+  color: var(--gw-yellow) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-state[data-tone="granted"] i {
+  background: var(--gw-yellow) !important;
+  box-shadow: 0 0 10px var(--gw-yellow) !important;
+}
+
+/* ---------- body layout ---------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-body {
+  gap: 16px !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-terminal,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  background: linear-gradient(180deg, var(--gw-panel-2), var(--gw-panel) 60%, rgba(12, 6, 8, .9)) !important;
+  border: 1px solid var(--gw-red-dim) !important;
+  box-shadow: none !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-terminal {
+  padding: 16px 20px 18px !important;
+  gap: 12px !important;
+  min-height: 0 !important;
+  justify-content: flex-start !important;
+}
+
+/* Once authentication starts the boot log has done its job: drop it so the
+   biometric stack and console fit without clipping the top of the column. */
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom:is(.is-authenticating, .is-granted, .is-linking) .feha-eg-boot,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-terminal:has(.feha-eg-biometrics:not([hidden])) .feha-eg-boot {
+  display: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-side {
+  gap: 16px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  min-height: 0 !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-section-title {
+  color: var(--gw-red) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: .18em !important;
+  text-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-section-title span {
+  font-size: 15px !important;
+  color: inherit !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::before {
+  background: var(--gw-red) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-section-title::after {
+  background: linear-gradient(90deg, var(--gw-red-dim), transparent) !important;
+}
+
+/* ---------- boot log ------------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-boot {
+  flex: 0 0 auto !important;
+  padding: 10px 14px !important;
+  background: rgba(0, 0, 0, .32) !important;
+  border: 0 !important;
+  border-left: 2px solid var(--gw-red) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-boot > div {
+  min-height: 22px !important;
+  align-items: center !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-boot span {
+  color: var(--gw-red-soft) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 13px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-boot b {
+  color: var(--gw-text) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  letter-spacing: .04em !important;
+}
+
+/* ---------- ID entry ------------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card {
+  flex: 0 0 auto !important;
+  padding: 14px 16px 16px !important;
+  gap: 10px !important;
+  background: rgba(0, 0, 0, .38) !important;
+  border: 1px solid var(--gw-red-dim) !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card::before,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card::after {
+  display: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth-card label {
+  color: var(--gw-red) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: .2em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell {
+  min-height: 60px !important;
+  background: rgba(0, 0, 0, .55) !important;
+  border: 1px solid var(--gw-cyan-dim) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell:focus-within {
+  border-color: var(--gw-cyan) !important;
+  box-shadow: 0 0 0 1px var(--gw-cyan), 0 0 24px rgba(94, 242, 255, .12) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell > span {
+  background: var(--gw-cyan) !important;
+  color: #04181b !important;
+  font-family: var(--gw-mono) !important;
+  text-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell input {
+  color: var(--gw-text) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 30px !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em !important;
+  background: transparent !important;
+  text-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell input::placeholder {
+  color: rgba(195, 156, 152, .55) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-input-shell > i {
+  background: var(--gw-cyan) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-match {
+  color: var(--gw-muted) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 14px !important;
+  letter-spacing: .08em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-match b,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-match strong {
+  color: var(--gw-yellow) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth {
+  min-height: 48px !important;
+  background: var(--gw-red) !important;
+  background-image: none !important;
+  border: 1px solid var(--gw-red) !important;
+  color: #1a0507 !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: .2em !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%) !important;
+  transition: background-color .12s, color .12s, border-color .12s !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth:hover:not(:disabled),
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth:focus-visible {
+  background: #ff807a !important;
+  border-color: #ff807a !important;
+  outline: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-auth:disabled {
+  background: transparent !important;
+  border-color: var(--gw-red-dim) !important;
+  color: var(--gw-muted) !important;
+  opacity: 1 !important;
+}
+
+/* ---------- biometrics ----------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-biometrics:not([hidden]) {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list {
+  background: rgba(0, 0, 0, .32) !important;
+  border: 0 !important;
+  border-top: 1px solid var(--gw-red-dim) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div {
+  min-height: 30px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--gw-red-faint) !important;
+  background: transparent !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div span {
+  color: var(--gw-red-soft) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 13px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div b {
+  color: var(--gw-text) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: .12em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div i {
+  color: var(--gw-muted) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 13px !important;
+  font-style: normal !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bio-list > div.verified i {
+  color: var(--gw-cyan) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-progress {
+  height: 4px !important;
+  background: var(--gw-red-faint) !important;
+  border: 0 !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-progress > div {
+  background: var(--gw-cyan) !important;
+  box-shadow: 0 0 12px rgba(94, 242, 255, .5) !important;
+}
+
+/* ---------- console -------------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-console {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  padding: 8px 12px !important;
+  background: rgba(0, 0, 0, .28) !important;
+  border: 0 !important;
+  border-top: 1px solid var(--gw-red-faint) !important;
+  box-shadow: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gw-red-dim) transparent;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-console > div {
+  min-height: 21px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-console span {
+  color: rgba(195, 156, 152, .6) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 12px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-console b {
+  color: var(--gw-muted) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-console [data-tone="good"] b {
+  color: var(--gw-cyan) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-console [data-tone="grant"] b,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-console [data-tone="granted"] b {
+  color: var(--gw-yellow) !important;
+}
+
+/* ---------- candidates ----------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel {
+  padding: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header {
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  background: rgba(255, 94, 87, .10) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--gw-red-dim) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header span {
+  color: var(--gw-red) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: .18em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidates-panel > header b {
+  color: var(--gw-muted) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate {
+  min-height: 52px !important;
+  padding: 0 14px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--gw-red-faint) !important;
+  border-left: 3px solid transparent !important;
+  color: var(--gw-text) !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  transition: background-color .12s, border-color .12s !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate:hover,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate:focus-visible {
+  background: var(--gw-cyan-faint) !important;
+  border-left-color: var(--gw-cyan) !important;
+  outline: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate:is(.is-selected, .selected, .active, [aria-pressed="true"]) {
+  background: rgba(255, 94, 87, .14) !important;
+  border-left-color: var(--candidate, var(--gw-red)) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate > span {
+  color: var(--gw-red-soft) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 13px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate b {
+  color: var(--gw-text) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: .04em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-candidate em {
+  color: var(--gw-muted) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 12px !important;
+  font-style: normal !important;
+  letter-spacing: .08em !important;
+}
+
+/* ---------- profile -------------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-left: 3px solid var(--eg-primary, var(--gw-red)) !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty span {
+  color: var(--gw-red) !important;
+  border-color: var(--gw-red-dim) !important;
+  background: transparent !important;
+  font-size: 12px !important;
+  letter-spacing: .14em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty b {
+  color: var(--gw-text) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 30px !important;
+  letter-spacing: .06em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile-empty small {
+  color: var(--gw-muted) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 13px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-profile-name {
+  color: var(--gw-text) !important;
+  font-family: var(--gw-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .9) !important;
+}
+
+/* ---------- footer --------------------------------------------------------- */
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-footer {
+  min-height: 0 !important;
+  padding: 10px 0 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid var(--gw-red-dim) !important;
+  box-shadow: none !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-footer-copy {
+  color: var(--gw-muted) !important;
+  font-family: var(--gw-mono) !important;
+  font-size: 12px !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-footer-copy span {
+  color: var(--gw-red) !important;
+  font-family: var(--gw-display) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: .16em !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bypass {
+  min-height: 40px !important;
+  padding: 0 18px !important;
+  background: transparent !important;
+  border: 1px solid var(--gw-red-dim) !important;
+  color: var(--gw-red-soft) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .16em !important;
+  box-shadow: none !important;
+  transition: background-color .12s, border-color .12s, color .12s !important;
+}
+
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bypass:hover,
+html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom .feha-eg-bypass:focus-visible {
+  background: var(--gw-red-faint) !important;
+  border-color: var(--gw-red) !important;
+  color: var(--gw-text) !important;
+  outline: none !important;
+}
+
+/* ---------- intro video ---------------------------------------------------- */
+
+/* Overscan the YouTube frame so its title bar, "More videos" shelf and logo
+   fall outside the viewport instead of flashing over the intro. */
+html body #feha-gateway-intro-stage#feha-gateway-intro-stage iframe,
+html body #feha-gateway-intro-stage#feha-gateway-intro-stage #feha-gateway-intro-player {
+  transform: translate(-50%, -50%) scale(1.22) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom *,
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom *::before,
+  html body #adk-entry-gateway#adk-entry-gateway.feha-eg-custom *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
