@@ -982,16 +982,21 @@
     root.dataset.v3Assets = count ? "1" : "0";
   }
 
-  // One tile per RAM point (capped at 24) so the strip reads as real RAM;
-  // no deck renders a single NO DECK tile.
+  // Always 24 tiles (the deck ceiling): one per RAM point the deck provides
+  // (filled = available, empty = spent), the rest render as locked.
+  // No deck renders a single NO DECK tile.
+  const RAM_TILES = 24;
+
   function segments(value,max) {
-    const total = Math.max(0,Math.min(24,Math.round(Number(max) || 0)));
+    const total = Math.max(0,Math.min(RAM_TILES,Math.round(Number(max) || 0)));
     if (!total) {
       return '<div class="cd2-segments is-ram is-nodeck"><i class="is-nodeck"><span>NO DECK</span></i></div>';
     }
     const filled = Math.max(0,Math.min(total,Math.round(Number(value) || 0)));
-    return '<div class="cd2-segments is-ram" style="--ram-total:'+total+'">' +
-      Array.from({length:total},(_,i) => '<i class="'+(i<filled?"is-filled":"")+'"></i>').join("") +
+    return '<div class="cd2-segments is-ram">' +
+      Array.from({length:RAM_TILES},(_,i) =>
+        '<i class="'+(i<filled ? "is-filled" : i<total ? "is-spent" : "is-locked")+'"></i>'
+      ).join("") +
       '</div>';
   }
 
