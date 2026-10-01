@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.0.0";
+  const VERSION = "2.1.0";
   const STOCK_SCHEMA_VERSION = "2.0.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -337,6 +337,34 @@
     await game.settings.set("world",STOCK_KEY,stock);
 
     return next;
+  }
+
+  // A player's purchase cannot save the reduced stock itself (world settings
+  // are GM-only; the module logs the failure and moves on), so the item stayed
+  // on the shelf. The active GM removes it when the purchased copy appears.
+  let purchaseHookId = null;
+
+  async function onMarketPurchase(item) {
+    if (game.users?.activeGM?.isSelf !== true) return;
+    if (item?.parent?.documentName !== "Actor") return;
+
+    const flags = item.flags?.[FLAG] ?? {};
+    if (flags.marketPurchased !== true || !flags.marketSourceId) return;
+    if (!flags.marketShop || !flags.marketShopTier) return;
+
+    try {
+      registerSettings();
+
+      const key = flags.marketShop+":"+flags.marketShopTier;
+      const stock = readStock();
+      const current = Array.isArray(stock[key]) ? stock[key] : [];
+      if (!current.includes(flags.marketSourceId)) return;
+
+      stock[key] = current.filter(id => id !== flags.marketSourceId);
+      await game.settings.set("world",STOCK_KEY,stock);
+    } catch (error) {
+      console.warn("FEHA MARKET STOCK // purchase stock update failed",error);
+    }
   }
 
   async function onRerollClick(event) {
@@ -754,6 +782,15 @@
           card.dataset.fehaRarity = rarity;
         }
 
+        // The module labels cyberware "BUY + INSTALL", but a purchase only
+        // stashes it; installing happens in the Chrome Manager.
+        for (const buy of card.querySelectorAll("[data-buy-item]")) {
+          if (buy.textContent.trim() === "BUY + INSTALL") {
+            buy.textContent = "BUY";
+            buy.title = "Goes to your stash. Install it in the Chrome Manager.";
+          }
+        }
+
         if (item?.type !== "weapon") continue;
 
         card.classList.add("feha-weapon-card");
@@ -929,6 +966,10 @@
       installNoMkGuard();
       document.addEventListener("click",onRerollClick,true);
 
+      if (purchaseHookId == null) {
+        purchaseHookId = Hooks.on("createItem",onMarketPurchase);
+      }
+
       if (game.user?.isGM) {
         // Price / rarity flags must exist before stock is built.
         try {
@@ -953,6 +994,11 @@
     async destroy() {
       removeNoMkGuard();
       document.removeEventListener("click",onRerollClick,true);
+
+      if (purchaseHookId != null) {
+        try { Hooks.off("createItem",purchaseHookId); } catch {}
+        purchaseHookId = null;
+      }
       if (game?.adk?.marketStockPatch === api) {
         delete game.adk.marketStockPatch;
       }
