@@ -1750,3 +1750,16 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-gri
   padding: 0 8px !important;
   font-size: 11px !important;
 }
+
+/* JACK IN with no deck installed is not available: show it as an unlit bar
+   rather than the same yellow as the live action. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:disabled {
+  background: var(--fui-panel) !important;
+  border-color: var(--fui-line-2) !important;
+  color: var(--fui-muted) !important;
+  cursor: not-allowed !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-jackbar:disabled .v3-jack-state {
+  color: #ff5e57 !important;
+}
