@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_MELEE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.1.1";
+  const VERSION = "1.2.0";
   const REWRITE = "melee-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const MELEE_FOLDERS = new Set(["melee","-melee"]);
@@ -43,38 +43,38 @@
   });
 
   const ROWS = Object.freeze([
-    ["Baseball Bat","Blunt","3d6","bludgeoning",10,5,null,null],
-    ["Baton Beta","Baton","2d8","bludgeoning",null,5,null,null],
+    ["Baseball Bat","Blunt","4d6","bludgeoning",10,5,null,null],
+    ["Baton Beta","Baton","3d8","bludgeoning",null,5,null,null],
     ["Baton Murphy","Baton","3d8","bludgeoning",10,5,null,null],
-    ["Baton Tinker Bell","Baton","2d8","bludgeoning",null,5,null,null],
-    ["Butcher's Knife","Knife","3d6","slashing",null,5,null,null],
-    ["Cane Fingers","Knife","2d6","piercing",null,5,null,null],
-    ["Chainsword Legendary","Heavy Blade","5d10","slashing",14,5,null,null],
-    ["Chef's Knife","Knife","2d6","slashing",null,5,null,null],
-    ["Crowbar","Blunt","2d8","bludgeoning",10,5,null,null],
+    ["Baton Tinker Bell","Baton","3d8","bludgeoning",null,5,null,null],
+    ["Butcher's Knife","Knife","4d6","slashing",null,5,null,null],
+    ["Cane Fingers","Knife","3d6","piercing",null,5,null,null],
+    ["Chainsword Legendary","Heavy Blade","11d10","slashing",14,5,null,null],
+    ["Chef's Knife","Knife","3d6","slashing",null,5,null,null],
+    ["Crowbar","Blunt","3d8","bludgeoning",10,5,null,null],
     ["Dildo Stout","Blunt","1d100","bludgeoning",null,5,null,null],
-    ["Errata","Katana","4d8","slashing",11,5,null,null],
+    ["Errata","Katana","15d8","slashing",11,5,null,null],
     ["Fanged Axe Military","Axe","4d10","slashing",13,5,null,null],
     ["Hammer","Blunt","3d10","bludgeoning",12,5,null,null],
-    ["Iron Pipe","Blunt","2d8","bludgeoning",10,5,null,null],
+    ["Iron Pipe","Blunt","3d8","bludgeoning",10,5,null,null],
     ["Kanabo","Heavy Blunt","4d12","bludgeoning",15,5,null,null],
     ["Katana","Katana","4d8","slashing",10,5,null,null],
     ["Katana Go G","Katana","4d8","slashing",10,5,null,null],
     ["Katana Takemura","Katana","4d8+6","slashing",11,5,null,null],
-    ["Knife Kurtz","Knife","3d6","piercing",null,5,null,null],
-    ["Knife Military","Knife","3d6","piercing",null,5,null,null],
-    ["Knife Stinger","Knife","3d6","piercing",null,5,null,null],
+    ["Knife Kurtz","Knife","4d6","piercing",null,5,null,null],
+    ["Knife Military","Knife","4d6","piercing",null,5,null,null],
+    ["Knife Stinger","Knife","4d6","piercing",null,5,null,null],
     ["Kukri","Knife","3d8","slashing",10,5,null,null],
     ["Kukri Voodoo","Knife","3d8","slashing",10,5,null,null],
     ["Machete","Machete","3d8","slashing",10,5,null,null],
     ["Machete Maelstrom","Machete","4d8","slashing",12,5,null,null],
     ["Machete Valentinos","Machete","3d8+4","slashing",10,5,null,null],
-    ["Neurotoxin Knife","Knife","2d6","piercing",null,5,null,null],
-    ["Punk Knife Pimp","Knife","3d6","piercing",null,5,null,null],
+    ["Neurotoxin Knife","Knife","4d6","piercing",null,5,null,null],
+    ["Punk Knife Pimp","Knife","4d6","piercing",null,5,null,null],
     ["Sword Witcher","Sword","4d10","slashing",12,5,null,null],
-    ["Tanto","Knife","3d6","piercing",null,5,null,null],
-    ["Tire Iron","Blunt","2d8","bludgeoning",10,5,null,null],
-    ["Tomahawk","Axe","3d8","slashing",10,5,20,60],
+    ["Tanto","Knife","4d6","piercing",null,5,null,null],
+    ["Tire Iron","Blunt","3d8","bludgeoning",10,5,null,null],
+    ["Tomahawk","Axe","4d8","slashing",10,5,20,60],
     ["VB Axe","Heavy Axe","5d10","slashing",14,5,null,null]
   ]);
 
