@@ -644,7 +644,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand h1 s
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-brand small {
   order: 2;
-  font-size: 10px !important;
+  font-size: 11px !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-header-status > div {
@@ -699,7 +699,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram small {
   margin: 0 !important;
   padding: 8px 10px 2px !important;
   background: var(--fui-panel) !important;
-  font-size: 9px !important;
+  font-size: 11px !important;
   line-height: 1.2 !important;
   white-space: nowrap !important;
   overflow: hidden !important;
@@ -723,7 +723,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-re
   grid-area: rest;
   margin-top: 8px !important;
   min-height: 30px !important;
-  font-size: 10px !important;
+  font-size: 11px !important;
   padding: 4px 8px !important;
 }
 
@@ -794,7 +794,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-se
   left: 3px;
   bottom: 1px;
   font-family: var(--fui-mono);
-  font-size: 7px;
+  font-size: 10px;
   font-style: normal;
   color: var(--fui-dim);
 }
@@ -1120,7 +1120,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-label 
   border: 1px solid var(--fui-line-2) !important;
   color: var(--fui-white) !important;
   font-family: var(--fui-mono) !important;
-  font-size: 9px !important;
+  font-size: 11px !important;
   letter-spacing: .1em !important;
   white-space: nowrap !important;
 }

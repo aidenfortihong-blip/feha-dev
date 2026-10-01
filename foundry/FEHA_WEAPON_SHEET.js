@@ -685,7 +685,7 @@
 
         [data-feha-canonical-weapon-sheet] .feha-ws-art-meta strong {
           color:#70e6fb;
-          font-size:10px;
+          font-size:11px;
           font-weight:1000;
           letter-spacing:.10em;
           text-transform:uppercase;
@@ -693,7 +693,7 @@
 
         [data-feha-canonical-weapon-sheet] .feha-ws-art-meta span {
           color:#728991;
-          font-size:9px;
+          font-size:11px;
           font-weight:900;
           letter-spacing:.06em;
           text-transform:uppercase;
@@ -715,7 +715,7 @@
           padding-bottom:10px;
           border-bottom:1px solid #17343c;
           color:#6bdff3;
-          font-size:9px;
+          font-size:11px;
           font-weight:1000;
           letter-spacing:.12em;
           text-transform:uppercase;
@@ -737,7 +737,7 @@
           margin:0;
           max-width:760px;
           color:#91a5ac;
-          font-size:10px;
+          font-size:11px;
           line-height:1.5;
         }
 
@@ -758,7 +758,7 @@
         [data-feha-canonical-weapon-sheet] .feha-ws-stat small {
           display:block;
           color:#6f868e;
-          font-size:8px;
+          font-size:10px;
           font-weight:900;
           letter-spacing:.07em;
           text-transform:uppercase;
@@ -798,7 +798,7 @@
         [data-feha-canonical-weapon-sheet] .feha-ws-rule small {
           display:block;
           color:#718a92;
-          font-size:8px;
+          font-size:10px;
           font-weight:1000;
           letter-spacing:.10em;
           text-transform:uppercase;
@@ -815,14 +815,14 @@
         [data-feha-canonical-weapon-sheet] .feha-ws-rule strong {
           display:block;
           margin-top:3px;
-          font-size:10px;
+          font-size:11px;
           letter-spacing:.05em;
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-rule p {
           margin:5px 0 0;
           color:#d6e2e6;
-          font-size:9px;
+          font-size:11px;
           line-height:1.48;
         }
 
@@ -852,7 +852,7 @@
         [data-feha-canonical-weapon-sheet] .feha-ws-combat-top small {
           display:block;
           color:#68e0f7;
-          font-size:8px;
+          font-size:10px;
           font-weight:1000;
           letter-spacing:.14em;
         }
@@ -861,7 +861,7 @@
           display:block;
           margin-top:3px;
           color:#f7fdff;
-          font-size:10px;
+          font-size:11px;
           letter-spacing:.03em;
         }
 
@@ -871,7 +871,7 @@
           border:1px solid #35515a;
           background:#061014;
           color:#99aeb5;
-          font-size:8px;
+          font-size:10px;
           font-weight:1000;
           letter-spacing:.09em;
         }
@@ -917,7 +917,7 @@
 
         [data-feha-canonical-weapon-sheet] .feha-ws-readiness-count small {
           color:#728890;
-          font-size:8px;
+          font-size:10px;
           font-weight:1000;
           letter-spacing:.08em;
         }
@@ -962,7 +962,7 @@
           grid-template-columns:repeat(3,minmax(0,1fr));
           gap:5px;
           color:#667d85;
-          font-size:7px;
+          font-size:10px;
           letter-spacing:.04em;
         }
 
@@ -1001,7 +1001,7 @@
         }
 
         [data-feha-canonical-weapon-sheet] .feha-ws-primary-actions small {
-          font-size:7px;
+          font-size:10px;
           opacity:.74;
         }
 
@@ -1041,7 +1041,7 @@
           border:1px solid #2e4d56;
           background:#08171b;
           color:#dce9ed;
-          font-size:8px;
+          font-size:10px;
           font-weight:900;
         }
 
@@ -1065,7 +1065,7 @@
           justify-content:space-between;
           gap:8px;
           color:#70858c;
-          font-size:7px;
+          font-size:10px;
           font-weight:900;
         }
 
@@ -1101,7 +1101,7 @@
           border:1px solid #213940;
           background:#050e11;
           color:#71878f;
-          font-size:7px;
+          font-size:10px;
           font-weight:900;
           letter-spacing:.06em;
         }
@@ -1126,7 +1126,7 @@
 
         [data-feha-canonical-weapon-sheet] .feha-ws-combat-empty span {
           color:#81969d;
-          font-size:9px;
+          font-size:11px;
           line-height:1.5;
         }
 
