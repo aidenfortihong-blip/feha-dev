@@ -15,6 +15,7 @@
     marketSkinCss:"market-cp.css",
     chromeSkinCss:"chrome-cp.css",
     cyberdeckSkinCss:"cyberdeck-cp.css",
+    itemSkinCss:"item-cp.css",
     baseJs:"latest-dev.js",
     chromeRipperdoc:"foundry/FEHA_CHROME_RIPPERDOC.js",
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
@@ -226,6 +227,7 @@
     cssBraceCheck(source.marketSkinCss,files.marketSkinCss);
     cssBraceCheck(source.chromeSkinCss,files.chromeSkinCss);
     cssBraceCheck(source.cyberdeckSkinCss,files.cyberdeckSkinCss);
+    cssBraceCheck(source.itemSkinCss,files.itemSkinCss);
 
     let buildManifest = null;
     try {
@@ -306,7 +308,7 @@
     marketSkin.dataset.adkCommit = sha.slice(0,7);
     marketSkin.textContent =
       '@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@500;600;700&family=Share+Tech+Mono&family=Dela+Gothic+One&display=swap");\n' +
-      source.marketSkinCss + "\n\n" + source.chromeSkinCss + "\n\n" + source.cyberdeckSkinCss;
+      source.marketSkinCss + "\n\n" + source.chromeSkinCss + "\n\n" + source.cyberdeckSkinCss + "\n\n" + source.itemSkinCss;
     document.head.appendChild(marketSkin);
 
     evaluate(source.baseJs,files.baseJs,sha);

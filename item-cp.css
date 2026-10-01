@@ -1,0 +1,408 @@
+/* ==========================================================================
+   FEHA // ITEM CARDS — CP2077 ITEM TOOLTIP SKIN
+   After the item tooltip in the CP2077 ripperdoc reference: teal-black
+   panel, salmon uppercase name over an orange rule, white stat numbers,
+   red labels and effect text, yellow price.
+
+   Scope: dnd5e item sheets (not the custom FEHA weapon sheet) and the FEHA
+   catalog description card (section[data-feha-ui="item-card-v1"]) wherever
+   it renders. Styling only. dnd5e's own sheet CSS lives in a cascade layer,
+   so these unlayered rules win; !important covers latest-dev.css overrides
+   and the catalog card's inline styles.
+   ========================================================================== */
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)),
+html body section[data-feha-ui="item-card-v1"] {
+  --ic-bg: #0d1417;
+  --ic-panel: #121c20;
+  --ic-line: rgba(63, 214, 198, .28);
+  --ic-teal: #3fd6c6;
+  --ic-red: #ff5e57;
+  --ic-red-dim: rgba(255, 94, 87, .3);
+  --ic-salmon: #ff8f86;
+  --ic-orange: #ff9d2e;
+  --ic-yellow: #f3e600;
+  --ic-text: #f1e6e3;
+  --ic-muted: #b9a3a0;
+  --ic-display: "Rajdhani", "Roboto Condensed", "Arial Narrow", sans-serif;
+}
+
+/* ---------- item sheet window ------------------------------------------- */
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) {
+  background: var(--ic-bg) !important;
+  border: 1px solid var(--ic-line) !important;
+  border-top: 3px solid var(--ic-teal) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 0 1px #000, 0 20px 50px rgba(0,0,0,.75) !important;
+  color: var(--ic-text) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .window-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--ic-line) !important;
+  color: var(--ic-teal) !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .window-content {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(63,214,198,.07), transparent 55%),
+    var(--ic-bg) !important;
+  color: var(--ic-text) !important;
+}
+
+/* Header: image, salmon name, orange rule. */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-header {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-header .document-image {
+  background: radial-gradient(ellipse at 50% 60%, rgba(63,214,198,.18), transparent 70%), #081013 !important;
+  border: 1px solid var(--ic-line) !important;
+  border-left: 3px solid var(--ic-teal) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-header .document-name,
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-header .document-name input {
+  color: var(--ic-salmon) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .03em !important;
+  text-transform: uppercase !important;
+  text-shadow: none !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .identity-info {
+  border-bottom: 2px solid var(--ic-orange) !important;
+  padding-bottom: 4px !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .subtitles li,
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .subtitles span {
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .common-fields,
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .common-fields .value {
+  color: var(--ic-text) !important;
+  font-family: var(--ic-display) !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .common-fields .price .value {
+  color: var(--ic-yellow) !important;
+  font-weight: 700 !important;
+}
+
+/* Tabs: red uppercase, active cyan underline; drop the D&D ampersand. */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-tabs a {
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  text-shadow: none !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-tabs a.active {
+  color: var(--ic-teal) !important;
+  border-bottom-color: var(--ic-teal) !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) hr.ampersand {
+  display: none !important;
+}
+
+/* Big stat (e.g. ARMOR CLASS 15). */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .info-block .label {
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  letter-spacing: .14em !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .info-block .value {
+  color: var(--ic-text) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 700 !important;
+}
+
+/* Collapsible description cards. */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .card {
+  background: var(--ic-panel) !important;
+  border: 1px solid var(--ic-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .card > .header {
+  background: rgba(63,214,198,.08) !important;
+  border-bottom: 1px solid var(--ic-line) !important;
+  color: var(--ic-teal) !important;
+  font-family: var(--ic-display) !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+}
+
+/* Pills (Not Equipped, etc.). */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .pill {
+  background: transparent !important;
+  border: 1px solid var(--ic-red-dim) !important;
+  border-radius: 0 !important;
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  letter-spacing: .08em !important;
+}
+
+/* Details tab: red labels, dark fields. */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) fieldset {
+  border-color: var(--ic-line) !important;
+  border-radius: 0 !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) legend,
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .form-group > label {
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) input:not([type="checkbox"]):not([type="radio"]),
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) select {
+  background: #081013 !important;
+  border: 1px solid var(--ic-line) !important;
+  border-radius: 0 !important;
+  color: var(--ic-text) !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .create-child {
+  background: var(--ic-yellow) !important;
+  border-radius: 0 !important;
+  color: #000 !important;
+}
+
+/* Plain (non-card) descriptions, e.g. cyberware: CP tooltip typography. */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .editor-content h2,
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .editor-content h3 {
+  color: var(--ic-salmon) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .03em !important;
+  border-bottom: 1px solid var(--ic-orange) !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .editor-content strong {
+  color: var(--ic-red);
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .editor-content hr {
+  border: 0 !important;
+  border-top: 1px solid var(--ic-line) !important;
+}
+
+/* ---------- FEHA catalog description card -------------------------------- */
+/* Generated with inline styles; structure: header row, h2, p, stat grid,
+   passive box. Overridden here by position. */
+
+html body section[data-feha-ui="item-card-v1"] {
+  position: relative !important;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(63,214,198,.08), transparent 50%),
+    var(--ic-bg) !important;
+  border: 1px solid var(--ic-line) !important;
+  border-top: 3px solid var(--ic-teal) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  font-family: var(--ic-display) !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] > div:first-child {
+  border-bottom-color: var(--ic-line) !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] > div:first-child small {
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .14em !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] > div:first-child strong {
+  color: var(--ic-teal) !important;
+  border: 1px solid var(--ic-line) !important;
+  padding: 0 .4em !important;
+  font-family: var(--ic-display) !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] h2 {
+  color: var(--ic-salmon) !important;
+  font-family: var(--ic-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .03em !important;
+  text-transform: uppercase !important;
+  border-bottom: 2px solid var(--ic-orange) !important;
+  padding-bottom: 3px !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] div[style*="grid-template-columns"] {
+  border-color: var(--ic-line) !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] div[style*="grid-template-columns"] small {
+  color: var(--ic-red) !important;
+  font-weight: 600 !important;
+  letter-spacing: .1em !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] div[style*="grid-template-columns"] strong {
+  color: var(--ic-text) !important;
+  font-size: 1.15em !important;
+  font-family: var(--ic-display) !important;
+}
+
+/* Price stays yellow (the generator writes it as the gold-coloured stat). */
+html body section[data-feha-ui="item-card-v1"] div[style*="grid-template-columns"] strong[style*="#f0c85a"],
+html body section[data-feha-ui="item-card-v1"] strong[style*="#f0c85a"] {
+  color: var(--ic-yellow) !important;
+}
+
+/* Passive / effect box: teal stripe, red label, salmon text. */
+html body section[data-feha-ui="item-card-v1"] > div[style*="background"] {
+  background: rgba(63,214,198,.06) !important;
+  border: 1px solid var(--ic-line) !important;
+  border-left: 3px solid var(--ic-teal) !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] > div[style*="background"] small {
+  color: var(--ic-teal) !important;
+  letter-spacing: .14em !important;
+}
+
+html body section[data-feha-ui="item-card-v1"] > div[style*="background"] p,
+html body section[data-feha-ui="item-card-v1"] > div[style*="background"] div {
+  color: var(--ic-salmon) !important;
+}
+
+/* ---------- FEHA weapon sheet (custom shell) ----------------------------- */
+
+html body .application.sheet.dnd5e2.item:has(.feha-ws-shell) {
+  --ic-bg: #0d1417;
+  --ic-panel: #121c20;
+  --ic-line: rgba(63, 214, 198, .28);
+  --ic-teal: #3fd6c6;
+  --ic-red: #ff5e57;
+  --ic-salmon: #ff8f86;
+  --ic-orange: #ff9d2e;
+  --ic-yellow: #f3e600;
+  --ic-text: #f1e6e3;
+  --ic-display: "Rajdhani", "Roboto Condensed", "Arial Narrow", sans-serif;
+  background: var(--ic-bg) !important;
+  border: 1px solid var(--ic-line) !important;
+  border-top: 3px solid var(--ic-teal) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-eyebrow,
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-eyebrow * {
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  letter-spacing: .14em !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-title {
+  color: var(--ic-salmon) !important;
+  font-family: var(--ic-display) !important;
+  font-variant: normal !important;
+  font-weight: 700 !important;
+  letter-spacing: .03em !important;
+  text-transform: uppercase !important;
+  border-bottom: 2px solid var(--ic-orange) !important;
+  padding-bottom: 3px !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-image-frame {
+  border-left: 3px solid var(--ic-teal) !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-stat {
+  border-color: var(--ic-line) !important;
+  border-radius: 0 !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-stat small,
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-stat span:first-child {
+  color: var(--ic-red) !important;
+  font-family: var(--ic-display) !important;
+  letter-spacing: .1em !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-stat b,
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-stat strong {
+  color: var(--ic-text) !important;
+  font-family: var(--ic-display) !important;
+  font-size: 1.15em !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule {
+  background: rgba(63,214,198,.06) !important;
+  border: 1px solid var(--ic-line) !important;
+  border-left: 3px solid var(--ic-teal) !important;
+  border-radius: 0 !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule p,
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule div {
+  color: var(--ic-salmon) !important;
+}
+
+/* Live fire console. */
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-combat {
+  border-color: var(--ic-line) !important;
+  border-top: 2px solid var(--ic-red) !important;
+  border-radius: 0 !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg.is-filled,
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg.is-ready,
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-seg:not(.is-empty):not(.is-spent) {
+  background: var(--ic-yellow) !important;
+  box-shadow: 0 0 8px rgba(243,230,0,.35) !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-attack {
+  background: rgba(63,214,198,.14) !important;
+  border: 1px solid var(--ic-teal) !important;
+  border-radius: 0 !important;
+  color: var(--ic-text) !important;
+  font-family: var(--ic-display) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-damage {
+  background: rgba(255,94,87,.16) !important;
+  border: 1px solid var(--ic-red) !important;
+  border-radius: 0 !important;
+  color: var(--ic-text) !important;
+  font-family: var(--ic-display) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-attack:hover:not(:disabled) {
+  background: var(--ic-teal) !important;
+  color: #062220 !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-damage:hover:not(:disabled) {
+  background: var(--ic-red) !important;
+  color: #1a0507 !important;
+}

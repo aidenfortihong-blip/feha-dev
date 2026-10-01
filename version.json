@@ -1,14 +1,12 @@
 {
-  "version": "0.11.84",
+  "version": "0.11.85",
   "updated": "2026-09-30",
-  "scope": "cyberdeck-fui-tile-sheet",
+  "scope": "item-cards-cp2077",
   "notes": [
-    "Cyberdeck loadout rebuilt as the monochrome 'HUD / FUI ELEMENTS' tile sheet: text-only header (':CYBERDECK OS:', '_RAM', '_DECK', '_SOFTWARE'), a two-row strip of numbered square tiles (L1-L24) with ring glyphs, a CYBERDECK logo tile, then big panels.",
-    "RAM strip is always 24 tiles (the deck ceiling): the deck's RAM shows as rings (solid white with a yellow underline = available, outlined = spent) and the remaining tiles show as dark hatched locked tiles; no deck shows a single red NO DECK tile.",
-    "Operator portrait keeps full colour in its own panel; the CYBERDECK logo tile carries an outlined yellow サイバーデッキ line; the deck-passive tile carries a stacked CYBER / DECK mark.",
-    "Network telemetry graph kept and un-squashed (locked to the SVG's 320:176 shape), restyled in white with a yellow deck node and packets, and animated: flowing dashed links, pulsing nodes and a sweeping scan line (slower and dimmer offline; disabled under reduced motion).",
-    "Minimal accents: yellow for brand/action (section bars, operator tag, label marks, JACK IN), red only for offline/warning states.",
-    "JACK IN is a full-width yellow bar with a cut corner, inverting to black on hover. Below 1180px wide the side tiles drop under the software panel.",
-    "Pure CSS re-flow of the existing loadout DOM (cyberdeck-cp.css); fonts Chakra Petch, Share Tech Mono and Dela Gothic One added to the shared import. No RAM, Quickhack, Short Rest or JACK IN behavior changed."
+    "Item sheets (armor, cyberware, consumables, grenades, Quickhacks, melee, uniques) restyled as the CP2077 item tooltip: teal top bar, salmon uppercase name over an orange rule, red labels and tabs, cyan active tab, yellow price; the D&D ampersand ornament is hidden.",
+    "FEHA catalog description cards (data-feha-ui=item-card-v1) and plain cyberware descriptions share the same tooltip styling; effect boxes get a teal stripe with salmon text.",
+    "FEHA weapon sheet brought in line: salmon title with orange rule, red stat labels, teal trait box, cyan ATTACK, red DAMAGE, yellow ammo bars.",
+    "World data: the last legacy currency glyph ('Price: ₡N' in 101 world + 25 owned cyberware descriptions) now reads 'Price: CR N'.",
+    "New item-cp.css is loaded with the other skins. Styling only: no item data, rules, prices or weapon behavior changed."
   ]
 }
