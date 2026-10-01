@@ -313,8 +313,8 @@
       .replace(/&/g,"&amp;")
       .replace(/</g,"&lt;")
       .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
+      // Apostrophes stay literal; Foundry stores cleaned HTML with a plain '.
+      .replace(/"/g,"&quot;");
 
     const price = "CR " + Number(tier.price).toLocaleString();
 

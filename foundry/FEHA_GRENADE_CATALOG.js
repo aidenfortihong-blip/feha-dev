@@ -384,8 +384,9 @@
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+    // Apostrophes stay literal: Foundry stores cleaned HTML with a plain ',
+    // so an escaped one never matched and forced an update on every load.
+    .replace(/"/g,"&quot;");
 
   function rewriteDescription(def,item) {
     const manufacturer =
@@ -585,11 +586,21 @@
       ...def.schema
     };
 
+    // Key order is not stable across stored flag merges; compare by content.
+    const stable = value =>
+      JSON.stringify(value,(key,inner) =>
+        inner && typeof inner === "object" && !Array.isArray(inner)
+          ? Object.fromEntries(
+              Object.keys(inner).sort().map(name => [name,inner[name]])
+            )
+          : inner
+      );
+
     let schemaChanged = true;
     try {
       schemaChanged =
-        JSON.stringify(flags.grenadeSchema ?? null) !==
-        JSON.stringify(nextSchema);
+        stable(flags.grenadeSchema ?? null) !==
+        stable(nextSchema);
     } catch {}
 
     if (schemaChanged) {
