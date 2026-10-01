@@ -1186,3 +1186,338 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-net-teleme
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   JACKED IN // live net view + quickhack picker
+   Same monochrome FUI sheet as the deck: grey tiles, white type, yellow for
+   the action you take (RUN / lock), red for hostile nodes and the exit.
+   ========================================================================== */
+
+html body #feha-jackin-overlay#feha-jackin-overlay {
+  --fui-bg: #0a0a0a;
+  --fui-panel: #191919;
+  --fui-panel-2: #222222;
+  --fui-line: #333333;
+  --fui-line-2: #4a4a4a;
+  --fui-white: #f2f2f2;
+  --fui-muted: #9a9a9a;
+  --fui-yellow: #f3e600;
+  --fui-red: #ff5e57;
+  --fui-display: "Chakra Petch", "Rajdhani", "Arial Narrow", sans-serif;
+  --fui-mono: "Share Tech Mono", "Consolas", monospace;
+
+  background: var(--fui-bg) !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay button {
+  font-family: var(--fui-display) !important;
+}
+
+/* ---------- header ---------------------------------------------------------- */
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-header {
+  background: var(--fui-panel) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-header small {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 12px !important;
+  letter-spacing: .14em !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-header h1 {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-header h1 span {
+  color: var(--fui-yellow) !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-stat {
+  background: var(--fui-panel-2) !important;
+  border: 1px solid var(--fui-line) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-stat span {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-stat b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-actions button {
+  background: transparent !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: background-color .12s, border-color .12s, color .12s !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-actions button:hover,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-actions button:focus-visible {
+  background: var(--fui-white) !important;
+  border-color: var(--fui-white) !important;
+  color: #0a0a0a !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-actions button.is-danger {
+  border-color: var(--fui-red) !important;
+  color: var(--fui-red) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-actions button.is-danger:hover,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-head-actions button.is-danger:focus-visible {
+  background: var(--fui-red) !important;
+  color: #0a0a0a !important;
+}
+
+/* ---------- net space ------------------------------------------------------- */
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-space {
+  background:
+    linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px),
+    #0e0e0e !important;
+  background-size: 40px 40px, 40px 40px, auto !important;
+  border: 1px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-space::before,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-space::after {
+  display: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-world svg line {
+  stroke: var(--fui-yellow) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-operator > span {
+  border-color: var(--fui-white) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-operator > span small {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-operator > span b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-node {
+  background: var(--fui-panel) !important;
+  border: 2px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+  transition: border-color .12s !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-node:hover,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-node:focus-visible {
+  border-color: var(--fui-white) !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-node.is-hostile {
+  border-color: var(--fui-red) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-node.is-targeted {
+  border-color: var(--fui-yellow) !important;
+  box-shadow: 0 0 0 3px rgba(243, 230, 0, .22) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-node em,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-lock-copy span {
+  background: var(--fui-yellow) !important;
+  border: 0 !important;
+  color: #0a0a0a !important;
+  font-family: var(--fui-display) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-viewport-controls {
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-viewport-controls button {
+  background: var(--fui-panel-2) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 13px !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-viewport-controls button:hover,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-viewport-controls button:focus-visible {
+  background: var(--fui-white) !important;
+  color: #0a0a0a !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-viewport-controls b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  font-weight: 400 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-net-caption {
+  border-color: var(--fui-line-2) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-net-caption small {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-net-caption b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-lock-readout {
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  border-left: 3px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-lock-readout.has-target {
+  border-left-color: var(--fui-yellow) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-lock-portrait {
+  border: 1px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-lock-copy small {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-lock-copy b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  text-shadow: none !important;
+}
+
+/* ---------- quickhack bar --------------------------------------------------- */
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-actions {
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-actions-title {
+  border-color: var(--fui-yellow) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-actions-title small {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-actions-title b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-actions-title span {
+  color: var(--fui-yellow) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 12px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack {
+  background: var(--fui-panel-2) !important;
+  border: 1px solid var(--fui-line-2) !important;
+  color: var(--fui-white) !important;
+  box-shadow: none !important;
+  transition: border-color .12s, background-color .12s !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:hover:not(:disabled),
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:focus-visible {
+  border-color: var(--fui-yellow) !important;
+  outline: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:disabled {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:disabled > img,
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:disabled > span {
+  opacity: .45 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > span b {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-display) !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > span small {
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 12px !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > em {
+  background: var(--fui-yellow) !important;
+  border: 0 !important;
+  color: #0a0a0a !important;
+  font-style: normal !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack > em span {
+  font-size: 10px !important;
+  letter-spacing: .14em !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:disabled > em {
+  background: var(--fui-line) !important;
+  color: var(--fui-muted) !important;
+}
