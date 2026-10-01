@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const REWRITE = "unique-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "Do these";
@@ -38,7 +38,7 @@
       key:"igla-sovereign",
       name:"Igla Sovereign",
       weaponClass:"Shotgun",
-      damage:"40d2",
+      damage:"60d2",
       damageType:"piercing",
       range:15,
       longRange:30,
@@ -61,7 +61,7 @@
       key:"motor-lock",
       name:"Motor Lock",
       weaponClass:"DMR",
-      damage:"8d10+10",
+      damage:"10d10+12",
       damageType:"piercing",
       range:150,
       longRange:500,

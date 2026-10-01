@@ -405,7 +405,9 @@
       damage !== "—" ? "DMG "+damage : null,
       "RANGE "+marketRangeText(def,item),
       !isMelee && attacks > 0 ? attacks+" ATTACK"+(attacks===1?"":"S")+" / RELOAD" : null,
-      !isMelee && reload > 0 ? "RELOAD "+reload+" PT"+(reload===1?"":"S") : null,
+      !isMelee && (globalThis.FEHA_WEAPON_HANDLING?.profile?.(def ?? item)?.reloadLabel ?? null)
+        ? "RELOAD "+globalThis.FEHA_WEAPON_HANDLING.profile(def ?? item).reloadLabel
+        : (!isMelee && reload > 0 ? "RELOAD "+reload+" PT"+(reload===1?"":"S") : null),
       "TO HIT DEX"
     ].filter(Boolean);
 
