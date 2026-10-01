@@ -4,7 +4,7 @@
 **Repository:** `aidenfortihong-blip/feha-dev` · branch `main`
 **Live world:** `caradactyl.forge-vtt.com` (Forge)
 **Foundry baseline:** 14.367 · dnd5e 5.3.3
-**Current verified build (live on main):** **0.11.83**
+**Current verified build (live on main):** **0.11.84**
 **Known-good checkpoint:** branch `checkpoint-before-claude` (`eeebb69`, build 0.11.78)
 
 This supersedes `FEHA_MASTER_HANDOFF_2026-09-28.md` (build 0.10.79). The older
@@ -161,13 +161,12 @@ CP2077 ripperdoc screen (Chrome Manager) and a monochrome "HUD / FUI ELEMENTS
   signature = no-op. The v6 renderer itself lives in the installed module
   (`scripts/chrome-visual.js`), not in this repo. Install/eject round trip
   verified on Ponyboy's Dense Marrow.
-- **Cyberdeck (0.11.84) — NOT LIVE, awaiting user approval:** branch
-  `release/cyberdeck-fui` (`126f95e`). Pure CSS re-flow into the tile sheet:
-  ring-tile RAM strip (L1–L24), CYBERDECK logo tile, greyscale portrait panel,
-  サイバーデッキ watermark, yellow JACK IN. `.v3-main` is `display: contents`,
-  so its legacy `::before/::after` must stay hidden (they caused a 300px
-  horizontal overflow). Below 1180px the side tiles move under the panel.
-  Deck-installed state (loaded Quickhack cards) is untested — no roster
-  character owns a deck.
+- **Cyberdeck (0.11.84, live):** CSS tile-sheet re-flow (`.v3-main` is
+  `display: contents`, so its legacy `::before/::after` stay hidden). V3
+  `segments()` now always renders 24 RAM tiles: `is-filled` (available),
+  `is-spent`, `is-locked` (beyond deck max); no deck = one NO DECK tile.
+  Telemetry graph is locked to 320:176 and animated (flow/pulse/sweep; off
+  under reduced motion). Colour portrait, yellow accents, red warnings,
+  yellow JACK IN. Deck-installed state untested (no roster deck).
 - Known: at 1280px the Chrome body-map columns overlap the portrait edges by
   ~90px (readable; left as-is). JACK IN map (network overlay) not restyled.
