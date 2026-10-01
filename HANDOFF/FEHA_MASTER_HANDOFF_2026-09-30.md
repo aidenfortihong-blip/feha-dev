@@ -297,3 +297,11 @@ Test artifacts left in the world: Actor folder "FEHA TEST" (TEST Gunner, TEST Du
 - **Network devices / cameras never worked**: every read used `doc.getFlag("fleshEnshrouded", ...)` and every write `setFlag(...)`; Foundry rejects that scope because it is not a package id (the module id is `flesh-enshrouded-heart-ablaze`), and the reads were inside try/catch so they silently returned nothing. All FEHA flag access now goes through `doc.flags.fleshEnshrouded...` / `doc.update({"flags.fleshEnshrouded...": ...})`. Verified: custom alarm/terminal/turret devices save, scan, show in JACKED IN, breach + capability execute; door OPEN changes the wall state.
 - `cyberdeck-v3.css` (Cyberdeck + JACKED IN base styles) got the same 10-11px text floor; device tiles and the device panel are skinned in cyberdeck-cp.css.
 - Do NOT "fix" the module's `repairChromeData` by supplying the missing parent without reading it: its second half sets `installed = (flag !== false)` on every actor's cyberware, i.e. it would auto-install anything lacking an explicit `installed:false`. The throw currently prevents that.
+
+### §11 state when the unattended session ended
+
+- Branch `gateway-and-bugsweep`, head = "Market: GM removes player purchases from stock; honest cyberware buy label" (stock patch 2.1.0). Everything before that commit was verified live on the GM client. **That last commit is syntax-checked only**: the Forge server idled out before it could be loaded. To verify: buy an item as a non-GM player and confirm it leaves `world.adkMarketStockV16["shop:tier"]`; check cyberware buy buttons read "BUY".
+- All 20 quickhacks were executed against test dummies through FEHA_QUICKHACK_RUNTIME (prepare + execute) with no errors.
+- Not restored because the server stopped: in the Claude built-in browser profile only, the client setting `core.messageMode` is "gm" (set to keep test rolls out of public chat); the GM user's last viewed scene is "FEHA TEST ARENA".
+- Test artifacts to delete when convenient: Actor folder "FEHA TEST" (3 actors), scene "FEHA TEST ARENA" (door wall + 3 custom network devices), and test chat cards from 2026-10-01.
+- To ship: fast-forward `main` to this branch (version already 0.11.89 in version.json and FEHA_TABLETOP_UI_V3.js), then `game.adk.reload()` on the GM client and confirm "0.11.89 loaded".
