@@ -2174,6 +2174,10 @@
                     }
                   },
                   onStateChange:handleIntroPlayerState,
+                  // The captions module loads late (and auto-enables when
+                  // the browser forces a muted start); unload it whenever it
+                  // announces itself.
+                  onApiChange:event => suppressIntroCaptions(event.target),
                   onError:event => {
                     console.warn(
                       "FEHA DEV // YouTube intro player error",
