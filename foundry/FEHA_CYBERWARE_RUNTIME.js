@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const PASSIVE_FLAG = "cyberwarePassive";
@@ -121,7 +121,17 @@
 
   // ---- Passive bonuses -----------------------------------------------------
 
-  const fingerprint = def => JSON.stringify(def.changes ?? []);
+  // Most characters in this world have no base walking speed recorded, so a
+  // speed bonus would show as the bonus alone. Any effect that changes speed
+  // first raises an unset speed to the standard 30 ft.
+  function withBaseSpeed(changes) {
+    const WALK = "system.attributes.movement.walk";
+    if (!changes.some(change => change.key === WALK)) return changes;
+
+    return [{key:WALK,value:"30",type:"upgrade",priority:5},...changes];
+  }
+
+  const fingerprint = def => VERSION+JSON.stringify(def.changes ?? []);
 
   async function syncActor(actor) {
     if (!actor?.isOwner || syncing.has(actor.id)) return;
@@ -161,7 +171,7 @@
             img:item.img || "icons/svg/upgrade.svg",
             type:"base",
             description:"<p>"+esc(def.effectText)+"</p>",
-            system:{changes:def.changes},
+            system:{changes:withBaseSpeed(def.changes)},
             flags:{
               [FLAG]:{
                 [PASSIVE_FLAG]:{
@@ -328,7 +338,7 @@
         img:item.img || "icons/svg/upgrade.svg",
         type:"base",
         description:"<p>"+esc(def.effectText)+"</p>",
-        system:{changes:spec.changes ?? []},
+        system:{changes:withBaseSpeed(spec.changes ?? [])},
         statuses:spec.statuses ?? [],
         duration:spec.duration,
         flags:{[FLAG]:{[ACTIVE_FLAG]:{itemId:item.id}}}
