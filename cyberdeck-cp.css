@@ -1969,3 +1969,21 @@ html body #feha-jackin-overlay#feha-jackin-overlay .jack-device-capabilities but
   opacity: 1 !important;
   cursor: not-allowed !important;
 }
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-camera-node {
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-white) !important;
+  color: var(--fui-white) !important;
+  box-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-camera-node i {
+  color: var(--fui-yellow) !important;
+  text-shadow: none !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-camera-node small {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 10px !important;
+}
