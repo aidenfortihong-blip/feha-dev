@@ -305,3 +305,13 @@ Test artifacts left in the world: Actor folder "FEHA TEST" (TEST Gunner, TEST Du
 - Not restored because the server stopped: in the Claude built-in browser profile only, the client setting `core.messageMode` is "gm" (set to keep test rolls out of public chat); the GM user's last viewed scene is "FEHA TEST ARENA".
 - Test artifacts to delete when convenient: Actor folder "FEHA TEST" (3 actors), scene "FEHA TEST ARENA" (door wall + 3 custom network devices), and test chat cards from 2026-10-01.
 - To ship: fast-forward `main` to this branch (version already 0.11.89 in version.json and FEHA_TABLETOP_UI_V3.js), then `game.adk.reload()` on the GM client and confirm "0.11.89 loaded".
+
+## 12. 0.11.89 shipped to main (2026-10-01)
+
+Everything in §11 is live, plus the user's decisions:
+- Reload check is always **Dexterity** vs DC = STR requirement (FEHA_WEAPON_HANDLING 1.3.0).
+- **RAM refills only on a Short/Long Rest from the character sheet** (`dnd5e.restCompleted` hook in V3); the Cyberdeck's rest button is gone.
+- **Breaching a device costs RAM per attempt**, pass or fail: DC <=12 -> 1, 13-15 -> 2, 16+ -> 3 (`breachRamCost` in V3). Unsecured or already-breached devices are free.
+- Unique weapons stay purchasable but rare: economy weight 0.02 and vendor tier 4+ only, now actually applied by the stock builder.
+- Derke got the same "Power Level 2" ActiveEffect as Ponyboy/Zach (levels in this world come from that effect: `system.details.level` override); his cyberware capacity bonus is now 3 (total 24).
+- Verified live: player-purchase stock removal (createItem hook), rest RAM restore, breach RAM cost and the not-enough-RAM refusal.
