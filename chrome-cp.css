@@ -998,35 +998,53 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .cp-rd-label:focus-visibl
 
 /* ---------- inspector readability ------------------------------------------ */
 
-/* Hardware ports as full-width rows: three side-by-side tiles could not hold
-   their labels once UI text was raised to a readable size. */
+/* The inspector scrolls when a system has many ports; the primary action
+   (BROWSE COMPATIBLE HARDWARE) stays pinned in view. */
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-inspector {
+  grid-template-rows: auto !important;
+  grid-auto-rows: auto !important;
+  align-content: start !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 94, 87, .3) transparent;
 }
 
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-inspector .adk-v6-browse {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 2 !important;
+  background: #180b0f !important;
+  box-shadow: 0 -10px 14px rgba(12, 6, 8, .92) !important;
+}
+
+/* Hardware ports as compact full-width rows: three side-by-side tiles could
+   not hold their labels once UI text was raised to a readable size. */
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app .adk-v6-port-stack {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) !important;
   grid-template-rows: none !important;
-  grid-auto-rows: auto !important;
+  grid-auto-rows: max-content !important;
   align-content: start !important;
-  height: auto !important;
-  min-height: 0 !important;
+  height: max-content !important;
+  min-height: max-content !important;
+  max-height: none !important;
+  overflow: visible !important;
   gap: 4px !important;
 }
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app .adk-v6-port-stack .adk-v6-port {
   display: grid !important;
   grid-template-columns: 30px 24px minmax(0, 1fr) !important;
+  grid-template-rows: auto !important;
+  grid-auto-rows: 0 !important;
   align-items: center !important;
-  gap: 8px !important;
+  row-gap: 0 !important;
+  column-gap: 8px !important;
   width: 100% !important;
-  min-height: 40px !important;
+  min-height: 34px !important;
   height: auto !important;
-  padding: 4px 12px !important;
+  padding: 2px 12px !important;
   text-align: left !important;
 }
 
@@ -1047,7 +1065,9 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy {
   grid-column: 3 !important;
   grid-row: 1 !important;
   display: flex !important;
-  flex-direction: column !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+  gap: 8px !important;
   min-width: 0 !important;
 }
 
@@ -1057,6 +1077,42 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy s
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   line-height: 1.25 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy b {
+  flex: 0 0 auto !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-port .port-copy small {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+}
+
+/* System dossier: readable description instead of a clipped block. */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system-dossier {
+  height: auto !important;
+  grid-template-rows: auto !important;
+  grid-auto-rows: auto !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-system-dossier .dossier-visual {
+  height: 112px !important;
+  min-height: 0 !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy span {
+  font-size: 12px !important;
+  letter-spacing: .1em !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-copy p {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
 }
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
