@@ -4,7 +4,7 @@
 **Repository:** `aidenfortihong-blip/feha-dev` · branch `main`
 **Live world:** `caradactyl.forge-vtt.com` (Forge)
 **Foundry baseline:** 14.367 · dnd5e 5.3.3
-**Current verified build (live on main):** **0.11.86**
+**Current verified build (live on main):** **0.11.87**
 **Known-good checkpoint:** branch `checkpoint-before-claude` (`eeebb69`, build 0.11.78)
 
 This supersedes `FEHA_MASTER_HANDOFF_2026-09-28.md` (build 0.10.79). The older
@@ -199,3 +199,30 @@ CP2077 ripperdoc screen (Chrome Manager) and a monochrome "HUD / FUI ELEMENTS
   pre-patch) and `world.feha-weapon-backup-2026-09-30`.
 - Revisit when characters reach level 5 (Extra Attack roughly doubles gun
   output under this model).
+
+---
+
+## 8. Class-based weapon handling (0.11.87) — live
+
+`foundry/FEHA_WEAPON_HANDLING.js` (global `FEHA_WEAPON_HANDLING`, loaded
+after latest-dev.js) owns the rules; reload points are retired.
+
+- Reload: Pistol/Heavy Pistol/SMG/Shotgun Pistol = Bonus Action;
+  Assault Rifle/DMR/Shotgun/Bow and any single-shot weapon = Action;
+  LMG/Sniper = full turn (Action, no movement) + reload check (LMG STR,
+  sniper DEX, DC = weapon STR requirement, 10 if none). Fail = retry.
+- STR requirement: below it → disadvantage (automatic) + max 10 ft move
+  (table rule) unless installed Strong Arms / Power Grip / Reinforced
+  Muscles / Gun Stabilizer (`STR_NEGATORS`) or an item flagged
+  `flags.fleshEnshrouded.handling.negateStrRequirement`.
+- LMG Brace (table rule): disadvantage if moved > 10 ft. Sniper Scoped
+  (automatic): disadvantage vs targets within 30 ft. `CLOSE_RANGE_SNIPERS`
+  = Ashura, Long Vigil (no scope, 60/180 ft).
+- Feat/cyberware flags: `handling.skipReloadCheck`, `handling.reloadAdvantage`.
+- Disadvantage applies via `dnd5e.preRollAttackV2` (all attack paths).
+  Weapon sheet: single RELOAD button (`FEHA_RELOAD_TRACKER.reload`), HANDLING
+  rule card, STR warning bar. Market cards show reload type.
+- Re-tune for the new model (LMG/sniper checks counted at 60%): 17 weapons,
+  single hits capped near 100 avg; capped single-shot weapons keep their
+  prior power rating so price reflects alpha.
+- Backup: `world.feha-handling-backup-2026-09-30` (all weapons pre-0.11.87).
