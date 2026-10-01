@@ -395,27 +395,44 @@
       return;
     }
 
-    const canonical = JSON.stringify({
-      name:spec.name,
-      system:spec.system,
-      description:spec.description,
-      transfer:spec.transfer,
-      flags:spec.flags
-    });
+    // Compare only the fields this module sets. Foundry fills stored changes
+    // with defaults (e.g. phase:"initial"), so comparing the whole system
+    // object never matched and every signature effect was deleted and
+    // recreated on each load.
+    const changeKey = change => [
+      change?.key,
+      String(change?.value ?? ""),
+      change?.type,
+      change?.priority ?? null
+    ];
+
+    const fingerprint = (name,changes,description,transfer,flags) =>
+      JSON.stringify({
+        name,
+        changes:list(changes).map(changeKey),
+        description,
+        transfer,
+        flags
+      });
+
+    const canonical =
+      fingerprint(
+        spec.name,
+        spec.system.changes,
+        spec.description,
+        spec.transfer,
+        spec.flags[FLAG]
+      );
 
     const matches =
       existing.length === 1 &&
-      JSON.stringify({
-        name:existing[0].name,
-        system:existing[0].system?.toObject
-          ? existing[0].system.toObject()
-          : existing[0].system,
-        description:existing[0].description,
-        transfer:existing[0].transfer,
-        flags:{
-          [FLAG]:existing[0].flags?.[FLAG]
-        }
-      }) === canonical;
+      fingerprint(
+        existing[0].name,
+        existing[0].system?.changes,
+        existing[0].description,
+        existing[0].transfer,
+        existing[0].flags?.[FLAG]
+      ) === canonical;
 
     if (matches) return;
 

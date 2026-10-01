@@ -366,6 +366,20 @@
       }
     }
 
+    // Market fields belong to FEHA_WEAPON_ECONOMY when it prices this weapon.
+    // Both modules used to write them, so they flipped on every load.
+    const economyOwned =
+      Boolean(globalThis.FEHA_WEAPON_ECONOMY?.profile?.(item));
+
+    if (economyOwned) {
+      for (const key of [
+        "sourceCategory","marketCategory","shopType","curatedCatalogV10",
+        "catalogEnabled","marketReady","priceCredits","marketPrice"
+      ]) {
+        delete values[key];
+      }
+    }
+
     for (const [key,value] of Object.entries(values)) {
       if (!same(flags[key],value)) update["flags."+FLAG+"."+key] = value;
     }
@@ -416,6 +430,7 @@
     // These are one-off rewards, not Quickhack shop entries. Clear any
     // leftover price written by the old name-collision migration.
     if (
+      !economyOwned &&
       item.system?.price &&
       Number(item.system.price.value ?? 0) !== 0
     ) {

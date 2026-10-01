@@ -655,6 +655,9 @@
       update["system.description.value"] = description;
     }
 
+    // Nothing to change: skip the no-op update (94 of them per load).
+    if (!Object.keys(update).length) return false;
+
     await item.update(update);
     return true;
   }

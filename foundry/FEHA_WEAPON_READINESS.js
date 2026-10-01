@@ -9,7 +9,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_READINESS requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.1.2";
+  const VERSION = "4.1.3";
   const REVIEW_IMPORT = "2026-09-30-do-these-export-1";
   const DESCRIPTION_REPAIR = "2026-09-30-final-card-repair-1";
   const FLAG = "fleshEnshrouded";
@@ -882,6 +882,23 @@
         special.text;
     }
 
+    // The permanent weapon catalog stamps its own values on these three
+    // keys. Writing ours as well made the two modules overwrite each other
+    // on every load (156 database writes for 78 guns, ~20 s of load time).
+    const catalogOwned =
+      Boolean(
+        (
+          globalThis.FEHA_WEAPON_CATALOG ??
+          game.adk?.weapons
+        )?.definition?.(item)
+      );
+
+    if (catalogOwned) {
+      delete values.marketPass;
+      delete values.weaponReadinessVersion;
+      delete values.doTheseFinalizedVersion;
+    }
+
     for (
       const [key,value] of
       Object.entries(values)
@@ -1096,6 +1113,17 @@
 
       if (!managed) continue;
       if (legacyIdentifierQuarantined(item)) continue;
+
+      // Melee and unique weapons are finished catalog items owned by their
+      // own catalogs and priced by the weapon economy; they are not stale
+      // firearm drafts. Demoting them here pulled them out of every shop's
+      // saved stock on each load before the economy re-enabled them.
+      if (
+        globalThis.FEHA_MELEE_CATALOG?.definition?.(item) ||
+        globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.definition?.(item)
+      ) {
+        continue;
+      }
 
       await item.update({
         ["flags."+FLAG+".marketReady"]:false,
@@ -1497,19 +1525,28 @@
         demotion.blockedIds
       );
 
-    try {
-      const reroll =
-        document.querySelector(
-          "#adk-market-15 #reroll-stock"
-        );
+    // Only disturb an open Market when this pass actually changed what may
+    // be sold. Re-rolling unconditionally replaced every shop's stock each
+    // time the build was reloaded with the Market open.
+    if (
+      updated > 0 ||
+      demotion.demoted > 0 ||
+      staleStockRemoved > 0
+    ) {
+      try {
+        const reroll =
+          document.querySelector(
+            "#adk-market-15 #reroll-stock"
+          );
 
-      if (reroll) {
-        reroll.click();
-      } else {
-        globalThis.ADKMarket
-          ?.refresh?.();
-      }
-    } catch {}
+        if (reroll && staleStockRemoved > 0) {
+          reroll.click();
+        } else {
+          globalThis.ADKMarket
+            ?.refresh?.();
+        }
+      } catch {}
+    }
 
     guardMarketDom();
 
