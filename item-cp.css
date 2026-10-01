@@ -360,9 +360,26 @@ html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule {
   border-radius: 0 !important;
 }
 
-html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule p,
-html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule div {
+/* Rule cards carry the text players actually need at the table (reload
+   cost, STR penalty, manufacturer trait): keep them comfortably readable. */
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule small {
+  font-family: var(--ic-display) !important;
+  font-size: 11px !important;
+  letter-spacing: .12em !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule strong {
+  font-family: var(--ic-display) !important;
+  font-size: 14px !important;
+  letter-spacing: .06em !important;
+}
+
+html body .application.sheet.dnd5e2.item .feha-ws-shell .feha-ws-rule p {
   color: var(--ic-salmon) !important;
+  font-family: var(--ic-display) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
 }
 
 /* Live fire console. */
