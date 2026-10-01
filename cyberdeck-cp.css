@@ -2059,3 +2059,31 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-chec
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check:disabled span {
   color: var(--fui-muted) !important;
 }
+
+/* JACKED IN tokens are drawn at their true map footprint and scale with the
+   map (FEHA_TABLETOP_UI_V3 jackTokenFootprint). The portrait fills the frame
+   exactly, and the labels attached to a token keep one readable size instead
+   of growing with the zoom. */
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-world .jack-node img {
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-world .jack-operator > span {
+  top: calc(100% + 6px / var(--jack-zoom, 1)) !important;
+  bottom: auto !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) scale(calc(1 / var(--jack-zoom, 1))) !important;
+  transform-origin: 50% 0 !important;
+}
+
+html body #feha-jackin-overlay#feha-jackin-overlay .jack-world .jack-node > em {
+  top: calc(100% + 4px / var(--jack-zoom, 1)) !important;
+  bottom: auto !important;
+  transform: translateX(-50%) scale(calc(1 / var(--jack-zoom, 1))) !important;
+  transform-origin: 50% 0 !important;
+}
