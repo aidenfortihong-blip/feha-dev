@@ -61,7 +61,7 @@
 #feha-cyberdeck-v2 .cd2-hack-card button {
   min-width: 86px !important;
   height: 42px !important;
-  font-size: 9px !important;
+  font-size: 11px !important;
   font-weight: 900 !important;
   letter-spacing: .9px !important;
 }
@@ -133,7 +133,7 @@
 #feha-jackin-overlay .jack-code-rain i {
   display: block;
   color: rgba(var(--jack-green), .62);
-  font-size: 10px;
+  font-size: 11px;
   font-style: normal;
   line-height: 1.35;
   text-align: center;
@@ -188,7 +188,7 @@
 #feha-jackin-overlay .jack-boot-core span {
   margin-top: 8px;
   color: #57916b;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 1.2px;
 }
 
@@ -221,7 +221,7 @@
 
 #feha-jackin-overlay .jack-header small {
   color: rgb(var(--jack-mag));
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 2px;
 }
 
@@ -250,7 +250,7 @@
 
 #feha-jackin-overlay .jack-head-stat span {
   color: #617c83;
-  font-size: 7px;
+  font-size: 10px;
   letter-spacing: 1.1px;
 }
 
@@ -365,7 +365,7 @@
 
 #feha-jackin-overlay .jack-operator small {
   color: #668087;
-  font-size: 7px;
+  font-size: 10px;
   letter-spacing: 1px;
 }
 
@@ -440,14 +440,14 @@
 #feha-jackin-overlay .jack-node-copy small {
   margin-top: 4px;
   color: #70888f;
-  font-size: 7px;
+  font-size: 10px;
   letter-spacing: .7px;
 }
 
 #feha-jackin-overlay .jack-node > em {
   grid-column: 2;
   color: rgba(var(--jack-cyan),.62);
-  font-size: 7px;
+  font-size: 10px;
   font-style: normal;
   font-weight: 900;
   letter-spacing: 1px;
@@ -462,7 +462,7 @@
   top: 6px;
   right: 7px;
   color: rgba(var(--jack-cyan),.28);
-  font-size: 6px;
+  font-size: 10px;
 }
 
 #feha-jackin-overlay .jack-lock-readout {
@@ -484,7 +484,7 @@
 
 #feha-jackin-overlay .jack-lock-readout small {
   color: #687f85;
-  font-size: 7px;
+  font-size: 10px;
 }
 
 #feha-jackin-overlay .jack-lock-readout b {
@@ -496,7 +496,7 @@
 #feha-jackin-overlay .jack-lock-readout span {
   margin-top: 3px;
   color: #567078;
-  font-size: 7px;
+  font-size: 10px;
 }
 
 #feha-jackin-overlay .jack-empty-scene {
@@ -510,7 +510,7 @@
 }
 
 #feha-jackin-overlay .jack-empty-scene b { font-size: 18px; }
-#feha-jackin-overlay .jack-empty-scene span { color:#607a81;font-size:9px; }
+#feha-jackin-overlay .jack-empty-scene span { color:#607a81;font-size:11px; }
 
 #feha-jackin-overlay .jack-actions {
   position: absolute;
@@ -540,7 +540,7 @@
 
 #feha-jackin-overlay .jack-actions-title small {
   color: rgb(var(--jack-mag));
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.4px;
 }
 
@@ -553,7 +553,7 @@
 #feha-jackin-overlay .jack-actions-title span {
   margin-top: 8px;
   color: rgb(var(--jack-yellow));
-  font-size: 8px;
+  font-size: 10px;
   line-height: 1.45;
 }
 
@@ -602,8 +602,8 @@
 }
 
 #feha-jackin-overlay .jack-hack b { font-size: 11px; }
-#feha-jackin-overlay .jack-hack small { margin-top:4px;color:#73898f;font-size:7px; }
-#feha-jackin-overlay .jack-hack em { color:rgb(var(--jack-yellow));font-size:7px;font-style:normal;font-weight:900; }
+#feha-jackin-overlay .jack-hack small { margin-top:4px;color:#73898f;font-size:10px; }
+#feha-jackin-overlay .jack-hack em { color:rgb(var(--jack-yellow));font-size:10px;font-style:normal;font-weight:900; }
 
 #feha-jackin-overlay .jack-no-hacks {
   display: grid;
@@ -611,7 +611,7 @@
   min-height: 72px;
   color: #637b82;
   border: 1px dashed rgba(var(--jack-cyan),.16);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 @keyframes jack-code-fall {
@@ -723,7 +723,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-brand small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:2.2px !important;
 }
 
@@ -733,7 +733,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-build {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-header-status {
@@ -748,11 +748,11 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-header-status span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-header-status b {
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 #v3-actor {
@@ -802,7 +802,7 @@
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-tag {
   padding:7px 10px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta {
@@ -814,7 +814,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta b {
@@ -868,7 +868,7 @@
 #feha-cyberdeck-v2.feha-v3 .v3-ram small {
   display:block;
   color:#788f94;
-  font-size:8px;
+  font-size:10px;
   letter-spacing:1.4px;
 }
 
@@ -899,7 +899,7 @@
     linear-gradient(135deg,rgba(var(--cd2-cyan),.045),transparent),
     #03090b !important;
   border:1px solid rgba(var(--cd2-cyan),.34) !important;
-  font-size:10px !important;
+  font-size:11px !important;
   font-weight:900;
   letter-spacing:1.1px;
   cursor:pointer;
@@ -928,7 +928,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-section-head small {
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:1.5px !important;
 }
 
@@ -983,7 +983,7 @@
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy span {
   margin-top:6px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy small {
@@ -997,7 +997,7 @@
   min-width:0 !important;
   height:38px !important;
   align-self:end;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot {
@@ -1015,7 +1015,7 @@
   top:10px;
   left:11px;
   color:#425c62;
-  font-size:6px;
+  font-size:10px;
   font-style:normal;
 }
 
@@ -1026,13 +1026,13 @@
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot b {
   color:#93a8ad;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot small {
   max-width:110px;
   color:#516970;
-  font-size:6px !important;
+  font-size:10px !important;
   line-height:1.4;
   text-align:center;
 }
@@ -1065,13 +1065,13 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy span {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy small {
   max-height:42px;
   overflow:hidden;
-  font-size:7px !important;
+  font-size:10px !important;
   line-height:1.45 !important;
 }
 
@@ -1079,7 +1079,7 @@
   width:84px !important;
   height:46px !important;
   align-self:center;
-  font-size:9px !important;
+  font-size:11px !important;
   font-weight:900;
 }
 
@@ -1100,7 +1100,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-subhead {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.4px !important;
 }
 
@@ -1109,11 +1109,11 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat b {
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card {
@@ -1128,7 +1128,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-session p {
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.6 !important;
 }
 
@@ -1196,7 +1196,7 @@
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-state {
   justify-self:start;
-  font-size:9px;
+  font-size:11px;
   font-weight:900;
   letter-spacing:1.6px;
 }
@@ -1213,7 +1213,7 @@
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-main small {
   margin-bottom:4px;
-  font-size:9px;
+  font-size:11px;
   letter-spacing:2px;
 }
 
@@ -1228,7 +1228,7 @@
   justify-self:end;
   position:relative;
   z-index:1;
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1.2px;
 }
@@ -1393,7 +1393,7 @@
   right:9px;
   top:7px;
   color:rgba(var(--cd2-yellow),.70);
-  font-size:6px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1.1px;
 }
@@ -1424,7 +1424,7 @@
   display:block !important;
   margin-top:6px !important;
   color:rgb(var(--cd2-yellow)) !important;
-  font-size:7px !important;
+  font-size:10px !important;
   line-height:1.3 !important;
 }
 
@@ -1471,7 +1471,7 @@
   left:10px !important;
   top:9px !important;
   color:#40575d !important;
-  font-size:6px !important;
+  font-size:10px !important;
 }
 
 /* SOFTWARE LIBRARY: clean horizontal cards. */
@@ -1508,7 +1508,7 @@
   margin-top:5px !important;
   overflow:hidden;
   color:#70858b !important;
-  font-size:7px !important;
+  font-size:10px !important;
   line-height:1.35 !important;
 }
 
@@ -1541,7 +1541,7 @@
 
 #feha-cyberdeck-v2.feha-v3 .cd2-subhead {
   margin-bottom:10px !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat {
@@ -1549,7 +1549,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat b {
@@ -1563,13 +1563,13 @@
   padding:14px;
   color:#60767c !important;
   border:1px dashed rgba(var(--cd2-cyan),.12) !important;
-  font-size:7px !important;
+  font-size:10px !important;
   text-align:center;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-session p {
   margin:0 !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.55 !important;
 }
 
@@ -1614,12 +1614,12 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-state {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.4px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-main small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-main b {
@@ -1630,7 +1630,7 @@
 #feha-cyberdeck-v2.feha-v3 .v3-jack-meta {
   max-width:220px;
   padding-right:18px;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.4;
   text-align:right;
   white-space:normal;
@@ -1742,7 +1742,7 @@
 
 #feha-cyberdeck-v2.feha-v3 .cd2-section-head > span {
   color:rgb(var(--cd2-yellow)) !important;
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:1.1px !important;
 }
 
@@ -1802,7 +1802,7 @@
 
 #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
   color:#8ca0a5 !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.55 !important;
 }
 
@@ -1820,7 +1820,7 @@
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card b {
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
@@ -1829,7 +1829,7 @@
   margin-top:4px;
   overflow:hidden;
   color:#71858b;
-  font-size:7px !important;
+  font-size:10px !important;
   line-height:1.35;
 }
 
@@ -1942,7 +1942,7 @@
   }
 
   #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
-    font-size:7px !important;
+    font-size:10px !important;
   }
 }
 
@@ -1958,7 +1958,7 @@
   color:#ffd65a;
   background:rgba(255,214,90,.045);
   border-left:2px solid rgba(255,214,90,.72);
-  font-size:7px;
+  font-size:10px;
   line-height:1.45;
   letter-spacing:.8px;
 }
@@ -1980,7 +1980,7 @@
 #feha-cyberdeck-v2.feha-v3 .v3-overflow-head {
   margin:0 0 9px;
   color:rgb(var(--cd2-mag));
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1px;
 }
@@ -2019,13 +2019,13 @@
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span,
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy span,
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card::before,
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot::before,
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot em {
-  font-size:7.5px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot small,
@@ -2034,7 +2034,7 @@
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small,
 #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p,
 #feha-cyberdeck-v2.feha-v3 .v3-deck-conflict {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-head-stat span,
@@ -2045,17 +2045,17 @@
 #feha-jackin-overlay .jack-lock-readout span,
 #feha-jackin-overlay .jack-hack small,
 #feha-jackin-overlay .jack-hack em {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-node-num {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 @media(max-width:1450px) {
   #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p,
   #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
-    font-size:8px !important;
+    font-size:10px !important;
   }
 }
 
@@ -2206,7 +2206,7 @@
 }
 
 #feha-jackin-overlay .jack-operator small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-operator b {
@@ -2249,11 +2249,11 @@
 
 #feha-jackin-overlay .jack-node-copy small {
   margin-top:5px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-node > em {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-node.is-targeted {
@@ -2318,7 +2318,7 @@
 }
 
 #feha-jackin-overlay .jack-actions-title small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-actions-title b {
@@ -2329,7 +2329,7 @@
 
 #feha-jackin-overlay .jack-actions-title span {
   margin-top:11px !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.5 !important;
 }
 
@@ -2377,13 +2377,13 @@
 
 #feha-jackin-overlay .jack-hack small {
   margin-top:5px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-hack em {
   justify-self:end;
   color:rgb(var(--jack-yellow)) !important;
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:.7px;
 }
 
@@ -2482,7 +2482,7 @@
 }
 
 #feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node-copy small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-space[data-node-count="1"] .jack-net-line {
@@ -2539,7 +2539,7 @@
 }
 
 #feha-jackin-overlay .jack-hack small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-hack em {
@@ -2565,7 +2565,7 @@
 }
 
 #feha-jackin-overlay .jack-hack em span {
-  font-size:6.5px !important;
+  font-size:10px !important;
   letter-spacing:.9px;
 }
 
@@ -2595,7 +2595,7 @@
 }
 
 #feha-jackin-overlay .jack-lock-readout span {
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:.5px;
 }
 
@@ -2698,14 +2698,14 @@
 
 #feha-jackin-overlay .jack-net-caption small {
   color:#5f777d;
-  font-size:7px;
+  font-size:10px;
   letter-spacing:1.3px;
 }
 
 #feha-jackin-overlay .jack-net-caption b {
   margin-top:4px;
   color:#cfeff4;
-  font-size:8px;
+  font-size:10px;
   letter-spacing:.8px;
 }
 
@@ -2872,7 +2872,7 @@
 #feha-jackin-overlay .jack-relay small {
   align-self:end;
   color:#bad9de;
-  font-size:7px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:.8px;
   line-height:1;
@@ -2882,7 +2882,7 @@
   align-self:start;
   margin-top:3px;
   color:#4f7077;
-  font-size:6px;
+  font-size:10px;
   font-style:normal;
   letter-spacing:.9px;
 }
@@ -2982,7 +2982,7 @@
   right:9px;
   bottom:-18px;
   color:rgba(var(--jack-yellow),.72);
-  font-size:6px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1.2px;
 }
@@ -3233,11 +3233,11 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-relay small {
-  font-size:6.5px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-relay em {
-  font-size:5.5px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-space[data-node-count="1"] .jack-node {
@@ -3346,7 +3346,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .qh-resolution-head small {
   color:rgb(var(--jack-mag));
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1.8px;
 }
@@ -3362,7 +3362,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .qh-resolution-head span {
   color:#789097;
-  font-size:9px;
+  font-size:11px;
   letter-spacing:.8px;
 }
 
@@ -3410,7 +3410,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .qh-resolution-target small {
   margin-top:7px;
   color:#627a81;
-  font-size:7px;
+  font-size:10px;
   letter-spacing:1.1px;
 }
 
@@ -3421,7 +3421,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .qh-resolution-target span {
   color:#779096;
-  font-size:8px;
+  font-size:10px;
 }
 
 #feha-jackin-overlay .qh-resolution-result {
@@ -3444,7 +3444,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .qh-resolve-state small,
 #feha-jackin-overlay .qh-effect-state small {
   color:#6f878d;
-  font-size:8px;
+  font-size:10px;
   letter-spacing:1.1px;
 }
 
@@ -3461,7 +3461,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .qh-resolve-state > b em {
   display:block;
   margin-top:5px;
-  font-size:10px;
+  font-size:11px;
   font-style:normal;
   letter-spacing:1px;
 }
@@ -3469,7 +3469,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .qh-resolve-state > span,
 #feha-jackin-overlay .qh-effect-state > span {
   color:#81979d;
-  font-size:9px;
+  font-size:11px;
   line-height:1.55;
 }
 
@@ -3530,7 +3530,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .qh-damage-apply small {
   display:block;
   color:#687f86;
-  font-size:8px;
+  font-size:10px;
   letter-spacing:1.1px;
 }
 
@@ -3546,7 +3546,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .qh-damage-roll span,
 #feha-jackin-overlay .qh-damage-apply > span {
   color:#82989e;
-  font-size:8px;
+  font-size:10px;
 }
 
 #feha-jackin-overlay .qh-damage-apply {
@@ -3600,7 +3600,7 @@ body > #feha-jackin-overlay {
   background:rgb(var(--jack-yellow));
   border:1px solid rgba(255,244,180,.58);
   border-radius:0;
-  font-size:10px;
+  font-size:11px;
   font-weight:900;
   letter-spacing:1px;
   cursor:pointer;
@@ -3627,7 +3627,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .qh-resolution-warnings span {
-  font-size:8px;
+  font-size:10px;
   line-height:1.45;
   letter-spacing:.4px;
 }
@@ -3642,7 +3642,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .qh-resolution-foot > span {
   color:#6f878d;
-  font-size:8px;
+  font-size:10px;
   letter-spacing:1px;
 }
 
@@ -3652,7 +3652,7 @@ body > #feha-jackin-overlay {
   background:rgba(var(--jack-cyan),.025);
   border:1px solid rgba(var(--jack-cyan),.32);
   border-radius:0;
-  font-size:9px;
+  font-size:11px;
   font-weight:900;
   letter-spacing:1px;
   cursor:pointer;
@@ -3732,7 +3732,7 @@ body > #feha-jackin-overlay {
   background:#03090b;
   border:1px solid rgba(var(--jack-cyan),.25);
   border-radius:0;
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1px;
   cursor:pointer;
@@ -3869,18 +3869,18 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-space.has-scene-map .jack-node-copy b {
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.12;
 }
 
 #feha-jackin-overlay .jack-space.has-scene-map .jack-node-copy small {
   margin-top:3px !important;
-  font-size:6.5px !important;
+  font-size:10px !important;
   line-height:1.2;
 }
 
 #feha-jackin-overlay .jack-space.has-scene-map .jack-node > em {
-  font-size:6.5px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-space.has-scene-map .jack-node.is-targeted {
@@ -3970,11 +3970,11 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-space.has-scene-map .jack-relay small {
-  font-size:5.5px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-space.has-scene-map .jack-relay em {
-  font-size:5px !important;
+  font-size:10px !important;
 }
 
 /* Routes float over the scene, but don't erase the geography beneath them. */
@@ -4015,7 +4015,7 @@ body > #feha-jackin-overlay {
   background:rgba(var(--jack-cyan),.025);
   border:1px solid rgba(var(--jack-cyan),.32);
   border-radius:0;
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1px;
   cursor:pointer;
@@ -4041,7 +4041,7 @@ body > #feha-jackin-overlay {
   #feha-jackin-overlay .jack-head-actions button {
     min-width:108px;
     padding:0 10px;
-    font-size:7px;
+    font-size:10px;
   }
 
   #feha-jackin-overlay .qh-resolution-actions {
@@ -4301,7 +4301,7 @@ body > #feha-jackin-overlay {
   background:rgba(var(--jack-cyan),.018);
   border:1px solid rgba(var(--jack-cyan),.18);
   border-radius:0;
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:.7px;
   cursor:pointer;
@@ -4327,7 +4327,7 @@ body > #feha-jackin-overlay {
   background:#020709;
   border-top:1px solid rgba(var(--jack-cyan),.20);
   border-bottom:1px solid rgba(var(--jack-cyan),.08);
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:.6px;
 }
@@ -4477,14 +4477,14 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-device-node b {
   color:#f1fdff;
-  font-size:9px;
+  font-size:11px;
   line-height:1.1;
 }
 
 #feha-jackin-overlay .jack-device-node small {
   margin-top:4px;
   color:#718990;
-  font-size:6.5px;
+  font-size:10px;
   letter-spacing:.5px;
 }
 
@@ -4567,7 +4567,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-device-panel header small {
   color:rgb(var(--jack-mag));
-  font-size:7px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1.5px;
 }
@@ -4582,7 +4582,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-device-panel header span {
   color:#728991;
-  font-size:7px;
+  font-size:10px;
   letter-spacing:.6px;
 }
 
@@ -4618,7 +4618,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-device-security small {
   color:#61777e;
-  font-size:7px;
+  font-size:10px;
   letter-spacing:1px;
 }
 
@@ -4631,7 +4631,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-device-security span {
   margin-top:3px;
   color:#769096;
-  font-size:7px;
+  font-size:10px;
 }
 
 #feha-jackin-overlay .jack-device-breach {
@@ -4642,7 +4642,7 @@ body > #feha-jackin-overlay {
   background:rgb(var(--jack-yellow));
   border:1px solid rgba(255,242,170,.56);
   border-radius:0;
-  font-size:9px;
+  font-size:11px;
   font-weight:900;
   letter-spacing:1px;
   cursor:pointer;
@@ -4668,7 +4668,7 @@ body > #feha-jackin-overlay {
   display:block;
   margin-bottom:7px;
   color:#61777e;
-  font-size:7px;
+  font-size:10px;
   letter-spacing:1.1px;
 }
 
@@ -4685,7 +4685,7 @@ body > #feha-jackin-overlay {
   background:rgba(var(--jack-cyan),.022);
   border:1px solid rgba(var(--jack-cyan),.20);
   border-radius:0;
-  font-size:7.5px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:.6px;
   cursor:pointer;
@@ -4716,13 +4716,13 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-device-result b {
   color:#fff;
-  font-size:9px;
+  font-size:11px;
 }
 
 #feha-jackin-overlay .jack-device-result span {
   margin-top:4px;
   color:#789198;
-  font-size:7.5px;
+  font-size:10px;
   line-height:1.45;
 }
 
@@ -4789,7 +4789,7 @@ body > #feha-jackin-overlay {
   color:rgb(var(--jack-mag));
   background:rgba(7,2,6,.88);
   border:1px solid rgba(var(--jack-mag),.40);
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1px;
   pointer-events:none;
@@ -4839,7 +4839,7 @@ body > #feha-jackin-overlay {
 
 #feha-network-approval-queue .nda-head small {
   color:rgb(255,73,119);
-  font-size:8px;
+  font-size:10px;
   letter-spacing:1.5px;
 }
 
@@ -4883,7 +4883,7 @@ body > #feha-jackin-overlay {
 
 #feha-network-approval-queue .nda-meta small {
   color:#667d83;
-  font-size:7px;
+  font-size:10px;
   letter-spacing:1px;
 }
 
@@ -4895,7 +4895,7 @@ body > #feha-jackin-overlay {
 
 #feha-network-approval-queue .nda-meta span {
   color:#718990;
-  font-size:7px;
+  font-size:10px;
   line-height:1.5;
 }
 
@@ -4904,7 +4904,7 @@ body > #feha-jackin-overlay {
   gap:5px;
   align-content:start;
   color:#6b8289;
-  font-size:7px;
+  font-size:10px;
   letter-spacing:.7px;
 }
 
@@ -4917,7 +4917,7 @@ body > #feha-jackin-overlay {
   background:#010506;
   border:1px solid rgba(92,239,255,.20);
   border-radius:0;
-  font-size:8px;
+  font-size:10px;
 }
 
 #feha-network-approval-queue .nda-security {
@@ -4932,7 +4932,7 @@ body > #feha-jackin-overlay {
   color:#688087;
   background:#020709;
   border:1px solid rgba(92,239,255,.08);
-  font-size:6.5px;
+  font-size:10px;
 }
 
 #feha-network-approval-queue .nda-actions {
@@ -4949,7 +4949,7 @@ body > #feha-jackin-overlay {
   background:#020709;
   border:1px solid rgba(92,239,255,.26);
   border-radius:0;
-  font-size:8px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:.8px;
   cursor:pointer;
@@ -5051,7 +5051,7 @@ body > #feha-jackin-overlay {
   width:100%;
   margin-bottom:2px;
   color:#556d74;
-  font-size:6.5px;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1px;
 }
@@ -5265,7 +5265,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-header small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.25px !important;
 }
 
@@ -5275,7 +5275,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-head-stat span {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-head-stat b {
@@ -5287,7 +5287,7 @@ body > #feha-jackin-overlay {
   min-height:46px !important;
   min-width:142px !important;
   padding:0 16px !important;
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1px !important;
 }
 
@@ -5310,7 +5310,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-operator > span small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.25px !important;
 }
 
@@ -5345,7 +5345,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-node-copy small,
 #feha-jackin-overlay .jack-device-copy small {
   margin-top:6px !important;
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:.95px !important;
   opacity:.92 !important;
 }
@@ -5353,7 +5353,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-node > em,
 #feha-jackin-overlay .jack-device-node > em {
   margin-top:7px !important;
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.1px !important;
 }
 
@@ -5365,7 +5365,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-lock-readout small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-lock-readout b {
@@ -5375,7 +5375,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-lock-readout span {
   margin-top:6px !important;
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:.85px !important;
 }
 
@@ -5389,7 +5389,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-viewport-controls b {
   height:44px !important;
   min-height:44px !important;
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 /* Quickhack tray gets more breathing room and larger action cards. */
@@ -5411,7 +5411,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-actions-title small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-actions-title b {
@@ -5421,7 +5421,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-actions-title span {
   margin-top:8px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-hacks {
@@ -5449,7 +5449,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-hack small {
   margin-top:6px !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-jackin-overlay .jack-hack em {
@@ -5459,7 +5459,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-hack em span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-hack em b {
@@ -5536,7 +5536,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-brand small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.6px !important;
 }
 
@@ -5555,7 +5555,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-header-status span {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-header-status b {
@@ -5581,7 +5581,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-tag {
   padding:8px 11px !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta {
@@ -5593,7 +5593,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta b {
@@ -5607,7 +5607,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:1.25px !important;
 }
 
@@ -5618,11 +5618,11 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
   margin-top:5px !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
@@ -5640,7 +5640,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-ram small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.45px !important;
 }
 
@@ -5665,7 +5665,7 @@ body > #feha-jackin-overlay {
   height:58px !important;
   min-height:58px !important;
   padding:0 20px !important;
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 /* SECTION HEADERS */
@@ -5674,7 +5674,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-section-head small {
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-section-head h3 {
@@ -5683,7 +5683,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-section-head > span {
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 /* LOADED QUICKHACKS */
@@ -5716,18 +5716,18 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-hack-copy span {
   margin-top:7px !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card::before,
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot::before,
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot em {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .v3-hack-card > button {
   height:44px !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot span {
@@ -5735,12 +5735,12 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot b {
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot small {
   max-width:128px !important;
-  font-size:7.5px !important;
+  font-size:10px !important;
   line-height:1.5 !important;
 }
 
@@ -5762,19 +5762,19 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy span {
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-library-list .cd2-hack-copy small {
   max-height:42px !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.5 !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-library-list .v3-hack-card > button {
   width:94px !important;
   height:46px !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 /* RIGHT RAIL */
@@ -5789,7 +5789,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-subhead {
   margin-bottom:12px !important;
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.4px !important;
 }
 
@@ -5798,7 +5798,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat b {
@@ -5808,11 +5808,11 @@ body > #feha-jackin-overlay {
 #feha-cyberdeck-v2.feha-v3 .cd2-empty-message {
   min-height:88px !important;
   padding:12px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1.65 !important;
 }
 
@@ -5821,7 +5821,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.45 !important;
 }
 
@@ -5833,7 +5833,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-main small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-main b {
@@ -5842,7 +5842,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-state,
 #feha-cyberdeck-v2.feha-v3 .v3-jack-meta {
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 @media(max-width:1450px) {
@@ -5851,7 +5851,7 @@ body > #feha-jackin-overlay {
   }
 
   #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
-    font-size:9px !important;
+    font-size:11px !important;
   }
 }
 
@@ -5958,7 +5958,7 @@ body > #feha-jackin-overlay {
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot::before,
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot em {
   color:#476067 !important;
-  font-size:7px !important;
+  font-size:10px !important;
   opacity:.70;
 }
 
@@ -5969,7 +5969,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot b {
   color:#82979c !important;
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-loaded-grid .cd2-empty-slot small {
@@ -6016,7 +6016,7 @@ body > #feha-jackin-overlay {
 #feha-cyberdeck-v2.feha-v3 .cd2-subhead {
   margin-bottom:14px !important;
   color:rgb(var(--cd2-mag)) !important;
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.5px !important;
 }
 
@@ -6033,7 +6033,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
   color:#667d83 !important;
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:1.15px !important;
 }
 
@@ -6050,7 +6050,7 @@ body > #feha-jackin-overlay {
   border:0 !important;
   background:transparent !important;
   color:#66797e !important;
-  font-size:8px !important;
+  font-size:10px !important;
   text-align:left !important;
   place-items:center start !important;
 }
@@ -6060,7 +6060,7 @@ body > #feha-jackin-overlay {
   max-width:30ch;
   margin:0 !important;
   color:#a8babf !important;
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.72 !important;
 }
 
@@ -6111,7 +6111,7 @@ body > #feha-jackin-overlay {
 
   #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
     max-width:none;
-    font-size:9px !important;
+    font-size:11px !important;
   }
 }
 
@@ -6139,7 +6139,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-tag {
   padding:7px 9px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta {
@@ -6151,7 +6151,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta b {
@@ -6165,7 +6165,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-head {
@@ -6184,7 +6184,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
   margin-top:4px !important;
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs {
@@ -6196,7 +6196,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
@@ -6235,7 +6235,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
   color:#82969b !important;
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.1px !important;
 }
 
@@ -6250,7 +6250,7 @@ body > #feha-jackin-overlay {
   min-height:62px !important;
   padding:8px 2px !important;
   color:#82969b !important;
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1.45 !important;
 }
 
@@ -6270,7 +6270,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1.5 !important;
 }
 
@@ -6299,7 +6299,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-main small {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-main b {
@@ -6309,7 +6309,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .v3-jack-state,
 #feha-cyberdeck-v2.feha-v3 .v3-jack-meta {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .v3-jackbar::before {
@@ -6332,7 +6332,7 @@ body > #feha-jackin-overlay {
   }
 
   #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p {
-    font-size:10px !important;
+    font-size:11px !important;
   }
 }
 
@@ -6372,7 +6372,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-operator-meta b {
@@ -6393,7 +6393,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:1.2px !important;
 }
 
@@ -6414,7 +6414,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
   margin-top:5px !important;
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1.45 !important;
 }
 
@@ -6430,7 +6430,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
@@ -6491,7 +6491,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-right-stat span {
   color:#83989d !important;
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.1px !important;
 }
 
@@ -6506,7 +6506,7 @@ body > #feha-jackin-overlay {
   padding:10px 2px !important;
   place-items:center start !important;
   text-align:left !important;
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.5 !important;
   color:#8a9ea3 !important;
   border:0 !important;
@@ -6529,7 +6529,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1.5 !important;
 }
 
@@ -6605,13 +6605,13 @@ body > #feha-jackin-overlay {
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card span {
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.45 !important;
 }
 
 #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-support-card small {
   color:#a5b8bd !important;
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.6 !important;
 }
 
@@ -6628,7 +6628,7 @@ body > #feha-jackin-overlay {
 
 /* Installed Cyberdeck text: make the descriptive copy readable. */
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-summary > small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.25px !important;
 }
 
@@ -6653,7 +6653,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs span {
   color:#85999e !important;
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1px !important;
 }
 
@@ -6670,11 +6670,11 @@ body > #feha-jackin-overlay {
 
   #feha-cyberdeck-v2.feha-v3 .v3-deck-passive p,
   #feha-cyberdeck-v2.feha-v3 .cd2-mini-support .cd2-empty-message {
-    font-size:10px !important;
+    font-size:11px !important;
   }
 
   #feha-cyberdeck-v2.feha-v3 .cd2-deck-head span {
-    font-size:10px !important;
+    font-size:11px !important;
   }
 
   #feha-cyberdeck-v2.feha-v3 .cd2-deck-specs b {
@@ -6716,7 +6716,7 @@ body > #feha-jackin-overlay {
   display:block;
   margin-bottom:8px;
   color:rgba(var(--v3-accent),.58);
-  font-size:8px;
+  font-size:10px;
   font-weight:700;
   letter-spacing:1.8px;
 }
@@ -6754,7 +6754,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-node-copy small {
   margin-top:7px !important;
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.35 !important;
   letter-spacing:1px !important;
 }
@@ -6767,7 +6767,7 @@ body > #feha-jackin-overlay {
 
 /* Operator identity */
 #feha-jackin-overlay .jack-operator > span small {
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.3px !important;
 }
 
@@ -6777,26 +6777,26 @@ body > #feha-jackin-overlay {
 
 /* Relay / scene labels */
 #feha-jackin-overlay .jack-relay small {
-  font-size:8px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-relay em {
-  font-size:7px !important;
+  font-size:10px !important;
 }
 
 #feha-jackin-overlay .jack-net-caption small {
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:1px !important;
 }
 
 #feha-jackin-overlay .jack-net-caption b {
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:.9px !important;
 }
 
 /* Target lock */
 #feha-jackin-overlay .jack-lock-readout small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.1px !important;
 }
 
@@ -6806,13 +6806,13 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-lock-readout span {
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.35 !important;
 }
 
 /* Quickhack execution header */
 #feha-jackin-overlay .jack-actions-title small {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.2px !important;
 }
 
@@ -6822,7 +6822,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-actions-title span {
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1.35 !important;
 }
 
@@ -6842,7 +6842,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-hack > span > small {
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.35 !important;
 }
 
@@ -6852,7 +6852,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-hack em span {
-  font-size:8px !important;
+  font-size:10px !important;
   letter-spacing:1px !important;
 }
 
@@ -6948,7 +6948,7 @@ body > #feha-jackin-overlay {
   color:#050708 !important;
   background:rgb(var(--jack-yellow)) !important;
   border:1px solid rgba(255,244,188,.62);
-  font-size:10px !important;
+  font-size:11px !important;
   font-weight:900 !important;
   letter-spacing:1.1px !important;
   line-height:1 !important;
@@ -6959,7 +6959,7 @@ body > #feha-jackin-overlay {
   right:9px !important;
   bottom:-21px !important;
   color:rgb(var(--jack-yellow)) !important;
-  font-size:7px !important;
+  font-size:10px !important;
   letter-spacing:1.25px !important;
   opacity:.90 !important;
 }
@@ -6984,7 +6984,7 @@ body > #feha-jackin-overlay {
   }
 
   #feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message::before {
-    font-size:10px !important;
+    font-size:11px !important;
   }
 }
 
@@ -7050,7 +7050,7 @@ body > #feha-jackin-overlay {
 
 #feha-cyberdeck-v2.feha-v3 .v3-library .cd2-empty-message::before {
   margin-bottom:10px !important;
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 /* Prevent loaded rack from creating a vertical overflow on shorter windows. */
@@ -7106,7 +7106,7 @@ body > #feha-jackin-overlay {
 #feha-cyberdeck-v2.feha-v3 .cd2-net-head small {
   display:block;
   color:#6f858b;
-  font-size:8px;
+  font-size:10px;
   letter-spacing:1.2px;
 }
 
@@ -7116,7 +7116,7 @@ body > #feha-jackin-overlay {
   color:rgb(var(--cd2-cyan));
   background:rgba(var(--cd2-cyan),.035);
   border:1px solid rgba(var(--cd2-cyan),.18);
-  font-size:8px;
+  font-size:10px;
   letter-spacing:1.15px;
   line-height:1;
 }
@@ -7211,7 +7211,7 @@ body > #feha-jackin-overlay {
 #feha-cyberdeck-v2.feha-v3 .cd2-net-label {
   position:absolute;
   color:#83979c;
-  font-size:7px;
+  font-size:10px;
   font-weight:800;
   letter-spacing:1px;
   pointer-events:none;
@@ -7684,14 +7684,14 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-world .jack-relay small {
   color:#e2f7fa !important;
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1 !important;
   letter-spacing:.9px !important;
 }
 
 #feha-jackin-overlay .jack-world .jack-relay em {
   color:#819ca2 !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1 !important;
   letter-spacing:.9px !important;
 }
@@ -7725,7 +7725,7 @@ body > #feha-jackin-overlay {
 
 /* Header */
 #feha-jackin-overlay .jack-header > div:first-child > small {
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.5px !important;
 }
 
@@ -7735,7 +7735,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-head-stat span {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1.05px !important;
 }
 
@@ -7745,7 +7745,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-head-actions button {
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.05px !important;
 }
 
@@ -7768,7 +7768,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-node-num {
-  font-size:9px !important;
+  font-size:11px !important;
 }
 
 /* Operator */
@@ -7785,7 +7785,7 @@ body > #feha-jackin-overlay {
 
 /* Target readout */
 #feha-jackin-overlay .jack-lock-readout small {
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.1px !important;
 }
 
@@ -7803,7 +7803,7 @@ body > #feha-jackin-overlay {
 /* Topology caption */
 #feha-jackin-overlay .jack-net-caption small {
   color:#718a90 !important;
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1px !important;
 }
 
@@ -7822,7 +7822,7 @@ body > #feha-jackin-overlay {
 
 /* Quickhack execution panel */
 #feha-jackin-overlay .jack-actions-title small {
-  font-size:10px !important;
+  font-size:11px !important;
   letter-spacing:1.2px !important;
 }
 
@@ -7832,7 +7832,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-actions-title span {
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1.4 !important;
 }
 
@@ -7848,7 +7848,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-hack em span {
-  font-size:9px !important;
+  font-size:11px !important;
   letter-spacing:1px !important;
 }
 
@@ -7895,7 +7895,7 @@ body > #feha-jackin-overlay {
 
   #feha-jackin-overlay .jack-node-copy small,
   #feha-jackin-overlay .jack-hack > span > small {
-    font-size:10px !important;
+    font-size:11px !important;
   }
 }
 
@@ -7945,7 +7945,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-world .jack-node-num {
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 /* Sparse scenes can be a touch larger without fighting precision. */
@@ -7976,11 +7976,11 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-world .jack-relay small {
-  font-size:10px !important;
+  font-size:11px !important;
 }
 
 #feha-jackin-overlay .jack-world .jack-relay em {
-  font-size:8.5px !important;
+  font-size:10px !important;
 }
 
 /* Operator follows natural world zoom too. */
@@ -8348,7 +8348,7 @@ body > #feha-jackin-overlay {
 }
 
 #feha-jackin-overlay .jack-world .jack-node-copy small {
-  font-size:10.5px !important;
+  font-size:11px !important;
   line-height:1.35 !important;
   color:#a7bec4 !important;
 }
@@ -8393,14 +8393,14 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-world .jack-relay small {
   color:#eefbff !important;
-  font-size:10px !important;
+  font-size:11px !important;
   line-height:1 !important;
   letter-spacing:.9px !important;
 }
 
 #feha-jackin-overlay .jack-world .jack-relay em {
   color:#90a7ad !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1.05 !important;
   letter-spacing:.85px !important;
 }
@@ -8546,7 +8546,7 @@ body > #feha-jackin-overlay {
   top:7px !important;
   right:8px !important;
   left:auto !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1 !important;
 }
 
@@ -8576,7 +8576,7 @@ body > #feha-jackin-overlay {
   overflow:hidden !important;
   text-overflow:ellipsis !important;
   white-space:nowrap !important;
-  font-size:7.5px !important;
+  font-size:10px !important;
   line-height:1.1 !important;
   letter-spacing:.75px !important;
 }
@@ -8590,7 +8590,7 @@ body > #feha-jackin-overlay {
   margin:0 !important;
   padding:5px 8px !important;
   text-align:center !important;
-  font-size:8px !important;
+  font-size:10px !important;
   line-height:1 !important;
 }
 
@@ -8727,7 +8727,7 @@ body > #feha-jackin-overlay {
   padding:0 9px !important;
   display:grid !important;
   place-items:center !important;
-  font-size:8.5px !important;
+  font-size:10px !important;
   font-weight:900 !important;
   line-height:1 !important;
   letter-spacing:1.05px !important;
@@ -8917,7 +8917,7 @@ body > #feha-jackin-overlay {
   border:0 !important;
   border-radius:0 !important;
   box-shadow:0 3px 12px rgba(0,0,0,.42) !important;
-  font-size:9px !important;
+  font-size:11px !important;
   font-weight:900 !important;
   line-height:1 !important;
   letter-spacing:1.15px !important;
@@ -9256,7 +9256,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-lock-copy small {
   color:#779198 !important;
-  font-size:9px !important;
+  font-size:11px !important;
   line-height:1 !important;
   letter-spacing:1.25px !important;
 }
@@ -9275,7 +9275,7 @@ body > #feha-jackin-overlay {
 #feha-jackin-overlay .jack-lock-copy span {
   margin-top:10px !important;
   color:#91aab0 !important;
-  font-size:9px !important;
+  font-size:11px !important;
   font-weight:800 !important;
   line-height:1 !important;
   letter-spacing:1.1px !important;
@@ -9475,7 +9475,7 @@ body > #feha-jackin-overlay {
   color:#9fdde5 !important;
   background:rgba(1,7,9,.94) !important;
   border-left:1px solid rgb(var(--jack-cyan)) !important;
-  font-size:7px !important;
+  font-size:10px !important;
   font-weight:900 !important;
   line-height:1 !important;
   letter-spacing:1px !important;
@@ -9521,7 +9521,7 @@ body > #feha-jackin-overlay {
   color:rgb(var(--jack-cyan)) !important;
   background:rgba(1,7,9,.96) !important;
   border:1px solid rgba(var(--jack-cyan),.38) !important;
-  font-size:8px !important;
+  font-size:10px !important;
   font-weight:900 !important;
   line-height:1 !important;
   letter-spacing:1.2px !important;
@@ -9726,7 +9726,7 @@ body > #feha-jackin-overlay {
 
 #feha-jackin-overlay .jack-qh-transmit small {
   color:rgb(var(--jack-cyan));
-  font-size:10px;
+  font-size:11px;
   font-weight:900;
   letter-spacing:.18em;
 }
