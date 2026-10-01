@@ -890,10 +890,16 @@
       return value;
     };
 
+    // GM-only playtest dummies (flags.fleshEnshrouded.playtest) are listed
+    // after the real roster so systems can be tested without real PCs.
+    const playtest = actor =>
+      game.user?.isGM === true &&
+      actor?.flags?.[FLAG]?.playtest === true;
+
     return [...(game.actors ?? [])]
       .filter(
         actor =>
-          order.has(key(actor)) &&
+          (order.has(key(actor)) || playtest(actor)) &&
           (game.user?.isGM || actor.isOwner)
       )
       .sort(

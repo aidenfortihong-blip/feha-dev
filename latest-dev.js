@@ -1517,7 +1517,13 @@
           actor ?? option.textContent ?? option.label ?? ""
         );
 
-        if (!FEHA_PLAYABLE_ROSTER_SET.has(key)) {
+        // GM-only playtest dummies (flags.fleshEnshrouded.playtest) stay
+        // selectable so systems can be tested without touching real PCs.
+        const playtest =
+          game?.user?.isGM === true &&
+          actor?.flags?.fleshEnshrouded?.playtest === true;
+
+        if (!FEHA_PLAYABLE_ROSTER_SET.has(key) && !playtest) {
           if (option.selected) removedSelected = true;
           option.remove();
           changed++;
