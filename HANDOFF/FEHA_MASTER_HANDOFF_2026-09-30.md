@@ -244,3 +244,32 @@ after latest-dev.js) owns the rules; reload points are retired.
 - Abilities: Ponyboy 16/13/15/12/12/10 HP 30; Derke 15/16/13/10/12/12 HP 24; Sasha 8/14/12/16/13/14 HP 25; Zach 12/16/13/15/12/8 HP 22.
 - Cyberware capacity = 12 + 4*level + CON mod + flags.fleshEnshrouded.cyberwareCapacityBonus (installed module chrome-legacy.js maxCapacity). Targets: Ponyboy 26, Derke 24, Sasha 22, Zach 22 (bonus 4/11/-3/1). Re-tune the bonus if they level.
 - NEXT: user wants the Entry Gateway fixed (problem not yet described; ask for a screenshot/description). Entry gateway code is in the installed module scripts/entry-gateway.js and the world macro ADK // ENTRY GATEWAY.
+
+## 11. Unattended bug sweep (branch `gateway-and-bugsweep`, NOT shipped)
+
+Everything below is on the test branch only. Load it on the GM client by SHA (see §"Branch testing"). Ship = fast-forward main after the user says "ship it" (bump version.json + V3 VERSION first).
+
+Fixed and verified live on the GM client:
+- **Entry Gateway**: new `gateway-cp.css` (red CP skin, bundled by the loader as `gatewaySkinCss`). JACK IN bar no longer pushed off-screen once access is granted; fits 1366x768; intro video overscanned to crop the YouTube title/"More videos"/logo; captions unloaded on `onApiChange`.
+- **Ammo tracking (FEHA_RELOAD_TRACKER 2.5.0)**: a shot is spent only by `dnd5e.postRollAttack`. Before, `useAttack` also counted 90 ms after `activity.use()` resolved, so a roll dialog left open >1.5 s spent two shots and a cancelled attack spent one.
+- **Reload check (FEHA_WEAPON_HANDLING 1.1.0)**: rolls with `{configure:false}` (no generic "Strength Ability Check" dialog).
+- **Grenades**: zone sync serialized per template (duplicate SMOKE markers).
+- **Quickhacks**: option picker z-index 130000 (was hidden behind the JACKED IN overlay at 120000, looked like a frozen upload); bonus-action refusal carries `code:"FEHA_QH_REFUSED"` and shows as a warning.
+- **Chrome Manager**: inspector hardware ports render as rows (labels overflowed after the readability pass).
+- **GM playtest actors**: any actor with `flags.fleshEnshrouded.playtest === true` is selectable by GMs in Market / Chrome / Cyberdeck.
+- **Load time 32 s -> ~1 s, 0 writes per load**:
+  - FEHA_WEAPON_READINESS (4.1.3) and FEHA_WEAPON_CATALOG both wrote marketPass / weaponReadinessVersion / doTheseFinalizedVersion with their own values: 156 writes per load. Readiness now skips those keys for catalog-owned guns (`dropCatalogOwnedKeys`).
+  - Readiness `demoteOldManaged` demoted all 33 melee + 4 unique weapons every load (marketPass starts with "weapon-"), purged them from saved shop stock, then the economy re-enabled them. Melee/unique catalog items are now skipped.
+  - Unique catalog no longer writes market fields the economy owns (they flipped every load).
+  - Armor signature effects were deleted+recreated every load (comparison included Foundry defaults); now compared on stored source fields.
+  - Grenade/quickhack cards re-saved every load (escaped apostrophes, flag key order).
+  - Market stock is no longer re-rolled on reload unless stock was invalidated.
+
+Open questions for the user (not changed):
+- LMG/sniper reload DC = STR requirement (16-17): a STR 16 character succeeds ~35%, not the ~60% the balance model assumed.
+- Derke is level 0 (no class item): proficiency +1, and capacity math treats him as level 0.
+- Unique weapons are sold in arms/black/corporate shops (economy) although the unique catalog calls them one-off rewards.
+- Short Rest in the Cyberdeck restores RAM instantly with no confirmation, even mid-combat.
+- Credits live in three fields (system.currency.gp, flags.credits, flags.eurodollars); the Market keeps them in sync.
+
+Test artifacts left in the world: Actor folder "FEHA TEST" (TEST Gunner, TEST Dummy A/B), scene "FEHA TEST ARENA", one test combat, a handful of grenade/quickhack chat cards.
