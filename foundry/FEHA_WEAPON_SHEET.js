@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_SHEET requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.6.1";
+  const VERSION = "1.7.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
 
@@ -402,7 +402,25 @@
       Math.min(100,(Number(state.reload) || 0)/progressMax*100)
     );
 
-    const reloadControls = state.reloadMax > 0
+    const handlingApi = globalThis.FEHA_WEAPON_HANDLING;
+    const handlingProfile = handlingApi?.profile?.(ctx.item) ?? null;
+    const strInfo = handlingApi?.strPenalty?.(ctx.actor,ctx.item) ?? null;
+    const strWarning = strInfo?.under
+      ? (strInfo.negated
+          ? `<div class="feha-ws-handling-warning is-ok">STR ${esc(strInfo.str)} &lt; ${esc(strInfo.req)} // NEGATED BY ${esc(strInfo.by.join(", ").toUpperCase())}</div>`
+          : `<div class="feha-ws-handling-warning">STR ${esc(strInfo.str)} &lt; ${esc(strInfo.req)} // DISADVANTAGE + MAX 10 FT MOVE</div>`)
+      : "";
+
+    const reloadControls = handlingProfile && handlingProfile.reload !== "none"
+      ? `
+          <div class="feha-ws-reload-cluster">
+            <button type="button" class="feha-ws-reload-one" data-feha-ws-action="reload">
+              <span>RELOAD</span>
+              <strong>${esc(handlingProfile.reloadLabel)}${handlingProfile.reloadCheck ? " // "+esc(handlingProfile.reloadCheck.label)+" DC "+esc(handlingProfile.reloadCheck.dc) : ""}</strong>
+            </button>
+          </div>
+        `
+      : state.reloadMax > 0
       ? `
           <div class="feha-ws-reload-cluster">
             <div class="feha-ws-reload-buttons">
@@ -440,6 +458,7 @@
           <span class="${statusClass}">${esc(status)}</span>
         </div>
 
+        ${strWarning}
         <div class="feha-ws-console">
           <div class="feha-ws-readiness">
             <div class="feha-ws-readiness-count">
@@ -516,8 +535,19 @@
       "gold"
     );
 
-    const rules = trait || special
-      ? '<div class="feha-ws-rules">'+trait+special+'</div>'
+    const handlingLines =
+      globalThis.FEHA_WEAPON_HANDLING?.rulesText?.(def ?? item) ?? [];
+    const handling = handlingLines.length
+      ? buildRuleCard(
+          "HANDLING",
+          String(def?.weaponClass ?? "WEAPON").toUpperCase(),
+          handlingLines.join(" "),
+          "gold"
+        )
+      : "";
+
+    const rules = trait || special || handling
+      ? '<div class="feha-ws-rules">'+trait+special+handling+'</div>'
       : "";
 
     return `
@@ -540,6 +570,46 @@
 
         [data-feha-canonical-weapon-sheet] * {
           box-sizing:border-box;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-one {
+          width:100%;
+          min-height:42px;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:10px;
+          padding:8px 12px;
+          border:1px solid #f3e600;
+          background:rgba(243,230,0,.10);
+          color:#f3e600;
+          font-weight:800;
+          letter-spacing:.1em;
+          cursor:pointer;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-reload-one:hover:not(:disabled) {
+          background:#f3e600;
+          color:#000;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-handling-warning {
+          margin:0 0 8px;
+          padding:6px 10px;
+          border:1px solid rgba(255,94,87,.55);
+          border-left:3px solid #ff5e57;
+          background:rgba(255,94,87,.10);
+          color:#ff8f86;
+          font-size:11px;
+          font-weight:800;
+          letter-spacing:.1em;
+        }
+
+        [data-feha-canonical-weapon-sheet] .feha-ws-handling-warning.is-ok {
+          border-color:rgba(63,214,198,.5);
+          border-left-color:#3fd6c6;
+          background:rgba(63,214,198,.08);
+          color:#3fd6c6;
         }
 
         [data-feha-canonical-weapon-sheet] button {
@@ -1140,8 +1210,8 @@
                   <strong>${esc(def?.functionalAttacks ?? "—")}</strong>
                 </div>
                 <div class="feha-ws-stat">
-                  <small>RELOAD POINTS</small>
-                  <strong>${esc(def?.reloadPoints ?? def?.reloadActions ?? "—")}</strong>
+                  <small>RELOAD</small>
+                  <strong>${esc(globalThis.FEHA_WEAPON_HANDLING?.profile?.(def ?? item)?.reloadLabel ?? def?.reloadPoints ?? def?.reloadActions ?? "—")}</strong>
                 </div>
                 <div class="feha-ws-stat">
                   <small>${esc(capacityLabel(def))}</small>
@@ -1221,6 +1291,9 @@
         }
         else if (action === "damage") {
           await tracker.rollDamage?.(item,event);
+        }
+        else if (action === "reload") {
+          await tracker.reload?.(item);
         }
         else if (action === "reload-action") {
           await tracker.addReload?.(item,2,"ACTION");

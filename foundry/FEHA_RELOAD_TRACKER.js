@@ -167,6 +167,25 @@
     });
   }
 
+  // Class-based reload (FEHA_WEAPON_HANDLING): one press refills the weapon.
+  // Full-turn weapons (LMG / sniper) must pass their reload check first.
+  async function reload(item) {
+    const handling = globalThis.FEHA_WEAPON_HANDLING;
+    const check = await handling?.rollReloadCheck?.(item) ?? {ok:true};
+    if (!check.ok) {
+      if (check.reason !== "cancelled") {
+        ui.notifications?.warn?.(
+          "FEHA // "+String(item?.name ?? "weapon")+" reload failed ("+
+          String(check.total ?? "?")+" vs DC "+String(check.dc ?? "?")+
+          "). Try again next turn."
+        );
+      }
+      return {ok:false,reason:check.reason ?? "check-failed",check,state:state(item)};
+    }
+    const result = await resetWeapon(item);
+    return {...result,check};
+  }
+
   function equippedFirearms(actor) {
     if (!actor) return [];
     return [...(actor.items?.contents ?? actor.items ?? [])]
@@ -552,6 +571,7 @@
     recordShot,
     undoShot,
     addReload,
+    reload,
     reset:resetWeapon,
     equippedFirearms,
     open,

@@ -18,6 +18,7 @@
     itemSkinCss:"item-cp.css",
     baseJs:"latest-dev.js",
     chromeRipperdoc:"foundry/FEHA_CHROME_RIPPERDOC.js",
+    weaponHandling:"foundry/FEHA_WEAPON_HANDLING.js",
     grenades:"foundry/FEHA_GRENADE_CATALOG.js",
     consumables:"foundry/FEHA_CONSUMABLE_CATALOG.js",
     armor:"foundry/FEHA_ARMOR_CATALOG.js",
@@ -313,6 +314,7 @@
 
     evaluate(source.baseJs,files.baseJs,sha);
     evaluate(source.chromeRipperdoc,files.chromeRipperdoc,sha);
+    evaluate(source.weaponHandling,files.weaponHandling,sha);
     evaluate(source.grenades,files.grenades,sha);
     evaluate(source.consumables,files.consumables,sha);
     evaluate(source.armor,files.armor,sha);

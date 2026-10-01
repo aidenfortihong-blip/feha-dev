@@ -1,15 +1,13 @@
 {
-  "version": "0.11.86",
+  "version": "0.11.87",
   "updated": "2026-09-30",
-  "scope": "balance-patch-1-lethal",
+  "scope": "weapon-handling",
   "notes": [
-    "Includes 0.11.85 item cards.",
-    "Lethal weapon curve: every firearm, unique and melee weapon is scored by expected damage per turn over a full reload cycle (one attack per turn, reload = Action +2 / Bonus +1, vs AC 14 at +5) and outliers beyond +/-15% are pulled onto one curve: ~14-16 per turn for street gear (street pistols ~24 per hit), ~26 mid tier, ~50 top tier; melee +15%, uniques +10%. Dice scale within their die type; magazines, reloads and every manufacturer trait unchanged.",
-    "Big single-shot snipers keep extreme alpha: Nekomata 6d20+75, Sunlance 1d20+114, Grad 1d20+74, Rasetsu 7d20+26. Black Requiem and Silverhand 3516 unchanged. Errata 16d8, Chainsword Legendary 12d10, Neurotoxin Knife 6d6 + poison.",
-    "Prices follow power: power ratings re-derived from final damage; price = 150 + 7 x rating^1.75 (x rarity multiplier).",
-    "Armor AC, prices and Bastion reduction unchanged (high AC is the intended counterweight to lethal guns). Flexweave Grenade Null halves grenade damage at Mk I-IV, immunity at Mk V.",
-    "Grenades: damage by Mk (Mk1 6d6, Mk2 8d6, Mk3 10d6, Mk4 12d6; EMP one step lighter; Ozob's Nose 15d6 at 1750 CR); prices by Mk with sticky x1.3, homing x1.6, utility x0.4.",
-    "Quickhacks: Arc Overload 12d12 -> 10d10. Consumables: Neural Adaptation Kit once per character (GM-enforced text).",
-    "Joke weapons (Slaughtomatic, Dildo Stout, Shovel Caretaker) and all cyberware untouched."
+    "Class-based reloads replace reload points: Pistol / Heavy Pistol / SMG / Shotgun Pistol reload with a Bonus Action; Assault Rifle / DMR / Shotgun / Bow and any single-shot weapon reload with an Action; LMG / Sniper Rifle reload takes a full turn (Action, no movement) plus a reload check (LMG Strength, Sniper Dexterity, DC = the weapon's STR requirement). A failed check means try again next turn. The weapon sheet shows one RELOAD button that rolls the check when needed.",
+    "STR requirement now matters: below it you attack with disadvantage (automatic) and can move only 10 ft on turns you use that weapon (table rule), unless installed Strong Arms / Power Grip / Reinforced Muscles / Gun Stabilizer, or any feat or cyberware flagged handling.negateStrRequirement, negates it.",
+    "LMG Brace: disadvantage if you moved more than 10 ft this turn (table rule). Sniper Scoped: automatic disadvantage against targets within 30 ft. Ashura and Long Vigil are close-range snipers (no scope penalty, 60/180 ft).",
+    "Feats or cyberware can set flags.fleshEnshrouded.handling.skipReloadCheck or reloadAdvantage.",
+    "Re-tune under the new reload model (LMG/sniper reload counted at 60% check success): 17 weapons changed, e.g. MA70 12d12, HMG 12d12, assault rifles +2d8, shotguns up, Black Requiem 7d20+28, Borg4a 29d6, Nekomata 4d20+54, Sunlance 1d20+90. Single hits are capped near 100 average; capped single-shot weapons keep their power rating so price reflects the alpha strike.",
+    "Disadvantage is applied through dnd5e.preRollAttackV2, so it works from the weapon sheet and the normal item roll."
   ]
 }
