@@ -6,8 +6,8 @@
 //   Reload       Pistol / Heavy Pistol / SMG / Shotgun Pistol -> Bonus Action
 //                Assault Rifle / DMR / Shotgun / Bow / single-shot -> Action
 //                LMG / Sniper Rifle -> Full turn (Action, cannot move) and a
-//                reload check: LMG Strength / Sniper Dexterity vs DC = the
-//                weapon's STR requirement (10 if none). Fail = try again.
+//                Dexterity reload check vs DC = the weapon's STR requirement
+//                (10 if none). Fail = try again.
 //   STR          Below a weapon's STR requirement: disadvantage and max 10 ft
 //                movement on turns you use it, unless installed cyberware
 //                negates it (STR_NEGATORS).
@@ -21,7 +21,7 @@
 // The 10 ft movement limits themselves are table rules surfaced on the sheet.
 
 (() => {
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const FLAG = "fleshEnshrouded";
 
   const BONUS_RELOAD = new Set(["Pistol","Heavy Pistol","SMG","Shotgun Pistol"]);
@@ -74,8 +74,8 @@
 
     const reloadCheck = reload === "full"
       ? {
-          ability:cls === "LMG" ? "str" : "dex",
-          label:cls === "LMG" ? "STRENGTH" : "DEXTERITY",
+          ability:"dex",
+          label:"DEXTERITY",
           dc:Number(def.strengthRequirement) || 10
         }
       : null;

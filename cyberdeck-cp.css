@@ -1987,3 +1987,19 @@ html body #feha-jackin-overlay#feha-jackin-overlay .jack-camera-node small {
   font-family: var(--fui-mono) !important;
   font-size: 10px !important;
 }
+
+/* Where the in-deck Short Rest button used to be: RAM now refills on a rest
+   taken from the character sheet. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-rest-note {
+  display: grid !important;
+  place-items: center !important;
+  min-height: 44px !important;
+  padding: 6px 10px !important;
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-line) !important;
+  color: var(--fui-muted) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+  letter-spacing: .08em !important;
+  text-align: center !important;
+}

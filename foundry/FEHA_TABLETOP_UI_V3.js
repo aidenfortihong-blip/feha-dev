@@ -123,6 +123,15 @@
     return 0;
   }
 
+  // RAM spent on each breach attempt against a secured device.
+  function breachRamCost(device) {
+    const dc = Number(device?.securityDC ?? 0) || 0;
+    if (dc <= 0) return 0;
+    if (dc <= 12) return 1;
+    if (dc <= 15) return 2;
+    return 3;
+  }
+
   function hackCost(item) {
     const catalogCost =
       globalThis.FEHA_QUICKHACK_CATALOG?.ramCost?.(item);
@@ -1120,7 +1129,7 @@
             <strong>${m.currentRam}<em>/ ${m.maxRam}</em></strong>
             ${segments(m.currentRam,m.deck ? m.maxRam : 0)}
           </div>
-          <button type="button" class="cd2-rest" data-v3-action="rest" title="Short rest: restore RAM to full" ${m.deck?"":"disabled"}>SHORT REST</button>
+          <span class="cd2-rest-note">RAM REFILLS ON A REST</span>
         </section>
 
         <div class="v3-scroll">
@@ -3169,7 +3178,7 @@
           '</span></div>'+
         '</div>'+
         (!hasAccess
-          ? '<button type="button" class="jack-device-breach" data-device-action="breach">BREACH // DC '+device.securityDC+'</button>'
+          ? '<button type="button" class="jack-device-breach" data-device-action="breach">BREACH // DC '+device.securityDC+(breachRamCost(device) ? ' // '+breachRamCost(device)+' RAM' : '')+'</button>'
           : ''
         )+
         '<div class="jack-device-capabilities">'+
@@ -3423,47 +3432,6 @@
         return;
       }
 
-      if (action === "rest") {
-        const lock = beginAction("rest",actor.id);
-        if (!lock) return;
-
-        const live = model(actor);
-        if (!live.deck) {
-          endAction(lock);
-          return ui?.notifications?.warn?.("No Cyberdeck installed.");
-        }
-
-        button.dataset.busy = "1";
-        button.disabled = true;
-
-        try {
-          globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
-          await actor.update({
-            [`flags.${FLAG}.ramCurrent`]:live.maxRam
-          });
-
-          await ChatMessage.create({
-            speaker:ChatMessage.getSpeaker({actor}),
-            content:
-              "<p><strong>"+esc(actor.name)+
-              "</strong> completed a Short Rest. RAM restored to <strong>"+
-              live.maxRam+"</strong>.</p>"
-          });
-
-          if (root.isConnected) render(actor.id);
-        } catch (err) {
-          console.error("FEHA V3 Short Rest failed",err);
-          ui?.notifications?.error?.("Cyberdeck Short Rest failed.");
-          if (root.isConnected) {
-            button.disabled = false;
-            delete button.dataset.busy;
-          }
-        } finally {
-          endAction(lock);
-        }
-        return;
-      }
-
       if (action === "jack") {
         openJack(actor);
       }
@@ -3568,7 +3536,28 @@
           deviceButton.disabled = true;
 
           try {
+            const ramCost = breachRamCost(device);
+            const ramBefore = model(actor).currentRam;
+
+            if (ramCost > 0 && ramBefore < ramCost) {
+              ui?.notifications?.warn?.(
+                "Not enough RAM to breach. "+ramBefore+"/"+ramCost+"."
+              );
+              deviceButton.disabled = false;
+              delete deviceButton.dataset.busy;
+              return;
+            }
+
             const result = await actionService.breach(actor,device);
+
+            // Every real attempt costs RAM, pass or fail. Unsecured devices
+            // and a session that already has access cost nothing.
+            if (ramCost > 0 && !result.automatic && !result.cached) {
+              await actor.update({
+                [`flags.${FLAG}.ramCurrent`]:Math.max(0,ramBefore - ramCost)
+              });
+              syncQuickhackRamUI(actor);
+            }
 
             const math = result.automatic
               ? "UNSECURED DEVICE // ACCESS AUTOMATIC"
@@ -4510,6 +4499,27 @@
   }
 
   if (globalThis.Hooks?.on) {
+    // RAM is restored by a Short or Long Rest taken from the character
+    // sheet, not by a button inside the Cyberdeck.
+    v3Hooks.push([
+      "dnd5e.restCompleted",
+      Hooks.on("dnd5e.restCompleted", async actor => {
+        try {
+          if (!actor?.isOwner) return;
+          const live = model(actor);
+          if (!live.deck || live.currentRam >= live.maxRam) return;
+          await actor.update({
+            [`flags.${FLAG}.ramCurrent`]:live.maxRam
+          });
+          ui?.notifications?.info?.(
+            actor.name+" // RAM restored to "+live.maxRam+"."
+          );
+        } catch (err) {
+          console.warn("FEHA V3 // rest RAM restore failed",err);
+        }
+      })
+    ]);
+
     v3Hooks.push([
       "updateActor",
       Hooks.on("updateActor", actor => {
