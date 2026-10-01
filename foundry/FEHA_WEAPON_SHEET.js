@@ -366,8 +366,8 @@
 
     if (!ctx.item || !state) {
       const actorLabel = ctx.actor?.name
-        ? "WIELDER // "+String(ctx.actor.name).toUpperCase()
-        : "NO WIELDER";
+        ? "SELECTED // "+String(ctx.actor.name).toUpperCase()
+        : "NO ONE SELECTED";
 
       return `
         <section class="feha-ws-combat is-unavailable">
