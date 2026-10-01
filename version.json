@@ -1,12 +1,14 @@
 {
-  "version": "0.11.83",
+  "version": "0.11.84",
   "updated": "2026-09-30",
-  "scope": "chrome-cp2077-ripperdoc",
+  "scope": "cyberdeck-fui-tile-sheet",
   "notes": [
-    "Chrome Manager rebuilt as a Cyberpunk 2077 ripperdoc screen around the character portrait: all ten body systems sit left and right of the subject, each with a red label, an AVAILABLE ITEMS count and a row of square slot tiles.",
-    "Installed chrome shows as a teal image tile with a cyan corner; empty ports are red dashed '+' tiles. Clicking an empty tile opens the owned-chrome cache for that system; clicking an installed tile opens it in the inspector with EJECT.",
-    "Inspector restyled as the CP item tooltip (teal status bar, salmon title with orange rule); red-on-black HUD, radar ring behind the portrait, yellow CR balance matching the Market.",
-    "New FEHA_CHROME_RIPPERDOC.js is presentation only and routes every action through the installed module's own install/eject/use buttons; latest-dev.js markRoot() calls it after each Chrome render. chrome-cp.css is loaded with market-cp.css.",
-    "Verified on the GM client: install and eject of Ponyboy's Dense Marrow round-tripped with identical item data and capacity. No install rules, capacity, slots, prices or balances changed."
+    "Cyberdeck loadout rebuilt as the monochrome 'HUD / FUI ELEMENTS' tile sheet: text-only header (':CYBERDECK OS:', '_RAM', '_DECK', '_SOFTWARE'), a two-row strip of numbered square tiles (L1-L24) with ring glyphs, a CYBERDECK logo tile, then big panels.",
+    "RAM strip is always 24 tiles (the deck ceiling): the deck's RAM shows as rings (solid white with a yellow underline = available, outlined = spent) and the remaining tiles show as dark hatched locked tiles; no deck shows a single red NO DECK tile.",
+    "Operator portrait keeps full colour in its own panel; the CYBERDECK logo tile carries an outlined yellow サイバーデッキ line; the deck-passive tile carries a stacked CYBER / DECK mark.",
+    "Network telemetry graph kept and un-squashed (locked to the SVG's 320:176 shape), restyled in white with a yellow deck node and packets, and animated: flowing dashed links, pulsing nodes and a sweeping scan line (slower and dimmer offline; disabled under reduced motion).",
+    "Minimal accents: yellow for brand/action (section bars, operator tag, label marks, JACK IN), red only for offline/warning states.",
+    "JACK IN is a full-width yellow bar with a cut corner, inverting to black on hover. Below 1180px wide the side tiles drop under the software panel.",
+    "Pure CSS re-flow of the existing loadout DOM (cyberdeck-cp.css); fonts Chakra Petch, Share Tech Mono and Dela Gothic One added to the shared import. No RAM, Quickhack, Short Rest or JACK IN behavior changed."
   ]
 }

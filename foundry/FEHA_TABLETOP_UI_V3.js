@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.83";
+  const VERSION = "0.11.84";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -982,10 +982,21 @@
     root.dataset.v3Assets = count ? "1" : "0";
   }
 
-  function segments(value,max,count=24) {
-    const filled = max > 0 ? Math.round(Math.max(0,Math.min(1,value/max))*count) : 0;
+  // Always 24 tiles (the deck ceiling): one per RAM point the deck provides
+  // (filled = available, empty = spent), the rest render as locked.
+  // No deck renders a single NO DECK tile.
+  const RAM_TILES = 24;
+
+  function segments(value,max) {
+    const total = Math.max(0,Math.min(RAM_TILES,Math.round(Number(max) || 0)));
+    if (!total) {
+      return '<div class="cd2-segments is-ram is-nodeck"><i class="is-nodeck"><span>NO DECK</span></i></div>';
+    }
+    const filled = Math.max(0,Math.min(total,Math.round(Number(value) || 0)));
     return '<div class="cd2-segments is-ram">' +
-      Array.from({length:count},(_,i) => '<i class="'+(i<filled?"is-filled":"")+'"></i>').join("") +
+      Array.from({length:RAM_TILES},(_,i) =>
+        '<i class="'+(i<filled ? "is-filled" : i<total ? "is-spent" : "is-locked")+'"></i>'
+      ).join("") +
       '</div>';
   }
 
@@ -1101,7 +1112,7 @@
           <div>
             <small>ACTIVE MEMORY // SHORT REST ONLY</small>
             <strong>${m.currentRam}<em>/ ${m.maxRam}</em></strong>
-            ${segments(m.currentRam,Math.max(1,m.maxRam))}
+            ${segments(m.currentRam,m.deck ? m.maxRam : 0)}
           </div>
           <button type="button" class="cd2-rest" data-v3-action="rest" ${m.deck?"":"disabled"}>SHORT REST // RESTORE RAM</button>
         </section>
