@@ -175,9 +175,12 @@
       quickhackStamp === stamp ||
       bonusActionStamp === stamp
     ) {
-      throw new Error(
+      // A rule refusal, not a failure: callers show it as a plain warning.
+      const refused = new Error(
         "You already used your Bonus Action this turn."
       );
+      refused.code = "FEHA_QH_REFUSED";
+      throw refused;
     }
 
     return true;
@@ -206,7 +209,9 @@
     return [
       "position:fixed",
       "inset:0",
-      "z-index:100000",
+      // Above the JACKED IN overlay (120000): a picker behind it looked like a
+      // frozen upload.
+      "z-index:130000",
       "background:rgba(0,0,0,.82)",
       "display:flex",
       "align-items:center",

@@ -4323,7 +4323,17 @@
             err?.code ===
             "FEHA_QH_CANCELLED";
 
-          if (!wasCancelled) {
+          const wasRefused =
+            err?.code ===
+            "FEHA_QH_REFUSED";
+
+          if (wasRefused) {
+            ui?.notifications?.warn?.(
+              String(err.message)
+            );
+
+            transmitHud?.remove?.();
+          } else if (!wasCancelled) {
             console.error(
               "FEHA V3 finalized Quickhack execution failed",
               err
