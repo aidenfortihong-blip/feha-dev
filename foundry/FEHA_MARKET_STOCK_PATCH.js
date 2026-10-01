@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.6.1";
+  const VERSION = "1.7.0";
   const STOCK_SCHEMA_VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -363,15 +363,6 @@
         "—"
       );
 
-    const doctrine =
-      String(
-        def?.doctrine ??
-        def?.effect?.text ??
-        def?.special?.text ??
-        f.effectText ??
-        ""
-      ).trim();
-
     const attacks =
       Number(
         def?.functionalAttacks ??
@@ -393,27 +384,67 @@
       String(def?.weaponKind ?? f.weaponKind ?? "").toLowerCase() === "melee" ||
       Boolean(f.meleeWeapon);
 
-    const primary =
-      doctrine ||
-      (
-        isMelee
-          ? weaponClass+" built for close combat."
-          : weaponClass+" // canonical FEHA weapon profile."
-      );
+    const handling =
+      globalThis.FEHA_WEAPON_HANDLING?.profile?.(def ?? item) ?? null;
+    const reach = Boolean(def?.reach && !def?.range);
+    const strength =
+      Number(def?.strengthRequirement ?? f.strengthRequirement ?? 0) || 0;
 
+    // Fixed stat grid: every weapon card shows the same slots in the same
+    // order so cards can be compared at a glance.
     const stats = [
-      damage !== "—" ? "DMG "+damage : null,
-      "RANGE "+marketRangeText(def,item),
-      !isMelee && attacks > 0 ? attacks+" ATTACK"+(attacks===1?"":"S")+" / RELOAD" : null,
-      !isMelee && (globalThis.FEHA_WEAPON_HANDLING?.profile?.(def ?? item)?.reloadLabel ?? null)
-        ? "RELOAD "+globalThis.FEHA_WEAPON_HANDLING.profile(def ?? item).reloadLabel
-        : (!isMelee && reload > 0 ? "RELOAD "+reload+" PT"+(reload===1?"":"S") : null),
-      "TO HIT DEX"
-    ].filter(Boolean);
+      {label:"DMG",value:damage},
+      reach
+        ? {label:"REACH",value:String(def.reach)+" FT"}
+        : {label:"RANGE",value:marketRangeText(def,item)},
+      reach
+        ? {
+            label:"THROWN",
+            value:def?.thrownRange != null
+              ? String(def.thrownRange)+(def?.thrownLong != null ? "/"+String(def.thrownLong) : "")+" FT"
+              : "—"
+          }
+        : {label:"MAG",value:attacks > 0 ? String(attacks) : "—"},
+      {
+        label:"RELOAD",
+        value:isMelee || reach
+          ? "—"
+          : handling?.reloadLabel ?? (reload > 0 ? reload+" PT"+(reload===1?"":"S") : "—")
+      },
+      {label:"STR",value:strength ? String(strength) : "—"}
+    ];
+
+    // Rules that matter at the table, in one consistent style: manufacturer
+    // trait, then the weapon's own special/unique effect.
+    const clean = text => String(text ?? "")
+      .replace(/\s*Track this manually\.?\s*$/i,"")
+      .replace(/\s+/g," ")
+      .trim();
+
+    const traits = [];
+    if (def?.familyTraitName || def?.familyTraitText) {
+      traits.push({
+        kind:"maker",
+        name:String(def.familyTraitName ?? "TRAIT"),
+        text:clean(def.familyTraitText)
+      });
+    }
+    for (const raw of [def?.effect,def?.special]) {
+      const extra = typeof raw === "string" ? {text:raw} : raw;
+      if (!extra?.text) continue;
+      traits.push({
+        kind:"special",
+        name:String(extra.name ?? "SPECIAL"),
+        text:clean(extra.text)
+      });
+    }
+    if (!traits.length && f.effectText) {
+      traits.push({kind:"special",name:"SPECIAL",text:clean(f.effectText)});
+    }
 
     return {
-      primary,
       stats,
+      traits,
       weaponClass,
       manufacturer:String(
         def?.company ??
@@ -424,15 +455,9 @@
     };
   }
 
-  function ensureMarketWeaponStyles() {
-    let style = document.getElementById(MARKET_STYLE_ID);
-    if (style) return style;
-
-    style = document.createElement("style");
-    style.id = MARKET_STYLE_ID;
-    style.textContent = `
+  // Structural rules only; the look lives in market-cp.css.
+  const MARKET_WEAPON_CSS = `
       #adk-market-15 .feha-weapon-card {
-        align-self:start !important;
         height:auto !important;
         min-height:0 !important;
         max-height:none !important;
@@ -443,46 +468,51 @@
       #adk-market-15 .feha-weapon-card .actions {
         position:static !important;
         inset:auto !important;
-        margin-top:10px !important;
+        margin-top:auto !important;
       }
 
       #adk-market-15 .feha-market-weapon-copy {
-        order:initial;
         width:100%;
-        margin:8px 0 0;
-        padding:10px 11px;
-        border:1px solid rgba(80,205,228,.24);
-        background:
-          linear-gradient(180deg,rgba(5,19,24,.92),rgba(3,12,16,.92));
-        box-shadow:inset 0 0 20px rgba(46,205,233,.035);
-      }
-
-      #adk-market-15 .feha-market-weapon-copy > p {
         margin:0;
-        color:#bccbd0;
-        font-size:10px;
-        line-height:1.45;
       }
 
       #adk-market-15 .feha-market-weapon-stats {
-        display:flex;
-        flex-wrap:wrap;
-        gap:5px 12px;
-        margin-top:8px;
-        padding-top:7px;
-        border-top:1px solid rgba(80,205,228,.14);
-        color:#6edff3;
-        font-size:8px;
-        font-weight:1000;
-        letter-spacing:.055em;
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        margin:0;
       }
 
-      #adk-market-15 .feha-market-weapon-stats span {
+      #adk-market-15 .feha-mws-stat {
+        min-width:0;
+        margin:0;
+      }
+
+      #adk-market-15 .feha-mws-stat dd {
+        margin:0;
+        overflow:hidden;
+        text-overflow:ellipsis;
         white-space:nowrap;
+      }
+
+      #adk-market-15 .feha-mws-trait p {
+        margin:0;
+        display:-webkit-box;
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:3;
+        overflow:hidden;
       }
     `;
 
-    document.head.appendChild(style);
+  function ensureMarketWeaponStyles() {
+    let style = document.getElementById(MARKET_STYLE_ID);
+    if (!style) {
+      style = document.createElement("style");
+      style.id = MARKET_STYLE_ID;
+      document.head.appendChild(style);
+    }
+    if (style.textContent !== MARKET_WEAPON_CSS) {
+      style.textContent = MARKET_WEAPON_CSS;
+    }
     return style;
   }
 
@@ -580,8 +610,8 @@
     const copy = marketWeaponCopy(item);
     return JSON.stringify({
       id:String(item?.id ?? ""),
-      primary:copy.primary,
-      stats:copy.stats
+      stats:copy.stats,
+      traits:copy.traits
     });
   }
 
@@ -592,20 +622,36 @@
     node.dataset.fehaWeaponDescription = String(item?.id ?? "");
     node.dataset.fehaWeaponSignature = weaponSummarySignature(item);
 
-    const p = document.createElement("p");
-    p.textContent = copy.primary;
-    node.appendChild(p);
-
-    const stats = document.createElement("div");
+    const stats = document.createElement("dl");
     stats.className = "feha-market-weapon-stats";
 
-    for (const value of copy.stats) {
-      const span = document.createElement("span");
-      span.textContent = value;
-      stats.appendChild(span);
+    for (const stat of copy.stats) {
+      const cell = document.createElement("div");
+      cell.className = "feha-mws-stat";
+      if (stat.value === "—") cell.classList.add("is-empty");
+      const dt = document.createElement("dt");
+      dt.textContent = stat.label;
+      const dd = document.createElement("dd");
+      dd.textContent = stat.value;
+      cell.append(dt,dd);
+      stats.appendChild(cell);
     }
 
     node.appendChild(stats);
+
+    for (const trait of copy.traits) {
+      const box = document.createElement("div");
+      box.className = "feha-mws-trait is-"+trait.kind;
+      // Full rule on hover; the card clamps it to keep cards even.
+      box.title = trait.name+": "+trait.text;
+      const name = document.createElement("strong");
+      name.textContent = trait.name;
+      const text = document.createElement("p");
+      text.textContent = trait.text;
+      box.append(name,text);
+      node.appendChild(box);
+    }
+
     return node;
   }
 
@@ -657,6 +703,26 @@
         for (const node of legacyNodes) {
           if (node === summary || node.contains?.(summary)) continue;
           node.remove();
+        }
+
+        // The weapon's special now lives in the summary's trait box.
+        for (const node of card.querySelectorAll(".item-effect")) {
+          node.remove();
+        }
+
+        // Tags: the generic WEAPONS chip becomes the weapon class.
+        const tags = card.querySelector(".item-tags");
+        if (tags) {
+          const cls = marketWeaponCopy(item).weaponClass;
+          for (const tag of [...tags.children]) {
+            if (/^weapons?$/i.test(tag.textContent.trim())) tag.remove();
+          }
+          if (cls && !tags.querySelector(".feha-mws-class")) {
+            const chip = document.createElement("span");
+            chip.className = "feha-mws-class";
+            chip.textContent = cls;
+            tags.prepend(chip);
+          }
         }
 
         // Remove accidental duplicate FEHA summaries from older patches.
