@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.2";
+  const VERSION = "1.0.3";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const PASSIVE_FLAG = "cyberwarePassive";
@@ -390,14 +390,16 @@
   // The manager's own USE only counts item uses; charge is what limits chrome.
   function onManagerClick(event) {
     const button = event.target?.closest?.(
-      "#"+MANAGER_ID+" [data-use], #"+MANAGER_ID+" [data-use-item]"
+      "#"+MANAGER_ID+" [data-feha-activate], #"+MANAGER_ID+" [data-use], #"+MANAGER_ID+" [data-use-item]"
     );
     if (!button) return;
 
     const backend = globalThis.ADKChromeBackend ?? null;
     const actor = backend?.getActor?.() ?? backend?.actor ?? null;
     const item = actor?.items?.get?.(
-      button.dataset.use ?? button.dataset.useItem
+      button.dataset.fehaActivate ??
+      button.dataset.use ??
+      button.dataset.useItem
     );
 
     if (!item || !handles(item)) return;
@@ -453,14 +455,37 @@
     const value = chip.querySelector("b");
     if (value.textContent !== text) value.textContent = text;
 
-    for (const button of root.querySelectorAll("[data-use]")) {
-      const item = actor.items?.get?.(button.dataset.use);
-      const def = item ? catalog.definition(item) : null;
-      if (!def?.active) continue;
+    // The inspector hides the module's own USE buttons, so active chrome gets
+    // an ACTIVATE button in the item dossier, above EJECT.
+    const eject = root.querySelector("button.adk-v6-primary[data-remove]");
+    const item = eject ? actor.items?.get?.(eject.dataset.remove) : null;
+    const def = item ? catalog.definition(item) : null;
+    const existing = root.querySelector("[data-feha-activate]");
 
-      const label = "USE // "+chargeCost(actor,def)+" CHG";
-      if (button.textContent !== label) button.textContent = label;
+    if (!def?.active) {
+      existing?.remove();
+      return;
     }
+
+    const cost = chargeCost(actor,def);
+    const detail =
+      String(def.active.action).toUpperCase()+" // "+cost+" CHARGE"+
+      (state.remaining < cost ? " // PUSH FOR DAMAGE" : "");
+
+    let button = existing;
+
+    if (!button || button.dataset.fehaActivate !== item.id) {
+      existing?.remove();
+      button = document.createElement("button");
+      button.type = "button";
+      button.className = "adk-v6-primary feha-cw-activate";
+      button.dataset.fehaActivate = item.id;
+      button.innerHTML = "<span>ACTIVATE</span><small></small>";
+      eject.before(button);
+    }
+
+    const small = button.querySelector("small");
+    if (small.textContent !== detail) small.textContent = detail;
   }
 
   // ---- Rest, regeneration, expiry ------------------------------------------

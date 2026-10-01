@@ -1125,11 +1125,12 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
 /* Charge readout beside CYBERWARE CAPACITY (FEHA_CYBERWARE_RUNTIME). Charge is
    the capacity left unused; active chrome spends it. */
 #adk-chrome-manager-34 .adk-v6-capacity-head .feha-cw-charge {
-  display: grid;
-  gap: 2px;
-  margin-left: 14px;
-  padding-left: 14px;
-  border-left: 1px solid rgba(255, 255, 255, .18);
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 #adk-chrome-manager-34 .adk-v6-capacity-head .feha-cw-charge span {
@@ -1140,4 +1141,16 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
 
 #adk-chrome-manager-34 .adk-v6-capacity-head .feha-cw-charge b {
   color: #f3e600;
+}
+
+/* ACTIVATE button for active chrome, above EJECT in the item dossier. */
+#adk-chrome-manager-34 .adk-v6-hardware-dossier .feha-cw-activate {
+  border-color: #f3e600 !important;
+  color: #f3e600 !important;
+}
+
+#adk-chrome-manager-34 .adk-v6-hardware-dossier .feha-cw-activate:hover,
+#adk-chrome-manager-34 .adk-v6-hardware-dossier .feha-cw-activate:focus-visible {
+  background: #f3e600 !important;
+  color: #0a0a0a !important;
 }
