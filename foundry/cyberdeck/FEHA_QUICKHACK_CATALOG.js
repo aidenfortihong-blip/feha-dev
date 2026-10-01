@@ -79,8 +79,8 @@
       aliases:["Arc Overload","EMP Overload Program"],
       mk:5,
       ramCost:8,
-      effectText:"As a bonus action, choose one cybernetic or electronic target you can hack. The target must make a Constitution saving throw. On a failed save, it takes 8d10 lightning damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
-      meta:{save:"con",damage:"8d10",damageType:"lightning",halfOnSuccess:true,cyberneticOnly:true,removeReactionsOnFail:true}
+      effectText:"As a bonus action, choose one cybernetic or electronic target you can hack. The target must make a Constitution saving throw. On a failed save, it takes 10d10 lightning damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
+      meta:{save:"con",damage:"10d10",damageType:"lightning",halfOnSuccess:true,cyberneticOnly:true,removeReactionsOnFail:true}
     },
     {
       key:"rollback",

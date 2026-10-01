@@ -28,13 +28,13 @@
   };
 
   const POWER_RATINGS = Object.freeze({
-    "ForgeLine Industries":[28,39,49,58,73],
-    "Bastion Strategic":[23,34,44,54,70],
-    "Jade Arc Systems":[31,37,48,54,67],
-    "Corvus Neural":[15,22,32,39,53],
-    "Vektor Dynamics":[27,33,39,46,58],
-    "Helix Vitae":[15,25,33,41,56],
-    "Kurohane Group":[23,28,37,42,59]
+    "ForgeLine Industries":[28,45,61,84,100],
+    "Bastion Strategic":[23,40,57,81,98],
+    "Jade Arc Systems":[31,43,62,74,87],
+    "Corvus Neural":[15,27,43,56,71],
+    "Vektor Dynamics":[27,40,46,59,71],
+    "Helix Vitae":[15,31,46,62,77],
+    "Kurohane Group":[34,46,56,68,84]
   });
 
   const profiles = [
@@ -44,8 +44,8 @@
       flavor:"Overbuilt industrial armor that locks into a brutally stable defensive posture once the wearer plants their feet.",
       armorType:"heavy",
       dexCap:0,
-      ac:[16,17,18,19,21],
-      price:[950,2250,5900,13150,36650],
+      ac:[16,18,20,23,25],
+      price:[950,2550,7350,19000,50000],
       weight:[35,45,60,80,110],
       effect:mk => ({
         key:"anchor-plating",
@@ -63,16 +63,16 @@
       flavor:"Military plate designed to eat conventional gunfire instead of merely trying to turn it aside.",
       armorType:"heavy",
       dexCap:0,
-      ac:[15,16,17,18,20],
-      price:[850,1950,5200,12150,34700],
+      ac:[15,17,19,22,24],
+      price:[850,2300,6700,18250,48600],
       weight:[24,30,37,45,56],
       effect:mk => ({
         key:"take-the-bullet",
         name:"Take the Bullet",
-        value:[3,5,7,9,12][mk-1],
+        value:[5,10,15,20,30][mk-1],
         text:
           "Take the Bullet: reduce the normal damage of each firearm hit against you by " +
-          [3,5,7,9,12][mk-1] +
+          [5,10,15,20,30][mk-1] +
           ", to a minimum of 0. Separate non-firearm and special damage is unaffected."
       })
     },
@@ -82,8 +82,8 @@
       flavor:"Heat-shielded combat armor built to survive incendiary weapons and shut down electromagnetic disruption.",
       armorType:"heavy",
       dexCap:0,
-      ac:[15,16,17,18,20],
-      price:[1050,2100,5850,12000,31600],
+      ac:[15,17,19,21,23],
+      price:[1050,2450,7500,16500,41050],
       weight:[22,28,35,43,52],
       effect:mk => ({
         key:"thermal-faraday",
@@ -101,8 +101,8 @@
       flavor:"Expensive neural-defense armor full of eccentric shielding, signal isolation, and operator-first design choices that only Corvus would build this way.",
       armorType:"medium",
       dexCap:0,
-      ac:[14,15,16,17,19],
-      price:[700,1400,3400,8400,22500],
+      ac:[14,16,18,20,22],
+      price:[700,1700,4500,12000,30000],
       weight:[11,12,14,16,18],
       effect:mk => ({
         key:"neural-isolation",
@@ -119,8 +119,8 @@
       flavor:"A stripped-down combat shell built around blast isolation instead of Dexterity-assisted protection.",
       armorType:"medium",
       dexCap:0,
-      ac:[14,15,16,17,19],
-      price:[950,1900,4250,9900,24550],
+      ac:[14,16,17,19,21],
+      price:[950,2300,4950,12750,30000],
       weight:[12,14,16,18,20],
       effect:mk => ({
         key:"grenade-null",
@@ -138,8 +138,8 @@
       flavor:"Bio-integrated armor that synchronizes with Helix weapon telemetry and turns a matched loadout into pure movement.",
       armorType:"medium",
       dexCap:1,
-      ac:[13,14,15,16,18],
-      price:[700,1500,3550,9000,24850],
+      ac:[13,15,17,19,21],
+      price:[700,1900,4950,13500,34150],
       weight:[8,9,10,11,12],
       effect:mk => ({
         key:"kinetic-sync",
@@ -157,8 +157,8 @@
       flavor:"Low-profile covert armor built around speed, silence, and avoiding the shot instead of trying to become heavier than it.",
       armorType:"light",
       dexCap:null,
-      ac:[12,13,14,15,17],
-      price:[750,1550,4350,9400,27250],
+      ac:[13,15,16,18,20],
+      price:[1100,2600,6550,15000,38950],
       weight:[5,6,7,8,9],
       effect:mk => ({
         key:"ghostweave",

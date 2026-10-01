@@ -1,15 +1,15 @@
 {
   "version": "0.11.86",
   "updated": "2026-09-30",
-  "scope": "balance-patch-1",
+  "scope": "balance-patch-1-lethal",
   "notes": [
     "Includes 0.11.85 item cards.",
-    "Weapon balance: every firearm, unique and melee weapon is scored by expected damage per turn over a full reload cycle (one attack per turn, reload = Action +2 / Bonus +1, vs AC 14 at +5). Target curve: ~8-10 per turn for street gear rising steeply to ~50 for the top tier; melee +15%, uniques +10%. 64 of 115 weapons were outside +/-15% and had dice scaled within their die type (class identity kept). Magazines, reloads and every manufacturer trait unchanged.",
-    "Big single-shot snipers keep nutty alpha: Nekomata 5d20+70, Sunlance 1d20+102, Grad 1d20+68, Rasetsu 7d20+26 (was 8d20+30). Silverhand 1d30+61 (was +75). Errata 15d8, Chainsword Legendary 11d10. Street pistols/knives raised to ~9 per turn. Neurotoxin Knife 4d6 (poison effect carries the rest).",
-    "Prices follow power: every weapon's power rating is re-derived from its final damage, so price = 150 + 7 x rating^1.75 (x rarity multiplier).",
-    "Armor: AC per Mk capped at 21 (heavy 15-21, medium 13-19, light 12-17 + full DEX); prices and power ratings scale with AC. Bastion Take the Bullet 3/5/7/9/12. Flexweave Grenade Null halves grenade damage at Mk I-IV, immunity at Mk V.",
-    "Grenades: damage by Mk (Mk1 4d6, Mk2 6d6, Mk3 8d6, Mk4 10d6; EMP one step lighter; Ozob's Nose 10d6); prices by Mk with sticky x1.3, homing x1.6, utility x0.4.",
-    "Quickhacks: Arc Overload 12d12 -> 8d10. Consumables: Neural Adaptation Kit limited to once per character (GM-enforced text).",
+    "Lethal weapon curve: every firearm, unique and melee weapon is scored by expected damage per turn over a full reload cycle (one attack per turn, reload = Action +2 / Bonus +1, vs AC 14 at +5) and outliers beyond +/-15% are pulled onto one curve: ~14-16 per turn for street gear (street pistols ~24 per hit), ~26 mid tier, ~50 top tier; melee +15%, uniques +10%. Dice scale within their die type; magazines, reloads and every manufacturer trait unchanged.",
+    "Big single-shot snipers keep extreme alpha: Nekomata 6d20+75, Sunlance 1d20+114, Grad 1d20+74, Rasetsu 7d20+26. Black Requiem and Silverhand 3516 unchanged. Errata 16d8, Chainsword Legendary 12d10, Neurotoxin Knife 6d6 + poison.",
+    "Prices follow power: power ratings re-derived from final damage; price = 150 + 7 x rating^1.75 (x rarity multiplier).",
+    "Armor AC, prices and Bastion reduction unchanged (high AC is the intended counterweight to lethal guns). Flexweave Grenade Null halves grenade damage at Mk I-IV, immunity at Mk V.",
+    "Grenades: damage by Mk (Mk1 6d6, Mk2 8d6, Mk3 10d6, Mk4 12d6; EMP one step lighter; Ozob's Nose 15d6 at 1750 CR); prices by Mk with sticky x1.3, homing x1.6, utility x0.4.",
+    "Quickhacks: Arc Overload 12d12 -> 10d10. Consumables: Neural Adaptation Kit once per character (GM-enforced text).",
     "Joke weapons (Slaughtomatic, Dildo Stout, Shovel Caretaker) and all cyberware untouched."
   ]
 }
