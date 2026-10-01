@@ -1,6 +1,7 @@
-// FEHA // CAMERA SYSTEM
-// Foundry-backed camera actors + JACK IN placement authority.
-// FOV editing is intentionally a separate follow-up layer.
+// FEHA // CAMERAS
+// A GM tool, not a hacking system. When a player gets into a camera (roleplay,
+// or a Cyber Check against a DC the GM picks), the GM drops a camera token for
+// that player. The player owns it, so they see what it sees.
 
 (() => {
   const core = globalThis.FEHA_CYBER_CORE;
@@ -9,30 +10,21 @@
     throw new Error("FEHA_CAMERAS requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "0.1.2";
+  const VERSION = "0.2.0";
   const FLAG_SCOPE = "fleshEnshrouded";
   const ACTOR_FLAG = "cameraActor";
   const TOKEN_FLAG = "cameraToken";
-  const CHANNEL = "module.flesh-enshrouded-heart-ablaze";
-  const MARKER = "fehaCameraSystemV1";
   const CAMERA_FOLDER = "Camera";
   const CAMERA_IMG = "icons/svg/eye.svg";
   const TOKEN_SIZE = 0.5;
-  const REQUEST_TIMEOUT_MS = 15000;
+  const SIGHT_RANGE_FT = 60;
+  const TOOL_NAME = "fehaCamera";
 
-  const pending = new Map();
-  let socketHandler = null;
+  let controlsHook = null;
+  let visionPatch = null;
 
   const clamp = (n,min,max) =>
     Math.max(min,Math.min(max,Number(n)||0));
-
-  function randomID() {
-    return (
-      globalThis.foundry?.utils?.randomID?.() ??
-      globalThis.crypto?.randomUUID?.() ??
-      (String(Date.now()) + Math.random().toString(36).slice(2))
-    );
-  }
 
   function collectionContents(collection) {
     if (!collection) return [];
@@ -45,40 +37,6 @@
     return Number(
       globalThis.CONST?.DOCUMENT_OWNERSHIP_LEVELS?.OWNER ??
       3
-    );
-  }
-
-  function userOwnsActor(user,actor) {
-    if (!user || !actor) return false;
-    if (user.isGM) return true;
-
-    try {
-      if (typeof actor.testUserPermission === "function") {
-        return actor.testUserPermission(user,ownerLevel());
-      }
-    } catch {}
-
-    const ownership =
-      actor.ownership ??
-      actor.permission ??
-      {};
-
-    const level = Number(
-      ownership[user.id] ??
-      ownership.default ??
-      0
-    );
-
-    return Number.isFinite(level) && level >= ownerLevel();
-  }
-
-  function activeAuthorityGM() {
-    return (
-      game.users?.activeGM ??
-      collectionContents(game.users)
-        .filter(user => user?.isGM && user?.active)
-        .sort((a,b) => String(a.id).localeCompare(String(b.id)))[0] ??
-      null
     );
   }
 
@@ -109,47 +67,13 @@
     );
   }
 
-  function percentToCenter(scene,xPct,yPct) {
-    const rect = sceneRect(scene);
-    const width = Math.max(1,Number(rect.width)||1);
-    const height = Math.max(1,Number(rect.height)||1);
-
-    return {
-      x:Number(rect.x??0) + width*(clamp(xPct,0,100)/100),
-      y:Number(rect.y??0) + height*(clamp(yPct,0,100)/100)
-    };
-  }
-
-  function centerToPercent(scene,x,y) {
-    const rect = sceneRect(scene);
-    const width = Math.max(1,Number(rect.width)||1);
-    const height = Math.max(1,Number(rect.height)||1);
-
-    return {
-      xPct:clamp(
-        ((Number(x)-Number(rect.x??0))/width)*100,
-        0,
-        100
-      ),
-      yPct:clamp(
-        ((Number(y)-Number(rect.y??0))/height)*100,
-        0,
-        100
-      )
-    };
-  }
-
+  // Direct reads: getFlag throws for the "fleshEnshrouded" namespace.
   function cameraActorFlag(actor) {
-    // Direct read: getFlag throws for the "fleshEnshrouded" namespace.
     return actor?.flags?.[FLAG_SCOPE]?.[ACTOR_FLAG] ?? null;
   }
 
   function cameraTokenFlag(token) {
-    try {
-      return token?.flags?.[FLAG_SCOPE]?.[TOKEN_FLAG] ?? null;
-    } catch {
-      return null;
-    }
+    return token?.flags?.[FLAG_SCOPE]?.[TOKEN_FLAG] ?? null;
   }
 
   function isCameraActor(actor) {
@@ -160,548 +84,285 @@
     return Boolean(cameraTokenFlag(token)?.enabled);
   }
 
-  function findCameraActor(operatorActorId,userId) {
-    return collectionContents(game.actors).find(actor => {
-      const flag = cameraActorFlag(actor);
-
-      return (
-        flag?.enabled === true &&
-        String(flag.operatorActorId ?? "") === String(operatorActorId ?? "") &&
-        String(flag.ownerUserId ?? "") === String(userId ?? "")
-      );
-    }) ?? null;
-  }
-
-  async function ensureCameraFolder() {
-    let folder = collectionContents(game.folders).find(folder =>
-      folder?.type === "Actor" &&
-      String(folder?.name ?? "").trim().toLowerCase() ===
-        CAMERA_FOLDER.toLowerCase()
-    ) ?? null;
-
-    if (folder) return folder;
-
-    if (!game.user?.isGM) {
-      throw new Error("GM authority is required to create the Camera folder.");
-    }
-
-    folder = await Folder.create({
-      name:CAMERA_FOLDER,
-      type:"Actor",
-      sorting:"a"
-    });
-
-    return folder;
-  }
-
-  async function ensureCameraActorLocal(operatorActorId,userId) {
-    if (!game.user?.isGM) {
-      throw new Error("GM authority is required to create Camera actors.");
-    }
-
-    const operator = game.actors?.get?.(operatorActorId) ?? null;
-    const user = game.users?.get?.(userId) ?? null;
-
-    if (!operator || !user) {
-      throw new Error("Camera operator context is no longer available.");
-    }
-
-    if (!userOwnsActor(user,operator)) {
-      throw new Error("Requesting user does not own the operator Actor.");
-    }
-
-    const folder = await ensureCameraFolder();
-    let actor = findCameraActor(operator.id,user.id);
-
-    if (!actor) {
-      const ownership = {
-        default:Number(
-          globalThis.CONST?.DOCUMENT_OWNERSHIP_LEVELS?.NONE ??
-          0
-        )
-      };
-
-      ownership[user.id] = ownerLevel();
-
-      actor = await Actor.create({
-        name:"CAMERA // " + operator.name,
-        type:"npc",
-        img:CAMERA_IMG,
-        folder:folder.id,
-        ownership,
-        flags:{
-          [FLAG_SCOPE]:{
-            [ACTOR_FLAG]:{
-              enabled:true,
-              operatorActorId:operator.id,
-              ownerUserId:user.id,
-              createdAt:new Date().toISOString()
-            }
-          }
-        },
-        prototypeToken:{
-          name:"CAMERA // " + operator.name,
-          actorLink:true,
-          width:TOKEN_SIZE,
-          height:TOKEN_SIZE,
-          texture:{src:CAMERA_IMG},
-          disposition:0
-        }
-      },{
-        renderSheet:false
-      });
-    } else {
-      const currentOwnership = {
-        ...(actor.ownership ?? {})
-      };
-
-      if (Number(currentOwnership[user.id] ?? 0) < ownerLevel()) {
-        currentOwnership[user.id] = ownerLevel();
-
-        await actor.update({
-          ownership:currentOwnership,
-          folder:folder.id
-        });
-      } else if (String(actor.folder?.id ?? actor.folder ?? "") !== String(folder.id)) {
-        await actor.update({folder:folder.id});
-      }
-    }
-
-    return actor;
-  }
-
   function cameraRecord(scene,token) {
     if (!scene || !token || !isCameraToken(token)) return null;
 
     const flag = cameraTokenFlag(token) ?? {};
     const size = gridSize(scene);
-    const widthPx = Math.max(
-      1,
-      Number(token.width ?? TOKEN_SIZE)*size
-    );
-    const heightPx = Math.max(
-      1,
-      Number(token.height ?? TOKEN_SIZE)*size
-    );
+    const rect = sceneRect(scene);
+    const width = Math.max(1,Number(rect.width)||1);
+    const height = Math.max(1,Number(rect.height)||1);
 
-    const center = {
-      x:Number(token.x ?? 0) + widthPx/2,
-      y:Number(token.y ?? 0) + heightPx/2
-    };
-
-    const pos = centerToPercent(
-      scene,
-      center.x,
-      center.y
-    );
-
-    const actor =
-      token.actor ??
-      game.actors?.get?.(token.actorId) ??
-      null;
+    const centerX =
+      Number(token.x ?? 0) + Number(token.width ?? TOKEN_SIZE)*size/2;
+    const centerY =
+      Number(token.y ?? 0) + Number(token.height ?? TOKEN_SIZE)*size/2;
 
     return {
       id:String(token.id),
       tokenId:String(token.id),
       sceneId:String(scene.id),
-      actorId:String(actor?.id ?? token.actorId ?? ""),
-      operatorActorId:String(flag.operatorActorId ?? ""),
       ownerUserId:String(flag.ownerUserId ?? ""),
-      name:String(token.name ?? actor?.name ?? "CAMERA"),
-      img:String(
-        token.texture?.src ??
-        actor?.img ??
-        CAMERA_IMG
-      ),
-      xPct:pos.xPct,
-      yPct:pos.yPct,
-      rotation:Number(token.rotation ?? flag.rotation ?? 0) || 0,
-      fovAngle:Number(flag.fovAngle ?? 60) || 60,
-      fovRange:Number(flag.fovRange ?? 60) || 60
+      name:String(token.name ?? "CAMERA"),
+      xPct:clamp(((centerX-Number(rect.x??0))/width)*100,0,100),
+      yPct:clamp(((centerY-Number(rect.y??0))/height)*100,0,100)
     };
   }
 
+  // Cameras this user may know about: the GM sees all, a player only theirs.
   function scanScene(scene=canvas?.scene) {
     if (!scene) return [];
 
     return collectionContents(scene.tokens)
-      .filter(isCameraToken)
+      .filter(token =>
+        isCameraToken(token) &&
+        (game.user?.isGM || token.isOwner)
+      )
       .map(token => cameraRecord(scene,token))
       .filter(Boolean);
   }
 
-  async function placeCameraLocal({
-    operatorActorId,
-    userId,
-    sceneId,
-    xPct,
-    yPct
-  }) {
-    if (!game.user?.isGM) {
-      throw new Error("GM authority is required to place Camera tokens.");
-    }
-
-    const scene = game.scenes?.get?.(sceneId) ?? null;
-    const user = game.users?.get?.(userId) ?? null;
-    const operator = game.actors?.get?.(operatorActorId) ?? null;
-
-    if (!scene || !user || !operator) {
-      throw new Error("Camera placement context is no longer available.");
-    }
-
-    if (!userOwnsActor(user,operator)) {
-      throw new Error("Requesting user does not own the operator Actor.");
-    }
-
-    const cameraActor =
-      await ensureCameraActorLocal(
-        operator.id,
-        user.id
-      );
-
-    const center =
-      percentToCenter(
-        scene,
-        xPct,
-        yPct
-      );
-
-    const size = gridSize(scene);
-    const tokenPixels = size*TOKEN_SIZE;
-    const rect = sceneRect(scene);
-
-    const minX = Number(rect.x ?? 0);
-    const minY = Number(rect.y ?? 0);
-    const maxX =
-      minX +
-      Math.max(0,Number(rect.width ?? 0)-tokenPixels);
-
-    const maxY =
-      minY +
-      Math.max(0,Number(rect.height ?? 0)-tokenPixels);
-
-    const x = Math.round(
-      clamp(
-        center.x-tokenPixels/2,
-        minX,
-        maxX
-      )
+  async function ensureCameraFolder() {
+    const existing = collectionContents(game.folders).find(folder =>
+      folder?.type === "Actor" &&
+      String(folder?.name ?? "").trim().toLowerCase() ===
+        CAMERA_FOLDER.toLowerCase()
     );
 
-    const y = Math.round(
-      clamp(
-        center.y-tokenPixels/2,
-        minY,
-        maxY
-      )
-    );
-
-    const [token] =
-      await scene.createEmbeddedDocuments(
-        "Token",
-        [{
-          name:"CAMERA",
-          actorId:cameraActor.id,
-          actorLink:true,
-          x,
-          y,
-          width:TOKEN_SIZE,
-          height:TOKEN_SIZE,
-          rotation:0,
-          hidden:false,
-          disposition:0,
-          texture:{
-            src:cameraActor.img || CAMERA_IMG
-          },
-          flags:{
-            [FLAG_SCOPE]:{
-              [TOKEN_FLAG]:{
-                enabled:true,
-                operatorActorId:operator.id,
-                ownerUserId:user.id,
-                fovAngle:60,
-                fovRange:60,
-                rotation:0,
-                createdAt:new Date().toISOString()
-              }
-            }
-          }
-        }]
-      );
-
-    const record = cameraRecord(scene,token);
-
-    await core.emit(
-      "cameras:changed",
-      {
-        sceneId:scene.id,
-        camera:record,
-        placedBy:user.id
-      }
-    );
-
-    return record;
-  }
-
-  function createPending(requestId) {
-    let timer = null;
-    let settled = false;
-
-    return new Promise((resolve,reject) => {
-      const resolver = payload => {
-        if (settled) return;
-        settled = true;
-
-        if (timer) clearTimeout(timer);
-
-        if (pending.get(requestId) === resolver) {
-          pending.delete(requestId);
-        }
-
-        resolve(payload);
-      };
-
-      resolver.cancel = (
-        message="Camera authority service reloaded."
-      ) => resolver({
-        requestId,
-        cancelled:true,
-        error:message
-      });
-
-      pending.set(requestId,resolver);
-
-      timer = setTimeout(() => {
-        if (
-          settled ||
-          pending.get(requestId) !== resolver
-        ) {
-          return;
-        }
-
-        settled = true;
-        pending.delete(requestId);
-        reject(
-          new Error(
-            "Camera authority request timed out."
-          )
-        );
-      },REQUEST_TIMEOUT_MS);
+    return existing ?? Folder.create({
+      name:CAMERA_FOLDER,
+      type:"Actor",
+      sorting:"a"
     });
   }
 
-  function cancelPending(
-    message="Camera authority service reloaded."
-  ) {
-    for (const resolver of [...pending.values()]) {
-      try {
-        resolver?.cancel?.(message);
-      } catch {}
-    }
+  async function ensureCameraActor(user) {
+    const folder = await ensureCameraFolder();
 
-    pending.clear();
-  }
-
-  function emit(kind,payload) {
-    game.socket?.emit?.(
-      CHANNEL,
-      {
-        [MARKER]:true,
-        kind,
-        payload
-      }
-    );
-  }
-
-  async function requestAuthority(kind,payload) {
-    const gm = activeAuthorityGM();
-
-    if (!gm) {
-      throw new Error(
-        "No online GM authority is available for Camera placement."
+    const existing = collectionContents(game.actors).find(actor => {
+      const flag = cameraActorFlag(actor);
+      return (
+        flag?.enabled === true &&
+        String(flag.ownerUserId ?? "") === String(user.id)
       );
-    }
+    });
 
-    const requestId = randomID();
-    const resolution = createPending(requestId);
-
-    emit(
-      kind,
-      {
-        ...payload,
-        requestId,
-        gmId:gm.id,
-        userId:payload.userId ?? game.user.id
+    if (existing) {
+      if (Number(existing.ownership?.[user.id] ?? 0) < ownerLevel()) {
+        await existing.update({
+          ["ownership."+user.id]:ownerLevel()
+        });
       }
-    );
 
-    const result = await resolution;
-
-    if (result?.error) {
-      throw new Error(result.error);
+      return existing;
     }
 
-    return result?.result ?? null;
+    const name = "CAMERA // " + user.name;
+
+    return Actor.create({
+      name,
+      type:"npc",
+      img:CAMERA_IMG,
+      folder:folder.id,
+      ownership:{
+        default:Number(
+          globalThis.CONST?.DOCUMENT_OWNERSHIP_LEVELS?.NONE ?? 0
+        ),
+        [user.id]:ownerLevel()
+      },
+      flags:{
+        [FLAG_SCOPE]:{
+          [ACTOR_FLAG]:{
+            enabled:true,
+            ownerUserId:user.id,
+            createdAt:new Date().toISOString()
+          }
+        }
+      },
+      prototypeToken:{
+        name,
+        actorLink:true,
+        width:TOKEN_SIZE,
+        height:TOKEN_SIZE,
+        texture:{src:CAMERA_IMG},
+        disposition:0
+      }
+    },{
+      renderSheet:false
+    });
   }
 
-  async function ensureCameraActor(
-    operatorActorId,
-    userId=game.user?.id
-  ) {
-    if (!operatorActorId || !userId) {
-      throw new Error("Camera Actor requires operator and user.");
-    }
+  // Middle of what the GM is looking at right now.
+  function viewCenter() {
+    const pivot = canvas?.stage?.pivot;
+    const rect = sceneRect(canvas?.scene);
 
-    if (game.user?.isGM) {
-      const actor =
-        await ensureCameraActorLocal(
-          operatorActorId,
-          userId
-        );
-
-      return {
-        id:actor.id,
-        name:actor.name,
-        img:actor.img
-      };
-    }
-
-    return requestAuthority(
-      "ensureActorRequest",
-      {
-        operatorActorId,
-        userId
-      }
-    );
+    return {
+      x:Number(pivot?.x ?? (Number(rect.x)+Number(rect.width)/2)),
+      y:Number(pivot?.y ?? (Number(rect.y)+Number(rect.height)/2))
+    };
   }
 
-  async function placeCamera({
-    operatorActorId,
-    userId=game.user?.id,
-    sceneId=canvas?.scene?.id,
-    xPct,
-    yPct
-  }={}) {
-    if (
-      !operatorActorId ||
-      !userId ||
-      !sceneId ||
-      !Number.isFinite(Number(xPct)) ||
-      !Number.isFinite(Number(yPct))
-    ) {
-      throw new Error("Camera placement request is incomplete.");
+  // Drop a camera token for a player on the current scene. The GM then drags
+  // it where the camera is and deletes the token when the feed is lost.
+  async function placeCameraFor(userId,{x,y}={}) {
+    if (!game.user?.isGM) {
+      throw new Error("Only the GM can place a camera.");
     }
 
-    if (game.user?.isGM) {
-      return placeCameraLocal({
-        operatorActorId,
-        userId,
-        sceneId,
-        xPct,
-        yPct
-      });
+    const scene = canvas?.scene ?? null;
+    const user = game.users?.get?.(userId) ?? null;
+
+    if (!scene || !user) {
+      throw new Error("Camera needs an open scene and a player.");
     }
 
-    return requestAuthority(
-      "placeCameraRequest",
-      {
-        operatorActorId,
-        userId,
-        sceneId,
-        xPct:Number(xPct),
-        yPct:Number(yPct)
+    const actor = await ensureCameraActor(user);
+    const center = viewCenter();
+    const half = gridSize(scene)*TOKEN_SIZE/2;
+
+    const [token] = await scene.createEmbeddedDocuments("Token",[{
+      name:"CAMERA // " + user.name,
+      actorId:actor.id,
+      actorLink:true,
+      x:Math.round(Number(x ?? center.x)-half),
+      y:Math.round(Number(y ?? center.y)-half),
+      width:TOKEN_SIZE,
+      height:TOKEN_SIZE,
+      disposition:0,
+      texture:{src:actor.img || CAMERA_IMG},
+      sight:{
+        enabled:true,
+        range:SIGHT_RANGE_FT,
+        angle:360
+      },
+      flags:{
+        [FLAG_SCOPE]:{
+          [TOKEN_FLAG]:{
+            enabled:true,
+            ownerUserId:user.id,
+            createdAt:new Date().toISOString()
+          }
+        }
       }
+    }]);
+
+    ui.notifications?.info?.(
+      "Camera placed for " + user.name +
+      ". Drag it into position; delete the token to cut the feed."
     );
+
+    return cameraRecord(scene,token);
   }
 
-  async function receive(message) {
-    if (!message?.[MARKER]) return;
+  async function openPlaceDialog() {
+    if (!game.user?.isGM) return null;
 
-    const kind = message.kind;
-    const payload = message.payload ?? {};
+    const players = collectionContents(game.users)
+      .filter(user => !user.isGM);
 
-    if (
-      kind === "ensureActorResolved" ||
-      kind === "placeCameraResolved"
-    ) {
-      if (
-        payload.userId !== game.user?.id
-      ) {
-        return;
-      }
-
-      const resolver =
-        pending.get(payload.requestId);
-
-      resolver?.(payload);
-      return;
+    if (!players.length) {
+      ui.notifications?.warn?.("There are no players to give a camera to.");
+      return null;
     }
 
+    const escape = value =>
+      foundry.utils.escapeHTML(String(value ?? ""));
+
+    const options = players
+      .map(user =>
+        '<option value="'+escape(user.id)+'">'+
+        escape(user.name)+
+        (user.active ? "" : " (offline)")+
+        '</option>'
+      )
+      .join("");
+
+    const userId = await foundry.applications.api.DialogV2.prompt({
+      window:{title:"Place camera"},
+      content:
+        '<p>The player you pick owns the camera and sees through it. '+
+        'It appears in the middle of your view.</p>'+
+        '<div class="form-group"><label for="feha-camera-user">Player</label>'+
+        '<select id="feha-camera-user" name="user">'+options+'</select></div>',
+      ok:{
+        label:"Place camera",
+        callback:(event,button) => button.form.elements.user.value
+      },
+      rejectClose:false
+    });
+
+    if (!userId) return null;
+
+    try {
+      return await placeCameraFor(userId);
+    } catch (err) {
+      console.error("FEHA CAMERAS // placement failed",err);
+      ui.notifications?.error?.(err?.message ?? "Could not place the camera.");
+      return null;
+    }
+  }
+
+  function addControlTool(controls) {
     if (!game.user?.isGM) return;
-    if (payload.gmId !== game.user.id) return;
 
-    if (kind === "ensureActorRequest") {
-      try {
-        const actor =
-          await ensureCameraActorLocal(
-            payload.operatorActorId,
-            payload.userId
-          );
+    const tools = controls?.tokens?.tools;
+    if (!tools || tools[TOOL_NAME]) return;
 
-        emit(
-          "ensureActorResolved",
-          {
-            requestId:payload.requestId,
-            userId:payload.userId,
-            result:{
-              id:actor.id,
-              name:actor.name,
-              img:actor.img
-            }
-          }
-        );
-      } catch (err) {
-        emit(
-          "ensureActorResolved",
-          {
-            requestId:payload.requestId,
-            userId:payload.userId,
-            error:String(err?.message ?? err)
-          }
-        );
+    tools[TOOL_NAME] = {
+      name:TOOL_NAME,
+      title:"Place camera for a player",
+      icon:"fa-solid fa-video",
+      order:Object.keys(tools).length,
+      button:true,
+      visible:true,
+      onChange:() => openPlaceDialog()
+    };
+  }
+
+  // Foundry only uses a player's other owned tokens for vision while they
+  // have no token selected. A camera feed should stay on while they play
+  // their character, so a player's own camera always counts.
+  function patchVision() {
+    const proto = CONFIG?.Token?.objectClass?.prototype;
+    const original = proto?._isVisionSource;
+
+    if (typeof original !== "function") return;
+
+    const patched = function() {
+      if (
+        !game.user?.isGM &&
+        isCameraToken(this.document) &&
+        this.document.isOwner &&
+        !this.document.hidden &&
+        this.hasSight &&
+        canvas?.visibility?.tokenVision
+      ) {
+        return true;
       }
 
-      return;
+      return original.call(this);
+    };
+
+    proto._isVisionSource = patched;
+    visionPatch = {proto,original,patched};
+  }
+
+  function unpatchVision() {
+    if (
+      visionPatch &&
+      visionPatch.proto._isVisionSource === visionPatch.patched
+    ) {
+      visionPatch.proto._isVisionSource = visionPatch.original;
     }
 
-    if (kind === "placeCameraRequest") {
-      try {
-        const record =
-          await placeCameraLocal({
-            operatorActorId:payload.operatorActorId,
-            userId:payload.userId,
-            sceneId:payload.sceneId,
-            xPct:payload.xPct,
-            yPct:payload.yPct
-          });
+    visionPatch = null;
+  }
 
-        emit(
-          "placeCameraResolved",
-          {
-            requestId:payload.requestId,
-            userId:payload.userId,
-            result:record
-          }
-        );
-      } catch (err) {
-        emit(
-          "placeCameraResolved",
-          {
-            requestId:payload.requestId,
-            userId:payload.userId,
-            error:String(err?.message ?? err)
-          }
-        );
+  function refreshCameraVision() {
+    for (const token of canvas?.tokens?.placeables ?? []) {
+      if (isCameraToken(token.document)) {
+        try { token.initializeVisionSource?.(); } catch {}
       }
     }
   }
@@ -709,55 +370,34 @@
   const api = {
     version:VERSION,
     cameraFolderName:CAMERA_FOLDER,
-    cameraImage:CAMERA_IMG,
-    tokenSize:TOKEN_SIZE,
     isCameraActor,
     isCameraToken,
     scanScene,
     cameraRecord,
-    ensureCameraActor,
-    placeCamera,
+    placeCameraFor,
+    openPlaceDialog,
 
     async init() {
-      if (socketHandler) {
-        try {
-          game.socket?.off?.(CHANNEL,socketHandler);
-        } catch {}
-      }
+      patchVision();
+      refreshCameraVision();
 
-      socketHandler = receive;
-      game.socket?.on?.(CHANNEL,socketHandler);
+      controlsHook = Hooks.on("getSceneControlButtons",addControlTool);
 
+      // This file hot-loads after the controls first drew.
       if (game.user?.isGM) {
-        try {
-          await ensureCameraFolder();
-        } catch (err) {
-          console.warn(
-            "FEHA CAMERAS // folder bootstrap failed",
-            err
-          );
-        }
+        try { await ui.controls?.render?.({reset:true}); } catch {}
       }
 
-      console.log(
-        "FEHA CAMERAS",
-        VERSION,
-        "ready"
-      );
+      console.log("FEHA CAMERAS",VERSION,"ready");
     },
 
     async destroy() {
-      if (socketHandler) {
-        try {
-          game.socket?.off?.(
-            CHANNEL,
-            socketHandler
-          );
-        } catch {}
+      if (controlsHook !== null) {
+        Hooks.off("getSceneControlButtons",controlsHook);
+        controlsHook = null;
       }
 
-      socketHandler = null;
-      cancelPending();
+      unpatchVision();
 
       if (globalThis.FEHA_CAMERAS === api) {
         delete globalThis.FEHA_CAMERAS;

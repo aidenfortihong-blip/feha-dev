@@ -7,7 +7,7 @@
   try { globalThis.FEHA_TABLETOP_UI_V3?.destroy?.(); } catch {}
   globalThis.FEHA_CYBERDECK_V3_ACTIVE = true;
   try { globalThis.ADKDevPatch?.suspendCyberdeckV2?.(); } catch {}
-  const VERSION = "0.11.89";
+  const VERSION = "0.11.90";
   let lifecycleActive = true;
   const ROOT_ID = "feha-cyberdeck-v2";
   const JACK_ID = "feha-jackin-overlay";
@@ -123,13 +123,42 @@
     return 0;
   }
 
-  // RAM spent on each breach attempt against a secured device.
-  function breachRamCost(device) {
-    const dc = Number(device?.securityDC ?? 0) || 0;
-    if (dc <= 0) return 0;
-    if (dc <= 12) return 1;
-    if (dc <= 15) return 2;
-    return 3;
+  // Cyber check: the one roll for hacking anything that is not a creature
+  // (doors, cameras, terminals...). The GM sets the DC and narrates the result.
+  const CYBER_CHECK_RAM = 1;
+
+  function cyberCheckBonus(actor) {
+    const int = actor?.system?.abilities?.int ?? {};
+    const mod = Number.isFinite(Number(int.mod))
+      ? Number(int.mod)
+      : Math.floor(((Number(int.value) || 10) - 10) / 2);
+    const prof = Number(actor?.system?.attributes?.prof ?? 2);
+
+    return mod + (Number.isFinite(prof) ? prof : 2);
+  }
+
+  async function rollCyberCheck(actor) {
+    const ram = model(actor).currentRam;
+
+    if (ram < CYBER_CHECK_RAM) {
+      ui?.notifications?.warn?.("Not enough RAM for a Cyber Check.");
+      return null;
+    }
+
+    const bonus = cyberCheckBonus(actor);
+    const roll = new Roll("1d20 " + (bonus >= 0 ? "+ " : "- ") + Math.abs(bonus));
+    await roll.evaluate();
+
+    await actor.update({
+      [`flags.${FLAG}.ramCurrent`]:Math.max(0,ram - CYBER_CHECK_RAM)
+    });
+
+    await roll.toMessage({
+      speaker:ChatMessage.getSpeaker({actor}),
+      flavor:"CYBER CHECK // INT + PROFICIENCY // " + CYBER_CHECK_RAM + " RAM SPENT"
+    });
+
+    return roll;
   }
 
   function hackCost(item) {
@@ -1129,7 +1158,12 @@
             <strong>${m.currentRam}<em>/ ${m.maxRam}</em></strong>
             ${segments(m.currentRam,m.deck ? m.maxRam : 0)}
           </div>
-          <span class="cd2-rest-note">RAM REFILLS ON A REST</span>
+          <aside class="cd2-ram-side">
+            <button type="button" class="cd2-cyber-check" data-v3-action="cyber-check" ${m.deck && m.currentRam >= CYBER_CHECK_RAM ? "" : "disabled"}>
+              <b>CYBER CHECK</b><span>1D20 ${cyberCheckBonus(chosen) >= 0 ? "+" : "−"} ${Math.abs(cyberCheckBonus(chosen))} // ${CYBER_CHECK_RAM} RAM</span>
+            </button>
+            <span class="cd2-rest-note">RAM REFILLS ON A REST</span>
+          </aside>
         </section>
 
         <div class="v3-scroll">
@@ -1249,15 +1283,6 @@
     );
   }
 
-  function sceneNetworkDevices(scene) {
-    try {
-      return cyberModule("devices")?.scanScene?.(scene) ?? [];
-    } catch (err) {
-      console.warn("FEHA V3 // Network Device scan failed",err);
-      return [];
-    }
-  }
-
   function sceneCameras(scene) {
     try {
       return cyberModule("cameras")?.scanScene?.(scene) ?? [];
@@ -1276,7 +1301,6 @@
         backgroundSrc:"",
         aspectRatio:1,
         nodes:[],
-        devices:[],
         cameras:[],
         relays:[],
         links:[],
@@ -1734,47 +1758,6 @@
         Number.isFinite(camera.y)
       );
 
-    const networkDevices = sceneNetworkDevices(scene)
-      .map((device,index) => ({
-        ...device,
-        index,
-        x:Number(device.xPct),
-        y:Number(device.yPct)
-      }))
-      .filter(device =>
-        Number.isFinite(device.x) &&
-        Number.isFinite(device.y)
-      );
-
-    // Devices join the same topology graph but keep their exact scene
-    // coordinates. They never need to know how JACK IN renders them.
-    for (const device of networkDevices) {
-      const relay = relays.length
-        ? [...relays].sort((a,b) => {
-            const da = Math.hypot(device.x-a.x,device.y-a.y);
-            const db = Math.hypot(device.x-b.x,device.y-b.y);
-            return da-db;
-          })[0]
-        : gateway;
-
-      if (!relay) continue;
-
-      links.push({
-        id:"link-device-"+device.id,
-        from:relay.id,
-        to:"device:"+device.id,
-        x1:relay.x,
-        y1:relay.y,
-        x2:device.x,
-        y2:device.y,
-        kind:"device",
-        selected:false,
-        relation:"device",
-        targetId:null,
-        deviceId:device.id
-      });
-    }
-
     const backgroundSrc =
       String(
         scene?.background?.src ??
@@ -1787,7 +1770,6 @@
       backgroundSrc,
       aspectRatio:rw/rh,
       nodes,
-      devices:networkDevices,
       cameras:cameraNodes,
       relays,
       links,
@@ -1999,8 +1981,6 @@
         dash = [3,12];
       } else if (line.classList.contains("is-shadow")) {
         dash = [2,11];
-      } else if (line.classList.contains("is-device")) {
-        dash = [4,8];
       }
 
       line.style.setProperty(
@@ -2190,237 +2170,6 @@
     });
   }
 
-  function jackWorldPercentAt(
-    root,
-    clientX,
-    clientY
-  ) {
-    const space = root?.querySelector?.(".jack-space");
-    const world = root?.querySelector?.(".jack-world");
-
-    if (!space || !world) return null;
-
-    const rect = space.getBoundingClientRect();
-    const state = jackViewportState(root);
-    const zoom = Math.max(1,Number(state.zoom)||1);
-    const planeLeft = Number(world.offsetLeft ?? 0);
-    const planeTop = Number(world.offsetTop ?? 0);
-
-    const worldX =
-      (Number(clientX)-rect.left-planeLeft-state.panX)/zoom;
-
-    const worldY =
-      (Number(clientY)-rect.top-planeTop-state.panY)/zoom;
-
-    const clamp = (n,min,max) =>
-      Math.max(min,Math.min(max,n));
-
-    return {
-      xPct:clamp(
-        (worldX/Math.max(1,world.clientWidth))*100,
-        0,
-        100
-      ),
-      yPct:clamp(
-        (worldY/Math.max(1,world.clientHeight))*100,
-        0,
-        100
-      )
-    };
-  }
-
-  function setJackCameraGhost(
-    root,
-    position
-  ) {
-    const world =
-      root?.querySelector?.(".jack-world");
-
-    if (!world || !position) return null;
-
-    let ghost =
-      world.querySelector(".jack-camera-ghost");
-
-    if (!ghost) {
-      ghost = document.createElement("div");
-      ghost.className = "jack-camera-ghost";
-      ghost.innerHTML =
-        '<i class="fa-solid fa-video"></i>'+
-        '<span>PLACE</span>';
-
-      world.appendChild(ghost);
-    }
-
-    ghost.style.setProperty(
-      "--jack-x",
-      Number(position.xPct).toFixed(3)+"%"
-    );
-
-    ghost.style.setProperty(
-      "--jack-y",
-      Number(position.yPct).toFixed(3)+"%"
-    );
-
-    ghost.dataset.xPct =
-      Number(position.xPct).toFixed(6);
-
-    ghost.dataset.yPct =
-      Number(position.yPct).toFixed(6);
-
-    return ghost;
-  }
-
-  function cancelJackCameraPlacement(
-    root,
-    {silent=false}={}
-  ) {
-    if (!root) return;
-
-    delete root.dataset.cameraPlacement;
-
-    root.querySelector(
-      ".jack-camera-ghost"
-    )?.remove();
-
-    root.querySelector(
-      '[data-jack-action="camera-place"]'
-    )?.classList.remove("is-active");
-
-    if (!silent) {
-      globalThis.FEHA_SOUNDS?.play?.(
-        "drawer_close",
-        {cooldown:0}
-      );
-    }
-  }
-
-  async function beginJackCameraPlacement(
-    root,
-    actor
-  ) {
-    const cameras = cyberModule("cameras");
-    const world =
-      root?.querySelector?.(".jack-world");
-
-    if (!cameras || !world || !canvas?.scene) {
-      ui?.notifications?.warn?.(
-        "Camera placement is not available."
-      );
-      return;
-    }
-
-    if (root.dataset.cameraPlacement === "1") {
-      cancelJackCameraPlacement(root);
-      return;
-    }
-
-    const button =
-      root.querySelector(
-        '[data-jack-action="camera-place"]'
-      );
-
-    if (button?.dataset.busy === "1") return;
-
-    if (button) {
-      button.dataset.busy = "1";
-      button.disabled = true;
-    }
-
-    try {
-      await cameras.ensureCameraActor(
-        actor.id,
-        game.user?.id
-      );
-
-      root.dataset.cameraPlacement = "1";
-      button?.classList.add("is-active");
-
-      const operator =
-        root.querySelector(".jack-operator");
-
-      setJackCameraGhost(
-        root,
-        {
-          xPct:Number(
-            operator?.dataset.jackAnchorX ?? 50
-          ),
-          yPct:Number(
-            operator?.dataset.jackAnchorY ?? 50
-          )
-        }
-      );
-
-      ui?.notifications?.info?.(
-        "CAMERA READY // move over JACK IN and click to deploy"
-      );
-
-      globalThis.FEHA_SOUNDS?.play?.(
-        "scan",
-        {cooldown:0}
-      );
-    } catch (err) {
-      console.error(
-        "FEHA V3 camera preparation failed",
-        err
-      );
-
-      ui?.notifications?.error?.(
-        err?.message ??
-        "Could not prepare Camera placement."
-      );
-    } finally {
-      if (button) {
-        button.disabled = false;
-        delete button.dataset.busy;
-      }
-    }
-  }
-
-  function appendJackCameraNode(
-    root,
-    camera
-  ) {
-    const world =
-      root?.querySelector?.(".jack-world");
-
-    if (!world || !camera?.tokenId) return;
-
-    const existing =
-      [...world.querySelectorAll(
-        ".jack-camera-node[data-camera-token-id]"
-      )].find(
-        node =>
-          node.dataset.cameraTokenId ===
-          String(camera.tokenId)
-      );
-
-    const node =
-      existing ??
-      document.createElement("div");
-
-    node.className = "jack-camera-node";
-    node.dataset.cameraTokenId =
-      String(camera.tokenId);
-
-    node.style.setProperty(
-      "--jack-x",
-      Number(camera.xPct).toFixed(3)+"%"
-    );
-
-    node.style.setProperty(
-      "--jack-y",
-      Number(camera.yPct).toFixed(3)+"%"
-    );
-
-    node.innerHTML =
-      '<i class="fa-solid fa-video"></i>'+
-      '<small>CAM</small>';
-
-    if (!existing) {
-      world.appendChild(node);
-    }
-  }
-
   function rectOverlapArea(a,b) {
     const width = Math.max(
       0,
@@ -2445,7 +2194,7 @@
 
     const cards = [
       ...world.querySelectorAll(
-        ".jack-node[data-token-id], .jack-device-node[data-device-id]"
+        ".jack-node[data-token-id]"
       )
     ];
 
@@ -2656,10 +2405,7 @@
       card.style.setProperty("--jack-card-y",best.y+"px");
 
       const cardId =
-        card.dataset.tokenId ??
-        (card.dataset.deviceId
-          ? "device:"+card.dataset.deviceId
-          : "");
+        card.dataset.tokenId ?? "";
 
       placed.push({
         id:cardId,
@@ -2757,15 +2503,9 @@
     space.onpointerdown = event => {
       if (event.button !== 2) return;
 
-      if (root.dataset.cameraPlacement === "1") {
-        event.preventDefault();
-        cancelJackCameraPlacement(root);
-        return;
-      }
-
       if (
         event.target?.closest?.(
-          "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-device-panel"
+          "input,select,textarea,.qh-resolution,.jack-viewport-controls,.jack-lock-readout,.jack-net-caption"
         )
       ) {
         return;
@@ -2792,25 +2532,6 @@
     };
 
     root.onpointermove = event => {
-      if (
-        root.dataset.cameraPlacement === "1" &&
-        space.contains(event.target)
-      ) {
-        const position =
-          jackWorldPercentAt(
-            root,
-            event.clientX,
-            event.clientY
-          );
-
-        if (position) {
-          setJackCameraGhost(
-            root,
-            position
-          );
-        }
-      }
-
       const drag = root.__jackDrag;
       if (!drag || drag.pointerId !== event.pointerId) return;
 
@@ -2842,104 +2563,6 @@
     root.onpointerup = endDrag;
     root.onpointercancel = endDrag;
     root.onlostpointercapture = endDrag;
-
-    space.addEventListener(
-      "click",
-      async event => {
-        if (root.dataset.cameraPlacement !== "1") {
-          return;
-        }
-
-        if (
-          event.target?.closest?.(
-            ".jack-viewport-controls,.jack-lock-readout,.jack-net-caption,.jack-node,.jack-operator,.jack-device-node,.jack-camera-node"
-          )
-        ) {
-          return;
-        }
-
-        const position =
-          jackWorldPercentAt(
-            root,
-            event.clientX,
-            event.clientY
-          );
-
-        if (!position) return;
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        const ghost =
-          setJackCameraGhost(
-            root,
-            position
-          );
-
-        ghost?.classList.add(
-          "is-deploying"
-        );
-
-        root.dataset.cameraPlacement =
-          "deploying";
-
-        try {
-          const cameras =
-            cyberModule("cameras");
-
-          const camera =
-            await cameras?.placeCamera?.({
-              operatorActorId:root.dataset.actorId,
-              userId:game.user?.id,
-              sceneId:canvas?.scene?.id,
-              xPct:position.xPct,
-              yPct:position.yPct
-            });
-
-          if (!camera) {
-            throw new Error(
-              "Camera placement returned no token."
-            );
-          }
-
-          appendJackCameraNode(
-            root,
-            camera
-          );
-
-          cancelJackCameraPlacement(
-            root,
-            {silent:true}
-          );
-
-          globalThis.FEHA_SOUNDS?.play?.(
-            "confirm",
-            {cooldown:0}
-          );
-
-          ui?.notifications?.info?.(
-            "CAMERA DEPLOYED // Foundry token placed"
-          );
-        } catch (err) {
-          console.error(
-            "FEHA V3 camera placement failed",
-            err
-          );
-
-          root.dataset.cameraPlacement =
-            "1";
-
-          ghost?.classList.remove(
-            "is-deploying"
-          );
-
-          ui?.notifications?.error?.(
-            err?.message ??
-            "Could not place Camera."
-          );
-        }
-      }
-    );
 
     requestAnimationFrame(refresh);
   }
@@ -2992,30 +2615,6 @@
         (n.targeted?'<em>LOCKED</em>':'')+
       '</button>'
     ).join("");
-
-    const deviceActionService = cyberModule("deviceActions");
-
-    const deviceNodes = (net.devices ?? []).map((device,deviceIndex) => {
-      const access = deviceActionService?.hasAccess?.(actor,device) ?? false;
-      const state = access ? "ACCESS" : "DC "+device.securityDC;
-
-      return (
-        '<button class="jack-device-node is-'+esc(device.type)+
-        (access?' has-access':'')+
-        '" style="--jack-x:'+Number(device.x).toFixed(2)+
-        '%;--jack-y:'+Number(device.y).toFixed(2)+
-        '%" data-jack-action="device" data-device-id="'+esc(device.id)+
-        '" data-jack-anchor-x="'+Number(device.x).toFixed(4)+
-        '" data-jack-anchor-y="'+Number(device.y).toFixed(4)+'">'+
-          '<i class="'+esc(device.icon || "fa-solid fa-microchip")+'"></i>'+
-          '<span><b>'+esc(device.name)+'</b><small>'+
-            esc(device.typeLabel)+' // '+
-            esc(device.accessScopeLabel ?? "ENDPOINT")+
-            ' // '+esc(state)+
-          '</small></span>'+
-        '</button>'
-      );
-    }).join("");
 
     const operatorPorts = Array.from({length:8},(_,i) =>
       '<i style="--port:'+i+'"></i>'
@@ -3083,7 +2682,6 @@
 
           ${nodes || '<div class="jack-empty-scene"><b>NO ACTOR SIGNATURES</b><span>No actor-backed tokens were found on the active scene.</span></div>'}
           ${cameraNodes}
-          ${deviceNodes}
         </div>
 
         <div class="jack-viewport-controls">
@@ -3096,7 +2694,7 @@
 
         <div class="jack-net-caption">
           <small>DIRECT TRACE // WHEEL = ZOOM // RMB DRAG = PAN</small>
-          <b>${net.nodes.length} ACTORS // ${net.devices.length} DEVICES // ${net.cameras.length} CAMERAS</b>
+          <b>${net.nodes.length} ACTORS${net.cameras.length ? " // "+net.cameras.length+" CAMERA"+(net.cameras.length===1?"":"S") : ""}</b>
         </div>
 
         <div class="jack-lock-readout${selected?" has-target is-"+selected.relation:""}">
@@ -3121,81 +2719,6 @@
         <div class="jack-hacks">${hacks}</div>
       </footer>
     `;
-  }
-
-  function liveNetworkDevice(id) {
-    const scene = canvas?.scene;
-    if (!scene) return null;
-
-    return sceneNetworkDevices(scene)
-      .find(device => device.id === id) ??
-      null;
-  }
-
-  function devicePanelMarkup(actor,device,status=null) {
-    const deviceService = cyberModule("devices");
-    const actionService = cyberModule("deviceActions");
-    const hasAccess = actionService?.hasAccess?.(actor,device) ?? false;
-
-    const capabilityButtons = (device.capabilities ?? [])
-      .map(capability => {
-        const def = deviceService?.capabilities?.[capability] ?? {
-          label:capability
-        };
-
-        return (
-          '<button type="button" data-device-action="capability" '+
-          'data-capability="'+esc(capability)+'" '+
-          (hasAccess ? "" : "disabled")+
-          '>'+esc(def.label)+'</button>'
-        );
-      })
-      .join("");
-
-    const result = status
-      ? (
-          '<div class="jack-device-result '+esc(status.kind ?? "")+'">'+
-            '<b>'+esc(status.title ?? "NETWORK RESULT")+'</b>'+
-            '<span>'+esc(status.body ?? "")+'</span>'+
-          '</div>'
-        )
-      : "";
-
-    return (
-      '<section class="jack-device-panel" data-device-id="'+esc(device.id)+'">'+
-        '<header>'+
-          '<div><small>NETWORK DEVICE</small><h3>'+esc(device.name)+'</h3>'+
-          '<span>'+esc(device.typeLabel)+' // '+
-          esc(device.accessScopeLabel ?? "ENDPOINT")+
-          ' // '+esc(device.origin.toUpperCase())+'</span></div>'+
-          '<button type="button" data-device-action="close">×</button>'+
-        '</header>'+
-        '<div class="jack-device-security">'+
-          '<div><small>SECURITY</small><b>DC '+device.securityDC+'</b><span>'+esc(device.securityLabel)+'</span></div>'+
-          '<div><small>SCOPE</small><b>'+esc(device.accessScopeLabel ?? "ENDPOINT")+'</b><span>CONTROL BREADTH</span></div>'+
-          '<div><small>ACCESS</small><b>'+(hasAccess?"GRANTED":"LOCKED")+'</b><span>'+
-            (hasAccess?"SESSION AUTHORIZED":"BREACH REQUIRED")+
-          '</span></div>'+
-        '</div>'+
-        (!hasAccess
-          ? '<button type="button" class="jack-device-breach" data-device-action="breach">BREACH // DC '+device.securityDC+(breachRamCost(device) ? ' // '+breachRamCost(device)+' RAM' : '')+'</button>'
-          : ''
-        )+
-        '<div class="jack-device-capabilities">'+
-          '<small>CAPABILITIES</small>'+
-          '<div>'+capabilityButtons+'</div>'+
-        '</div>'+
-        result+
-      '</section>'
-    );
-  }
-
-  function showDevicePanel(root,actor,device,status=null) {
-    root.querySelector(".jack-device-panel")?.remove();
-    root.insertAdjacentHTML(
-      "beforeend",
-      devicePanelMarkup(actor,device,status)
-    );
   }
 
   function updateJackTargetUI(root,actor) {
@@ -3432,6 +2955,23 @@
         return;
       }
 
+      if (action === "cyber-check") {
+        if (button.dataset.busy === "1") return;
+        button.dataset.busy = "1";
+        button.disabled = true;
+
+        try {
+          await rollCyberCheck(actor);
+          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:80});
+        } catch (err) {
+          console.error("FEHA V3 cyber check failed",err);
+          ui?.notifications?.error?.("Cyber Check failed.");
+        } finally {
+          if (root.isConnected) render(actor.id);
+        }
+        return;
+      }
+
       if (action === "jack") {
         openJack(actor);
       }
@@ -3502,217 +3042,10 @@
     root.onclick = async event => {
       const jackButton = event.target?.closest?.("[data-jack-action]") ?? null;
       const qhButton = event.target?.closest?.("[data-qh-action]") ?? null;
-      const deviceButton = event.target?.closest?.("[data-device-action]") ?? null;
 
-      if (!jackButton && !qhButton && !deviceButton) return;
+      if (!jackButton && !qhButton) return;
       if (jackButton && !root.contains(jackButton)) return;
       if (qhButton && !root.contains(qhButton)) return;
-      if (deviceButton && !root.contains(deviceButton)) return;
-
-      if (deviceButton) {
-        const deviceAction = deviceButton.dataset.deviceAction;
-        const panel = deviceButton.closest(".jack-device-panel");
-        const deviceId = panel?.dataset?.deviceId ?? "";
-        const device = liveNetworkDevice(deviceId);
-        const actionService = cyberModule("deviceActions");
-        const deviceService = cyberModule("devices");
-
-        if (deviceAction === "close") {
-          panel?.remove();
-          globalThis.FEHA_SOUNDS?.play?.("drawer_close",{cooldown:0});
-          return;
-        }
-
-        if (!device || !actionService) {
-          ui?.notifications?.warn?.("Network Device is no longer available.");
-          panel?.remove();
-          return;
-        }
-
-        if (deviceAction === "breach") {
-          if (deviceButton.dataset.busy === "1") return;
-          globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:80});
-          deviceButton.dataset.busy = "1";
-          deviceButton.disabled = true;
-
-          try {
-            const ramCost = breachRamCost(device);
-            const ramBefore = model(actor).currentRam;
-
-            if (ramCost > 0 && ramBefore < ramCost) {
-              ui?.notifications?.warn?.(
-                "Not enough RAM to breach. "+ramBefore+"/"+ramCost+"."
-              );
-              deviceButton.disabled = false;
-              delete deviceButton.dataset.busy;
-              return;
-            }
-
-            const result = await actionService.breach(actor,device);
-
-            // Every real attempt costs RAM, pass or fail. Unsecured devices
-            // and a session that already has access cost nothing.
-            if (ramCost > 0 && !result.automatic && !result.cached) {
-              await actor.update({
-                [`flags.${FLAG}.ramCurrent`]:Math.max(0,ramBefore - ramCost)
-              });
-              syncQuickhackRamUI(actor);
-            }
-
-            const math = result.automatic
-              ? "UNSECURED DEVICE // ACCESS AUTOMATIC"
-              : result.cached
-                ? "SESSION ACCESS ALREADY ESTABLISHED"
-                : (
-                    result.die+" "+
-                    (result.modifier >= 0 ? "+ " : "− ")+
-                    Math.abs(result.modifier)+
-                    " = "+result.total+
-                    " // DC "+result.dc
-                  );
-
-            showDevicePanel(
-              root,
-              actor,
-              liveNetworkDevice(device.id) ?? device,
-              {
-                kind:result.passed ? "is-success" : "is-failure",
-                title:result.passed ? "BREACH ACCEPTED" : "BREACH REJECTED",
-                body:math
-              }
-            );
-
-            globalThis.FEHA_SOUNDS?.play?.(
-              result.passed ? "confirm" : "error",
-              {cooldown:0}
-            );
-
-            await ChatMessage.create({
-              speaker:ChatMessage.getSpeaker({actor}),
-              content:
-                "<p><strong>NETWORK BREACH // "+esc(device.name)+"</strong></p>"+
-                "<p>"+esc(math)+" — <strong>"+
-                (result.passed ? "SUCCESS" : "FAILURE")+
-                "</strong></p>"
-            });
-          } catch (err) {
-            console.error("FEHA V3 Network breach failed",err);
-            ui?.notifications?.error?.("Network breach failed.");
-            deviceButton.disabled = false;
-            delete deviceButton.dataset.busy;
-          }
-
-          return;
-        }
-
-        if (deviceAction === "capability") {
-          const capability = String(deviceButton.dataset.capability ?? "");
-          if (!capability) return;
-          if (deviceButton.dataset.busy === "1") return;
-
-          globalThis.FEHA_SOUNDS?.play?.("subsystem_select",{cooldown:80});
-          deviceButton.dataset.busy = "1";
-          deviceButton.disabled = true;
-
-          try {
-            const result = await actionService.executeCapability(
-              actor,
-              device,
-              capability,
-              {root}
-            );
-
-            const capabilityLabel =
-              deviceService?.capabilities?.[capability]?.label ??
-              capability;
-
-            if (result?.denied) {
-              const access = result.access ?? {};
-              showDevicePanel(
-                root,
-                actor,
-                device,
-                {
-                  kind:"is-failure",
-                  title:"ACCESS DENIED",
-                  body:
-                    (access.total == null
-                      ? "DEVICE REJECTED ACCESS"
-                      : access.total+" vs DC "+access.dc)
-                }
-              );
-              globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
-              return;
-            }
-
-            if (result?.error) {
-              showDevicePanel(
-                root,
-                actor,
-                device,
-                {
-                  kind:"is-failure",
-                  title:capabilityLabel+" // FAILED",
-                  body:String(result.error)
-                }
-              );
-
-              globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
-              return;
-            }
-
-            if (result?.requiresAdapter) {
-              showDevicePanel(
-                root,
-                actor,
-                device,
-                {
-                  kind:"is-pending",
-                  title:capabilityLabel+" // ADAPTER",
-                  body:
-                    result.requiresAdapter.toUpperCase()+
-                    " adapter is registered as a separate subsystem."
-                }
-              );
-              ui?.notifications?.warn?.(
-                capabilityLabel+" requires the "+
-                result.requiresAdapter+" adapter."
-              );
-              globalThis.FEHA_SOUNDS?.play?.("error",{cooldown:0});
-              return;
-            }
-
-            showDevicePanel(
-              root,
-              actor,
-              liveNetworkDevice(device.id) ?? device,
-              {
-                kind:"is-success",
-                title:capabilityLabel+" // EXECUTED",
-                body:"NETWORK COMMAND ACCEPTED"
-              }
-            );
-
-            globalThis.FEHA_SOUNDS?.play?.("confirm",{cooldown:0});
-
-            await ChatMessage.create({
-              speaker:ChatMessage.getSpeaker({actor}),
-              content:
-                "<p><strong>NETWORK DEVICE // "+esc(device.name)+"</strong></p>"+
-                "<p>"+esc(capabilityLabel)+" — <strong>EXECUTED</strong></p>"
-            });
-          } catch (err) {
-            console.error("FEHA V3 device capability failed",err);
-            ui?.notifications?.error?.("Network Device action failed.");
-            deviceButton.disabled = false;
-            delete deviceButton.dataset.busy;
-          }
-
-          return;
-        }
-
-        return;
-      }
 
       if (qhButton) {
         const qhAction = qhButton.dataset.qhAction;
@@ -3990,25 +3323,6 @@
       const action = button?.dataset?.jackAction;
 
       if (!button || !action) return;
-
-      if (action === "device") {
-        const device = liveNetworkDevice(button.dataset.deviceId);
-        if (!device) {
-          return ui?.notifications?.warn?.("Network Device is no longer available.");
-        }
-
-        showDevicePanel(root,actor,device);
-        globalThis.FEHA_SOUNDS?.play?.("scan",{cooldown:70});
-        return;
-      }
-
-      if (action === "camera-place") {
-        await beginJackCameraPlacement(
-          root,
-          actor
-        );
-        return;
-      }
 
       if (action === "zoom-in") {
         const state = jackViewportState(root);
@@ -4447,25 +3761,6 @@
   const v3Hooks = [];
   const cyberUnsubscribers = [];
   let refreshQueued = false;
-
-  const deviceChangeOff =
-    globalThis.FEHA_CYBER_CORE?.on?.(
-      "devices:changed",
-      payload => {
-        const jack = document.getElementById(JACK_ID);
-
-        if (
-          jack?.dataset?.phase === "live" &&
-          (!payload?.sceneId || payload.sceneId === canvas?.scene?.id)
-        ) {
-          queueV3Refresh("jack");
-        }
-      }
-    );
-
-  if (typeof deviceChangeOff === "function") {
-    cyberUnsubscribers.push(deviceChangeOff);
-  }
 
   function queueV3Refresh(mode = "auto") {
     if (refreshQueued) return;

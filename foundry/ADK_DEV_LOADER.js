@@ -43,9 +43,6 @@
     quickhacks:"foundry/cyberdeck/FEHA_QUICKHACK_CATALOG.js",
     quickhackAuthority:"foundry/cyberdeck/FEHA_QUICKHACK_AUTHORITY.js",
     quickhackRuntime:"foundry/cyberdeck/FEHA_QUICKHACK_RUNTIME.js",
-    devices:"foundry/cyberdeck/FEHA_NETWORK_DEVICES.js",
-    actions:"foundry/cyberdeck/FEHA_DEVICE_ACTIONS.js",
-    approvals:"foundry/cyberdeck/FEHA_NETWORK_APPROVALS.js",
     cameras:"foundry/cyberdeck/FEHA_CAMERAS.js",
     sync:"foundry/FEHA_MULTIPLAYER_SYNC.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js",
@@ -219,7 +216,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","devices","actions","approvals","cameras","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","quickhacks","quickhackAuthority","quickhackRuntime","cameras","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -340,9 +337,6 @@
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
     evaluate(source.quickhackRuntime,files.quickhackRuntime,sha);
-    evaluate(source.devices,files.devices,sha);
-    evaluate(source.actions,files.actions,sha);
-    evaluate(source.approvals,files.approvals,sha);
     evaluate(source.cameras,files.cameras,sha);
     evaluate(source.sync,files.sync,sha);
 
@@ -388,9 +382,6 @@
       "quickhacks",
       "quickhackAuthority",
       "quickhackRuntime",
-      "devices",
-      "deviceActions",
-      "deviceApprovals",
       "cameras",
       "multiplayerSync"
     ];

@@ -1422,50 +1422,8 @@
     }
   }
 
-  function deviceScan(scene,center,radius) {
-    const service = core.module?.("devices") ?? null;
-    if (!service?.scanScene) return [];
-
-    let devices = [];
-
-    try {
-      devices = service.scanScene(scene) ?? [];
-    } catch {
-      try { devices = service.scanScene(scene.id) ?? []; } catch {}
-    }
-
-    const rect =
-      scene?.dimensions?.sceneRect ??
-      (
-        String(canvas?.scene?.id ?? "") === String(scene?.id ?? "")
-          ? canvas?.dimensions?.sceneRect
-          : null
-      ) ??
-      {
-        x:0,
-        y:0,
-        width:Number(scene?.width ?? 1) || 1,
-        height:Number(scene?.height ?? 1) || 1
-      };
-
-    const width = Math.max(1,Number(rect.width ?? scene?.width ?? 1) || 1);
-    const height = Math.max(1,Number(rect.height ?? scene?.height ?? 1) || 1);
-    const originX = Number(rect.x ?? 0) || 0;
-    const originY = Number(rect.y ?? 0) || 0;
-
-    return list(devices).filter(device => {
-      const point = {
-        x:originX + (Number(device?.xPct ?? 0) / 100 * width),
-        y:originY + (Number(device?.yPct ?? 0) / 100 * height)
-      };
-
-      return feetBetween(scene,center,point) <= radius + 0.001;
-    });
-  }
-
   async function whisperScan(userId,def,scene,center,radius) {
     const tokens = tokensWithin(scene,center,radius);
-    const devices = deviceScan(scene,center,radius);
 
     const creatures =
       tokens
@@ -1500,15 +1458,11 @@
           : name;
       });
 
-    const deviceNames =
-      devices.map(device => String(device.name ?? device.typeLabel ?? "Device"));
-
     const content =
       '<div style="border:1px solid #2c7b8b;background:#07151b;padding:10px">'+
       '<div style="font-size:10px;letter-spacing:.12em;color:#73d6e7;font-weight:900">RECON GRENADE // SCAN RESULT</div>'+
       '<h3 style="margin:5px 0">'+esc(def.name)+'</h3>'+
       '<div><strong>CREATURES:</strong> '+esc(creatures.join(", ") || "NONE")+'</div>'+
-      '<div><strong>DEVICES:</strong> '+esc(deviceNames.join(", ") || "NONE")+'</div>'+
       '</div>';
 
     try {
@@ -1520,8 +1474,7 @@
     } catch {}
 
     return {
-      creatures,
-      devices:deviceNames
+      creatures
     };
   }
 

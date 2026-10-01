@@ -1,8 +1,9 @@
 {
-  "version": "0.11.89",
-  "updated": "2026-09-30",
-  "scope": "weapon-handling",
+  "version": "0.11.90",
+  "updated": "2026-10-01",
+  "scope": "cyber-check",
   "notes": [
+    "Network devices (hackable doors, turrets, terminals) are removed. The Cyberdeck has one CYBER CHECK button instead: 1d20 + Intelligence + proficiency, 1 RAM, rolled to chat; the GM sets the DC. Cameras are a GM tool: the Token controls have a Place camera button that drops a camera token owned by the chosen player, who sees through it.",
     "Class-based reloads replace reload points: Pistol / Heavy Pistol / SMG / Shotgun Pistol reload with a Bonus Action; Assault Rifle / DMR / Shotgun / Bow and any single-shot weapon reload with an Action; LMG / Sniper Rifle reload takes a full turn (Action, no movement) plus a reload check (LMG Strength, Sniper Dexterity, DC = the weapon's STR requirement). A failed check means try again next turn. The weapon sheet shows one RELOAD button that rolls the check when needed.",
     "STR requirement now matters: below it you attack with disadvantage (automatic) and can move only 10 ft on turns you use that weapon (table rule), unless installed Strong Arms / Power Grip / Reinforced Muscles / Gun Stabilizer, or any feat or cyberware flagged handling.negateStrRequirement, negates it.",
     "LMG Brace: disadvantage if you moved more than 10 ft this turn (table rule). Sniper Scoped: automatic disadvantage against targets within 30 ft. Ashura and Long Vigil are close-range snipers (no scope penalty, 60/180 ft).",

@@ -2003,3 +2003,59 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-rest-note 
   letter-spacing: .08em !important;
   text-align: center !important;
 }
+
+/* Cyber Check: the one roll for hacking anything that is not a creature. It
+   sits above the rest note in the RAM panel. */
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .v3-ram .cd2-ram-side {
+  grid-area: rest;
+  display: grid !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check {
+  display: grid !important;
+  gap: 2px !important;
+  min-height: 44px !important;
+  padding: 6px 10px !important;
+  background: var(--fui-panel) !important;
+  border: 1px solid var(--fui-yellow) !important;
+  border-radius: 0 !important;
+  color: var(--fui-yellow) !important;
+  font-family: var(--fui-display) !important;
+  text-align: center !important;
+  cursor: pointer !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check b {
+  font-size: 14px !important;
+  letter-spacing: .08em !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check span {
+  color: var(--fui-white) !important;
+  font-family: var(--fui-mono) !important;
+  font-size: 11px !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check:hover:not(:disabled),
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check:focus-visible {
+  background: var(--fui-yellow) !important;
+  color: #0a0a0a !important;
+  outline: none !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check:hover:not(:disabled) span,
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check:focus-visible span {
+  color: #0a0a0a !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check:disabled {
+  border-color: var(--fui-line) !important;
+  color: var(--fui-muted) !important;
+  cursor: not-allowed !important;
+}
+
+html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-cyber-check:disabled span {
+  color: var(--fui-muted) !important;
+}
