@@ -76,6 +76,17 @@ html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-header
   text-shadow: none !important;
 }
 
+/* Long names ("Cyberware Capacity Booster") were cut off in the title box. */
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-header .document-name input {
+  font-size: clamp(15px, 4.4cqw, 26px) !important;
+  letter-spacing: 0 !important;
+  text-overflow: ellipsis !important;
+}
+
+html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .sheet-header {
+  container-type: inline-size;
+}
+
 html body .application.sheet.dnd5e2.item:not(:has(.feha-ws-shell)) .identity-info {
   border-bottom: 2px solid var(--ic-orange) !important;
   padding-bottom: 4px !important;

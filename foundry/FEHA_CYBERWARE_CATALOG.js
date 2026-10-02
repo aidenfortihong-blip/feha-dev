@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.1.1";
+  const VERSION = "2.1.2";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
   const ROOT_FOLDER = "02 — CYBERWARE";
@@ -264,6 +264,13 @@
   const mkLabel = mk => "Mk." + ["0","I","II","III","IV","V"][mk];
 
   function activationLine(def) {
+    if (def.deck) {
+      return (
+        "CYBERDECK // "+def.ramMax+" RAM // "+def.quickhackSlots+
+        " QUICKHACK SLOTS"
+      );
+    }
+
     if (!def.active) return "PASSIVE // ALWAYS ON WHILE INSTALLED";
     return (
       "ACTIVE // "+String(def.active.action).toUpperCase()+
@@ -354,9 +361,38 @@
       }
     }
 
-    if (def.deck) return update;
-
     const system = item.system ?? {};
+
+    // A cyberdeck keeps its own numbers and effect text (FEHA_TABLETOP_UI_V3
+    // reads them from the item); only its card and price are brought in line
+    // with the rest of the catalog.
+    if (def.deck) {
+      const deckCard = describe({
+        ...def,
+        effectText:flags.effectText ?? "",
+        ramMax:Number(flags.ramMax) || 0,
+        quickhackSlots:Number(flags.quickhackSlots) || 0
+      });
+
+      if (String(system.description?.value ?? "") !== deckCard) {
+        update["system.description.value"] = deckCard;
+      }
+
+      if (system.price && Number(system.price.value ?? 0) !== def.price) {
+        update["system.price.value"] = def.price;
+      }
+
+      for (const [key,value] of Object.entries({
+        cyberwareCapacityCost:def.capacityCost,
+        priceCredits:def.price,
+        needsReview:false
+      })) {
+        if (!same(flags[key],value)) update["flags."+FLAG+"."+key] = value;
+      }
+
+      return update;
+    }
+
     const description = describe(def);
 
     if (String(system.description?.value ?? "") !== description) {
