@@ -222,6 +222,8 @@ html body .chat-message.message .dice-tooltip .part-total {
 .feha-chat-card {
   display: grid;
   gap: 6px;
+  /* Inside a roll's flavour line the system italicises everything. */
+  font-style: normal;
 }
 
 .feha-chat-card .feha-chat-kicker {
