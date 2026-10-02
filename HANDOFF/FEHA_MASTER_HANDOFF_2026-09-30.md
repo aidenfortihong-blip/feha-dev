@@ -407,3 +407,22 @@ Every catalog item was exercised on TEST Gunner as GM (temporary level-3 effect,
 - `dnd5e.preRollAttackV2`: `config.rolls[0].parts` is undefined at that point, so bonuses are added by assigning `parts = [...(parts ?? []), bonus]`; `options.criticalSuccess` sets the crit range. Smart links (`smartBonus`) apply when the weapon has `weaponTechnology === "Smart"` (9 weapons); No Pain No Gain (+2 below half HP); Knife Sharpener (crit 19 on blades).
 - `dnd5e.preRollDamageV2`: No Pain No Gain +2d6, Knife Sharpener +2d8 on blades, Blood Depleter +2d6 on a melee hit against a targeted creature below half HP (not exercised in testing).
 - Verified on TEST Gunner: weapons appear / roll / disappear, smart bonus only on a Smart weapon, wounded and blade riders. A clean reload afterwards made no cyberware writes (1.7 s).
+
+## 20. Maps, lights, bug test and cleanup (0.12.3, branch `bugtest-2026-10-03`, 2026-10-03)
+
+**World data (live, not in the repo):**
+- Scene folders: CAMPAIGN (the two session folders), MAPS (16 folders by type of place; a place with several versions has its own subfolder). The old names and folders are in the journal "FEHA Scene Layout Backup 2026-10-02".
+- 142 Nebula Maps scenes (day, no-grid images) were added from the Forge folder `Megafolder - Maps/Cyberpunk Maps/Nebula Maps`. Grid = image width / squares in the file name. Four have no size in the name and are set to 20 squares wide (flag `guessedGrid`).
+- Walls: the GM is walling by hand. State on 2026-10-03: 702 scenes, 351 with walls. 224 have the map pack's own walls and doors (restored from the journal "FEHA Wall Backup 2026-10-02"), 99 have an automatic outline on the black border, 28 Nebula scenes were outlined room by room with doors. Everything Claude created carries `flags.fleshEnshrouded.walledBy = "claude"`; restored pack walls carry `flags.fleshEnshrouded.restored`.
+- Lights: 587 scenes have lights. Every coloured light is capped at colour strength 0.15 (Claude's are 0.08, at most 6 squares); neon colours pulse slowly, warm orange flickers faintly. Original settings are in the journal "FEHA Light Backup 2026-10-02".
+- GM rule for walls: outline rooms, doors on doorways, lights, nothing inside rooms.
+
+**Repo:**
+- `tools/maps/FEHA_MAP_WALLER.js` and `tools/maps/FEHA_HAND_WALLER.js`: GM-side helpers pasted into the console (not loaded by the game). The first traces the black border and finds lit fixtures; the second shows a map with a percent grid so walls, doors and lights can be placed by eye. Use the tracer with `dark:3`; higher values follow shadows.
+- `foundry/FEHA_NEBULA_MAP_IMPORTER.js` (added on main outside this handoff's sessions): GM-only button in the Scenes tab.
+- `foundry/FEHA_CYBERWARE_RUNTIME.js` 1.2.1: `guardOwnedItemUpdates`. The installed Chrome Manager (`repairChromeData` in its `chrome-legacy.js`) calls `Item.updateDocuments` with no parent for chrome a character owns, which throws. The guard sends those rows to the owning character. Remove it if the installed module is ever fixed.
+- `.gitignore` added: `graphify-out/`, `nebula/`, `portraits-edgerunner/`. These hold third-party art and subscriber links and must never be committed.
+
+**Bug test 2026-10-03 (GM client):** all 41 JS files pass a syntax check; every file the loader lists exists; version.json matches the V3 version; the game loads with no FEHA errors; Market, Chrome Manager and Cyberdeck open; the four party characters have valid HP, items, feats and cyberware charge; no invalid documents. Not tested this round: a player login, combat flows, quickhacks.
+
+**Left for the GM (Claude does not delete world data):** actor folder "FEHA TEST" (TEST Dummy A/B, TEST Gunner); two unused combat encounters; macros named "Macro", "Macro (2)", "Macro (3)"; Ponyboy carries Dense Marrow twice (neither installed); the three backup journals once the layout is approved. `module.json` still says 0.10.125 (it describes the installed bridge module, not this repo's version). 22 merged remote branches can be deleted.

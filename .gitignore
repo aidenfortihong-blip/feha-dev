@@ -1,0 +1,5 @@
+# Local-only folders: never commit third-party art or subscriber download links.
+graphify-out/
+nebula/
+portraits-edgerunner/
+.claude/launch.json
