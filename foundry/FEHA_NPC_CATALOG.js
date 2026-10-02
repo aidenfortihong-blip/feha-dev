@@ -15,7 +15,7 @@
     throw new Error("FEHA_NPC_CATALOG requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const ROOT_FOLDER = "FEHA NPCS";
   const TOKEN_IMG = "icons/svg/mystery-man.svg";
@@ -23,13 +23,14 @@
 
   // Combat tiers, set against this world's numbers (a hit is 20-60 damage,
   // player characters have 22-30 HP at level 2-3).
-  //   0 bystander   1 street-level   2 trained   3 elite   4 boss
+  //   0 bystander   1 street-level   2 trained   3 elite   4 boss   5 legend
   const TIERS = {
     0:{hp:9,ac:10,cr:0,charge:0},
     1:{hp:22,ac:13,cr:0.5,charge:4},
     2:{hp:42,ac:15,cr:3,charge:6},
     3:{hp:75,ac:17,cr:6,charge:9},
-    4:{hp:135,ac:19,cr:10,charge:14}
+    4:{hp:135,ac:19,cr:10,charge:14},
+    5:{hp:320,ac:22,cr:20,charge:26}
   };
 
   const STREET = "Street";
@@ -37,6 +38,8 @@
   const CIVCORP = "CivCorp";
   const VIGIL = "Marble Vigil";
   const CORP = "Corporate";
+  const KUROHANE = "Kurohane Group";
+  const BASTION = "Bastion Strategic";
   const NAVY = "Navy";
   const CIVILIAN = "Civilians";
 
@@ -44,6 +47,10 @@
   //   w("Pistol",2)                    any pistol up to market band 2
   //   w("Katana",3,"Kurohane Group")   restricted to one maker
   const w = (cls,band,maker=null) => ({cls,band,maker});
+
+  // Top-shelf hardware (market band 5) is normally kept out of NPC hands;
+  // a legend gets it.
+  const best = (cls,maker=null) => ({cls,band:5,maker,top:true});
 
   const ab = (str,dex,con,int,wis,cha) => ({str,dex,con,int,wis,cha});
 
@@ -210,10 +217,36 @@
       bio:"A veteran of the Vargas years who kept the job through every change of government. Answers to the Council, in theory.",
       tactics:"Commands from cover until a gap opens, then stops time and ends it. Retreats if the mission is lost."
     },
+    {
+      key:"vigil-suppressor",name:"Marble Vigil Suppressor",faction:VIGIL,tier:3,hp:92,ac:19,
+      abilities:ab(18,13,18,10,13,9),
+      weapons:[w("LMG",4),w("Heavy Pistol",3)],armor:"Bastion Combat Plate Mk.IV",
+      chrome:["Gun Stabilizer","Subdermal Plating","Pain Reductor"],
+      bio:"The Vigil's heavy gun. Deployed when the target is chromed past the point of reason.",
+      tactics:"Braces and holds the kill zone the rest of the team drives the target into."
+    },
+    {
+      key:"vigil-netrunner",name:"Marble Vigil Netrunner",faction:VIGIL,tier:3,hp:56,
+      abilities:ab(9,15,13,19,15,10),
+      weapons:[w("SMG",3)],armor:"Interface Security Suit Mk.III",
+      chrome:["Raven Microcyber","Self Ice","Ex Disk"],
+      quickhacks:["System Collapse","Chrome Lock","Motor Lock","Optic Zero","Self-Terminate","Rollback"],
+      consumables:["Corvus Black Memory Booster"],
+      bio:"Specialises in shutting chrome down from the inside. Every Vigil takedown starts with this deck.",
+      tactics:"Locks the target's chrome and legs before the team moves. Saves System Collapse for the cyberware user."
+    },
+    {
+      key:"vigil-lancer",name:"Marble Vigil Lancer",faction:VIGIL,tier:3,hp:78,
+      abilities:ab(15,20,15,12,14,10),
+      weapons:[w("Katana",3),w("SMG",4)],armor:"Flexweave Mobility Suit Mk.III",
+      chrome:["Mantis Blades","Sandevistan C2","Kerenzikov","Kiroshi Optics"],
+      bio:"Close assault. The one sent in when the target has a Sandevistan of their own.",
+      tactics:"Matches speed with speed. Holds the Sandevistan until the target uses theirs."
+    },
 
     // ---- Corporate ----------------------------------------------------------
     {
-      key:"kurohane-guard",name:"Kurohane Security",faction:CORP,tier:2,
+      key:"kurohane-guard",name:"Kurohane Security",faction:KUROHANE,tier:2,
       abilities:ab(13,15,13,11,12,11),
       weapons:[w("Assault Rifle",3,"Kurohane Group"),w("Pistol",2,"Kurohane Group")],
       armor:"Interface Security Suit Mk.II",
@@ -221,7 +254,7 @@
       tactics:"Holds a post. Will not pursue off Kurohane property."
     },
     {
-      key:"kurohane-agent",name:"Kurohane Agent",faction:CORP,tier:3,
+      key:"kurohane-agent",name:"Kurohane Agent",faction:KUROHANE,tier:3,
       abilities:ab(13,18,14,15,14,15),
       weapons:[w("SMG",3,"Kurohane Group"),w("Katana",2,"Kurohane Group")],
       armor:"Ghostweave Suit Mk.III",
@@ -230,7 +263,7 @@
       tactics:"Starts invisible, takes the first shot with advantage, then closes with the blade."
     },
     {
-      key:"bastion-heavy",name:"Bastion Heavy",faction:CORP,tier:3,hp:95,ac:19,
+      key:"bastion-heavy",name:"Bastion Heavy",faction:BASTION,tier:3,hp:95,ac:19,
       abilities:ab(18,11,18,10,12,9),
       weapons:[w("LMG",4),w("Heavy Pistol",3,"Bastion Strategic")],
       armor:"Bastion Combat Plate Mk.IV",
@@ -256,6 +289,156 @@
       consumables:["Helix Health Booster","Helix Health Booster","Helix Oxy Booster"],
       bio:"A trauma technician on a Helix Vitae retainer. Treats whoever holds the contract.",
       tactics:"Keeps the others standing. Surrenders if left alone."
+    },
+
+    // ---- Kurohane Group -----------------------------------------------------
+    // The Group is the city's oldest military power and its most patient one:
+    // an army with a corporation attached.
+    {
+      key:"kurohane-trooper",name:"Kurohane Trooper",faction:KUROHANE,tier:2,hp:44,
+      abilities:ab(14,15,14,10,12,10),
+      weapons:[w("SMG",3,KUROHANE),w("Katana",2,KUROHANE)],
+      armor:"Interface Security Suit Mk.II",
+      grenades:[["Grenade Frag Regular Mk.I",1]],
+      bio:"Line infantry of the Group's private army. Drilled since the academy and proud of the crest.",
+      tactics:"Moves in fire teams of four. One pins, the others close."
+    },
+    {
+      key:"kurohane-elite",name:"Kurohane Elite Guard",faction:KUROHANE,tier:3,hp:80,ac:18,
+      abilities:ab(15,17,15,12,14,12),
+      weapons:[w("Assault Rifle",4,KUROHANE),w("Katana",3,KUROHANE)],
+      armor:"Interface Security Suit Mk.III",
+      chrome:["Reflex Recorder","Subdermal Plating","Kiroshi Optics"],
+      grenades:[["Grenade Flash Regular Mk.II",1]],
+      bio:"The detail that stands outside boardrooms. Chosen for loyalty first and skill a close second.",
+      tactics:"Never leaves the principal. Trades their own life for a clean extraction."
+    },
+    {
+      key:"kurohane-sniper",name:"Kurohane Sniper",faction:KUROHANE,tier:3,hp:58,
+      abilities:ab(12,19,13,13,16,10),
+      weapons:[w("Sniper Rifle",3),w("Pistol",3,KUROHANE)],
+      armor:"Ghostweave Suit Mk.III",
+      chrome:["Kiroshi Optics Hunter","Optical Camo"],
+      bio:"Posted on the tower roofs. Reads the street below as a list of ranges.",
+      tactics:"One shot from a prepared position, camo, relocate. Does not duel."
+    },
+    {
+      key:"kurohane-netrunner",name:"Kurohane Netrunner",faction:KUROHANE,tier:3,hp:52,
+      abilities:ab(9,14,13,19,15,11),
+      weapons:[w("Pistol",3,KUROHANE)],armor:"Interface Security Suit Mk.III",
+      chrome:["Tetratronic Rippler","Self Ice","Neuro Matrix","Ram Upgrade"],
+      quickhacks:["Synapse Burn","Optic Zero","Motor Lock","Dead Trigger","Wiretap"],
+      consumables:["Corvus Memory Booster"],
+      bio:"Counter-intrusion for the Group. Trained at the academy and never allowed to leave the payroll.",
+      tactics:"Guards the network first. Burns the intruder's netrunner, then breaks their guns."
+    },
+    {
+      key:"kurohane-kage",name:"Kurohane Kage",faction:KUROHANE,tier:3,hp:70,
+      abilities:ab(14,20,14,13,15,11),
+      weapons:[w("Katana",3,KUROHANE),w("Pistol",3,KUROHANE)],
+      armor:"Ghostweave Suit Mk.III",
+      chrome:["Mantis Blades","Sandevistan C2","Optical Camo","Kurohane Shadow","Cat Paws"],
+      bio:"The Group's deniable hand. No rank, no file, and a blade for the meetings that never happened.",
+      tactics:"Invisible until the first cut, then stops time and finishes it. Vanishes if the target survives."
+    },
+    {
+      key:"kurohane-officer",name:"Kurohane Counterintel Officer",faction:KUROHANE,tier:3,hp:62,
+      abilities:ab(12,15,14,16,16,17),
+      weapons:[w("Heavy Pistol",4),w("Katana",2,KUROHANE)],
+      armor:"Ghostweave Suit Mk.III",
+      chrome:["Tactical Icon Processor","Kiroshi Optics Combined","Self Ice","Mask CW"],
+      consumables:["Helix Health Booster"],
+      bio:"Runs informants inside the unions, the academy and the other eleven Council seats. Knows the party's names already.",
+      tactics:"Marks a target for the squad every round and stays behind them. Offers a deal before the shooting starts."
+    },
+    {
+      key:"kurohane-executive",name:"Kurohane Executive",faction:KUROHANE,tier:1,hp:20,ac:12,hostile:false,
+      abilities:ab(9,11,11,16,14,17),
+      weapons:[w("Pistol",2,KUROHANE)],
+      chrome:["Kiroshi Optics","Mask CW"],
+      bio:"A director with a Council seat in reach. Has never been in a fight and does not intend to start.",
+      tactics:"Hides behind the Elite Guard. Negotiates the moment the guards are down."
+    },
+    {
+      key:"kurohane-oni",name:"Kurohane Oni",faction:KUROHANE,tier:4,hp:150,ac:20,
+      abilities:ab(17,20,17,13,15,13),
+      weapons:[w("Katana",3,KUROHANE),w("SMG",3,KUROHANE)],
+      armor:"Ghostweave Suit Mk.IV",
+      chrome:["Mantis Blades","Sandevistan C3","Kerenzikov","Subdermal Skin Lattice","Kiroshi Optics Hunter","Second Heart","Dense Marrow"],
+      consumables:["Helix Health Booster"],
+      bio:"Personal bodyguard to a member of the Kurohane family. Carries the family's honour and a masked helm; the face under it is not on record.",
+      tactics:"Duels the strongest fighter and ignores the rest. Stops time when wounded, and returns once through Second Heart."
+    },
+    {
+      key:"adam-smasher",name:"Adam Smasher",faction:KUROHANE,tier:5,
+      abilities:ab(24,16,24,12,14,10),
+      weapons:[best("LMG"),w("Shotgun",4),w("Heavy Blunt",3)],
+      armor:"Bastion Combat Plate Mk.V",
+      chrome:[
+        "Sandevistan Apogee","Projectile Launcher",
+        "Subdermal Skin Lattice","Subdermal Plating","Reactive Plating",
+        "Pain Reductor","Kerenzikov","Synaptic Accelerator",
+        "Second Heart","Blood Pump","Regeneration Lattice",
+        "Gun Stabilizer","Kiroshi Optics Combined",
+        "Bio Conductors","Mechatronic Core","Dense Marrow"
+      ],
+      grenades:[["Grenade Frag Regular Mk.III",2],["Grenade EMP Regular Mk.III",1]],
+      consumables:["Bastion Trauma Booster"],
+      bio:"A full-conversion cyborg on the Group's retainer. Nothing under the armour is original, and nothing in it regrets that. The Group points him at problems it wants gone, and he has not failed one yet.",
+      tactics:"Does not take cover. Opens with the launcher, walks through fire behind the plating, and stops time for three turns when someone finally hurts him. A fight to survive or escape, not to win."
+    },
+
+    // ---- Bastion Strategic --------------------------------------------------
+    // Arms maker and private military contractor. Sells the war and the army.
+    {
+      key:"bastion-trooper",name:"Bastion Trooper",faction:BASTION,tier:2,hp:46,ac:16,
+      abilities:ab(15,14,15,10,12,10),
+      weapons:[w("Assault Rifle",4,BASTION),w("Pistol",3,BASTION)],
+      armor:"Bastion Combat Plate Mk.II",
+      grenades:[["Grenade Frag Regular Mk.I",1]],
+      bio:"A contract soldier in issue plate. Paid by the deployment and well aware of the rate.",
+      tactics:"By the manual: cover, suppress, advance. Predictable and hard to break."
+    },
+    {
+      key:"bastion-grenadier",name:"Bastion Grenadier",faction:BASTION,tier:2,hp:48,ac:16,
+      abilities:ab(16,13,15,10,12,9),
+      weapons:[w("Shotgun",3,BASTION),w("Pistol",1,BASTION)],
+      armor:"Bastion Combat Plate Mk.II",
+      chrome:["Projectile Launcher"],
+      grenades:[["Grenade Frag Regular Mk.II",2],["Grenade Incendiary Regular Mk.I",1]],
+      bio:"Carries the squad's explosives and an arm-mounted launcher on the company's lease.",
+      tactics:"Clears cover with explosives so the riflemen have targets."
+    },
+    {
+      key:"bastion-sergeant",name:"Bastion Sergeant",faction:BASTION,tier:3,hp:82,ac:18,
+      abilities:ab(16,15,16,12,14,13),
+      weapons:[w("Assault Rifle",4,BASTION),w("Shotgun",4,BASTION)],
+      armor:"Fire-Control Harness Mk.III",
+      chrome:["Reflex Recorder","Pain Reductor","Kiroshi Optics"],
+      grenades:[["Grenade Frag Regular Mk.II",1],["Grenade Smoke Regular Mk.I",1]],
+      consumables:["Bastion Trauma Booster"],
+      bio:"Twenty years of other people's wars. Keeps the squad alive because replacements cost the company money.",
+      tactics:"Holds the squad together. If the sergeant drops, the troopers fall back."
+    },
+    {
+      key:"bastion-marksman",name:"Bastion Marksman",faction:BASTION,tier:3,hp:60,
+      abilities:ab(13,18,14,12,16,10),
+      weapons:[w("DMR",4),w("Pistol",3,BASTION)],
+      armor:"Fire-Control Harness Mk.II",
+      chrome:["Kiroshi Optics Hunter","Shock Absorber"],
+      bio:"The squad's designated shooter. Counts kills in the unit's ledger, not on the stock.",
+      tactics:"Stays one position behind the line and picks off whoever breaks cover."
+    },
+    {
+      key:"bastion-commander",name:"Bastion Commander",faction:BASTION,tier:4,hp:145,ac:20,
+      abilities:ab(17,16,18,14,16,15),
+      weapons:[w("Assault Rifle",4,BASTION),w("Heavy Pistol",4,BASTION)],
+      armor:"Fire-Control Harness Mk.IV",
+      chrome:["Berserk C3","Subdermal Plating","Pain Reductor","Kerenzikov","Kiroshi Optics Combined","Second Heart","Gun Stabilizer"],
+      grenades:[["Grenade Frag Regular Mk.III",1],["Grenade EMP Regular Mk.II",1]],
+      consumables:["Bastion Trauma Booster","Helix Health Booster"],
+      bio:"Field commander for Bastion's Alabastra contracts. Has a seat near the Council table and a private army to keep it.",
+      tactics:"Directs the fight from armour and only joins it personally when the contract is at risk."
     },
 
     // ---- Navy ---------------------------------------------------------------
@@ -348,7 +531,7 @@
           // Signature and joke weapons stay out of rank-and-file hands.
           !/^unique/i.test(String(f.manufacturer ?? "")) &&
           f.uniqueWeapon !== true &&
-          Number(f.marketBand ?? 1) < 5 &&
+          (selector.top || Number(f.marketBand ?? 1) < 5) &&
           (!selector.maker || f.manufacturer === selector.maker)
         );
       })
