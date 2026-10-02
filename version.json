@@ -1,8 +1,9 @@
 {
-  "version": "0.11.96",
+  "version": "0.11.97",
   "updated": "2026-10-01",
-  "scope": "cyberware",
+  "scope": "looks",
   "notes": [
+    "Looks pass: the chat log, dice results and pop-up dialogs use the same dark HUD style as the rest of the game; cyberware and consumable messages are proper cards.",
     "Sandevistan is now a time stop: on activation you immediately take extra turns while nothing else can move, act or react (C1 a move and one attack; C2-C3 one turn; C4 two; Apogee three). C3 and up attack with advantage.",
     "Cyberware rebuilt to follow Cyberpunk 2077 / Edgerunners: every item has a real effect, passive bonuses apply while installed, and active chrome (Sandevistan, Berserk, Kerenzikov, Blood Pump, Optical Camo...) spends CHARGE, which is the Cyberware Capacity you have left unused. Charge returns on a rest; with too little charge you can push past the limit for psychic damage.",
     "Consumables now do what their card says when used from the character sheet: healing, temporary HP, RAM, or a timed bonus as an Active Effect. Once per Short Rest per product is enforced, a product that would be wasted is refused, and one item is used up. Ghost Key and Network Sweep are reworded as GM-run effects.",
