@@ -23,7 +23,7 @@
   // gw: analysis grid width in cells
   // islands: keep black areas that do not reach the map edge (pillars, pits)
   // doors: bridge door-sized gaps in a black wall line with a door
-  const opts = {gw:640,dark:8,open:3,close:0,tol:2.2,minArea:0.004,islands:true,doors:false};
+  const opts = {gw:640,dark:8,open:3,close:0,tol:2.2,minArea:0.004,islands:true,doors:false,whiteLights:true};
   const LIGHT_ALPHA = 0.08;
   const MAX_LIGHTS = 10;
 
@@ -306,7 +306,8 @@
       const max = Math.max(data[o],data[o + 1],data[o + 2]);
       const min = Math.min(data[o],data[o + 1],data[o + 2]);
 
-      if (!black[i] && ((max >= 238 && min >= 205) || (max >= 225 && max - min >= 110))) {
+      // whiteLights off: only coloured (neon) sources count, so daylight glare is ignored
+      if (!black[i] && ((opts.whiteLights && max >= 238 && min >= 205) || (max >= 225 && max - min >= 110))) {
         mask[i] = 1;
         lit++;
       }
