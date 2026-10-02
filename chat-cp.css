@@ -708,3 +708,247 @@ html body #chat {
 html body #chat .chat-scroll {
   padding-bottom: 0 !important;
 }
+
+/* ---- Sidebar tabs: directories, combat tracker, settings ------------------
+   Everything in the right sidebar except chat (styled above). */
+
+html body #sidebar-content .sidebar-tab:not(#chat) {
+  background: rgba(12, 12, 12, .96) !important;
+  border-left: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-body) !important;
+  font-size: 15px;
+}
+
+/* Buttons: create, import and module toolbars, settings, tracker controls. */
+html body #sidebar-content .sidebar-tab:not(#chat) button {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: border-color .12s, color .12s, background-color .12s;
+}
+
+html body #sidebar-content .sidebar-tab:not(#chat) button:hover:not(:disabled),
+html body #sidebar-content .sidebar-tab:not(#chat) button:focus-visible {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
+
+html body #sidebar-content .sidebar-tab:not(#chat) button:disabled {
+  color: var(--fcc-muted) !important;
+}
+
+html body #sidebar-content .sidebar-tab:not(#chat) button.inline-control {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--fcc-muted) !important;
+}
+
+html body #sidebar-content .sidebar-tab .directory-header {
+  gap: 6px;
+  padding: 8px !important;
+  border-bottom: 1px solid var(--fcc-red) !important;
+}
+
+/* Search row. */
+html body #sidebar-content .sidebar-tab search {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+}
+
+html body #sidebar-content .sidebar-tab search:focus-within {
+  border-color: var(--fcc-yellow) !important;
+}
+
+html body #sidebar-content .sidebar-tab input[type="search"],
+html body #sidebar-content .sidebar-tab input[type="text"],
+html body #sidebar-content .sidebar-tab input[type="number"],
+html body #sidebar-content .sidebar-tab select {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+html body #sidebar-content .sidebar-tab search input[type="search"] {
+  border: 0 !important;
+}
+
+html body #sidebar-content .sidebar-tab input::placeholder {
+  color: var(--fcc-muted) !important;
+  font-style: normal !important;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Folders. */
+html body #sidebar-content .directory-item.folder > .folder-header {
+  background: var(--fcc-raised) !important;
+  border: 0 !important;
+  border-left: 3px solid var(--fcc-red) !important;
+  border-bottom: 1px solid var(--fcc-bg) !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+}
+
+html body #sidebar-content .directory-item.folder > .folder-header h3,
+html body #sidebar-content .directory-item.folder > .folder-header .folder-name {
+  color: var(--fcc-white) !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  text-shadow: none !important;
+}
+
+html body #sidebar-content .directory-item.folder > .folder-header > i:first-child {
+  color: var(--fcc-yellow) !important;
+}
+
+html body #sidebar-content .directory-item.folder.expanded > .folder-header {
+  border-left-color: var(--fcc-yellow) !important;
+}
+
+html body #sidebar-content .directory-item.folder .subdirectory {
+  border-left: 1px solid var(--fcc-line) !important;
+  margin-left: 8px !important;
+}
+
+/* Entries. */
+html body #sidebar-content .directory-item.entry,
+html body #sidebar-content .directory-item.document {
+  border-top: 0 !important;
+  border-bottom: 1px solid #1f1f1f !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #sidebar-content .directory-item.entry:hover,
+html body #sidebar-content .directory-item.document:hover,
+html body #sidebar-content .directory-item.entry.context,
+html body #sidebar-content .directory-item.entry.active {
+  background: var(--fcc-raised) !important;
+  border-left-color: var(--fcc-yellow) !important;
+}
+
+html body #sidebar-content .directory-item .entry-name,
+html body #sidebar-content .directory-item .entry-name a,
+html body #sidebar-content .directory-item .document-name,
+html body #sidebar-content .directory-item .document-name a {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-body) !important;
+  font-weight: 600;
+  text-shadow: none !important;
+}
+
+html body #sidebar-content .directory-item img.thumbnail,
+html body #sidebar-content .directory-item .thumbnail {
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  background: var(--fcc-bg) !important;
+}
+
+html body #sidebar-content .directory-footer {
+  border-top: 1px solid var(--fcc-line) !important;
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+/* Combat tracker. */
+html body #sidebar-content #combat .combat-tracker-header,
+html body #sidebar-content #combat .encounter-controls {
+  border-bottom: 1px solid var(--fcc-red) !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #sidebar-content #combat .encounter-title,
+html body #sidebar-content #combat h3,
+html body #sidebar-content #combat h4 {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  letter-spacing: .06em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+}
+
+html body #sidebar-content #combat .combatant {
+  border-bottom: 1px solid #1f1f1f !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #sidebar-content #combat .combatant.active {
+  background: var(--fcc-raised) !important;
+  border-left-color: var(--fcc-yellow) !important;
+  box-shadow: none !important;
+}
+
+html body #sidebar-content #combat .combatant .token-image {
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+}
+
+html body #sidebar-content #combat .combatant .token-initiative,
+html body #sidebar-content #combat .combatant .initiative {
+  color: var(--fcc-yellow) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+html body #sidebar-content #combat .combatant .name {
+  font-family: var(--fcc-display) !important;
+  font-weight: 700;
+  letter-spacing: .03em;
+}
+
+/* Settings tab. */
+html body #sidebar-content #settings h4,
+html body #sidebar-content #settings h2,
+html body #sidebar-content #settings h3 {
+  border-bottom: 1px solid var(--fcc-line) !important;
+  color: var(--fcc-yellow) !important;
+  font-family: var(--fcc-mono) !important;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+}
+
+html body #sidebar-content #settings .info,
+html body #sidebar-content #settings .system-info,
+html body #sidebar-content #settings .build,
+html body #sidebar-content #settings .value {
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+/* Playlists. */
+html body #sidebar-content #playlists .playlist-header,
+html body #sidebar-content #playlists .currently-playing {
+  background: var(--fcc-raised) !important;
+  border-color: var(--fcc-line) !important;
+  border-radius: 0 !important;
+}
+
+html body #sidebar-content #playlists .sound.playing .sound-name,
+html body #sidebar-content #playlists .playlist.playing .playlist-name {
+  color: var(--fcc-cyan) !important;
+}
