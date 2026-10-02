@@ -16,12 +16,14 @@
 (() => {
   const NS = "fleshEnshrouded";
   const TAG = {[NS]:{walledBy:"claude",walledOn:"2026-10-01",auto:true}};
-  const GW = 640;                 // analysis grid width in cells
   // dark: a cell is "black" when its brightest channel is below this
   // open: how many cells of thin dark detail to ignore
   // tol:  how far (in cells) a wall may cut a corner when straightening
   // close: bridge thin bright lines (a grid drawn over the black) before anything else
-  const opts = {dark:8,open:3,close:0,tol:2.2,minArea:0.004};
+  // gw: analysis grid width in cells
+  // islands: keep black areas that do not reach the map edge (pillars, pits)
+  // doors: bridge door-sized gaps in a black wall line with a door
+  const opts = {gw:640,dark:8,open:3,close:0,tol:2.2,minArea:0.004,islands:true,doors:false};
   const LIGHT_ALPHA = 0.08;
   const MAX_LIGHTS = 10;
 
@@ -33,8 +35,8 @@
     img.src = src;
     await img.decode();
 
-    const gw = GW;
-    const gh = Math.max(1,Math.round(GW * img.naturalHeight / img.naturalWidth));
+    const gw = opts.gw;
+    const gh = Math.max(1,Math.round(opts.gw * img.naturalHeight / img.naturalWidth));
     const cv = document.createElement("canvas");
     cv.width = gw;
     cv.height = gh;
@@ -136,6 +138,15 @@
 
     for (let i = 0; i < total; i++) {
       if (dark.label[i] && dark.sizes[dark.label[i]] >= total * opts.minArea) keep[i] = 1;
+    }
+
+    if (!opts.islands) {
+      // Only black that reaches the map edge counts: the outside, and the
+      // wall lines growing in from it. Black furniture in a room is dropped.
+      const edge = new Set();
+      for (let x = 0; x < gw; x++) { edge.add(dark.label[x]); edge.add(dark.label[(gh - 1) * gw + x]); }
+      for (let y = 0; y < gh; y++) { edge.add(dark.label[y * gw]); edge.add(dark.label[y * gw + gw - 1]); }
+      for (let i = 0; i < total; i++) if (keep[i] && !edge.has(dark.label[i])) keep[i] = 0;
     }
 
     // Fill small bright islands inside the black.
@@ -345,6 +356,54 @@
     return {lights:picked,note:""};
   }
 
+  // Door-sized gaps in a black wall line. Closing the mask fills such a gap;
+  // a filled patch counts as a doorway when it has wall at both ends and
+  // floor on both sides.
+  function findDoors(black,gw,gh,square) {
+    const r = Math.max(2,Math.round(square * 0.7));
+    let closed = black;
+    for (let i = 0; i < r; i++) closed = dilate(closed,gw,gh);
+    for (let i = 0; i < r; i++) closed = erode(closed,gw,gh);
+
+    const gap = new Uint8Array(black.length);
+    for (let i = 0; i < gap.length; i++) gap[i] = closed[i] && !black[i] ? 1 : 0;
+
+    const found = components(gap,gw,gh);
+    const stats = found.sizes.map(() => ({n:0,x:0,y:0,xx:0,yy:0,xy:0}));
+
+    for (let i = 0; i < gap.length; i++) {
+      const id = found.label[i];
+      if (!id) continue;
+      const x = i % gw, y = Math.floor(i / gw), s = stats[id];
+      s.n++; s.x += x; s.y += y; s.xx += x * x; s.yy += y * y; s.xy += x * y;
+    }
+
+    const at = (x,y) => { x = Math.round(x); y = Math.round(y); return x < 0 || y < 0 || x >= gw || y >= gh ? 1 : black[y * gw + x]; };
+    const doors = [];
+
+    for (const s of stats) {
+      if (s.n < 6) continue;
+      const cx = s.x / s.n, cy = s.y / s.n;
+      const a = s.xx / s.n - cx * cx, c = s.yy / s.n - cy * cy, b = s.xy / s.n - cx * cy;
+      const angle = 0.5 * Math.atan2(2 * b,a - c);
+      const ux = Math.cos(angle), uy = Math.sin(angle);
+      const mean = (a + c) / 2, diff = Math.sqrt(Math.max(0,((a - c) / 2) ** 2 + b * b));
+      const length = Math.sqrt(12 * (mean + diff)), thick = Math.sqrt(12 * Math.max(0.08,mean - diff));
+
+      if (length < square * 0.45 || length > square * 2.3) continue;
+      if (thick > square * 0.75 || length < thick * 1.2) continue;
+
+      const end = length / 2 + 2, side = thick / 2 + 3;
+      const wallAtEnds = at(cx + ux * end,cy + uy * end) && at(cx - ux * end,cy - uy * end);
+      const floorAtSides = !at(cx - uy * side,cy + ux * side) && !at(cx + uy * side,cy - ux * side);
+      if (!wallAtEnds || !floorAtSides) continue;
+
+      doors.push([cx - ux * (length / 2 + 1),cy - uy * (length / 2 + 1),cx + ux * (length / 2 + 1),cy + uy * (length / 2 + 1)]);
+    }
+
+    return doors;
+  }
+
   async function analyzeOne(scene) {
     const src = scene.background?.src;
     if (!src) return results[scene.id] = {skip:"no background image"};
@@ -383,6 +442,13 @@
         const c = [...points[i - 1],...points[i]];
         if (c[0] === c[2] && c[1] === c[3]) continue;
         walls.push({c,move:20,sight:20,light:20,sound:20,door:0,flags:TAG});
+      }
+    }
+
+    if (opts.doors && blackShare >= 0.01) {
+      for (const d of findDoors(black,gw,gh,dims.size / sx)) {
+        const a = toScene([d[0],d[1]]), b = toScene([d[2],d[3]]);
+        walls.push({c:[...a,...b],move:20,sight:20,light:20,sound:20,door:1,ds:0,flags:TAG});
       }
     }
 
@@ -495,7 +561,7 @@
     document.body.append(root);
   }
 
-  async function apply(ids,{walls = true,lights = true} = {}) {
+  async function apply(ids,{walls = true,lights = true,replace = false} = {}) {
     const out = [];
 
     for (const id of ids) {
@@ -505,6 +571,12 @@
 
       let w = 0;
       let l = 0;
+
+      // replace: swap this tool's earlier automatic walls for the new set.
+      if (replace && walls && r.walls.length) {
+        const old = scene.walls.filter(w => w.flags?.[NS]?.auto).map(w => w.id);
+        if (old.length === scene.walls.size) await scene.deleteEmbeddedDocuments("Wall",old);
+      }
 
       if (walls && r.walls.length && !scene.walls.size) {
         w = (await scene.createEmbeddedDocuments("Wall",r.walls)).length;
