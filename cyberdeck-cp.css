@@ -1527,7 +1527,9 @@ html body #feha-jackin-overlay#feha-jackin-overlay .jack-hack:disabled > em {
 html body #feha-jackin-overlay#feha-jackin-overlay .jack-hacks {
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(188px, 1fr)) !important;
-  grid-auto-rows: minmax(0, 1fr) !important;
+  /* Rows never shrink below a card: on a narrow window a second row used to
+     be squeezed into the tray and drawn on top of the first. */
+  grid-auto-rows: minmax(max-content, 1fr) !important;
   gap: 8px !important;
   overflow: hidden auto !important;
   align-content: stretch !important;
@@ -1701,7 +1703,7 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-gri
   justify-items: stretch !important;
   align-content: start !important;
   gap: 6px !important;
-  padding: 10px !important;
+  padding: 8px !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card > * {
@@ -1726,10 +1728,16 @@ html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-gri
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card .cd2-hack-copy b {
   display: block !important;
   width: auto !important;
-  font-size: 13px !important;
+  /* Sized so the longest single word fits a five-slot card; a name wraps
+     between words, never inside one ("OVERLOA / D"). */
+  font-size: 12px !important;
   line-height: 1.15 !important;
-  letter-spacing: .02em !important;
-  overflow-wrap: break-word !important;
+  letter-spacing: 0 !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 html body #feha-cyberdeck-v2#feha-cyberdeck-v2#feha-cyberdeck-v2 .cd2-loaded-grid .v3-hack-card .cd2-hack-copy span {
