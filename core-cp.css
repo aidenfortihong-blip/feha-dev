@@ -498,6 +498,24 @@ html body .application.dnd5e2.sheet.vertical-tabs nav.tabs > [data-tab].active {
   color: #0a0a0a !important;
 }
 
+/* Portrait / vitals card in the sidebar and the empty species slots. */
+html body .application.dnd5e2.sheet .sidebar .card,
+html body .application.dnd5e2.sheet .card {
+  background: var(--fco-panel) !important;
+  border: 1px solid var(--fco-line) !important;
+  box-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet .pill-lg {
+  border-radius: 0 !important;
+}
+
+html body .application.dnd5e2.sheet .pill-lg.empty {
+  background: transparent !important;
+  border: 1px dashed var(--fco-line) !important;
+  color: var(--fco-muted) !important;
+}
+
 html body .application.dnd5e2.sheet .items-section .items-header {
   background: var(--fco-raised) !important;
   border: 1px solid var(--fco-line) !important;
