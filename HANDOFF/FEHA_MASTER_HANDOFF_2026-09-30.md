@@ -444,3 +444,16 @@ Tested live with three GM clients and one player client (Cera / Sasha) on a thro
 - Ponyboy, Sasha and Zach have no walking speed on their sheets (0 ft); Derke has 30.
 - The Entry Gateway (installed module) lets a player pick any candidate; it is cosmetic and does not change the assigned character.
 - A GM clicking directly on a token while placing a grenade selects the token; click beside it.
+
+## 22. Content sweep (0.12.5, branch `v1-qa`, 2026-10-03)
+
+0.12.4 went to main on the GM's "ship it". Then every content entry was exercised live:
+- **Weapons:** all 118 (78 firearms, 33 melee, 7 unique) on a throwaway actor: attack roll, shot recorded, damage formula matches the catalog, magazine empties, cannot fire empty, reload returns to full. One weapon of each firearm class was also run from the player client with its real reload rule. Slaughtomatic rolling below zero is its written rule (`100d100-9000`, below 0 deals 0).
+- **Quickhacks:** all 20 from the player client through `FEHA_QUICKHACK_RUNTIME.prepare` / `execute`, save-gated ones until both outcomes were seen.
+- **Grenades:** all 86 entries have a schema and a world item; one of each of the 18 lines thrown from the player client.
+
+**Fixed:**
+- `FEHA_QUICKHACK_AUTHORITY` `isExplosive` / `isFirearm` classify by the grenade runtime and the weapon catalogs. The old text match made 32 of 118 weapons "explosives" for Cookoff ("recharge", "determine" in descriptions) and missed every DMR and LMG for Dead Trigger. Quickhack feats that share a name with a unique weapon (Ghost Key, Motor Lock, Optic Zero) are excluded by item type.
+- `FEHA_GRENADE_RUNTIME`: result card rows are name + save on one line, damage and effects on the next; `isCyberware` rejects weapon items.
+- Query handlers are removed in `destroy()` only if still registered by that copy (`queryHandler`). A request that arrives during the few seconds of a GM hot reload is still lost and times out.
+- dnd5e 5.3 sense paths: `senses.ranges.*`.
