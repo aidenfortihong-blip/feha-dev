@@ -1164,7 +1164,7 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-command {
 }
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics span {
-  letter-spacing: .2px !important;
+  letter-spacing: 0 !important;
   white-space: nowrap !important;
 }
 
