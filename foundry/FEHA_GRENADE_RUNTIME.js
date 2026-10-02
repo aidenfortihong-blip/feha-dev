@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.4";
+  const VERSION = "1.4.5";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -1159,9 +1159,10 @@
   }
 
   async function syncZoneNow(template) {
-    // Any GM may run this: the GM who throws the grenade marks the zone
-    // straight away. The hooks that call it afterwards are authority-only.
-    if (!game.user?.isGM || !template) return;
+    // Zone markers have one writer, the active GM. When another GM throws
+    // the grenade, the createMeasuredTemplate hook below does the marking;
+    // two clients marking the same zone each added their own marker.
+    if (!isAuthority() || !template) return;
 
     const scene = template.parent ?? null;
     const zone = template.flags?.[FLAG]?.grenadeZone ?? null;
@@ -2826,6 +2827,18 @@
               }
             }
           })();
+        }
+      )
+    ]);
+
+    hooks.push([
+      "createMeasuredTemplate",
+      globalThis.Hooks.on(
+        "createMeasuredTemplate",
+        template => {
+          if (!isAuthority()) return;
+          if (!template?.flags?.[FLAG]?.grenadeZone?.kind) return;
+          void syncZone(template);
         }
       )
     ]);
