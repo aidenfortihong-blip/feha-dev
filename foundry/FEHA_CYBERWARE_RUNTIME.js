@@ -36,6 +36,7 @@
 
   const hooks = [];
   const syncing = new Set();
+  const resync = new Set();
   let clickHandler = null;
 
   const esc = value => foundry.utils.escapeHTML(String(value ?? ""));
@@ -142,7 +143,15 @@
   const fingerprint = def => VERSION+JSON.stringify(def.changes ?? []);
 
   async function syncActor(actor) {
-    if (!actor?.isOwner || syncing.has(actor.id)) return;
+    if (!actor?.isOwner) return;
+
+    // A change that arrives mid-sync is not dropped: the sync runs once more
+    // when the current pass finishes.
+    if (syncing.has(actor.id)) {
+      resync.add(actor.id);
+      return;
+    }
+
     syncing.add(actor.id);
 
     try {
@@ -196,6 +205,8 @@
     } finally {
       syncing.delete(actor.id);
     }
+
+    if (resync.delete(actor.id)) await syncActor(actor);
   }
 
   // The client that made the change does the sync, so it runs exactly once.
