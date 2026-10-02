@@ -37,6 +37,14 @@ html body .chat-message.message {
   line-height: 1.4;
 }
 
+/* dnd5e paints a grey texture strip behind the header. */
+html body .chat-message.message::before,
+html body .chat-message.message::after {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
 html body .chat-message.message.whisper {
   border-left-color: var(--fcc-yellow) !important;
 }
