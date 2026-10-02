@@ -133,10 +133,57 @@
     return `${scene.name}: ${walls.length} walls (${(P.doors ?? []).length} doors), ${lights.length} lights`;
   }
 
+  // Outline from the automatic waller, as percent segments. Only good on maps
+  // drawn on a flat black surround; always check it by eye before committing.
+  // Start with dark:3 (pure black only); raise it if the outline has gaps.
+  async function auto(id,options = {}) {
+    Object.assign(FEHAMapWaller.opts,{gw:960,dark:3,open:3,close:0,tol:2.2,minArea:0.002,islands:true,doors:false,whiteLights:true},options);
+    delete FEHAMapWaller.results[id];
+    const out = await FEHAMapWaller.analyze([id]);
+    const scene = game.scenes.get(id);
+    const d = scene.dimensions;
+    const pc = (x,y) => [Math.round((x - d.sceneX) / d.sceneWidth * 1000) / 10,Math.round((y - d.sceneY) / d.sceneHeight * 1000) / 10];
+    const walls = FEHAMapWaller.results[id].walls.filter(w => !w.door).map(w => [...pc(w.c[0],w.c[1]),...pc(w.c[2],w.c[3])]);
+    prop[id] = {walls,doors:[],lights:[]};
+    return out;
+  }
+
+  // Cut a doorway out of the proposal: the part of any wall segment lying
+  // along the door line is removed and a door is put in its place.
+  function door(id,line,tolerance = 1.2) {
+    const P = prop[id];
+    const [x0,y0,x1,y1] = line;
+    const horizontal = Math.abs(y1 - y0) < Math.abs(x1 - x0);
+    const a = horizontal ? Math.min(x0,x1) : Math.min(y0,y1);
+    const b = horizontal ? Math.max(x0,x1) : Math.max(y0,y1);
+    const c = horizontal ? (y0 + y1) / 2 : (x0 + x1) / 2;
+    const out = [];
+    let cut = 0;
+
+    for (const w of P.walls) {
+      for (let i = 0; i + 3 < w.length; i += 2) {
+        const s = [w[i],w[i + 1],w[i + 2],w[i + 3]];
+        const c0 = horizontal ? s[1] : s[0], c1 = horizontal ? s[3] : s[2];
+        const t0 = horizontal ? s[0] : s[1], t1 = horizontal ? s[2] : s[3];
+        const lo = Math.min(t0,t1), hi = Math.max(t0,t1);
+
+        if (Math.abs(c0 - c) <= tolerance && Math.abs(c1 - c) <= tolerance && hi > a && lo < b) {
+          cut++;
+          if (lo < a) out.push(horizontal ? [lo,c,a,c] : [c,lo,c,a]);
+          if (hi > b) out.push(horizontal ? [b,c,hi,c] : [c,b,c,hi]);
+        } else out.push(s);
+      }
+    }
+
+    P.walls = out;
+    (P.doors ??= []).push(horizontal ? [a,c,b,c] : [c,a,c,b]);
+    return cut;
+  }
+
   // Scenes still waiting for the rule-2 hand pass, Nebula maps first.
   const queue = () => game.scenes
     .filter(s => s.flags?.[NS]?.mapPass?.rule !== 2 && s.background?.src)
     .sort((a,b) => (b.flags?.[NS]?.nebula ? 1 : 0) - (a.flags?.[NS]?.nebula ? 1 : 0) || a.name.localeCompare(b.name));
 
-  globalThis.HW = {open,view,commit,prop,queue,close:() => document.getElementById("__sheet")?.remove()};
+  globalThis.HW = {open,view,commit,prop,queue,auto,door,close:() => document.getElementById("__sheet")?.remove()};
 })();
