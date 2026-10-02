@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.3.0";
+  const VERSION = "2.3.1";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
   const ROOT_FOLDER = "02 — CYBERWARE";
@@ -54,7 +54,7 @@
   const speed = value => add("system.attributes.movement.walk",value);
   const initiative = value => add("system.attributes.init.bonus","+"+value);
   const armorClass = value => add("system.attributes.ac.bonus","+"+value);
-  const darkvision = value => upgrade("system.attributes.senses.darkvision",value);
+  const darkvision = value => upgrade("system.attributes.senses.ranges.darkvision",value);
   const crit19 = () => set("flags.dnd5e.weaponCriticalThreshold",19);
   const attack = (kind,value) => add("system.bonuses."+kind+".attack","+"+value);
   const damage = (kind,value) => add("system.bonuses."+kind+".damage","+"+value);

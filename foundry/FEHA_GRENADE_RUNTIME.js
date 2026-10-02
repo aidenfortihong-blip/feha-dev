@@ -516,7 +516,7 @@
 
     const senses = actor?.system?.attributes?.senses ?? {};
     const blindsight =
-      Number(senses?.blindsight ?? 0) > 0 ||
+      Number((senses?.ranges ?? senses)?.blindsight ?? 0) > 0 ||
       /blindsight|blind sense/.test(
         norm([
           senses?.special,

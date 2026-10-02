@@ -675,7 +675,7 @@
     );
 
     const blindsight =
-      Number(senses?.blindsight ?? 0) > 0 ||
+      Number((senses?.ranges ?? senses)?.blindsight ?? 0) > 0 ||
       /blindsight|blind sense/.test(text);
 
     return {blindsight};
