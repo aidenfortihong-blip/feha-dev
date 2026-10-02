@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.6";
+  const VERSION = "1.4.7";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -28,6 +28,10 @@
   const lastCombatantByCombat = new Map();
 
   let socketHandler = null;
+  // The registered query handler. destroy() removes the registration only
+  // if it is still this one: on a hot reload the old copy's destroy can run
+  // after the new copy's init and used to delete the new handler.
+  let queryHandler = null;
   let cleanupTimer = null;
   let placementActive = false;
 
@@ -2880,11 +2884,11 @@
 
     async init() {
       if (socketHandler) {
-        try { if (CONFIG.queries) delete CONFIG.queries[CH]; } catch {}
+        try { if (CONFIG.queries?.[CH] === queryHandler) delete CONFIG.queries[CH]; } catch {}
       }
 
       socketHandler = receive;
-      CONFIG.queries[CH] = message => {
+      CONFIG.queries[CH] = queryHandler = message => {
         void socketHandler?.(message);
         return true;
       };
@@ -2932,7 +2936,7 @@
 
     async destroy() {
       if (socketHandler) {
-        try { if (CONFIG.queries) delete CONFIG.queries[CH]; } catch {}
+        try { if (CONFIG.queries?.[CH] === queryHandler) delete CONFIG.queries[CH]; } catch {}
       }
 
       socketHandler = null;

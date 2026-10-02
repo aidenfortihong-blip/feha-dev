@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.2.4";
+  const VERSION = "2.2.5";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -22,6 +22,10 @@
   const hooks = [];
   const lastCombatantByCombat = new Map();
   let socketHandler = null;
+  // The registered query handler. destroy() removes the registration only
+  // if it is still this one: on a hot reload the old copy's destroy can run
+  // after the new copy's init and used to delete the new handler.
+  let queryHandler = null;
   let cleanupTimer = null;
 
   const ABILITY_LABELS = {
@@ -1871,12 +1875,12 @@
     async init() {
       if (socketHandler) {
         try {
-          if (CONFIG.queries) delete CONFIG.queries[CH];
+          if (CONFIG.queries?.[CH] === queryHandler) delete CONFIG.queries[CH];
         } catch {}
       }
 
       socketHandler = receive;
-      CONFIG.queries[CH] = message => {
+      CONFIG.queries[CH] = queryHandler = message => {
         void socketHandler?.(message);
         return true;
       };
@@ -1916,7 +1920,7 @@
     async destroy() {
       if (socketHandler) {
         try {
-          if (CONFIG.queries) delete CONFIG.queries[CH];
+          if (CONFIG.queries?.[CH] === queryHandler) delete CONFIG.queries[CH];
         } catch {}
       }
 
