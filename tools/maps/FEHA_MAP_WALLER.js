@@ -17,7 +17,10 @@
   const NS = "fleshEnshrouded";
   const TAG = {[NS]:{walledBy:"claude",walledOn:"2026-10-01",auto:true}};
   const GW = 640;                 // analysis grid width in cells
-  const DARK = 14;                // a cell is "black" when its brightest channel is below this
+  // dark: a cell is "black" when its brightest channel is below this
+  // open: how many cells of thin dark detail to ignore
+  // tol:  how far (in cells) a wall may cut a corner when straightening
+  const opts = {dark:8,open:3,tol:2.2,minArea:0.004};
   const LIGHT_ALPHA = 0.08;
   const MAX_LIGHTS = 10;
 
@@ -115,18 +118,19 @@
 
     for (let i = 0; i < total; i++) {
       const o = i * 4;
-      mask[i] = Math.max(data[o],data[o + 1],data[o + 2]) < DARK ? 1 : 0;
+      mask[i] = Math.max(data[o],data[o + 1],data[o + 2]) < opts.dark ? 1 : 0;
     }
 
     // Drop thin dark lines and specks, then grow back.
-    mask = dilate(dilate(erode(erode(mask,gw,gh),gw,gh),gw,gh),gw,gh);
+    for (let i = 0; i < opts.open; i++) mask = erode(mask,gw,gh);
+    for (let i = 0; i < opts.open; i++) mask = dilate(mask,gw,gh);
 
     // Keep only large black areas.
     const dark = components(mask,gw,gh);
     const keep = new Uint8Array(total);
 
     for (let i = 0; i < total; i++) {
-      if (dark.label[i] && dark.sizes[dark.label[i]] >= total * 0.004) keep[i] = 1;
+      if (dark.label[i] && dark.sizes[dark.label[i]] >= total * opts.minArea) keep[i] = 1;
     }
 
     // Fill small bright islands inside the black.
@@ -228,10 +232,10 @@
 
     return lines
       .map(line => line.map(v => [v % vw,Math.floor(v / vw)]))
-      .filter(line => line.length > 6)
+      .filter(line => line.length > 24)
       .map(line => {
         const closed = line[0][0] === line.at(-1)[0] && line[0][1] === line.at(-1)[1];
-        if (!closed) return simplify(line,1.6);
+        if (!closed) return simplify(line,opts.tol);
 
         // Split a loop at its farthest point so both halves simplify cleanly.
         let far = 0;
@@ -243,8 +247,8 @@
         }
 
         return [
-          ...simplify(line.slice(0,far + 1),1.6),
-          ...simplify(line.slice(far),1.6).slice(1)
+          ...simplify(line.slice(0,far + 1),opts.tol),
+          ...simplify(line.slice(far),opts.tol).slice(1)
         ];
       });
   }
@@ -512,5 +516,5 @@
     }
   }
 
-  globalThis.FEHAMapWaller = {analyze,sheet,apply,undo,results};
+  globalThis.FEHAMapWaller = {analyze,sheet,apply,undo,results,opts};
 })();
