@@ -15,7 +15,7 @@
     throw new Error("FEHA_NPC_CATALOG requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const FLAG = "fleshEnshrouded";
   const ROOT_FOLDER = "FEHA NPCS";
   const TOKEN_IMG = "icons/svg/mystery-man.svg";
@@ -328,8 +328,13 @@
     return value;
   }
 
-  function worldItem(name) {
-    return list(game.items).find(item => item.name === name) ?? null;
+  // Names repeat across catalogs (there is an "Optic Zero" quickhack and an
+  // "Optic Zero" gun), so a lookup always names the catalog it wants.
+  function worldItem(name,category) {
+    return list(game.items).find(item =>
+      item.name === name &&
+      flags(item).sourceCategory === category
+    ) ?? null;
   }
 
   function pickWeapon(selector,seed) {
@@ -390,13 +395,13 @@
     });
 
     if (def.armor) {
-      const armor = worldItem(def.armor);
+      const armor = worldItem(def.armor,"Armor_Outer");
       if (armor) push(armor,data => { data.system.equipped = true; });
       else missing.push(def.armor);
     }
 
     for (const name of def.chrome ?? []) {
-      const chrome = worldItem(name);
+      const chrome = worldItem(name,"Cyberware");
 
       if (!chrome) {
         missing.push(name);
@@ -414,7 +419,7 @@
     }
 
     for (const name of def.quickhacks ?? []) {
-      const hack = worldItem(name);
+      const hack = worldItem(name,"Quickhacks");
 
       if (!hack) {
         missing.push(name);
@@ -425,13 +430,13 @@
     }
 
     for (const [name,quantity] of def.grenades ?? []) {
-      const grenade = worldItem(name);
+      const grenade = worldItem(name,"Grenades");
       if (grenade) push(grenade,data => { data.system.quantity = quantity; });
       else missing.push(name);
     }
 
     for (const name of def.consumables ?? []) {
-      const consumable = worldItem(name);
+      const consumable = worldItem(name,"Consumables");
       if (consumable) push(consumable);
       else missing.push(name);
     }
@@ -527,8 +532,11 @@
     ) ?? null;
   }
 
-  // Create every catalog NPC that does not exist yet.
-  async function importAll({keys=null}={}) {
+  // Create every catalog NPC that does not exist yet. With rebuild:true an
+  // existing catalog NPC has its gear replaced from the catalog (anything the
+  // GM added to it by hand is lost), which is how a catalog fix reaches NPCs
+  // that were already imported.
+  async function importAll({keys=null,rebuild=false}={}) {
     if (!game.user?.isGM) {
       throw new Error("Only the GM can import NPCs.");
     }
@@ -538,11 +546,34 @@
     const folders = new Map();
     const created = [];
     const skipped = [];
+    const rebuilt = [];
     const missing = {};
 
     for (const def of wanted) {
-      if (existing(def)) {
+      const current = existing(def);
+
+      if (current && !rebuild) {
         skipped.push(def.name);
+        continue;
+      }
+
+      if (current) {
+        const built = buildItems(def);
+        if (built.missing.length) missing[def.name] = built.missing;
+
+        await current.deleteEmbeddedDocuments(
+          "Item",
+          list(current.items).map(item => item.id)
+        );
+        await current.createEmbeddedDocuments("Item",built.items);
+        await current.update({
+          ["flags."+FLAG+".cyberwareCapacityBonus"]:
+            actorData(def,null,built.items).flags[FLAG].cyberwareCapacityBonus,
+          ["flags."+FLAG+".npcCatalogVersion"]:VERSION
+        });
+        await core.module("cyberwareRuntime")?.syncActor?.(current);
+
+        rebuilt.push(def.name);
         continue;
       }
 
@@ -564,7 +595,7 @@
       created.push(def.name);
     }
 
-    const result = {created,skipped,missing,version:VERSION};
+    const result = {created,rebuilt,skipped,missing,version:VERSION};
     console.log("FEHA NPC CATALOG",result);
     return result;
   }
