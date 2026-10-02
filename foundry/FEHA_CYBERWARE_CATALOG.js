@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.0.1";
+  const VERSION = "2.0.2";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
 
@@ -73,7 +73,8 @@
   // [name, slot, mk, maker, effect text, extras]
   //   changes        applied while installed
   //   active         {charge, action, duration?, changes?, heal?, tempHp?,
-  //                   ram?, roll?, halfHp?, statuses?}
+  //                   ram?, roll?, halfHp?, statuses?, turnOnly?,
+  //                   attackAdvantage?, label?}
   //   chargeBonus    extra cyberware charge
   //   chargeDiscount activations cost this much less (slots: only these slots)
   //   regen          HP regained at the start of each of your turns in combat
@@ -116,11 +117,11 @@
     ["Tetratronic Rippler",OS,3,FORGE,null,{deck:true}],
     ["Raven Microcyber",OS,4,FORGE,null,{deck:true}],
 
-    ["Sandevistan C1",OS,1,VEKTOR,"No action, on your turn: time slows until the start of your next turn. +10 ft Speed, your movement provokes no opportunity attacks, and you gain +2 to attack rolls.",{active:{charge:2,action:"No action, on your turn",duration:untilNextTurn,changes:[speed(10),attack("mwak",2),attack("rwak",2)]}}],
-    ["Sandevistan C2",OS,2,VEKTOR,"No action, on your turn: time slows until the start of your next turn. +15 ft Speed, your movement provokes no opportunity attacks, +2 to attack rolls and advantage on Dexterity saves. Attacks against you have disadvantage.",{active:{charge:3,action:"No action, on your turn",duration:untilNextTurn,changes:[speed(15),attack("mwak",2),attack("rwak",2)]}}],
-    ["Sandevistan C3",OS,3,VEKTOR,"No action, on your turn: time slows until the start of your next turn. +20 ft Speed, your movement provokes no opportunity attacks, +2 to attack rolls and advantage on Dexterity saves, and you make one additional weapon attack this turn. Attacks against you have disadvantage.",{active:{charge:4,action:"No action, on your turn",duration:untilNextTurn,changes:[speed(20),attack("mwak",2),attack("rwak",2)]}}],
-    ["Sandevistan C4",OS,4,VEKTOR,"No action, on your turn: time slows until the start of your next turn. Your Speed is doubled, your movement provokes no opportunity attacks, +3 to attack rolls and advantage on Dexterity saves, and you take one additional action this turn (Attack, Dash or Use an Object). Attacks against you have disadvantage.",{active:{charge:5,action:"No action, on your turn",duration:untilNextTurn,changes:[multiply("system.attributes.movement.walk",2),attack("mwak",3),attack("rwak",3)]}}],
-    ["Sandevistan Apogee",OS,5,VEKTOR,"No action, on your turn: time slows for this turn and your next. Your Speed is doubled, your movement provokes no opportunity attacks, +3 to attack rolls and advantage on Dexterity saves, and on each of those turns you take one additional action (Attack, Dash or Use an Object). Attacks against you have disadvantage.",{active:{charge:6,action:"No action, on your turn",duration:{value:2,units:"rounds",expiry:"turnStart"},changes:[multiply("system.attributes.movement.walk",2),attack("mwak",3),attack("rwak",3)]}}],
+    ["Sandevistan C1",OS,1,VEKTOR,"No action, on your turn: time stops for an instant. Immediately move up to your Speed and make one weapon attack. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:2,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
+    ["Sandevistan C2",OS,2,VEKTOR,"No action, on your turn: time stops. Immediately take one extra turn (movement, action and bonus action). While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:3,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
+    ["Sandevistan C3",OS,3,VEKTOR,"No action, on your turn: time stops. Immediately take one extra turn, and your attacks during it have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:4,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
+    ["Sandevistan C4",OS,4,VEKTOR,"No action, on your turn: time stops. Immediately take two extra turns in a row, and your attacks during them have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:5,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
+    ["Sandevistan Apogee",OS,5,VEKTOR,"No action, on your turn: time stops. Immediately take three extra turns in a row, and your attacks during them have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:6,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
 
     ["Berserk C1",OS,1,BASTION,"Bonus action, lasts until the end of your next turn: resistance to bludgeoning, piercing and slashing damage and +1d6 melee damage. You cannot make ranged attacks while it is active.",{active:{charge:2,action:"Bonus action",duration:forRounds(2),changes:[...resist(...PHYSICAL),damage("mwak","1d6")]}}],
     ["Berserk C2",OS,2,BASTION,"Bonus action, lasts until the end of your next turn: gain 10 temporary HP, resistance to bludgeoning, piercing and slashing damage and +2d6 melee damage. You cannot make ranged attacks while it is active.",{active:{charge:3,action:"Bonus action",duration:forRounds(2),tempHp:"10",changes:[...resist(...PHYSICAL),damage("mwak","2d6")]}}],

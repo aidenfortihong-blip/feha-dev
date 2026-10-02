@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.5";
+  const VERSION = "1.0.6";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const PASSIVE_FLAG = "cyberwarePassive";
@@ -344,14 +344,18 @@
       }
 
       await actor.createEmbeddedDocuments("ActiveEffect",[{
-        name:def.name,
+        name:spec.label ? spec.label+" // "+def.name : def.name,
         img:item.img || "icons/svg/upgrade.svg",
         type:"base",
         description:"<p>"+esc(def.effectText)+"</p>",
         system:{changes:withBaseSpeed(spec.changes ?? [])},
         statuses:spec.statuses ?? [],
         duration:spec.duration,
-        flags:{[FLAG]:{[ACTIVE_FLAG]:{itemId:item.id,turnOnly:Boolean(spec.turnOnly)}}}
+        flags:{[FLAG]:{[ACTIVE_FLAG]:{
+          itemId:item.id,
+          turnOnly:Boolean(spec.turnOnly),
+          attackAdvantage:Boolean(spec.attackAdvantage)
+        }}}
       }]);
     }
 
@@ -491,6 +495,31 @@
     if (small.textContent !== detail) small.textContent = detail;
   }
 
+  // Attacks made while an activation grants advantage (stopped time).
+  function onPreRollAttack(config) {
+    try {
+      const activity = config?.subject ?? null;
+      const actor = activity?.actor ?? activity?.item?.actor ?? null;
+      if (!actor) return;
+
+      const granted = list(actor.effects).some(effect =>
+        flags(effect)[ACTIVE_FLAG]?.attackAdvantage &&
+        !effect.disabled &&
+        !effect.duration?.expired
+      );
+      if (!granted) return;
+
+      config.advantage = true;
+
+      for (const roll of config.rolls ?? []) {
+        roll.options ??= {};
+        roll.options.advantage = true;
+      }
+    } catch (error) {
+      console.warn("FEHA CYBERWARE // preRollAttack failed",error);
+    }
+  }
+
   // ---- Rest, regeneration, expiry ------------------------------------------
 
   async function onRestCompleted(actor) {
@@ -620,6 +649,7 @@
         ["updateItem",Hooks.on("updateItem",onItemChange)],
         ["deleteItem",Hooks.on("deleteItem",onItemChange)],
         ["dnd5e.restCompleted",Hooks.on("dnd5e.restCompleted",onRestCompleted)],
+        ["dnd5e.preRollAttackV2",Hooks.on("dnd5e.preRollAttackV2",onPreRollAttack)],
         ["updateCombat",Hooks.on("updateCombat",onUpdateCombat)],
         ["updateActor",Hooks.on("updateActor",queueChip)]
       );
