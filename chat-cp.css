@@ -729,12 +729,22 @@ html body #sidebar-content .sidebar-tab:not(#chat) button {
   border-radius: 0 !important;
   box-shadow: none !important;
   color: var(--fcc-white) !important;
+  transition: border-color .12s, color .12s, background-color .12s;
+}
+
+/* Text buttons only: icon buttons draw their glyph with the icon font. */
+html body #sidebar-content .sidebar-tab:not(#chat) button:not(.icon) {
   font-family: var(--fcc-display) !important;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .05em;
   text-transform: uppercase;
-  transition: border-color .12s, color .12s, background-color .12s;
+}
+
+html body #sidebar-content .sidebar-tab:not(#chat) .folder-header button.icon {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--fcc-muted) !important;
 }
 
 html body #sidebar-content .sidebar-tab:not(#chat) button:hover:not(:disabled),
