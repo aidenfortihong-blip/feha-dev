@@ -11,9 +11,10 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.1.0";
+  const VERSION = "2.1.1";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
+  const ROOT_FOLDER = "02 — CYBERWARE";
 
   const FC = "Frontal Cortex";
   const OS = "Operating System";
@@ -308,9 +309,18 @@
     catch { return a === b; }
   };
 
-  function updateData(item,def) {
+  function updateData(item,def,folderId=null) {
     const flags = item.flags?.[FLAG] ?? {};
     const update = {};
+
+    // The catalog folder is organised by maker; a world item follows its maker.
+    if (
+      folderId &&
+      !item.parent &&
+      String(item.folder?.id ?? "") !== String(folderId)
+    ) {
+      update.folder = folderId;
+    }
 
     const flagValues = {
       cyberwareCatalogVersion:VERSION,
@@ -407,6 +417,30 @@
     return true;
   }
 
+  // One folder per maker under the cyberware catalog folder. Returns a map of
+  // maker -> folder id, or an empty map if the catalog folder is not there.
+  async function makerFolders() {
+    const root = list(game.folders).find(folder =>
+      folder.type === "Item" && folder.name === ROOT_FOLDER
+    );
+    const folders = new Map();
+    if (!root) return folders;
+
+    for (const company of new Set(definitions.map(def => def.company))) {
+      const folder =
+        list(game.folders).find(candidate =>
+          candidate.type === "Item" &&
+          candidate.name === company &&
+          String(candidate.folder?.id ?? "") === String(root.id)
+        ) ??
+        await Folder.create({name:company,type:"Item",folder:root.id,sorting:"a"});
+
+      folders.set(company,folder.id);
+    }
+
+    return folders;
+  }
+
   function allCyberware() {
     return [
       ...list(game.items).filter(isCyberware),
@@ -422,6 +456,7 @@
     }
 
     const items = allCyberware();
+    const folders = await makerFolders();
     const pending = [];
     const unknown = new Set();
 
@@ -433,7 +468,7 @@
         continue;
       }
 
-      const update = updateData(item,def);
+      const update = updateData(item,def,folders.get(def.company) ?? null);
       if (Object.keys(update).length) pending.push([item,update]);
     }
 
