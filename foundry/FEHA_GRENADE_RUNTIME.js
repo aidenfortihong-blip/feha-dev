@@ -9,9 +9,13 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.0";
+  const VERSION = "1.4.1";
   const FLAG = "fleshEnshrouded";
-  const CH = "module.flesh-enshrouded-heart-ablaze";
+  // FEHA messages travel over Foundry's user-to-user queries. The installed
+  // module does not declare a socket, so the server never relayed
+  // "module.flesh-enshrouded-heart-ablaze" and nothing a player sent reached
+  // the GM. CH is the query name; every other connected user receives it.
+  const CH = "feha.grenadeRuntime";
   const MARK = "fehaGrenadeRuntimeV1";
   const TIMEOUT = 20000;
   const TURN_MS = 6000;
@@ -112,11 +116,18 @@
   }
 
   function emit(kind,payload={}) {
-    game.socket?.emit?.(CH,{
+    const message = {
       [MARK]:true,
       kind,
       payload
-    });
+    };
+
+    for (const user of list(game.users)) {
+      if (!user?.active || user.isSelf) continue;
+
+      Promise.resolve(user.query?.(CH,message,{timeout:10000}))
+        .catch(() => {});
+    }
   }
 
   function wait(requestId) {
@@ -2826,11 +2837,14 @@
 
     async init() {
       if (socketHandler) {
-        try { game.socket?.off?.(CH,socketHandler); } catch {}
+        try { if (CONFIG.queries) delete CONFIG.queries[CH]; } catch {}
       }
 
       socketHandler = receive;
-      game.socket?.on?.(CH,socketHandler);
+      CONFIG.queries[CH] = message => {
+        void socketHandler?.(message);
+        return true;
+      };
 
       installHooks();
       installItemUseBridge();
@@ -2875,7 +2889,7 @@
 
     async destroy() {
       if (socketHandler) {
-        try { game.socket?.off?.(CH,socketHandler); } catch {}
+        try { if (CONFIG.queries) delete CONFIG.queries[CH]; } catch {}
       }
 
       socketHandler = null;

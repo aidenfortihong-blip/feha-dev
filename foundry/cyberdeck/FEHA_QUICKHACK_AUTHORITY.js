@@ -7,9 +7,13 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.2.0";
+  const VERSION = "2.2.1";
   const FLAG = "fleshEnshrouded";
-  const CH = "module.flesh-enshrouded-heart-ablaze";
+  // FEHA messages travel over Foundry's user-to-user queries. The installed
+  // module does not declare a socket, so the server never relayed
+  // "module.flesh-enshrouded-heart-ablaze" and nothing a player sent reached
+  // the GM. CH is the query name; every other connected user receives it.
+  const CH = "feha.quickhackAuthority";
   const MARK = "fehaQuickhackAuthorityV2";
   const TIMEOUT = 20000;
   const TURN_MS = 6000;
@@ -107,11 +111,18 @@
   }
 
   function emit(kind,payload={}) {
-    game.socket?.emit?.(CH,{
+    const message = {
       [MARK]:true,
       kind,
       payload
-    });
+    };
+
+    for (const user of list(game.users)) {
+      if (!user?.active || user.isSelf) continue;
+
+      Promise.resolve(user.query?.(CH,message,{timeout:10000}))
+        .catch(() => {});
+    }
   }
 
   function wait(requestId) {
@@ -1826,18 +1837,15 @@
     async init() {
       if (socketHandler) {
         try {
-          game.socket?.off?.(
-            CH,
-            socketHandler
-          );
+          if (CONFIG.queries) delete CONFIG.queries[CH];
         } catch {}
       }
 
       socketHandler = receive;
-      game.socket?.on?.(
-        CH,
-        socketHandler
-      );
+      CONFIG.queries[CH] = message => {
+        void socketHandler?.(message);
+        return true;
+      };
 
       installHooks();
 
@@ -1874,10 +1882,7 @@
     async destroy() {
       if (socketHandler) {
         try {
-          game.socket?.off?.(
-            CH,
-            socketHandler
-          );
+          if (CONFIG.queries) delete CONFIG.queries[CH];
         } catch {}
       }
 
