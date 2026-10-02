@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.1.1";
+  const VERSION = "1.1.2";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const USED_FLAG = "cyberwareUsedThisRest";
@@ -199,7 +199,10 @@
   }
 
   // The client that made the change does the sync, so it runs exactly once.
-  function onItemChange(item,_data,_options,userId) {
+  // createItem and deleteItem pass (item, options, userId); updateItem passes
+  // (item, changes, options, userId). The user id is always the last argument.
+  function onItemChange(item,...rest) {
+    const userId = rest.at(-1);
     if (userId !== game.user?.id) return;
     if (!item?.actor || !catalog.isCyberware(item)) return;
 
