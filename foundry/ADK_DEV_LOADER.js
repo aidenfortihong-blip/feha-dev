@@ -33,6 +33,7 @@
     cyberwareCatalog:"foundry/FEHA_CYBERWARE_CATALOG.js",
     cyberwareRuntime:"foundry/FEHA_CYBERWARE_RUNTIME.js",
     npcCatalog:"foundry/FEHA_NPC_CATALOG.js",
+    nebulaMaps:"foundry/FEHA_NEBULA_MAP_IMPORTER.js",
     core:"foundry/cyberdeck/FEHA_CYBER_CORE.js",
     modRetirement:"foundry/FEHA_MOD_RETIREMENT.js",
     specialRetirement:"foundry/FEHA_SPECIAL_RETIREMENT.js",
@@ -222,7 +223,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -345,6 +346,7 @@
     evaluate(source.cyberwareCatalog,files.cyberwareCatalog,sha);
     evaluate(source.cyberwareRuntime,files.cyberwareRuntime,sha);
     evaluate(source.npcCatalog,files.npcCatalog,sha);
+    evaluate(source.nebulaMaps,files.nebulaMaps,sha);
     evaluate(source.quickhacks,files.quickhacks,sha);
     evaluate(source.quickhackAuthority,files.quickhackAuthority,sha);
     evaluate(source.quickhackRuntime,files.quickhackRuntime,sha);
