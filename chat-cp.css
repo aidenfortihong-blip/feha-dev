@@ -962,3 +962,45 @@ html body #sidebar-content #playlists .sound.playing .sound-name,
 html body #sidebar-content #playlists .playlist.playing .playlist-name {
   color: var(--fcc-cyan) !important;
 }
+
+/* Settings tab: link-style buttons, the title, and the system links. */
+html body #sidebar-content #settings a.button {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+html body #sidebar-content #settings a.button:hover,
+html body #sidebar-content #settings a.button:focus-visible {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
+
+html body #sidebar-content #settings .title {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-size: 18px !important;
+  font-variant: normal !important;
+  letter-spacing: .06em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+}
+
+html body #sidebar-content #settings .subtitle,
+html body #sidebar-content #settings .label {
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+html body #sidebar-content #settings .links a,
+html body #sidebar-content #settings .system-links a {
+  color: var(--fcc-cyan) !important;
+}
