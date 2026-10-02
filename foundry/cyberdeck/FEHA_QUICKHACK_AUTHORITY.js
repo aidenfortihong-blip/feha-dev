@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.2.2";
+  const VERSION = "2.2.3";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -550,7 +550,26 @@
     return /leg|legs|ankle|knee|calf|tendon|locomotion|movement|reinforced tendons|fortified ankles/.test(haystack);
   }
 
+  // Catalog weapons are classified by their catalog entry. The name and
+  // class text guess below only covers items outside the catalogs: it missed
+  // every DMR and LMG, so Dead Trigger could not break them.
   function isFirearm(item) {
+    const firearm =
+      globalThis.FEHA_WEAPON_CATALOG?.definition?.(item) ?? null;
+    if (firearm) return firearm.weaponClass !== "Bow";
+
+    const unique =
+      globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.definition?.(item) ?? null;
+    if (unique) {
+      return (
+        Number(unique.range ?? 0) > 0 &&
+        Number(unique.functionalAttacks ?? 0) > 0 &&
+        unique.weaponClass !== "Bow"
+      );
+    }
+
+    if (globalThis.FEHA_MELEE_CATALOG?.definition?.(item)) return false;
+
     const flags = item?.flags?.[FLAG] ?? {};
 
     const haystack = norm([
@@ -573,22 +592,27 @@
     return explicit && !clearlyMelee;
   }
 
+  // A grenade is whatever the grenade runtime says it is. The old test read
+  // the item's description too, where "recharge" and "determine" made a
+  // quarter of all weapons count as carried explosives for Cookoff.
   function isExplosive(item) {
     const flags = item?.flags?.[FLAG] ?? {};
 
-    const haystack = norm([
-      item?.name,
-      item?.type,
-      flags.weaponClass,
-      flags.weaponType,
-      flags.sourceCategory,
-      flags.effectText,
-      item?.system?.description?.value
-    ].filter(Boolean).join(" "));
+    if (globalThis.FEHA_GRENADE_RUNTIME?.isGrenade?.(item)) return true;
+    if (flags.explosive === true) return true;
 
-    return (
-      flags.explosive === true ||
-      /grenade|explosive|mine|charge|c4|detonator/.test(haystack)
+    if (
+      globalThis.FEHA_WEAPON_CATALOG?.definition?.(item) ||
+      globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.definition?.(item) ||
+      globalThis.FEHA_MELEE_CATALOG?.definition?.(item) ||
+      isCyberware(item)
+    ) {
+      return false;
+    }
+
+    // Items outside the catalogs: the name only, whole words.
+    return /(grenade|explosive|mine|c4|detonator)/.test(
+      norm([item?.name,flags.sourceCategory].filter(Boolean).join(" "))
     );
   }
 
