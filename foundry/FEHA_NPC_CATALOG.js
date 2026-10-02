@@ -147,7 +147,7 @@
     },
     {
       key:"civcorp-riot",name:"CivCorp Riot Enforcer",faction:CIVCORP,tier:2,hp:50,ac:16,
-      abilities:ab(16,11,16,9,11,9),
+      abilities:ab(16,13,16,9,11,9),
       weapons:[w("Shotgun",3,"Bastion Strategic"),w("Baton",2)],
       armor:"Bastion Combat Plate Mk.II",
       grenades:[["Grenade Flash Regular Mk.I",1],["Grenade Smoke Regular Mk.I",1]],

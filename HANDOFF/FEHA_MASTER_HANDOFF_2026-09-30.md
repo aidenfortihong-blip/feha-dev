@@ -364,3 +364,11 @@ User brief: as faithful to Cyberpunk 2077 / Edgerunners as a turn-based table al
 - New skin file `chat-cp.css` (loader key `chatSkinCss`, bundled into `#feha-market-cp-css`). Tokens `--fcc-*`. Covers: chat messages (red rail public, yellow rail whisper), dnd5e chat cards and dice, DialogV2 windows, the player list / connection readout, left tool buttons and scene navigation, right sidebar tabs, chat controls + ProseMirror toolbar + input (stacked with no gaps), and the macro hotbar. Faded-UI opacity is forced to 1 on those pieces.
 - Cyberware and consumable chat messages use `.feha-chat-card` (kicker, h3, `.feha-chat-result`, `.feha-chat-foot`).
 - Not skinned: the contents of the other sidebar tabs (combat, scenes, actors, items, journal, settings) and character sheets.
+
+## 18. 0.12.0 NPC catalog (2026-10-01)
+
+- `foundry/FEHA_NPC_CATALOG.js` (module `npcCatalog`, `game.adk.npcs`): 29 NPC definitions in seven factions (Street, Yakuza, CivCorp, Marble Vigil, Corporate, Navy, Civilians), tiers 0-4 (`TIERS`: HP / AC / CR / charge). Setting comes from the user's lore doc (memory `feha-world-lore`).
+- Gear is copied from world items at import: weapons by selector `w(class, maxBand, maker?)` with a stable hash pick (unique and band-5 weapons excluded); armour, chrome, quickhacks, grenades and consumables by name **and** `sourceCategory` (names repeat across catalogs, e.g. "Optic Zero"). Chrome is flagged installed, quickhacks `loadedQuickhack`, and `cyberwareCapacityBonus` is set so each NPC has its tier's charge pool.
+- Nothing is created on load. GM button "Import FEHA NPCs" in the Actors tab header (`renderActorDirectory`) -> DialogV2 confirm -> `import()` creates folder "FEHA NPCS" > faction and skips NPCs that already exist (`flags.fleshEnshrouded.npcKey`). `import({rebuild:true})` replaces the gear on existing catalog NPCs.
+- Actors are unlinked `npc` type, flat AC, walk 30, default mystery-man art, hostile disposition (civilians neutral).
+- The 29 were imported into the live world on 2026-10-01 from the test branch (GM login "Evan (DM)").
