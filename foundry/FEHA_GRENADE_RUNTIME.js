@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.1";
+  const VERSION = "1.4.2";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -114,6 +114,13 @@
       null
     );
   }
+
+  // Upkeep that writes to the world (ticks, expiry, zone markers) runs on one
+  // client: the active GM. With several GMs connected, each of them used to
+  // run it, so a tick rolled and applied its damage once per GM.
+  const isAuthority = () =>
+    game.user?.isGM === true &&
+    authorityGM()?.id === game.user.id;
 
   function emit(kind,payload={}) {
     const message = {
@@ -1147,7 +1154,7 @@
   }
 
   async function syncZoneNow(template) {
-    if (!game.user?.isGM || !template) return;
+    if (!isAuthority() || !template) return;
 
     const scene = template.parent ?? null;
     const zone = template.flags?.[FLAG]?.grenadeZone ?? null;
@@ -1222,7 +1229,7 @@
   }
 
   async function moveAnchoredZones(scene,token) {
-    if (!game.user?.isGM || !scene || !token) return;
+    if (!isAuthority() || !scene || !token) return;
 
     const center = tokenCenter(token,scene);
 
@@ -1246,7 +1253,7 @@
   }
 
   async function cleanupTemplates() {
-    if (!game.user?.isGM) return;
+    if (!isAuthority()) return;
 
     const now = Date.now();
 
@@ -1274,7 +1281,7 @@
   }
 
   async function cleanupTimedByTime() {
-    if (!game.user?.isGM) return;
+    if (!isAuthority()) return;
 
     const now = Date.now();
 
@@ -1315,7 +1322,7 @@
   }
 
   async function clearCombatBoundEffects(combatId) {
-    if (!game.user?.isGM || !combatId) return;
+    if (!isAuthority() || !combatId) return;
 
     for (const actor of runtimeActors()) {
       for (const effect of list(actor.effects)) {
@@ -2516,6 +2523,15 @@
   async function onCombatUpdate(combat,changed) {
     if (!game.user?.isGM) return;
 
+    // Other GMs only keep track of whose turn it is, in case they take over.
+    if (!isAuthority()) {
+      lastCombatantByCombat.set(
+        combat.id,
+        currentCombatTokenId(combat) ?? null
+      );
+      return;
+    }
+
     const advanced =
       Object.prototype.hasOwnProperty.call(changed ?? {},"turn") ||
       Object.prototype.hasOwnProperty.call(changed ?? {},"round");
@@ -2789,7 +2805,7 @@
       globalThis.Hooks.on(
         "updateToken",
         token => {
-          if (!game.user?.isGM) return;
+          if (!isAuthority()) return;
 
           const scene = token?.parent ?? null;
           if (!scene) return;
@@ -2812,7 +2828,7 @@
       globalThis.Hooks.on(
         "deleteMeasuredTemplate",
         template => {
-          if (!game.user?.isGM) return;
+          if (!isAuthority()) return;
           if (template?.flags?.[FLAG]?.grenadeTemplate !== true) return;
           void removeZoneMarkers(template.id);
         }

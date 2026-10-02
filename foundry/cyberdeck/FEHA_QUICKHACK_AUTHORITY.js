@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.2.1";
+  const VERSION = "2.2.2";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -109,6 +109,13 @@
       null
     );
   }
+
+  // Upkeep that writes to the world (quickhack expiry) runs on one
+  // client: the active GM. With several GMs connected, each of them used to
+  // run it, racing to delete the same effects.
+  const isAuthority = () =>
+    game.user?.isGM === true &&
+    authorityGM()?.id === game.user.id;
 
   function emit(kind,payload={}) {
     const message = {
@@ -1373,7 +1380,7 @@
   }
 
   async function processCombatTurnEnd(combat,tokenId) {
-    if (!game.user?.isGM || !combat || !tokenId) return;
+    if (!isAuthority() || !combat || !tokenId) return;
 
     const combatant =
       list(combat.combatants)
@@ -1438,7 +1445,7 @@
   }
 
   async function cleanupExpiredByTime() {
-    if (!game.user?.isGM) return;
+    if (!isAuthority()) return;
 
     const now = Date.now();
 

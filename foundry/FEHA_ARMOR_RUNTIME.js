@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.3.0";
+  const VERSION = "1.3.1";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -102,8 +102,12 @@
     return Math.max(0,Number(def.signature?.value ?? (5 * Number(def.mk || 0))) || 0);
   }
 
+  // Armor upkeep writes effects, so one client does it: the active GM. With
+  // several GMs connected each one used to create its own copy of the bonus.
+  const isAuthority = () => game.users?.activeGM?.isSelf === true;
+
   async function syncHelixSpeed(actor) {
-    if (!actor || !game.user?.isGM) return false;
+    if (!actor || !isAuthority()) return false;
 
     const current = list(actor.effects).filter(effect =>
       effect.flags?.[FLAG]?.armorHelixKineticSync === true
@@ -170,7 +174,7 @@
   }
 
   async function setForgeBraced(actor,value,stamp=null) {
-    if (!actor || !game.user?.isGM) return;
+    if (!actor || !isAuthority()) return;
 
     const def = equippedDefinition(actor);
     const bonus =
@@ -241,7 +245,7 @@
   }
 
   async function finalizeForgeTurn(turn) {
-    if (!turn?.actorId || !turn?.stamp || !game.user?.isGM) return;
+    if (!turn?.actorId || !turn?.stamp || !isAuthority()) return;
     const actor = game.actors?.get?.(turn.actorId) ?? null;
     const def = equippedDefinition(actor);
     if (def?.company !== "ForgeLine Industries") return;
