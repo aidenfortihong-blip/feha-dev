@@ -18,10 +18,16 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.1.3";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const USED_FLAG = "cyberwareUsedThisRest";
+  const WEAPON_FLAG = "cyberarmWeapon";
+
+  // Cyberarm weapons are built from this world weapon (its attack activity
+  // and sheet layout), then given their own name, damage and reach.
+  const WEAPON_TEMPLATE = "Katana";
+  const BLADE_CLASSES = ["Katana","Knife","Machete","Sword","Heavy Blade"];
   const PASSIVE_FLAG = "cyberwarePassive";
   const ACTIVE_FLAG = "cyberwareActive";
   const MANAGER_ID = "adk-chrome-manager-34";
@@ -221,6 +227,8 @@
           }))
         );
       }
+
+      await syncWeapons(actor);
     } catch (error) {
       console.warn("FEHA CYBERWARE // passive sync failed",actor?.name,error);
     } finally {
@@ -228,6 +236,91 @@
     }
 
     if (resync.delete(actor.id)) await syncActor(actor);
+  }
+
+  // ---- Cyberarm weapons ----------------------------------------------------
+  // Mantis Blades, Monowire and gorilla fists are real weapons in the owner's
+  // inventory, next to their guns, for as long as the chrome is installed.
+
+  function weaponData(item,def) {
+    const spec = def.weapon;
+    const template = list(game.items).find(candidate =>
+      candidate.type === "weapon" && candidate.name === WEAPON_TEMPLATE
+    );
+    if (!template) return null;
+
+    const data = template.toObject();
+    delete data._id;
+
+    data.name = spec.name;
+    data.img = item.img || data.img;
+    data.folder = null;
+    data.flags = {
+      [FLAG]:{
+        [WEAPON_FLAG]:{itemId:item.id,fingerprint:VERSION+JSON.stringify(spec)},
+        meleeClass:spec.type === "slashing" ? "Katana" : "Blunt",
+        manufacturer:def.company
+      }
+    };
+
+    const system = data.system;
+    system.description = {
+      value:"<p>"+esc(def.effectText)+"</p><p><em>Part of "+esc(def.name)+
+        ". It leaves your inventory if the chrome is removed.</em></p>"
+    };
+    system.equipped = true;
+    system.proficient = 1;
+    system.quantity = 1;
+    system.weight = {...(system.weight ?? {}),value:0};
+    system.price = {...(system.price ?? {}),value:0};
+    system.properties = spec.finesse ? ["fin"] : [];
+    system.range = {...(system.range ?? {}),value:spec.reach,reach:spec.reach,long:0,units:"ft"};
+    system.damage.base = {
+      ...system.damage.base,
+      number:0,
+      denomination:0,
+      bonus:"",
+      custom:{enabled:true,formula:spec.damage},
+      types:[spec.type]
+    };
+
+    for (const activity of Object.values(system.activities ?? {})) {
+      if (activity.type !== "attack") continue;
+      activity.attack.ability = spec.ability;
+      activity.attack.critical = {threshold:spec.crit ?? 20};
+    }
+
+    return data;
+  }
+
+  async function syncWeapons(actor) {
+    const wanted = new Map(
+      installed(actor)
+        .filter(entry => entry.def?.weapon)
+        .map(entry => [entry.item.id,entry])
+    );
+
+    const stale = [];
+
+    for (const weapon of list(actor.items)) {
+      const meta = flags(weapon)[WEAPON_FLAG];
+      if (!meta) continue;
+
+      const entry = wanted.get(meta.itemId);
+      const current =
+        entry && meta.fingerprint === VERSION+JSON.stringify(entry.def.weapon);
+
+      if (current) wanted.delete(meta.itemId);
+      else stale.push(weapon.id);
+    }
+
+    if (stale.length) await actor.deleteEmbeddedDocuments("Item",stale);
+
+    const fresh = [...wanted.values()]
+      .map(({item,def}) => weaponData(item,def))
+      .filter(Boolean);
+
+    if (fresh.length) await actor.createEmbeddedDocuments("Item",fresh);
   }
 
   // The client that made the change does the sync, so it runs exactly once.
@@ -563,7 +656,60 @@
     if (small.textContent !== detail) small.textContent = detail;
   }
 
-  // Attacks made while an activation grants advantage (stopped time).
+  function isWounded(actor) {
+    const hp = actor?.system?.attributes?.hp ?? {};
+    const max = Number(hp.effectiveMax ?? hp.max ?? 0);
+    return max > 0 && Number(hp.value ?? 0) < max / 2;
+  }
+
+  function isBlade(weapon) {
+    const f = flags(weapon);
+    return (
+      BLADE_CLASSES.includes(String(f.meleeClass ?? f.weaponClass ?? "")) ||
+      (f[WEAPON_FLAG] && weapon?.system?.damage?.base?.types?.has?.("slashing"))
+    );
+  }
+
+  function isMelee(activity) {
+    return (
+      activity?.actionType === "mwak" ||
+      activity?.attack?.type?.value === "melee"
+    );
+  }
+
+  // Damage riders: No Pain No Gain, Knife Sharpener, Blood Depleter.
+  function onPreRollDamage(config) {
+    try {
+      const activity = config?.subject ?? null;
+      const actor = activity?.actor ?? activity?.item?.actor ?? null;
+      const first = config?.rolls?.[0];
+      if (!actor || !first || activity?.type !== "attack") return;
+
+      const weapon = activity.item ?? null;
+      const chrome = installed(actor).map(entry => entry.def).filter(Boolean);
+      const extra = [];
+
+      if (chrome.some(def => def.rider === "woundedFury") && isWounded(actor)) {
+        extra.push("2d6");
+      }
+
+      if (chrome.some(def => def.rider === "sharpBlades") && isBlade(weapon)) {
+        extra.push("2d8");
+      }
+
+      if (chrome.some(def => def.rider === "bloodDepleter") && isMelee(activity)) {
+        const target = [...(game.user?.targets ?? [])][0]?.actor ?? null;
+        if (target && isWounded(target)) extra.push("2d6");
+      }
+
+      if (extra.length) first.parts = [...(first.parts ?? []),...extra];
+    } catch (error) {
+      console.warn("FEHA CYBERWARE // preRollDamage failed",error);
+    }
+  }
+
+  // Attacks made while an activation grants advantage (stopped time), and
+  // the attack bonuses installed chrome gives.
   function onPreRollAttack(config) {
     try {
       const activity = config?.subject ?? null;
@@ -575,13 +721,48 @@
         !effect.disabled &&
         !effect.duration?.expired
       );
-      if (!granted) return;
 
-      config.advantage = true;
+      if (granted) {
+        config.advantage = true;
 
-      for (const roll of config.rolls ?? []) {
-        roll.options ??= {};
-        roll.options.advantage = true;
+        for (const roll of config.rolls ?? []) {
+          roll.options ??= {};
+          roll.options.advantage = true;
+        }
+      }
+
+      const weapon = activity?.item ?? null;
+      const chrome = installed(actor).map(entry => entry.def).filter(Boolean);
+      const bonuses = [];
+
+      // Smart link: the best installed link, with Smart weapons only.
+      if (flags(weapon).weaponTechnology === "Smart") {
+        const link = Math.max(0,...chrome.map(def => Number(def.smartBonus) || 0));
+        if (link) bonuses.push(String(link));
+      }
+
+      // No Pain No Gain: below half HP.
+      if (chrome.some(def => def.rider === "woundedFury") && isWounded(actor)) {
+        bonuses.push("2");
+      }
+
+      const first = config.rolls?.[0];
+
+      if (first && bonuses.length) {
+        first.parts = [...(first.parts ?? []),...bonuses];
+      }
+
+      // Knife Sharpener: blades crit on 19.
+      if (
+        first &&
+        chrome.some(def => def.rider === "sharpBlades") &&
+        isBlade(weapon)
+      ) {
+        first.options ??= {};
+        first.options.criticalSuccess = Math.min(
+          19,
+          Number(first.options.criticalSuccess ?? 20) || 20
+        );
       }
     } catch (error) {
       console.warn("FEHA CYBERWARE // preRollAttack failed",error);
@@ -722,6 +903,7 @@
         ["deleteItem",Hooks.on("deleteItem",onItemChange)],
         ["dnd5e.restCompleted",Hooks.on("dnd5e.restCompleted",onRestCompleted)],
         ["dnd5e.preRollAttackV2",Hooks.on("dnd5e.preRollAttackV2",onPreRollAttack)],
+        ["dnd5e.preRollDamageV2",Hooks.on("dnd5e.preRollDamageV2",onPreRollDamage)],
         ["updateCombat",Hooks.on("updateCombat",onUpdateCombat)],
         ["updateActor",Hooks.on("updateActor",queueChip)]
       );

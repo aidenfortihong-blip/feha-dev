@@ -1,8 +1,9 @@
 {
-  "version": "0.12.1",
+  "version": "0.12.2",
   "updated": "2026-10-01",
   "scope": "cyberware-capstones",
   "notes": [
+    "Cyberarms are real weapons: Mantis Blades, Mantis Blades Apex, Monowire (Nano Wires), Power Grip Fists and Gorilla Arms appear in the inventory while the chrome is installed and leave when it is removed. Smart links add their bonus with Smart weapons; No Pain No Gain, Knife Sharpener and Blood Depleter add their bonuses to the roll automatically.",
     "Cyberware capstones so every way of playing has Mk.IV-V chrome: Berserk C5, Mantis Blades Apex, Projectile Launcher Apex, Ballistic Coprocessor and the Corvus Apex Cyberdeck are new; Strong Arms, Kiroshi Optics Hunter, Chiton, Throwing Range Servos and the Rockerboy tattoo move to Mk.V; Sudden Aid can treat an ally. Camillo Ram Manager is once per rest.",
     "NPC catalog: 29 ready-made people of Alabastra (street, Yakuza, CivCorp, Marble Vigil, corporate, Navy, civilians) built from the world's own weapons, armour, chrome and quickhacks. The GM imports them from a button in the Actors tab; nothing is created until then.",
     "Looks pass: the chat log, dice results and pop-up dialogs use the same dark HUD style as the rest of the game; cyberware and consumable messages are proper cards.",

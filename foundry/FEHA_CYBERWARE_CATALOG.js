@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.2.2";
+  const VERSION = "2.3.0";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
   const ROOT_FOLDER = "02 — CYBERWARE";
@@ -76,6 +76,10 @@
   //                   ram?, roll?, halfHp?, statuses?, turnOnly?,
   //                   attackAdvantage?, label?}
   //   hpPerLevel     maximum HP per character level (worked out per actor)
+  //   weapon         a weapon the chrome puts in the owner's inventory while
+  //                  installed: {name, damage, type, ability, reach, crit?}
+  //   smartBonus     attack bonus with Smart weapons
+  //   rider          a conditional attack / damage bonus the runtime applies
   //   chargeBonus    extra cyberware charge
   //   chargeDiscount activations cost this much less (slots: only these slots)
   //   regen          HP regained at the start of each of your turns in combat
@@ -134,11 +138,11 @@
     ["Berserk C5",OS,5,BASTION,"Bonus action, lasts 3 rounds: gain 40 temporary HP, +10 ft Speed, resistance to bludgeoning, piercing and slashing damage, +6d6 melee damage and advantage on Strength checks and saves, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{from:"Berserk C4",active:{charge:10,action:"Bonus action",duration:forRounds(3),tempHp:"40",changes:[speed(10),...resist(...PHYSICAL),damage("mwak","6d6")]}}],
 
     // ---- Arms --------------------------------------------------------------
-    ["Power Grip",ARMS,2,FORGE,"Your unarmed strikes deal 5d8 bludgeoning damage. +2 to Athletics checks, and you ignore weapon Strength requirements.",{changes:[skill("ath",2)]}],
-    ["Strong Arms",ARMS,5,FORGE,"Gorilla arms: your unarmed strikes deal 9d10 bludgeoning damage and push the target 10 ft. +5 to Athletics checks, advantage on checks to force doors or break objects, and you ignore weapon Strength requirements.",{changes:[skill("ath",5)]}],
-    ["Mantis Blades",ARMS,3,KUROHANE,"Integrated blades: a melee weapon attack that deals 8d8 slashing damage (finesse). Once per turn, before you attack, you can leap up to 20 ft to your target without provoking opportunity attacks."],
-    ["Mantis Blades Apex",ARMS,5,KUROHANE,"Integrated blades: a melee weapon attack that deals 12d8 slashing damage (finesse) and scores a critical hit on a 19 or 20. Once per turn, before you attack, you can leap up to 30 ft to your target without provoking opportunity attacks.",{from:"Mantis Blades"}],
-    ["Nano Wires",ARMS,5,KUROHANE,"Monowire: a melee weapon attack that deals 9d8 slashing damage (finesse, reach 15 ft). One swing can strike two creatures within 5 ft of each other; roll one attack and compare it to both."],
+    ["Power Grip",ARMS,2,FORGE,"Your unarmed strikes deal 5d8 bludgeoning damage. +2 to Athletics checks, and you ignore weapon Strength requirements.",{changes:[skill("ath",2)],weapon:{name:"Power Grip Fists",damage:"5d8",type:"bludgeoning",ability:"str",reach:5}}],
+    ["Strong Arms",ARMS,5,FORGE,"Gorilla arms: your unarmed strikes deal 9d10 bludgeoning damage and push the target 10 ft. +5 to Athletics checks, advantage on checks to force doors or break objects, and you ignore weapon Strength requirements.",{changes:[skill("ath",5)],weapon:{name:"Gorilla Arms",damage:"9d10",type:"bludgeoning",ability:"str",reach:5}}],
+    ["Mantis Blades",ARMS,3,KUROHANE,"Integrated blades: a melee weapon attack that deals 8d8 slashing damage (finesse). Once per turn, before you attack, you can leap up to 20 ft to your target without provoking opportunity attacks.",{weapon:{name:"Mantis Blades",damage:"8d8",type:"slashing",ability:"dex",finesse:true,reach:5}}],
+    ["Mantis Blades Apex",ARMS,5,KUROHANE,"Integrated blades: a melee weapon attack that deals 12d8 slashing damage (finesse) and scores a critical hit on a 19 or 20. Once per turn, before you attack, you can leap up to 30 ft to your target without provoking opportunity attacks.",{from:"Mantis Blades",weapon:{name:"Mantis Blades Apex",damage:"12d8",type:"slashing",ability:"dex",finesse:true,reach:5,crit:19}}],
+    ["Nano Wires",ARMS,5,KUROHANE,"Monowire: a melee weapon attack that deals 9d8 slashing damage (finesse, reach 15 ft). One swing can strike two creatures within 5 ft of each other; roll one attack and compare it to both.",{weapon:{name:"Monowire",damage:"9d8",type:"slashing",ability:"dex",finesse:true,reach:15}}],
     ["Projectile Launcher",ARMS,3,BASTION,"Action: fire an explosive round at a point within 90 ft. Each creature within 10 ft of it takes 8d6 damage, or half on a successful DC 14 Dexterity save.",{active:{charge:4,action:"Action",roll:"8d6"}}],
     ["Projectile Launcher Apex",ARMS,5,BASTION,"Action: fire a heavy explosive round at a point within 120 ft. Each creature within 15 ft of it takes 12d6 damage, or half on a successful DC 16 Dexterity save.",{from:"Projectile Launcher",active:{charge:5,action:"Action",roll:"12d6"}}],
 
@@ -151,14 +155,14 @@
     ["Trouble Finder",FACE,5,CORVUS,"+5 to Perception checks, you cannot be surprised, you have advantage on initiative rolls, and you sense hidden creatures, traps and electronics within 60 ft.",{changes:[skill("prc",5),set("flags.dnd5e.initiativeAdv",true)]}],
 
     // ---- Hands -------------------------------------------------------------
-    ["Smart Link",HANDS,3,JADE,"+2 to attack rolls with Smart weapons, and they ignore half and three-quarters cover."],
-    ["Smartlink Tattoo",HANDS,4,KUROHANE,"+2 to attack rolls with Smart weapons, they ignore half and three-quarters cover, and you have no disadvantage on ranged attacks for having a hostile creature next to you."],
-    ["Syndicate Interface Tattoo",HANDS,1,KUROHANE,"Gang-ink smart link: you can use the targeting of Smart weapons, and gain +1 to attack rolls with them."],
+    ["Smart Link",HANDS,3,JADE,"+2 to attack rolls with Smart weapons, and they ignore half and three-quarters cover.",{smartBonus:2}],
+    ["Smartlink Tattoo",HANDS,4,KUROHANE,"+2 to attack rolls with Smart weapons, they ignore half and three-quarters cover, and you have no disadvantage on ranged attacks for having a hostile creature next to you.",{smartBonus:2}],
+    ["Syndicate Interface Tattoo",HANDS,1,KUROHANE,"Gang-ink smart link: you can use the targeting of Smart weapons, and gain +1 to attack rolls with them.",{smartBonus:1}],
     ["Gun Stabilizer",HANDS,4,BASTION,"You ignore weapon Strength requirements, and you have no disadvantage on ranged attacks for having a hostile creature next to you."],
     ["Ballistic Coprocessor",HANDS,5,BASTION,"+2 to ranged attack rolls, your weapon attacks score a critical hit on a 19 or 20, and once per turn you can reroll a ranged attack that missed.",{from:"Gun Stabilizer",changes:[attack("rwak",2),crit19()]}],
     ["Discharge Connector",HANDS,2,JADE,"You have advantage on reload checks, and drawing or stowing a weapon costs you nothing.",{flags:{handling:{reloadAdvantage:true}}}],
     ["Shock Absorber",HANDS,3,BASTION,"+1 to ranged attack rolls, and you ignore the LMG Brace penalty for moving.",{changes:[attack("rwak",1)]}],
-    ["Knife Sharpener",HANDS,4,KUROHANE,"Blades you wield, including Mantis Blades, deal +2d8 damage and score a critical hit on a 19 or 20."],
+    ["Knife Sharpener",HANDS,4,KUROHANE,"Blades you wield, including Mantis Blades, deal +2d8 damage and score a critical hit on a 19 or 20.",{rider:"sharpBlades"}],
 
     // ---- Skeleton ----------------------------------------------------------
     ["Titanium Infused Bones",SKEL,1,FORGE,"+2 to Athletics checks, your carrying capacity doubles, and falling damage you take is halved.",{changes:[skill("ath",2)]}],
@@ -180,7 +184,7 @@
     ["Catch Me If You Can",NERV,2,VEKTOR,"+5 ft Speed, and opportunity attacks against you are made with disadvantage.",{changes:[speed(5)]}],
     ["Time Bank",NERV,2,VEKTOR,"Reserve capacitor: +3 cyberware charge.",{chargeBonus:3}],
     ["Neo Fiber",NERV,2,VEKTOR,"+2 to Dexterity saving throws.",{changes:[save("dex",2)]}],
-    ["No Pain No Gain",NERV,3,BASTION,"While you are below half your maximum HP, you gain +2 to attack rolls and +2d6 to weapon damage rolls."],
+    ["No Pain No Gain",NERV,3,BASTION,"While you are below half your maximum HP, you gain +2 to attack rolls and +2d6 to weapon damage rolls.",{rider:"woundedFury"}],
     ["Pain Distributor",NERV,3,HELIX,"Resistance to psychic damage, and advantage on saving throws against being Stunned or Incapacitated.",{changes:[...resist("psychic")]}],
     ["Pain Reductor",NERV,3,HELIX,"Pain editor: reduce all damage you take by 4.",{changes:[...soak(ALL_DAMAGE,4)]}],
     ["Tyrosine Injector",NERV,5,HELIX,"+5 to initiative, and +15 ft Speed during the first round of combat.",{changes:[initiative(5)]}],
@@ -190,7 +194,7 @@
     ["Blood Pump",CIRC,4,HELIX,"Bonus action: regain 6d8 + 10 HP.",{active:{charge:6,action:"Bonus action",heal:"6d8 + 10"}}],
     ["Sudden Aid",CIRC,4,HELIX,"Bonus action: you or a creature you touch regains 4d8 + your Constitution modifier HP and ends the Poisoned, Blinded, Deafened or Stunned condition. Target the creature first to treat someone else.",{active:{charge:4,action:"Bonus action",heal:"4d8 + @abilities.con.mod",healsTarget:true}}],
     ["Heal On Kill",CIRC,2,HELIX,"Once per turn, when you reduce a hostile creature to 0 HP, regain 2d8 HP."],
-    ["Blood Depleter",CIRC,3,KUROHANE,"Your melee attacks deal +2d6 damage to creatures that are below half their maximum HP."],
+    ["Blood Depleter",CIRC,3,KUROHANE,"Your melee attacks deal +2d6 damage to creatures that are below half their maximum HP.",{rider:"bloodDepleter"}],
     ["Enhanced Blood Vessels",CIRC,3,HELIX,"When you finish a rest, regain HP equal to half your maximum.",{restHealHalf:true}],
     ["Viral Venom",CIRC,4,HELIX,"Once per turn, one of your melee hits also deals 3d6 poison damage, and the target must succeed on a DC 15 Constitution save or be Poisoned until the end of its next turn."],
     ["Micro Generator",CIRC,4,JADE,"Reaction, when you take damage: discharge. Each creature within 10 ft of you takes 6d6 lightning damage, or half on a successful DC 15 Dexterity save.",{active:{charge:4,action:"Reaction",roll:"6d6"}}],
