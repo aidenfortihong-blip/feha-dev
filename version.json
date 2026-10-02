@@ -1,8 +1,12 @@
 {
-  "version": "0.12.3",
+  "version": "0.12.4",
   "updated": "2026-10-03",
-  "scope": "bug-test-and-cleanup",
+  "scope": "v1-release-qa",
   "notes": [
+    "Release QA with three GMs and one player. Player quickhacks, player grenades and refund notices now reach the GM: FEHA messages no longer depend on the installed module's socket, which was never relayed.",
+    "With several GMs connected, grenade ticks, effect expiry, zone markers and armor bonuses are handled by the active GM only instead of once per GM.",
+    "Market: players only see their own characters and no reroll button; a copy of a bought item is no longer refunded as a duplicate purchase.",
+    "Weapon sheet redraws when a shot is spent; Cyberdeck quickhack names and the jack-in tray no longer overlap.",
     "Bug test: opening the Chrome Manager for a character who owns cyberware no longer throws an error. The installed manager saved its slot and cost flags as if the chrome were a world item; those saves now go to the character.",
     "Cyberarms are real weapons: Mantis Blades, Mantis Blades Apex, Monowire (Nano Wires), Power Grip Fists and Gorilla Arms appear in the inventory while the chrome is installed and leave when it is removed. Smart links add their bonus with Smart weapons; No Pain No Gain, Knife Sharpener and Blood Depleter add their bonuses to the roll automatically.",
     "Cyberware capstones so every way of playing has Mk.IV-V chrome: Berserk C5, Mantis Blades Apex, Projectile Launcher Apex, Ballistic Coprocessor and the Corvus Apex Cyberdeck are new; Strong Arms, Kiroshi Optics Hunter, Chiton, Throwing Range Servos and the Rockerboy tattoo move to Mk.V; Sudden Aid can treat an ally. Camillo Ram Manager is once per rest.",

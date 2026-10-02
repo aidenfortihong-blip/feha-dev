@@ -426,3 +426,21 @@ Every catalog item was exercised on TEST Gunner as GM (temporary level-3 effect,
 **Bug test 2026-10-03 (GM client):** all 41 JS files pass a syntax check; every file the loader lists exists; version.json matches the V3 version; the game loads with no FEHA errors; Market, Chrome Manager and Cyberdeck open; the four party characters have valid HP, items, feats and cyberware charge; no invalid documents. Not tested this round: a player login, combat flows, quickhacks.
 
 **Left for the GM (Claude does not delete world data):** actor folder "FEHA TEST" (TEST Dummy A/B, TEST Gunner); two unused combat encounters; macros named "Macro", "Macro (2)", "Macro (3)"; Ponyboy carries Dense Marrow twice (neither installed); the three backup journals once the layout is approved. `module.json` still says 0.10.125 (it describes the installed bridge module, not this repo's version). 22 merged remote branches can be deleted.
+
+## 21. v1.0 release QA (0.12.4, branch `v1-qa`, 2026-10-03)
+
+Tested live with three GM clients and one player client (Cera / Sasha) on a throwaway scene.
+
+**Fixed:**
+- **Messaging.** The installed module `flesh-enshrouded-heart-ablaze` has no `socket` in its manifest, so Foundry never relayed `module.flesh-enshrouded-heart-ablaze`. Everything a player sent to the GM was dropped: quickhacks timed out, player grenades, Market session requests, refund notices, `openForUser`. `FEHA_MULTIPLAYER_SYNC`, `FEHA_QUICKHACK_AUTHORITY` and `FEHA_GRENADE_RUNTIME` now send through `User#query` (`CONFIG.queries["feha.multiplayerSync" | "feha.quickhackAuthority" | "feha.grenadeRuntime"]`). Do not go back to `game.socket` unless the installed manifest gets `"socket": true`, and never use both: every message would arrive twice.
+- **One writer with several GMs.** Jobs that write to the world on a timer or on a hook ran on every GM (`game.user.isGM`): grenade ticks (damage and chat card once per GM), effect and zone expiry, zone markers, Helix speed and ForgeLine brace effects, cyberware passive sync. They now run on `game.users.activeGM` only (`isAuthority()` in the grenade, quickhack authority and armor runtimes; `onItemChange` in the cyberware runtime). A GM who throws a zone grenade no longer marks it; the active GM does, from `createMeasuredTemplate`.
+- **Market.** Players get only characters they own in the Market and Chrome Manager pickers, and no REROLL STOCK button. A purchase is only reconciled when its `marketPurchasedAt` stamp is under ten minutes old and not seen before: a copy of a bought item (dragged to another character) used to be deleted and refunded.
+- **Weapon sheet.** Redraws on `updateActor` when `flags.fleshEnshrouded.weaponTracker` changes (the shot is spent at the attack roll, after the click handler's own refresh). The fired/damage/range line wraps.
+- **Cyberdeck CSS.** Loaded quickhack names wrap between words; jack-in tray rows keep their height.
+- Grenade tick card shows the damage actually applied after armor.
+
+**Not FEHA, seen during the test:**
+- `CombatTracker5e._onRender ... 'turn' in undefined` on every turn change comes from Foundry core when the world holds more than one combat and the changed one is not the viewed one. Deleting the unused combat encounters removes it.
+- Ponyboy, Sasha and Zach have no walking speed on their sheets (0 ft); Derke has 30.
+- The Entry Gateway (installed module) lets a player pick any candidate; it is cosmetic and does not change the assigned character.
+- A GM clicking directly on a token while placing a grenade selects the token; click beside it.
