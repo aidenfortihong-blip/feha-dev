@@ -32,58 +32,58 @@ html body .application,
 html body .window-app,
 html body .dnd5e2,
 html body .themed {
-  --font-primary: var(--fco-body);
-  --font-body: var(--fco-body);
-  --font-sans: var(--fco-body);
-  --font-serif: var(--fco-body);
-  --font-h1: var(--fco-display);
-  --font-h2: var(--fco-display);
-  --font-h3: var(--fco-display);
-  --font-mono: var(--fco-mono);
+  --font-primary: var(--fco-body) !important;
+  --font-body: var(--fco-body) !important;
+  --font-sans: var(--fco-body) !important;
+  --font-serif: var(--fco-body) !important;
+  --font-h1: var(--fco-display) !important;
+  --font-h2: var(--fco-display) !important;
+  --font-h3: var(--fco-display) !important;
+  --font-mono: var(--fco-mono) !important;
 
-  --dnd5e-font-roboto: var(--fco-body);
-  --dnd5e-font-roboto-condensed: var(--fco-body);
-  --dnd5e-font-roboto-slab: var(--fco-display);
-  --dnd5e-font-modesto: var(--fco-display);
+  --dnd5e-font-roboto: var(--fco-body) !important;
+  --dnd5e-font-roboto-condensed: var(--fco-body) !important;
+  --dnd5e-font-roboto-slab: var(--fco-display) !important;
+  --dnd5e-font-modesto: var(--fco-display) !important;
 
-  --background: var(--fco-panel);
-  --sidebar-background: var(--fco-bg);
-  --color-border: var(--fco-line);
-  --color-warm-2: var(--fco-red);
-  --color-shadow-primary: var(--fco-red);
-  --color-text-primary: var(--fco-white);
-  --color-text-secondary: var(--fco-muted);
-  --color-form-label: var(--fco-white);
-  --color-form-hint: var(--fco-muted);
-  --color-scrollbar: var(--fco-line);
-  --color-text-selection-bg: #5a5600;
+  --background: var(--fco-panel) !important;
+  --sidebar-background: var(--fco-bg) !important;
+  --color-border: var(--fco-line) !important;
+  --color-warm-2: var(--fco-red) !important;
+  --color-shadow-primary: var(--fco-red) !important;
+  --color-text-primary: var(--fco-white) !important;
+  --color-text-secondary: var(--fco-muted) !important;
+  --color-form-label: var(--fco-white) !important;
+  --color-form-hint: var(--fco-muted) !important;
+  --color-scrollbar: var(--fco-line) !important;
+  --color-text-selection-bg: #5a5600 !important;
 
-  --color-level-info-bg: var(--fco-panel);
-  --color-level-warning-bg: var(--fco-panel);
-  --color-level-error-bg: var(--fco-panel);
+  --color-level-info-bg: var(--fco-panel) !important;
+  --color-level-warning-bg: var(--fco-panel) !important;
+  --color-level-error-bg: var(--fco-panel) !important;
 
-  --dnd5e-color-gold: #8a8a8a;
-  --dnd5e-color-scrollbar: var(--fco-line);
-  --dnd5e-color-card: var(--fco-panel);
-  --dnd5e-color-parchment: var(--fco-panel);
-  --dnd5e-background-card: var(--fco-panel);
-  --dnd5e-border-gold: 1px solid var(--fco-line);
-  --dnd5e-border-dotted: 1px solid var(--fco-line-soft);
-  --dnd5e-border-groove: 1px solid var(--fco-line);
-  --dnd5e-color-groove: var(--fco-line);
-  --dnd5e-color-dark: var(--fco-bg);
-  --dnd5e-color-dark-gray: var(--fco-bg);
-  --dnd5e-color-light-gray: var(--fco-line);
-  --dnd5e-color-hd-1: var(--fco-bg);
-  --dnd5e-color-hd-2: var(--fco-raised);
-  --dnd5e-color-hd-3: var(--fco-bg);
-  --dnd5e-color-maroon: var(--fco-red);
-  --dnd5e-color-crimson: var(--fco-red-deep);
-  --dnd5e-color-blue: var(--fco-cyan);
-  --dnd5e-color-hp-1: #0d3438;
-  --dnd5e-color-hp-2: var(--fco-cyan);
-  --dnd5e-color-hp-3: #1c8f98;
-  --dnd5e-color-sc-1: var(--fco-raised);
+  --dnd5e-color-gold: #8a8a8a !important;
+  --dnd5e-color-scrollbar: var(--fco-line) !important;
+  --dnd5e-color-card: var(--fco-panel) !important;
+  --dnd5e-color-parchment: var(--fco-panel) !important;
+  --dnd5e-background-card: var(--fco-panel) !important;
+  --dnd5e-border-gold: 1px solid var(--fco-line) !important;
+  --dnd5e-border-dotted: 1px solid var(--fco-line-soft) !important;
+  --dnd5e-border-groove: 1px solid var(--fco-line) !important;
+  --dnd5e-color-groove: var(--fco-line) !important;
+  --dnd5e-color-dark: var(--fco-bg) !important;
+  --dnd5e-color-dark-gray: var(--fco-bg) !important;
+  --dnd5e-color-light-gray: var(--fco-line) !important;
+  --dnd5e-color-hd-1: var(--fco-bg) !important;
+  --dnd5e-color-hd-2: var(--fco-raised) !important;
+  --dnd5e-color-hd-3: var(--fco-bg) !important;
+  --dnd5e-color-maroon: var(--fco-red) !important;
+  --dnd5e-color-crimson: var(--fco-red-deep) !important;
+  --dnd5e-color-blue: var(--fco-cyan) !important;
+  --dnd5e-color-hp-1: #0d3438 !important;
+  --dnd5e-color-hp-2: var(--fco-cyan) !important;
+  --dnd5e-color-hp-3: #1c8f98 !important;
+  --dnd5e-color-sc-1: var(--fco-raised) !important;
 }
 
 /* ---- Application windows --------------------------------------------------- */
@@ -278,7 +278,7 @@ html body .application.roll-configuration .dice-formula {
 /* ---- dnd5e actor sheets ---------------------------------------------------- */
 
 html body .application.dnd5e2.sheet.actor {
-  --dnd5e-sheet-bg: var(--fco-panel);
+  --dnd5e-sheet-bg: var(--fco-panel) !important;
 }
 
 html body .application.dnd5e2.sheet.actor > .window-content {
@@ -323,20 +323,128 @@ html body .application.dnd5e2.sheet .filigree-box > h3 {
   text-transform: uppercase;
 }
 
-/* The ornate SVG frames around skill and save boxes. */
+/* Skill, save and trait boxes draw their frame inside a closed shadow root;
+   only the variables it reads can be changed. The cut corners stay, the
+   ornament and the glow go. */
 html body .application.dnd5e2.sheet filigree-box,
 html body .application.dnd5e2.sheet .filigree-box {
-  background: var(--fco-bg) !important;
-  border: 1px solid var(--fco-line) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+  --filigree-background-color: var(--fco-bg);
+  --filigree-border-color: var(--fco-line);
+  --filigree-drop-shadow: none;
+  filter: none !important;
 }
 
-html body .application.dnd5e2.sheet filigree-box .backdrop,
-html body .application.dnd5e2.sheet .filigree-box .backdrop,
-html body .application.dnd5e2.sheet filigree-box svg.filigree,
-html body .application.dnd5e2.sheet .filigree-box svg {
-  display: none !important;
+/* dnd5e artwork: banner, badges, lozenges, textures. */
+html body .application.dnd5e2.sheet.actor > .window-content::before {
+  background-image: none !important;
+}
+
+html body .application.dnd5e2.sheet .ability-score::before {
+  background: var(--fco-bg) !important;
+  background-image: none !important;
+  border: 1px solid var(--fco-line);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+html body .application.dnd5e2.sheet .ability-score .label {
+  color: var(--fco-yellow) !important;
+  font-family: var(--fco-display) !important;
+  letter-spacing: .1em;
+}
+
+html body .application.dnd5e2.sheet .ability-score .mod {
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+}
+
+html body .application.dnd5e2.sheet .ability-score .score {
+  background: var(--fco-raised) !important;
+  border-radius: 0 !important;
+  color: var(--fco-muted) !important;
+  font-family: var(--fco-mono) !important;
+}
+
+html body .application.dnd5e2.sheet .badge {
+  background-image: none !important;
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  text-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet .ac-badge {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line);
+  border-top: 2px solid var(--fco-yellow);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+}
+
+html body .application.dnd5e2.sheet .level-badge {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-red);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+html body .application.dnd5e2.sheet .lozenge {
+  background: var(--fco-bg) !important;
+  background-image: none !important;
+  border: 1px solid var(--fco-line);
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  text-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet .pill-lg.texture {
+  background-image: none !important;
+  background-color: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+}
+
+html body .application.dnd5e2.sheet .pill-lg.texture::before {
+  background: none !important;
+}
+
+html body .application.dnd5e2.sheet .pills .pill,
+html body .application.dnd5e2.sheet .pill {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  letter-spacing: .04em;
+}
+
+html body .application.dnd5e2.sheet .pill.green {
+  border-color: var(--fco-cyan) !important;
+  color: var(--fco-cyan) !important;
+}
+
+html body .application.dnd5e2.sheet .pill.maroon,
+html body .application.dnd5e2.sheet .pill.red {
+  border-color: var(--fco-red) !important;
+  color: var(--fco-red) !important;
+}
+
+html body .application.dnd5e2.sheet .gold-button {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  box-shadow: none !important;
+  color: var(--fco-white) !important;
+}
+
+html body .application.dnd5e2.sheet .gold-button:hover,
+html body .application.dnd5e2.sheet .gold-button:focus-visible {
+  background: var(--fco-yellow) !important;
+  border-color: var(--fco-yellow) !important;
+  color: #0a0a0a !important;
+  outline: none !important;
+}
+
+html body .application.dnd5e2.sheet .drop-area,
+html body .application.dnd5e2.sheet .pill-lg.empty {
+  border: 1px dashed var(--fco-line) !important;
+  color: var(--fco-muted) !important;
+  font-family: var(--fco-display) !important;
 }
 
 html body .application.dnd5e2.sheet .card,
