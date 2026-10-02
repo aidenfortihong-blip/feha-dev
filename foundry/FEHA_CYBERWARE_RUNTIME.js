@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.6";
+  const VERSION = "1.0.7";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const PASSIVE_FLAG = "cyberwarePassive";
@@ -362,11 +362,16 @@
     const after = charge(actor);
 
     const content =
-      "<p><strong>"+esc(actor.name)+" activates "+esc(def.name)+"</strong></p>"+
+      '<div class="feha-chat-card">'+
+      '<small class="feha-chat-kicker">CYBERWARE // '+paid+' CHARGE</small>'+
+      "<h3>"+esc(def.name)+"</h3>"+
       "<p>"+esc(def.effectText)+"</p>"+
-      (lines.length ? "<p>"+lines.map(esc).join("<br>")+"</p>" : "")+
-      "<p><small>"+paid+" charge spent // "+after.remaining+" of "+
-      after.pool+" left</small></p>";
+      (lines.length
+        ? '<p class="feha-chat-result">'+lines.map(esc).join("<br>")+"</p>"
+        : "")+
+      '<small class="feha-chat-foot">'+after.remaining+" of "+
+      after.pool+" charge left</small>"+
+      "</div>";
 
     await ChatMessage.create({
       speaker:ChatMessage.getSpeaker({actor}),

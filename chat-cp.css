@@ -1,0 +1,350 @@
+/* FEHA // CHAT + DIALOG SKIN
+   The chat log and Foundry's pop-up dialogs were the last default-parchment
+   surfaces. This brings them onto the same FUI language as the Market,
+   Cyberdeck and item sheets: flat black panels, hairline borders, a red rail
+   for public messages and a yellow rail for whispers.
+
+   Scope: chat messages (sidebar, popouts, the notification stack), the chat
+   input, and DialogV2 windows. Character sheets and other dnd5e windows are
+   not touched. */
+
+:root {
+  --fcc-bg: #0a0a0a;
+  --fcc-panel: #141414;
+  --fcc-raised: #1c1c1c;
+  --fcc-line: #333333;
+  --fcc-white: #f2f2f2;
+  --fcc-muted: #9a9a9a;
+  --fcc-red: #ff5e57;
+  --fcc-yellow: #f3e600;
+  --fcc-cyan: #5ef6ff;
+  --fcc-display: "Chakra Petch", "Rajdhani", "Arial Narrow", sans-serif;
+  --fcc-body: "Rajdhani", "Segoe UI", sans-serif;
+  --fcc-mono: "Share Tech Mono", "Consolas", monospace;
+}
+
+/* ---- Message shell -------------------------------------------------------- */
+
+html body .chat-message.message {
+  background: var(--fcc-panel) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-left: 3px solid var(--fcc-red) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-body) !important;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+html body .chat-message.message.whisper {
+  border-left-color: var(--fcc-yellow) !important;
+}
+
+html body .chat-message.message .message-header {
+  border-bottom: 1px solid var(--fcc-line);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  color: var(--fcc-white) !important;
+}
+
+html body .chat-message.message .message-sender .avatar img {
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  background: var(--fcc-bg) !important;
+  box-shadow: none !important;
+}
+
+html body .chat-message.message .message-sender .title {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+html body .chat-message.message .message-sender .subtitle,
+html body .chat-message.message .message-metadata,
+html body .chat-message.message .message-metadata a,
+html body .chat-message.message .whisper-to {
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+  font-size: 11px;
+}
+
+html body .chat-message.message .message-metadata a:hover,
+html body .chat-message.message .message-metadata a:focus-visible {
+  color: var(--fcc-yellow) !important;
+}
+
+html body .chat-message.message .message-content {
+  color: var(--fcc-white) !important;
+}
+
+html body .chat-message.message .message-content a {
+  color: var(--fcc-cyan);
+}
+
+html body .chat-message.message .flavor-text {
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+  font-size: 12px;
+}
+
+/* ---- dnd5e item / activity cards ----------------------------------------- */
+
+html body .chat-message.message .chat-card .card-header,
+html body .chat-message.message .chat-card .card-header.description {
+  background: var(--fcc-raised) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+}
+
+html body .chat-message.message .chat-card .card-header .title {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-weight: 700;
+  letter-spacing: .03em;
+}
+
+html body .chat-message.message .chat-card .card-header .subtitle {
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+html body .chat-message.message .chat-card .gold-icon {
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  background: var(--fcc-bg) !important;
+  box-shadow: none !important;
+}
+
+html body .chat-message.message .chat-card .card-footer,
+html body .chat-message.message .chat-card .pill {
+  background: var(--fcc-raised) !important;
+  border-color: var(--fcc-line) !important;
+  border-radius: 0 !important;
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+html body .chat-message.message button {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-yellow) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-yellow) !important;
+  font-family: var(--fcc-display) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+html body .chat-message.message button:hover:not(:disabled),
+html body .chat-message.message button:focus-visible {
+  background: var(--fcc-yellow) !important;
+  color: #0a0a0a !important;
+  outline: none !important;
+}
+
+html body .chat-message.message button:disabled {
+  border-color: var(--fcc-line) !important;
+  color: var(--fcc-muted) !important;
+}
+
+/* ---- Dice ----------------------------------------------------------------- */
+
+html body .chat-message.message .dice-roll .dice-formula,
+html body .chat-message.message .dice-roll .dice-total {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+}
+
+html body .chat-message.message .dice-roll .dice-formula {
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+  font-size: 12px;
+}
+
+html body .chat-message.message .dice-roll .dice-total {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+  font-family: var(--fcc-display) !important;
+  font-weight: 700;
+}
+
+html body .chat-message.message .dice-roll .dice-total.critical,
+html body .chat-message.message .dice-roll .dice-total.success {
+  border-color: var(--fcc-cyan) !important;
+  color: var(--fcc-cyan) !important;
+}
+
+html body .chat-message.message .dice-roll .dice-total.fumble,
+html body .chat-message.message .dice-roll .dice-total.failure {
+  border-color: var(--fcc-red) !important;
+  color: var(--fcc-red) !important;
+}
+
+html body .chat-message.message .dice-roll .dice-total .icons,
+html body .chat-message.message .dice-roll .dice-total i {
+  color: inherit !important;
+}
+
+html body .chat-message.message .dice-tooltip {
+  background: var(--fcc-raised) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  color: var(--fcc-white) !important;
+}
+
+html body .chat-message.message .dice-tooltip .total,
+html body .chat-message.message .dice-tooltip .part-formula,
+html body .chat-message.message .dice-tooltip .part-total {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+/* ---- FEHA action cards (cyberware, consumables) --------------------------- */
+
+.feha-chat-card {
+  display: grid;
+  gap: 6px;
+}
+
+.feha-chat-card .feha-chat-kicker {
+  color: var(--fcc-yellow);
+  font-family: var(--fcc-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.feha-chat-card h3 {
+  margin: 0;
+  border: 0;
+  color: var(--fcc-white);
+  font-family: var(--fcc-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.feha-chat-card p {
+  margin: 0;
+  color: var(--fcc-white);
+}
+
+.feha-chat-card .feha-chat-result {
+  padding: 6px 8px;
+  background: var(--fcc-bg);
+  border-left: 2px solid var(--fcc-cyan);
+  color: var(--fcc-cyan);
+  font-family: var(--fcc-mono);
+  font-size: 13px;
+}
+
+.feha-chat-card .feha-chat-foot {
+  color: var(--fcc-muted);
+  font-family: var(--fcc-mono);
+  font-size: 11px;
+}
+
+/* ---- Chat input ----------------------------------------------------------- */
+
+html body #chat .chat-form .chat-input,
+html body #chat .chat-form textarea {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-body) !important;
+}
+
+html body #chat .chat-form .chat-input:focus-within,
+html body #chat .chat-form textarea:focus {
+  border-color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
+
+/* ---- Dialogs (DialogV2) --------------------------------------------------- */
+
+html body .application.dialog {
+  background: var(--fcc-panel) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-top: 2px solid var(--fcc-red) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .6) !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-body) !important;
+}
+
+html body .application.dialog .window-header {
+  background: var(--fcc-bg) !important;
+  border-bottom: 1px solid var(--fcc-line) !important;
+  color: var(--fcc-white) !important;
+}
+
+html body .application.dialog .window-header .window-title {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+html body .application.dialog .window-content {
+  background: var(--fcc-panel) !important;
+  color: var(--fcc-white) !important;
+  font-size: 15px;
+}
+
+html body .application.dialog .window-content p,
+html body .application.dialog .window-content label {
+  color: var(--fcc-white) !important;
+}
+
+html body .application.dialog .window-content select,
+html body .application.dialog .window-content input[type="text"],
+html body .application.dialog .window-content input[type="number"] {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-body) !important;
+}
+
+html body .application.dialog .form-footer button,
+html body .application.dialog .window-content > button {
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  min-height: 40px;
+  text-transform: uppercase;
+}
+
+html body .application.dialog .form-footer button[autofocus],
+html body .application.dialog .form-footer button.default,
+html body .application.dialog .form-footer button[data-action="ok"],
+html body .application.dialog .form-footer button[data-action="yes"] {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+}
+
+html body .application.dialog .form-footer button:hover,
+html body .application.dialog .form-footer button:focus-visible {
+  background: var(--fcc-yellow) !important;
+  border-color: var(--fcc-yellow) !important;
+  color: #0a0a0a !important;
+  outline: none !important;
+}

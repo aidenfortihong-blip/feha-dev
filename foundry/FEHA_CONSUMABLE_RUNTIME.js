@@ -14,7 +14,7 @@
     throw new Error("FEHA_CONSUMABLE_RUNTIME requires Cyber Core + Consumable Catalog.");
   }
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.0.2";
   const FLAG = "fleshEnshrouded";
   const USED_FLAG = "consumablesUsed";
   const EFFECT_FLAG = "consumableEffect";
@@ -258,8 +258,11 @@
     await consumeOne(item);
 
     const content =
-      "<p><strong>"+esc(actor.name)+" uses "+esc(def.name)+"</strong></p>"+
-      "<p>"+results.map(esc).join("<br>")+"</p>";
+      '<div class="feha-chat-card">'+
+      '<small class="feha-chat-kicker">CONSUMABLE // USED</small>'+
+      "<h3>"+esc(def.name)+"</h3>"+
+      '<p class="feha-chat-result">'+results.map(esc).join("<br>")+"</p>"+
+      "</div>";
 
     if (healRoll) {
       await healRoll.toMessage({
