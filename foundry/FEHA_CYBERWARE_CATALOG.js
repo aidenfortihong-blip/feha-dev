@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.1.2";
+  const VERSION = "2.2.0";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
   const ROOT_FOLDER = "02 — CYBERWARE";
@@ -82,13 +82,15 @@
   //   restHealHalf   regain half max HP on a rest
   //   flags          extra item flags (RAM bonus, weapon handling grants)
   //   deck           a cyberdeck: FEHA_TABLETOP_UI_V3 owns its numbers
+  //   deckSpec       numbers for a deck this catalog adds itself
+  //   from           a new item: cloned in the world from this existing one
   const ROWS = [
     // ---- Frontal Cortex ----------------------------------------------------
     ["Ram Upgrade",FC,1,CORVUS,"+2 maximum RAM.",{flags:{ramBonus:2}}],
     ["Neuro Matrix",FC,3,CORVUS,"+3 maximum RAM.",{flags:{ramBonus:3}}],
     ["Ex Disk",FC,4,CORVUS,"+5 maximum RAM.",{flags:{ramBonus:5}}],
     ["Memory Boost",FC,2,CORVUS,"Once per turn, when a creature you hit with a Quickhack this turn drops to 0 HP, regain 2 RAM."],
-    ["Camillo Ram Manager",FC,3,CORVUS,"Bonus action: flush and reallocate memory to regain 4 RAM.",{active:{charge:3,action:"Bonus action",ram:4}}],
+    ["Camillo Ram Manager",FC,3,CORVUS,"Bonus action, once per rest: flush and reallocate memory to regain 4 RAM.",{active:{charge:3,action:"Bonus action",ram:4,oncePerRest:true}}],
     ["Self Ice",FC,2,CORVUS,"+2 to saving throws against hostile Quickhacks. Reaction, when a hostile Quickhack targets you: it fails and its RAM is wasted.",{active:{charge:3,action:"Reaction"}}],
     ["Bio Conductors",FC,3,HELIX,"Activating cyberware costs you 1 less charge (minimum 1).",{chargeDiscount:1}],
     ["Mechatronic Core",FC,4,FORGE,"Your weapon attacks deal +3d6 damage to robots, drones, turrets and mechs, and you have advantage on saving throws against their effects."],
@@ -100,13 +102,13 @@
     ["Stamina Regen Booster",FC,1,HELIX,"+5 ft Speed.",{changes:[speed(5)]}],
     ["Rapid Muscle Nourisher",FC,1,HELIX,"+2 to Strength (Athletics) checks.",{changes:[skill("ath",2)]}],
     ["Subdermal Co-Processor",FC,2,CORVUS,"+2 to Dexterity saving throws.",{changes:[save("dex",2)]}],
-    ["Rockerboy Interface Tattoo",FC,4,KUROHANE,"+3 to Charisma (Performance, Persuasion and Intimidation) checks, and advantage on saving throws against being Charmed or Frightened.",{changes:[skill("prf",3),skill("per",3),skill("itm",3)]}],
+    ["Rockerboy Interface Tattoo",FC,5,KUROHANE,"+5 to Charisma (Performance, Persuasion and Intimidation) checks, advantage on saving throws against being Charmed or Frightened, and once per rest you can reroll a failed Charisma check.",{changes:[skill("prf",5),skill("per",5),skill("itm",5)]}],
     ["Tactical Icon Processor",FC,4,BASTION,"Bonus action: mark one creature you can see. Until the end of your next turn, you and your allies gain +2 to attack rolls against it.",{active:{charge:3,action:"Bonus action",duration:forRounds(2)}}],
     ["ForgeLine Sigma",FC,4,FORGE,"Load-bearing firmware: you ignore the Strength requirement of every weapon.",{flags:{handling:{negateStrRequirement:true}}}],
     ["Kurohane Shadow",FC,4,KUROHANE,"+5 to Dexterity (Stealth) checks. The first attack you make in a combat while unseen has advantage and deals +3d6 damage.",{changes:[skill("ste",5)]}],
     ["Smart Return Actuator",FC,3,KUROHANE,"Weapons you throw return to your hand at the end of your turn, and your thrown weapon attacks deal +2d6 damage."],
     ["Throwing Ballistic Calibrator",FC,3,BASTION,"+2 to attack rolls with thrown weapons, and the save DC of grenades you throw increases by 1."],
-    ["Throwing Range Servos",FC,4,FORGE,"The range of weapons and grenades you throw is doubled, and once per turn you can throw a grenade as a bonus action."],
+    ["Throwing Range Servos",FC,5,FORGE,"The range of weapons and grenades you throw is doubled, the save DC of your grenades increases by 2, and once per turn you can throw a grenade as a bonus action."],
     ["Oil Dispenser",FC,3,FORGE,"Bonus action: spray a 10-ft square within 15 ft with lubricant for 1 minute. It is difficult terrain, and a creature that enters it or starts its turn there must succeed on a DC 14 Dexterity save or fall Prone.",{active:{charge:2,action:"Bonus action"}}],
     ["Mask CW",FC,3,KUROHANE,"Facial scrambler: cameras and scanners cannot identify you, and you have advantage on checks made to hide your identity."],
     ["Electroshock Mechanism",FC,3,JADE,"When a creature hits you with a melee attack, it takes 3d6 lightning damage."],
@@ -117,6 +119,7 @@
     ["Haunted Cyberdeck",OS,3,CORVUS,null,{deck:true}],
     ["Tetratronic Rippler",OS,3,FORGE,null,{deck:true}],
     ["Raven Microcyber",OS,4,FORGE,null,{deck:true}],
+    ["Corvus Apex Cyberdeck",OS,5,CORVUS,null,{deck:true,from:"Raven Microcyber",deckSpec:{ramMax:14,quickhackSlots:7,effectText:"14 base RAM and 7 loaded Quickhack slots. Once per turn, reduce the RAM cost of a Quickhack costing 4 or more by 2, to a minimum of 1."}}],
 
     ["Sandevistan C1",OS,1,VEKTOR,"No action, on your turn: time stops for an instant. Immediately move up to your Speed and make one weapon attack. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:3,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
     ["Sandevistan C2",OS,2,VEKTOR,"No action, on your turn: time stops. Immediately take one extra turn (movement, action and bonus action). While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:5,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
@@ -128,18 +131,21 @@
     ["Berserk C2",OS,2,BASTION,"Bonus action, lasts until the end of your next turn: gain 10 temporary HP, resistance to bludgeoning, piercing and slashing damage and +2d6 melee damage. You cannot make ranged attacks while it is active.",{active:{charge:4,action:"Bonus action",duration:forRounds(2),tempHp:"10",changes:[...resist(...PHYSICAL),damage("mwak","2d6")]}}],
     ["Berserk C3",OS,3,BASTION,"Bonus action, lasts until the end of your next turn: gain 15 temporary HP, resistance to bludgeoning, piercing and slashing damage and +3d6 melee damage, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{active:{charge:6,action:"Bonus action",duration:forRounds(2),tempHp:"15",changes:[...resist(...PHYSICAL),damage("mwak","3d6")]}}],
     ["Berserk C4",OS,4,BASTION,"Bonus action, lasts 3 rounds: gain 25 temporary HP, resistance to bludgeoning, piercing and slashing damage, +4d6 melee damage and advantage on Strength checks and saves, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{active:{charge:8,action:"Bonus action",duration:forRounds(3),tempHp:"25",changes:[...resist(...PHYSICAL),damage("mwak","4d6")]}}],
+    ["Berserk C5",OS,5,BASTION,"Bonus action, lasts 3 rounds: gain 40 temporary HP, +10 ft Speed, resistance to bludgeoning, piercing and slashing damage, +6d6 melee damage and advantage on Strength checks and saves, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{from:"Berserk C4",active:{charge:10,action:"Bonus action",duration:forRounds(3),tempHp:"40",changes:[speed(10),...resist(...PHYSICAL),damage("mwak","6d6")]}}],
 
     // ---- Arms --------------------------------------------------------------
     ["Power Grip",ARMS,2,FORGE,"Your unarmed strikes deal 5d8 bludgeoning damage. +2 to Athletics checks, and you ignore weapon Strength requirements.",{changes:[skill("ath",2)]}],
-    ["Strong Arms",ARMS,4,FORGE,"Gorilla arms: your unarmed strikes deal 7d10 bludgeoning damage. +4 to Athletics checks, advantage on checks to force doors or break objects, and you ignore weapon Strength requirements.",{changes:[skill("ath",4)]}],
+    ["Strong Arms",ARMS,5,FORGE,"Gorilla arms: your unarmed strikes deal 9d10 bludgeoning damage and push the target 10 ft. +5 to Athletics checks, advantage on checks to force doors or break objects, and you ignore weapon Strength requirements.",{changes:[skill("ath",5)]}],
     ["Mantis Blades",ARMS,3,KUROHANE,"Integrated blades: a melee weapon attack that deals 8d8 slashing damage (finesse). Once per turn, before you attack, you can leap up to 20 ft to your target without provoking opportunity attacks."],
+    ["Mantis Blades Apex",ARMS,5,KUROHANE,"Integrated blades: a melee weapon attack that deals 12d8 slashing damage (finesse) and scores a critical hit on a 19 or 20. Once per turn, before you attack, you can leap up to 30 ft to your target without provoking opportunity attacks.",{from:"Mantis Blades"}],
     ["Nano Wires",ARMS,5,KUROHANE,"Monowire: a melee weapon attack that deals 9d8 slashing damage (finesse, reach 15 ft). One swing can strike two creatures within 5 ft of each other; roll one attack and compare it to both."],
     ["Projectile Launcher",ARMS,3,BASTION,"Action: fire an explosive round at a point within 90 ft. Each creature within 10 ft of it takes 8d6 damage, or half on a successful DC 14 Dexterity save.",{active:{charge:4,action:"Action",roll:"8d6"}}],
+    ["Projectile Launcher Apex",ARMS,5,BASTION,"Action: fire a heavy explosive round at a point within 120 ft. Each creature within 15 ft of it takes 12d6 damage, or half on a successful DC 16 Dexterity save.",{from:"Projectile Launcher",active:{charge:5,action:"Action",roll:"12d6"}}],
 
     // ---- Face --------------------------------------------------------------
     ["Kiroshi Optics",FACE,2,CORVUS,"+2 to Perception and Investigation checks that rely on sight, and darkvision out to 60 ft.",{changes:[skill("prc",2),skill("inv",2),darkvision(60)]}],
     ["Kiroshi Optics Piercing",FACE,2,CORVUS,"+2 to Perception checks that rely on sight, and you can see the outlines of creatures through up to 1 ft of wall within 30 ft.",{changes:[skill("prc",2)]}],
-    ["Kiroshi Optics Hunter",FACE,4,CORVUS,"+3 to Perception checks that rely on sight. Your ranged attacks ignore half cover and have no disadvantage at long range.",{changes:[skill("prc",3)]}],
+    ["Kiroshi Optics Hunter",FACE,5,CORVUS,"+4 to Perception checks that rely on sight. Your ranged attacks ignore cover and have no disadvantage at long range, and once per turn a ranged hit from 60 ft or more deals +3d10 damage.",{changes:[skill("prc",4)]}],
     ["Kiroshi Optics Combined",FACE,4,CORVUS,"+3 to Perception and Investigation checks that rely on sight, darkvision out to 120 ft, and you can see Invisible creatures within 30 ft.",{changes:[skill("prc",3),skill("inv",3),darkvision(120)]}],
     ["Iconic Kiroshi Optics Bare",FACE,4,CORVUS,"+3 to Perception and Investigation checks that rely on sight, darkvision out to 120 ft, and your weapon attacks score a critical hit on a 19 or 20.",{changes:[skill("prc",3),skill("inv",3),darkvision(120),crit19()]}],
     ["Trouble Finder",FACE,5,CORVUS,"+5 to Perception checks, you cannot be surprised, you have advantage on initiative rolls, and you sense hidden creatures, traps and electronics within 60 ft.",{changes:[skill("prc",5),set("flags.dnd5e.initiativeAdv",true)]}],
@@ -149,6 +155,7 @@
     ["Smartlink Tattoo",HANDS,4,KUROHANE,"+2 to attack rolls with Smart weapons, they ignore half and three-quarters cover, and you have no disadvantage on ranged attacks for having a hostile creature next to you."],
     ["Syndicate Interface Tattoo",HANDS,1,KUROHANE,"Gang-ink smart link: you can use the targeting of Smart weapons, and gain +1 to attack rolls with them."],
     ["Gun Stabilizer",HANDS,4,BASTION,"You ignore weapon Strength requirements, and you have no disadvantage on ranged attacks for having a hostile creature next to you."],
+    ["Ballistic Coprocessor",HANDS,5,BASTION,"+2 to ranged attack rolls, your weapon attacks score a critical hit on a 19 or 20, and once per turn you can reroll a ranged attack that missed.",{from:"Gun Stabilizer",changes:[attack("rwak",2),crit19()]}],
     ["Discharge Connector",HANDS,2,JADE,"You have advantage on reload checks, and drawing or stowing a weapon costs you nothing.",{flags:{handling:{reloadAdvantage:true}}}],
     ["Shock Absorber",HANDS,3,BASTION,"+1 to ranged attack rolls, and you ignore the LMG Brace penalty for moving.",{changes:[attack("rwak",1)]}],
     ["Knife Sharpener",HANDS,4,KUROHANE,"Blades you wield, including Mantis Blades, deal +2d8 damage and score a critical hit on a 19 or 20."],
@@ -181,7 +188,7 @@
     // ---- Circulatory System ------------------------------------------------
     ["Biomonitor",CIRC,1,HELIX,"Reaction, when you drop below half your maximum HP: regain 3d8 + your proficiency bonus HP.",{active:{charge:2,action:"Reaction",heal:"3d8 + @prof"}}],
     ["Blood Pump",CIRC,4,HELIX,"Bonus action: regain 6d8 + 10 HP.",{active:{charge:6,action:"Bonus action",heal:"6d8 + 10"}}],
-    ["Sudden Aid",CIRC,4,HELIX,"Bonus action: regain 3d8 + your Constitution modifier HP and end the Poisoned, Blinded, Deafened or Stunned condition on yourself.",{active:{charge:4,action:"Bonus action",heal:"3d8 + @abilities.con.mod"}}],
+    ["Sudden Aid",CIRC,4,HELIX,"Bonus action: you or a creature you touch regains 4d8 + your Constitution modifier HP and ends the Poisoned, Blinded, Deafened or Stunned condition. Target the creature first to treat someone else.",{active:{charge:4,action:"Bonus action",heal:"4d8 + @abilities.con.mod",healsTarget:true}}],
     ["Heal On Kill",CIRC,2,HELIX,"Once per turn, when you reduce a hostile creature to 0 HP, regain 2d8 HP."],
     ["Blood Depleter",CIRC,3,KUROHANE,"Your melee attacks deal +2d6 damage to creatures that are below half their maximum HP."],
     ["Enhanced Blood Vessels",CIRC,3,HELIX,"When you finish a rest, regain HP equal to half your maximum.",{restHealHalf:true}],
@@ -196,7 +203,7 @@
     ["Reactive Plating",SKIN,3,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 4. A creature that hits you with a melee attack takes 2d6 piercing damage.",{changes:[...soak(PHYSICAL,4)]}],
     ["Subdermal Plating",SKIN,3,BASTION,"Subdermal armor: reduce bludgeoning, piercing and slashing damage you take by 6.",{changes:[...soak(PHYSICAL,6)]}],
     ["Subdermal Skin Lattice",SKIN,4,BASTION,"+1 AC, and reduce bludgeoning, piercing and slashing damage you take by 5.",{changes:[armorClass(1),...soak(PHYSICAL,5)]}],
-    ["Chiton",SKIN,4,BASTION,"Chitin shell: +2 AC.",{changes:[armorClass(2)]}],
+    ["Chiton",SKIN,5,BASTION,"Chitin shell: +2 AC, and reduce bludgeoning, piercing and slashing damage you take by 6.",{changes:[armorClass(2),...soak(PHYSICAL,6)]}],
     ["Optical Camo",SKIN,3,KUROHANE,"Bonus action: you become Invisible until the end of your next turn. Attacking does not end it.",{active:{charge:5,action:"Bonus action",duration:forRounds(2),statuses:["invisible"]}}],
 
     // ---- Legs --------------------------------------------------------------
@@ -332,20 +339,30 @@
     const flagValues = {
       cyberwareCatalogVersion:VERSION,
       manufacturer:def.company,
-      company:def.company
+      company:def.company,
+      originalLibraryName:def.name,
+      cyberwareSlot:def.slot,
+      rating:def.mk,
+      tier:def.mk,
+      mk:def.mk,
+      ratingLabel:mkLabel(def.mk),
+      cyberwarePowerBand:POWER_BAND[def.mk],
+      availability:AVAILABILITY[def.mk]
     };
+
+    if (def.deckSpec) {
+      Object.assign(flagValues,{
+        cyberdeck:true,
+        ramMax:def.deckSpec.ramMax,
+        quickhackSlots:def.deckSpec.quickhackSlots,
+        effectText:def.deckSpec.effectText
+      });
+    }
 
     // Cyberdecks keep the numbers FEHA_TABLETOP_UI_V3 reads from them.
     if (!def.deck) {
       Object.assign(flagValues,{
-        cyberwareSlot:def.slot,
-        rating:def.mk,
-        tier:def.mk,
-        mk:def.mk,
-        ratingLabel:mkLabel(def.mk),
         cyberwareCapacityCost:def.capacityCost,
-        cyberwarePowerBand:POWER_BAND[def.mk],
-        availability:AVAILABILITY[def.mk],
         priceCredits:def.price,
         effectText:def.effectText,
         cyberwareActive:Boolean(def.active),
@@ -369,9 +386,9 @@
     if (def.deck) {
       const deckCard = describe({
         ...def,
-        effectText:flags.effectText ?? "",
-        ramMax:Number(flags.ramMax) || 0,
-        quickhackSlots:Number(flags.quickhackSlots) || 0
+        effectText:def.deckSpec?.effectText ?? flags.effectText ?? "",
+        ramMax:def.deckSpec?.ramMax ?? (Number(flags.ramMax) || 0),
+        quickhackSlots:def.deckSpec?.quickhackSlots ?? (Number(flags.quickhackSlots) || 0)
       });
 
       if (String(system.description?.value ?? "") !== deckCard) {
@@ -477,6 +494,43 @@
     return folders;
   }
 
+  // Catalog entries with `from` do not exist in the world yet: each is
+  // created once as a copy of its template (same art, same catalog flags) and
+  // then filled in by the normal migration.
+  async function createMissing() {
+    const created = [];
+
+    for (const def of definitions.filter(entry => entry.from)) {
+      const exists = list(game.items).some(item =>
+        isCyberware(item) && item.name === def.name
+      );
+      if (exists) continue;
+
+      const template = list(game.items).find(item =>
+        isCyberware(item) && item.name === def.from
+      );
+
+      if (!template) {
+        console.warn("FEHA CYBERWARE // no template for",def.name,"<-",def.from);
+        continue;
+      }
+
+      const data = template.toObject();
+      delete data._id;
+      data.name = def.name;
+      data.flags[FLAG] = {
+        ...data.flags[FLAG],
+        originalLibraryName:def.name,
+        catalogSourceUuid:null
+      };
+
+      await Item.create(data,{renderSheet:false});
+      created.push(def.name);
+    }
+
+    return created;
+  }
+
   function allCyberware() {
     return [
       ...list(game.items).filter(isCyberware),
@@ -491,6 +545,7 @@
       return {skipped:true,updated:0,unknown:[]};
     }
 
+    const created = await createMissing();
     const items = allCyberware();
     const folders = await makerFolders();
     const pending = [];
@@ -521,6 +576,7 @@
       version:VERSION,
       catalog:definitions.length,
       updated:pending.length,
+      created,
       unknown:[...unknown]
     };
 

@@ -1,8 +1,9 @@
 {
-  "version": "0.12.0",
+  "version": "0.12.1",
   "updated": "2026-10-01",
-  "scope": "npcs",
+  "scope": "cyberware-capstones",
   "notes": [
+    "Cyberware capstones so every way of playing has Mk.IV-V chrome: Berserk C5, Mantis Blades Apex, Projectile Launcher Apex, Ballistic Coprocessor and the Corvus Apex Cyberdeck are new; Strong Arms, Kiroshi Optics Hunter, Chiton, Throwing Range Servos and the Rockerboy tattoo move to Mk.V; Sudden Aid can treat an ally. Camillo Ram Manager is once per rest.",
     "NPC catalog: 29 ready-made people of Alabastra (street, Yakuza, CivCorp, Marble Vigil, corporate, Navy, civilians) built from the world's own weapons, armour, chrome and quickhacks. The GM imports them from a button in the Actors tab; nothing is created until then.",
     "Looks pass: the chat log, dice results and pop-up dialogs use the same dark HUD style as the rest of the game; cyberware and consumable messages are proper cards.",
     "Sandevistan is now a time stop: on activation you immediately take extra turns while nothing else can move, act or react (C1 a move and one attack; C2-C3 one turn; C4 two; Apogee three). C3 and up attack with advantage.",

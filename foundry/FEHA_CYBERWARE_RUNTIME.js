@@ -18,9 +18,10 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.0.7";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
+  const USED_FLAG = "cyberwareUsedThisRest";
   const PASSIVE_FLAG = "cyberwarePassive";
   const ACTIVE_FLAG = "cyberwareActive";
   const MANAGER_ID = "adk-chrome-manager-34";
@@ -245,7 +246,13 @@
     const hpMax = Number(hp.effectiveMax ?? hp.max ?? 0);
     const hpNow = Number(hp.value ?? 0);
 
-    if (spec.heal && hpNow >= hpMax) {
+    const other = spec.healsTarget
+      ? [...(game.user?.targets ?? [])]
+          .map(token => token.actor)
+          .find(target => target && target.id !== actor.id) ?? null
+      : null;
+
+    if (spec.heal && !other && hpNow >= hpMax) {
       ui.notifications?.warn?.(actor.name+" is already at full HP.");
       return null;
     }
@@ -263,6 +270,15 @@
       return null;
     }
 
+    const usedThisRest = list(flags(actor)[USED_FLAG]).map(String);
+
+    if (spec.oncePerRest && usedThisRest.includes(def.key)) {
+      ui.notifications?.warn?.(
+        actor.name+" has already used "+def.name+" since their last rest."
+      );
+      return null;
+    }
+
     const state = charge(actor);
     const cost = chargeCost(actor,def);
     const paid = Math.min(cost,state.remaining);
@@ -271,6 +287,10 @@
     const update = {
       ["flags."+FLAG+"."+SPENT_FLAG]:state.spent + paid
     };
+
+    if (spec.oncePerRest) {
+      update["flags."+FLAG+"."+USED_FLAG] = [...usedThisRest,def.key];
+    }
 
     let hpAfter = hpNow;
 
@@ -289,9 +309,13 @@
       const heal = await rollFormula(actor,spec.heal);
       rolls.push(heal);
 
-      const before = hpAfter;
-      hpAfter = Math.min(hpMax,hpAfter + Number(heal.total));
-      lines.push("Regained "+(hpAfter - before)+" HP.");
+      if (other) {
+        lines.push(other.name+" regains "+heal.total+" HP (GM applies it).");
+      } else {
+        const before = hpAfter;
+        hpAfter = Math.min(hpMax,hpAfter + Number(heal.total));
+        lines.push("Regained "+(hpAfter - before)+" HP.");
+      }
     }
 
     if (spec.halfHp) {
@@ -535,6 +559,10 @@
 
       if (Number(flags(actor)[SPENT_FLAG] ?? 0) > 0) {
         update["flags."+FLAG+"."+SPENT_FLAG] = 0;
+      }
+
+      if (list(flags(actor)[USED_FLAG]).length) {
+        update["flags."+FLAG+"."+USED_FLAG] = [];
       }
 
       if (installed(actor).some(entry => entry.def?.restHealHalf)) {
