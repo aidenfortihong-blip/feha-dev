@@ -20,7 +20,8 @@
   // dark: a cell is "black" when its brightest channel is below this
   // open: how many cells of thin dark detail to ignore
   // tol:  how far (in cells) a wall may cut a corner when straightening
-  const opts = {dark:8,open:3,tol:2.2,minArea:0.004};
+  // close: bridge thin bright lines (a grid drawn over the black) before anything else
+  const opts = {dark:8,open:3,close:0,tol:2.2,minArea:0.004};
   const LIGHT_ALPHA = 0.08;
   const MAX_LIGHTS = 10;
 
@@ -124,6 +125,8 @@
     }
 
     // Drop thin dark lines and specks, then grow back.
+    for (let i = 0; i < opts.close; i++) mask = dilate(mask,gw,gh);
+    for (let i = 0; i < opts.close; i++) mask = erode(mask,gw,gh);
     for (let i = 0; i < opts.open; i++) mask = erode(mask,gw,gh);
     for (let i = 0; i < opts.open; i++) mask = dilate(mask,gw,gh);
 
