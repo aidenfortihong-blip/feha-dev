@@ -546,3 +546,130 @@ html body #scene-navigation .scene-player {
 html body #players:not(.expanded) #players-inactive {
   display: none !important;
 }
+
+/* ---- Right sidebar tabs, chat controls, editor toolbar, hotbar ------------ */
+
+html body #sidebar-tabs,
+html body #hotbar {
+  opacity: 1 !important;
+}
+
+html body #sidebar-tabs .ui-control,
+html body #chat .chat-form .ui-control,
+html body #hotbar .ui-control {
+  background: rgba(10, 10, 10, .92) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  transition: border-color .12s, color .12s, background-color .12s;
+}
+
+html body #sidebar-tabs .ui-control:hover,
+html body #sidebar-tabs .ui-control:focus-visible,
+html body #chat .chat-form .ui-control:hover,
+html body #chat .chat-form .ui-control:focus-visible,
+html body #hotbar .ui-control:hover,
+html body #hotbar .ui-control:focus-visible {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
+
+/* The open tab and the chosen message mode are solid yellow blocks. */
+html body #sidebar-tabs .ui-control[aria-pressed="true"],
+html body #chat #message-modes .ui-control[aria-pressed="true"] {
+  background: var(--fcc-yellow) !important;
+  border-color: var(--fcc-yellow) !important;
+  color: #0a0a0a !important;
+}
+
+html body #sidebar-tabs .notification-pip {
+  background: var(--fcc-red) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #chat #message-modes {
+  gap: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Text editor toolbar above the chat box. */
+html body #chat .chat-form .editor-menu {
+  background: var(--fcc-panel) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #chat .chat-form .editor-menu button {
+  border-radius: 0 !important;
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+}
+
+html body #chat .chat-form .editor-menu button:hover,
+html body #chat .chat-form .editor-menu button:focus-visible,
+html body #chat .chat-form .editor-menu button.active {
+  background: var(--fcc-bg) !important;
+  color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
+
+html body #chat .chat-form .editor-menu .pm-dropdown ul {
+  background: var(--fcc-panel) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #chat .chat-form .editor-menu .pm-dropdown li:hover {
+  background: var(--fcc-bg) !important;
+  color: var(--fcc-yellow) !important;
+}
+
+html body #chat .chat-form .editor-content {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-body) !important;
+  font-size: 15px;
+}
+
+html body #chat .chat-form .chat-input::before,
+html body #chat .chat-form .editor-content::before {
+  color: var(--fcc-muted) !important;
+  font-family: var(--fcc-mono) !important;
+  font-style: normal !important;
+}
+
+/* Macro hotbar. */
+html body #hotbar .slot {
+  background: rgba(10, 10, 10, .92) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #hotbar .slot.full {
+  border-bottom: 2px solid var(--fcc-yellow) !important;
+}
+
+html body #hotbar .slot:hover,
+html body #hotbar .slot:focus-visible {
+  border-color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
+
+html body #hotbar .slot .slot-icon {
+  border-radius: 0 !important;
+}
+
+html body #hotbar .slot .key {
+  background: var(--fcc-bg) !important;
+  border-radius: 0 !important;
+  color: var(--fcc-yellow) !important;
+  font-family: var(--fcc-mono) !important;
+}
