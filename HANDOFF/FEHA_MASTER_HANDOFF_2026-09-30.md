@@ -387,3 +387,16 @@ User brief: as faithful to Cyberpunk 2077 / Edgerunners as a turn-based table al
 - Moved to Mk.V with stronger text: Strong Arms, Kiroshi Optics Hunter, Chiton, Throwing Range Servos, Rockerboy Interface Tattoo. Sudden Aid can treat a targeted ally (`healsTarget`: the roll is posted for the target and the GM applies it).
 - Bug fixed: effects were created from the catalog's own change objects, which Foundry mutates with defaults; the fingerprint then differed every session and passive effects were deleted and recreated on every load. `withBaseSpeed` now always deep-clones (cyberware runtime 1.1.1, consumable runtime 1.0.3).
 - Load timing: a clean reload is ~1 s of FEHA code; the rest is the GitHub download (6-7 s when GitHub is slow). Still recreated on every load, not from this change: armour effects "ANCHOR PLATING // BRACED" and "KINETIC SYNC // HELIX" (FEHA_ARMOR_RUNTIME), and the module flips the image of "Tactical Icon Processor" between two files.
+
+### §19 additions: full cyberware effect test (2026-10-01, runtime 1.1.3, catalog 2.2.2)
+
+Every catalog item was exercised on TEST Gunner as GM (temporary level-3 effect, mock combat on FEHA TEST ARENA).
+
+- 43 passive items: installed, each change key compared before / after, effect removed on delete. All pass.
+- 25 active items: activated in combat; charge paid, timed effect, heal / temp HP / RAM / roll, chat card all checked. All pass.
+- Special handling verified: Charge System, Time Bank (charge pool), Ram Upgrade / Neuro Matrix / Ex Disk (max RAM), Cogito Frame (quickhack DC +1), ForgeLine Sigma (STR requirement negated), Discharge Connector (reload-advantage flag), Enhanced Blood Vessels (rest heal), Regeneration Lattice (turn-start heal).
+- Bugs found and fixed by the test:
+  - `onItemChange` read the user id from the wrong argument for createItem / deleteItem (they pass 3 arguments, updateItem 4), so passives only synced on update (Chrome Manager install / eject) and on GM load. A deleted chrome item left its effect behind.
+  - A change arriving mid-sync was dropped; it now queues one more pass (`resync`).
+  - Endoskeleton / Bone Marrow Cells used `hp.bonuses.level`, which dnd5e ignores for a hand-set max HP. They now add `hpPerLevel x level` to `system.attributes.hp.max` (`passiveChanges`); the value is refreshed on the next sync after a level change.
+- About 19 items remain text-only (the table applies them): Memory Boost, Mechatronic Core, Smart Return Actuator, the throwing implants, Mask CW, Electroshock Mechanism, Mantis Blades (both), Nano Wires, Smart Link, Smartlink Tattoo, Syndicate Interface Tattoo, Knife Sharpener, Joint Lock, No Pain No Gain, Heal On Kill, Blood Depleter, Viral Venom. Many automated items also carry a text-only rider.
