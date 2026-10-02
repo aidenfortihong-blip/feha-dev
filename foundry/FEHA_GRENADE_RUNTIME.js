@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.5";
+  const VERSION = "1.4.6";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -461,6 +461,10 @@
   }
 
   function isCyberware(item) {
+    // A gun that carries a stray installed flag is not chrome: the recon
+    // scan listed it and an EMP could switch it off.
+    if (item?.type === "weapon") return false;
+
     const flags = item?.flags?.[FLAG] ?? {};
     const category = norm(flags.sourceCategory ?? flags.category);
     const path = norm(flags.cyberwareSlot ?? "");
@@ -1538,10 +1542,13 @@
           : "";
 
       return (
-        '<div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:3px 0;border-top:1px solid #253e45">'+
-          '<span>'+esc(result.name)+'</span>'+
-          '<span>'+esc(saveText)+'</span>'+
-          '<span><strong>'+Number(result.damage ?? 0)+'</strong>'+esc(extras)+'</span>'+
+        // Name and save share a line; damage and effects get their own. In
+        // one three-column row a long effect list squeezed the name down to
+        // one letter per line in the chat sidebar.
+        '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:4px 0;border-top:1px solid #253e45">'+
+          '<span style="font-weight:700;overflow-wrap:normal;word-break:normal">'+esc(result.name)+'</span>'+
+          '<span style="text-align:right;white-space:nowrap">'+esc(saveText)+'</span>'+
+          '<span style="grid-column:1 / -1"><strong>'+Number(result.damage ?? 0)+'</strong>'+esc(extras)+'</span>'+
         '</div>'
       );
     }).join("");
