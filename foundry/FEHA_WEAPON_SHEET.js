@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_SHEET requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.7.0";
+  const VERSION = "1.7.1";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
 
@@ -1578,6 +1578,27 @@
         })
       ]);
     }
+
+    // Shots and reloads are stored on the owning Actor, and a shot is only
+    // spent once the attack roll happens, after the click handler's own
+    // refresh. Redraw open weapon sheets whenever that state changes, on
+    // every client looking at them.
+    hooks.push([
+      "updateActor",
+      Hooks.on("updateActor",(actor,changed) => {
+        if (!changed?.flags?.[FLAG]?.weaponTracker) return;
+
+        for (const app of foundry.applications.instances.values()) {
+          if (!observedApps.has(app)) continue;
+
+          const shown = resolveItem(app);
+          const owner = actorFor(resolveCombatItem(shown,definition(shown)));
+          if (owner?.id !== actor.id) continue;
+
+          try { refresh(app); } catch {}
+        }
+      })
+    ]);
 
     hooks.push([
       "closeApplication",
