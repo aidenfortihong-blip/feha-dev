@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.2.1";
+  const VERSION = "1.2.2";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const USED_FLAG = "cyberwareUsedThisRest";
@@ -323,16 +323,19 @@
     if (fresh.length) await actor.createEmbeddedDocuments("Item",fresh);
   }
 
-  // The client that made the change does the sync, so it runs exactly once.
+  // One client does the sync, so it runs exactly once: the active GM when one
+  // is connected, otherwise the client that made the change. Two clients
+  // changing the same character's chrome at the same moment used to sync
+  // side by side and delete the same effect twice.
   // createItem and deleteItem pass (item, options, userId); updateItem passes
   // (item, changes, options, userId). The user id is always the last argument.
   function onItemChange(item,...rest) {
     const userId = rest.at(-1);
-    if (userId !== game.user?.id) return;
+    const runner = game.users?.activeGM?.id ?? userId;
     if (!item?.actor || !catalog.isCyberware(item)) return;
 
-    syncActor(item.actor);
     queueChip();
+    if (runner === game.user?.id) syncActor(item.actor);
   }
 
   // ---- Activation ----------------------------------------------------------
