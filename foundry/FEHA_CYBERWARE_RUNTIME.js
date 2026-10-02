@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.1.1";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const USED_FLAG = "cyberwareUsedThisRest";
@@ -130,9 +130,13 @@
   // first raises an unset speed to the standard 30 ft.
   function withBaseSpeed(changes) {
     const WALK = "system.attributes.movement.walk";
-    if (!changes.some(change => change.key === WALK)) return changes;
+    // Always a copy: Foundry fills in defaults on the objects it is given,
+    // and the catalog rows must stay exactly as written (their text is the
+    // fingerprint that decides whether an effect is up to date).
+    const copy = foundry.utils.deepClone(changes);
+    if (!copy.some(change => change.key === WALK)) return copy;
 
-    return [{key:WALK,value:"30",type:"upgrade",priority:5},...changes];
+    return [{key:WALK,value:"30",type:"upgrade",priority:5},...copy];
   }
 
   const fingerprint = def => VERSION+JSON.stringify(def.changes ?? []);

@@ -14,7 +14,7 @@
     throw new Error("FEHA_CONSUMABLE_RUNTIME requires Cyber Core + Consumable Catalog.");
   }
 
-  const VERSION = "1.0.2";
+  const VERSION = "1.0.3";
   const FLAG = "fleshEnshrouded";
   const USED_FLAG = "consumablesUsed";
   const EFFECT_FLAG = "consumableEffect";
@@ -148,9 +148,11 @@
   // first raises an unset speed to the standard 30 ft.
   function withBaseSpeed(changes) {
     const WALK = "system.attributes.movement.walk";
-    if (!changes.some(change => change.key === WALK)) return changes;
+    // Always a copy: Foundry fills in defaults on the objects it is given.
+    const copy = foundry.utils.deepClone(changes);
+    if (!copy.some(change => change.key === WALK)) return copy;
 
-    return [{key:WALK,value:"30",type:"upgrade",priority:5},...changes];
+    return [{key:WALK,value:"30",type:"upgrade",priority:5},...copy];
   }
 
   async function applyBuff(actor,item,def,buff) {
