@@ -540,3 +540,9 @@ html body #scene-navigation .scene-player {
   border-radius: 0 !important;
   font-family: var(--fcc-mono) !important;
 }
+
+/* Collapsed, the offline list would leave an empty strip of border above
+   the session panel. */
+html body #players:not(.expanded) #players-inactive {
+  display: none !important;
+}
