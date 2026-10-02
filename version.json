@@ -3,6 +3,7 @@
   "updated": "2026-10-03",
   "scope": "v1-content-sweep",
   "notes": [
+    "Style pass: character and NPC sheets, roll dialogs, settings and configuration windows, notifications, the pause banner, tooltips and menus now use the FEHA black / red / yellow interface style (core-cp.css).",
     "Content sweep: all 118 weapons fired, emptied and reloaded; all 20 quickhacks and all 18 grenade lines run from a player client.",
     "Cookoff only lists real grenades (it offered guns) and Dead Trigger can break DMRs and LMGs.",
     "Grenade result card no longer squeezes the target's name; the recon scan and EMP no longer treat guns as chrome.",

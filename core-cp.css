@@ -677,3 +677,19 @@ html body .window-app ::-webkit-scrollbar-thumb {
     text-shadow: none !important;
   }
 }
+
+/* Fieldsets and legends in configuration windows. */
+html body .application fieldset,
+html body .window-app fieldset {
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+}
+
+html body .application fieldset > legend,
+html body .window-app fieldset > legend {
+  color: var(--fco-yellow) !important;
+  font-family: var(--fco-display) !important;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
