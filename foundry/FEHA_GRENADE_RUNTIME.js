@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.3";
+  const VERSION = "1.4.4";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -1159,7 +1159,9 @@
   }
 
   async function syncZoneNow(template) {
-    if (!isAuthority() || !template) return;
+    // Any GM may run this: the GM who throws the grenade marks the zone
+    // straight away. The hooks that call it afterwards are authority-only.
+    if (!game.user?.isGM || !template) return;
 
     const scene = template.parent ?? null;
     const zone = template.flags?.[FLAG]?.grenadeZone ?? null;

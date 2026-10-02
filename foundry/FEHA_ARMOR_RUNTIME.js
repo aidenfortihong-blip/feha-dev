@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.3.1";
+  const VERSION = "1.3.2";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -556,7 +556,8 @@
         try { Hooks.off(event,id); } catch {}
       }
 
-      if (game.user?.isGM) {
+      // Only the client that recreates these effects on init removes them.
+      if (isAuthority()) {
         for (const actor of list(game.actors)) {
           for (const effect of list(actor.effects).filter(effect =>
             effect.flags?.[FLAG]?.armorHelixKineticSync === true ||
