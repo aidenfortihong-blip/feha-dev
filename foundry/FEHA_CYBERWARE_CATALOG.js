@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.2.0";
+  const VERSION = "2.2.1";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
   const ROOT_FOLDER = "02 — CYBERWARE";
@@ -397,6 +397,11 @@
 
       if (system.price && Number(system.price.value ?? 0) !== def.price) {
         update["system.price.value"] = def.price;
+      }
+
+      // A deck is not something you activate; no USE counter.
+      if (system.uses && String(system.uses.max ?? "") !== "") {
+        update["system.uses.max"] = "";
       }
 
       for (const [key,value] of Object.entries({
