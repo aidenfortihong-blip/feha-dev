@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.2.1";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const USED_FLAG = "cyberwareUsedThisRest";
@@ -911,6 +911,8 @@
       clickHandler = onManagerClick;
       document.addEventListener("click",clickHandler,true);
 
+      guardOwnedItemUpdates();
+
       console.log("FEHA CYBERWARE RUNTIME",VERSION,"ready");
     },
 
@@ -924,9 +926,63 @@
         clickHandler = null;
       }
 
+      restoreItemUpdates?.();
+
       document.querySelector("#"+MANAGER_ID+" ."+CHIP_CLASS)?.remove();
     }
   };
+
+  // The installed Chrome Manager saves cyberware flags with
+  // Item.updateDocuments and no parent, which only works for world items and
+  // throws for chrome a character owns. Rows that belong to a character are
+  // sent to that character instead; everything else passes through untouched.
+  let restoreItemUpdates = null;
+
+  function guardOwnedItemUpdates() {
+    const base = foundry.abstract.Document;
+    const original = base.updateDocuments;
+
+    const guarded = async function(updates = [],operation = {}) {
+      if (
+        this.documentName !== "Item" ||
+        operation?.parent ||
+        operation?.pack ||
+        !Array.isArray(updates)
+      ) {
+        return original.call(this,updates,operation);
+      }
+
+      const world = [];
+      const owned = new Map();
+
+      for (const row of updates) {
+        const owner = game.items.has(row?._id)
+          ? null
+          : list(game.actors).find(actor => actor.items.has(row?._id));
+
+        if (!owner) world.push(row);
+        else owned.set(owner,[...(owned.get(owner) ?? []),row]);
+      }
+
+      if (!owned.size) return original.call(this,updates,operation);
+
+      const done = world.length
+        ? await original.call(this,world,operation)
+        : [];
+
+      for (const [actor,rows] of owned) {
+        done.push(...await actor.updateEmbeddedDocuments("Item",rows,operation));
+      }
+
+      return done;
+    };
+
+    base.updateDocuments = guarded;
+    restoreItemUpdates = () => {
+      if (base.updateDocuments === guarded) base.updateDocuments = original;
+      restoreItemUpdates = null;
+    };
+  }
 
   core.registerModule("cyberwareRuntime",api);
   globalThis.FEHA_CYBERWARE_RUNTIME = api;
