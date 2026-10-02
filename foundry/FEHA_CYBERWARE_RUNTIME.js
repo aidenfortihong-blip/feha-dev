@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.1.2";
+  const VERSION = "1.1.3";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const USED_FLAG = "cyberwareUsedThisRest";
@@ -140,7 +140,28 @@
     return [{key:WALK,value:"30",type:"upgrade",priority:5},...copy];
   }
 
-  const fingerprint = def => VERSION+JSON.stringify(def.changes ?? []);
+  // What an installed item changes on this actor. Most of it is the catalog
+  // row as written; HP per level is worked out here, because characters in
+  // this world have a hand-set maximum HP that dnd5e's own per-level bonus
+  // does not touch.
+  function passiveChanges(actor,def) {
+    const changes = [...(def?.changes ?? [])];
+
+    if (def?.hpPerLevel) {
+      const level = Math.max(1,Number(actor?.system?.details?.level ?? 0) || 0);
+
+      changes.push({
+        key:"system.attributes.hp.max",
+        value:String(def.hpPerLevel * level),
+        type:"add"
+      });
+    }
+
+    return changes;
+  }
+
+  const fingerprint = (actor,def) =>
+    VERSION+JSON.stringify(passiveChanges(actor,def));
 
   async function syncActor(actor) {
     if (!actor?.isOwner) return;
@@ -157,7 +178,7 @@
     try {
       const wanted = new Map(
         installed(actor)
-          .filter(entry => entry.def?.changes?.length)
+          .filter(entry => passiveChanges(actor,entry.def).length)
           .map(entry => [entry.item.id,entry])
       );
 
@@ -169,7 +190,7 @@
 
         const entry = wanted.get(meta.itemId);
 
-        if (entry && meta.fingerprint === fingerprint(entry.def)) {
+        if (entry && meta.fingerprint === fingerprint(actor,entry.def)) {
           wanted.delete(meta.itemId);
         } else {
           stale.push(effect.id);
@@ -188,12 +209,12 @@
             img:item.img || "icons/svg/upgrade.svg",
             type:"base",
             description:"<p>"+esc(def.effectText)+"</p>",
-            system:{changes:withBaseSpeed(def.changes)},
+            system:{changes:withBaseSpeed(passiveChanges(actor,def))},
             flags:{
               [FLAG]:{
                 [PASSIVE_FLAG]:{
                   itemId:item.id,
-                  fingerprint:fingerprint(def)
+                  fingerprint:fingerprint(actor,def)
                 }
               }
             }

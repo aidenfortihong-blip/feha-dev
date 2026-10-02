@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.2.1";
+  const VERSION = "2.2.2";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
   const ROOT_FOLDER = "02 — CYBERWARE";
@@ -56,7 +56,6 @@
   const armorClass = value => add("system.attributes.ac.bonus","+"+value);
   const darkvision = value => upgrade("system.attributes.senses.darkvision",value);
   const crit19 = () => set("flags.dnd5e.weaponCriticalThreshold",19);
-  const hpPerLevel = value => add("system.attributes.hp.bonuses.level","+"+value);
   const attack = (kind,value) => add("system.bonuses."+kind+".attack","+"+value);
   const damage = (kind,value) => add("system.bonuses."+kind+".damage","+"+value);
   const save = (ability,value) => add("system.abilities."+ability+".bonuses.save","+"+value);
@@ -76,6 +75,7 @@
   //   active         {charge, action, duration?, changes?, heal?, tempHp?,
   //                   ram?, roll?, halfHp?, statuses?, turnOnly?,
   //                   attackAdvantage?, label?}
+  //   hpPerLevel     maximum HP per character level (worked out per actor)
   //   chargeBonus    extra cyberware charge
   //   chargeDiscount activations cost this much less (slots: only these slots)
   //   regen          HP regained at the start of each of your turns in combat
@@ -164,10 +164,10 @@
     ["Titanium Infused Bones",SKEL,1,FORGE,"+2 to Athletics checks, your carrying capacity doubles, and falling damage you take is halved.",{changes:[skill("ath",2)]}],
     ["Joint Lock",SKEL,1,FORGE,"Advantage on saving throws against being knocked Prone or moved against your will."],
     ["Bionic Joints",SKEL,2,FORGE,"+1 to ranged attack rolls.",{changes:[attack("rwak",1)]}],
-    ["Endoskeleton",SKEL,2,FORGE,"Your maximum HP increases by 4 per level.",{changes:[hpPerLevel(4)]}],
+    ["Endoskeleton",SKEL,2,FORGE,"Your maximum HP increases by 4 per level.",{hpPerLevel:4}],
     ["Compiling Skeleton",SKEL,2,FORGE,"+2 to Constitution saving throws.",{changes:[save("con",2)]}],
     ["Reinforced Muscles",SKEL,2,FORGE,"+2 to Athletics checks, and you ignore weapon Strength requirements.",{changes:[skill("ath",2)]}],
-    ["Bone Marrow Cells",SKEL,3,HELIX,"Your maximum HP increases by 6 per level.",{changes:[hpPerLevel(6)]}],
+    ["Bone Marrow Cells",SKEL,3,HELIX,"Your maximum HP increases by 6 per level.",{hpPerLevel:6}],
     ["Dense Marrow",SKEL,4,FORGE,"+2d6 melee and unarmed damage, and advantage on saving throws against being moved against your will.",{changes:[damage("mwak","2d6")]}],
     ["Cyber Rotors",SKEL,3,FORGE,"Microrotors: +1 to melee attack rolls and +1d8 melee damage.",{changes:[attack("mwak",1),damage("mwak","1d8")]}],
 
