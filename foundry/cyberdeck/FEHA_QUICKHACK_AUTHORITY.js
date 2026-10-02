@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.2.3";
+  const VERSION = "2.2.4";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -554,6 +554,9 @@
   // class text guess below only covers items outside the catalogs: it missed
   // every DMR and LMG, so Dead Trigger could not break them.
   function isFirearm(item) {
+    // Some quickhack programs share a name with a unique weapon.
+    if (item?.type !== "weapon") return false;
+
     const firearm =
       globalThis.FEHA_WEAPON_CATALOG?.definition?.(item) ?? null;
     if (firearm) return firearm.weaponClass !== "Bow";
