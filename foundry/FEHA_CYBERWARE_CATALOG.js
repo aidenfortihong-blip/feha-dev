@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.0.2";
+  const VERSION = "2.1.0";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
 
@@ -88,7 +88,7 @@
     ["Ex Disk",FC,4,CORVUS,"+5 maximum RAM.",{flags:{ramBonus:5}}],
     ["Memory Boost",FC,2,CORVUS,"Once per turn, when a creature you hit with a Quickhack this turn drops to 0 HP, regain 2 RAM."],
     ["Camillo Ram Manager",FC,3,CORVUS,"Bonus action: flush and reallocate memory to regain 4 RAM.",{active:{charge:3,action:"Bonus action",ram:4}}],
-    ["Self Ice",FC,2,CORVUS,"+2 to saving throws against hostile Quickhacks. Reaction, when a hostile Quickhack targets you: it fails and its RAM is wasted.",{active:{charge:2,action:"Reaction"}}],
+    ["Self Ice",FC,2,CORVUS,"+2 to saving throws against hostile Quickhacks. Reaction, when a hostile Quickhack targets you: it fails and its RAM is wasted.",{active:{charge:3,action:"Reaction"}}],
     ["Bio Conductors",FC,3,HELIX,"Activating cyberware costs you 1 less charge (minimum 1).",{chargeDiscount:1}],
     ["Mechatronic Core",FC,4,FORGE,"Your weapon attacks deal +3d6 damage to robots, drones, turrets and mechs, and you have advantage on saving throws against their effects."],
     ["Cogito Frame",FC,5,CORVUS,"+2 to Intelligence checks and saving throws, and your Quickhack save DC increases by 1.",{changes:[check("int",2),save("int",2)],flags:{quickhackDcBonus:1}}],
@@ -100,7 +100,7 @@
     ["Rapid Muscle Nourisher",FC,1,HELIX,"+2 to Strength (Athletics) checks.",{changes:[skill("ath",2)]}],
     ["Subdermal Co-Processor",FC,2,CORVUS,"+2 to Dexterity saving throws.",{changes:[save("dex",2)]}],
     ["Rockerboy Interface Tattoo",FC,4,KUROHANE,"+3 to Charisma (Performance, Persuasion and Intimidation) checks, and advantage on saving throws against being Charmed or Frightened.",{changes:[skill("prf",3),skill("per",3),skill("itm",3)]}],
-    ["Tactical Icon Processor",FC,4,BASTION,"Bonus action: mark one creature you can see. Until the end of your next turn, you and your allies gain +2 to attack rolls against it.",{active:{charge:2,action:"Bonus action",duration:forRounds(2)}}],
+    ["Tactical Icon Processor",FC,4,BASTION,"Bonus action: mark one creature you can see. Until the end of your next turn, you and your allies gain +2 to attack rolls against it.",{active:{charge:3,action:"Bonus action",duration:forRounds(2)}}],
     ["ForgeLine Sigma",FC,4,FORGE,"Load-bearing firmware: you ignore the Strength requirement of every weapon.",{flags:{handling:{negateStrRequirement:true}}}],
     ["Kurohane Shadow",FC,4,KUROHANE,"+5 to Dexterity (Stealth) checks. The first attack you make in a combat while unseen has advantage and deals +3d6 damage.",{changes:[skill("ste",5)]}],
     ["Smart Return Actuator",FC,3,KUROHANE,"Weapons you throw return to your hand at the end of your turn, and your thrown weapon attacks deal +2d6 damage."],
@@ -117,23 +117,23 @@
     ["Tetratronic Rippler",OS,3,FORGE,null,{deck:true}],
     ["Raven Microcyber",OS,4,FORGE,null,{deck:true}],
 
-    ["Sandevistan C1",OS,1,VEKTOR,"No action, on your turn: time stops for an instant. Immediately move up to your Speed and make one weapon attack. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:2,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
-    ["Sandevistan C2",OS,2,VEKTOR,"No action, on your turn: time stops. Immediately take one extra turn (movement, action and bonus action). While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:3,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
-    ["Sandevistan C3",OS,3,VEKTOR,"No action, on your turn: time stops. Immediately take one extra turn, and your attacks during it have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:4,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
-    ["Sandevistan C4",OS,4,VEKTOR,"No action, on your turn: time stops. Immediately take two extra turns in a row, and your attacks during them have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:5,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
-    ["Sandevistan Apogee",OS,5,VEKTOR,"No action, on your turn: time stops. Immediately take three extra turns in a row, and your attacks during them have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:6,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
+    ["Sandevistan C1",OS,1,VEKTOR,"No action, on your turn: time stops for an instant. Immediately move up to your Speed and make one weapon attack. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:3,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
+    ["Sandevistan C2",OS,2,VEKTOR,"No action, on your turn: time stops. Immediately take one extra turn (movement, action and bonus action). While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:5,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED"}}],
+    ["Sandevistan C3",OS,3,VEKTOR,"No action, on your turn: time stops. Immediately take one extra turn, and your attacks during it have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:6,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
+    ["Sandevistan C4",OS,4,VEKTOR,"No action, on your turn: time stops. Immediately take two extra turns in a row, and your attacks during them have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:9,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
+    ["Sandevistan Apogee",OS,5,VEKTOR,"No action, on your turn: time stops. Immediately take three extra turns in a row, and your attacks during them have advantage. While time is stopped no other creature can move, act or react, and you cannot be targeted.",{active:{charge:12,action:"No action, on your turn",duration:untilNextTurn,turnOnly:true,label:"TIME STOPPED",attackAdvantage:true}}],
 
-    ["Berserk C1",OS,1,BASTION,"Bonus action, lasts until the end of your next turn: resistance to bludgeoning, piercing and slashing damage and +1d6 melee damage. You cannot make ranged attacks while it is active.",{active:{charge:2,action:"Bonus action",duration:forRounds(2),changes:[...resist(...PHYSICAL),damage("mwak","1d6")]}}],
-    ["Berserk C2",OS,2,BASTION,"Bonus action, lasts until the end of your next turn: gain 10 temporary HP, resistance to bludgeoning, piercing and slashing damage and +2d6 melee damage. You cannot make ranged attacks while it is active.",{active:{charge:3,action:"Bonus action",duration:forRounds(2),tempHp:"10",changes:[...resist(...PHYSICAL),damage("mwak","2d6")]}}],
-    ["Berserk C3",OS,3,BASTION,"Bonus action, lasts until the end of your next turn: gain 15 temporary HP, resistance to bludgeoning, piercing and slashing damage and +3d6 melee damage, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{active:{charge:4,action:"Bonus action",duration:forRounds(2),tempHp:"15",changes:[...resist(...PHYSICAL),damage("mwak","3d6")]}}],
-    ["Berserk C4",OS,4,BASTION,"Bonus action, lasts 3 rounds: gain 25 temporary HP, resistance to bludgeoning, piercing and slashing damage, +4d6 melee damage and advantage on Strength checks and saves, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{active:{charge:5,action:"Bonus action",duration:forRounds(3),tempHp:"25",changes:[...resist(...PHYSICAL),damage("mwak","4d6")]}}],
+    ["Berserk C1",OS,1,BASTION,"Bonus action, lasts until the end of your next turn: resistance to bludgeoning, piercing and slashing damage and +1d6 melee damage. You cannot make ranged attacks while it is active.",{active:{charge:3,action:"Bonus action",duration:forRounds(2),changes:[...resist(...PHYSICAL),damage("mwak","1d6")]}}],
+    ["Berserk C2",OS,2,BASTION,"Bonus action, lasts until the end of your next turn: gain 10 temporary HP, resistance to bludgeoning, piercing and slashing damage and +2d6 melee damage. You cannot make ranged attacks while it is active.",{active:{charge:4,action:"Bonus action",duration:forRounds(2),tempHp:"10",changes:[...resist(...PHYSICAL),damage("mwak","2d6")]}}],
+    ["Berserk C3",OS,3,BASTION,"Bonus action, lasts until the end of your next turn: gain 15 temporary HP, resistance to bludgeoning, piercing and slashing damage and +3d6 melee damage, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{active:{charge:6,action:"Bonus action",duration:forRounds(2),tempHp:"15",changes:[...resist(...PHYSICAL),damage("mwak","3d6")]}}],
+    ["Berserk C4",OS,4,BASTION,"Bonus action, lasts 3 rounds: gain 25 temporary HP, resistance to bludgeoning, piercing and slashing damage, +4d6 melee damage and advantage on Strength checks and saves, and you cannot be reduced below 1 HP. You cannot make ranged attacks while it is active.",{active:{charge:8,action:"Bonus action",duration:forRounds(3),tempHp:"25",changes:[...resist(...PHYSICAL),damage("mwak","4d6")]}}],
 
     // ---- Arms --------------------------------------------------------------
     ["Power Grip",ARMS,2,FORGE,"Your unarmed strikes deal 5d8 bludgeoning damage. +2 to Athletics checks, and you ignore weapon Strength requirements.",{changes:[skill("ath",2)]}],
     ["Strong Arms",ARMS,4,FORGE,"Gorilla arms: your unarmed strikes deal 7d10 bludgeoning damage. +4 to Athletics checks, advantage on checks to force doors or break objects, and you ignore weapon Strength requirements.",{changes:[skill("ath",4)]}],
     ["Mantis Blades",ARMS,3,KUROHANE,"Integrated blades: a melee weapon attack that deals 8d8 slashing damage (finesse). Once per turn, before you attack, you can leap up to 20 ft to your target without provoking opportunity attacks."],
     ["Nano Wires",ARMS,5,KUROHANE,"Monowire: a melee weapon attack that deals 9d8 slashing damage (finesse, reach 15 ft). One swing can strike two creatures within 5 ft of each other; roll one attack and compare it to both."],
-    ["Projectile Launcher",ARMS,3,BASTION,"Action: fire an explosive round at a point within 90 ft. Each creature within 10 ft of it takes 8d6 damage, or half on a successful DC 14 Dexterity save.",{active:{charge:3,action:"Action",roll:"8d6"}}],
+    ["Projectile Launcher",ARMS,3,BASTION,"Action: fire an explosive round at a point within 90 ft. Each creature within 10 ft of it takes 8d6 damage, or half on a successful DC 14 Dexterity save.",{active:{charge:4,action:"Action",roll:"8d6"}}],
 
     // ---- Face --------------------------------------------------------------
     ["Kiroshi Optics",FACE,2,CORVUS,"+2 to Perception and Investigation checks that rely on sight, and darkvision out to 60 ft.",{changes:[skill("prc",2),skill("inv",2),darkvision(60)]}],
@@ -156,17 +156,17 @@
     ["Titanium Infused Bones",SKEL,1,FORGE,"+2 to Athletics checks, your carrying capacity doubles, and falling damage you take is halved.",{changes:[skill("ath",2)]}],
     ["Joint Lock",SKEL,1,FORGE,"Advantage on saving throws against being knocked Prone or moved against your will."],
     ["Bionic Joints",SKEL,2,FORGE,"+1 to ranged attack rolls.",{changes:[attack("rwak",1)]}],
-    ["Endoskeleton",SKEL,2,FORGE,"Your maximum HP increases by 2 per level.",{changes:[hpPerLevel(2)]}],
+    ["Endoskeleton",SKEL,2,FORGE,"Your maximum HP increases by 4 per level.",{changes:[hpPerLevel(4)]}],
     ["Compiling Skeleton",SKEL,2,FORGE,"+2 to Constitution saving throws.",{changes:[save("con",2)]}],
     ["Reinforced Muscles",SKEL,2,FORGE,"+2 to Athletics checks, and you ignore weapon Strength requirements.",{changes:[skill("ath",2)]}],
-    ["Bone Marrow Cells",SKEL,3,HELIX,"Your maximum HP increases by 3 per level.",{changes:[hpPerLevel(3)]}],
+    ["Bone Marrow Cells",SKEL,3,HELIX,"Your maximum HP increases by 6 per level.",{changes:[hpPerLevel(6)]}],
     ["Dense Marrow",SKEL,4,FORGE,"+2d6 melee and unarmed damage, and advantage on saving throws against being moved against your will.",{changes:[damage("mwak","2d6")]}],
     ["Cyber Rotors",SKEL,3,FORGE,"Microrotors: +1 to melee attack rolls and +1d8 melee damage.",{changes:[attack("mwak",1),damage("mwak","1d8")]}],
 
     // ---- Nervous System ----------------------------------------------------
-    ["Kerenzikov",NERV,4,VEKTOR,"Reaction, when an attack targets you: time slows. Gain +4 AC against that attack, then move up to 15 ft without provoking opportunity attacks. Your next attack before the end of your next turn has advantage.",{active:{charge:2,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(4)]}}],
+    ["Kerenzikov",NERV,4,VEKTOR,"Reaction, when an attack targets you: time slows. Gain +4 AC against that attack, then move up to 15 ft without provoking opportunity attacks. Your next attack before the end of your next turn has advantage.",{active:{charge:3,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(4)]}}],
     ["Kerenzikov Boost System",NERV,4,VEKTOR,"Your Nervous System reactions (Kerenzikov, Reflex Recorder, Proximity Reducer) cost 1 less charge (minimum 1), and once per round you can use one of them without spending your reaction.",{chargeDiscount:1,discountSlots:[NERV]}],
-    ["Reflex Recorder",NERV,3,VEKTOR,"Reaction, when an attack targets you: gain +3 AC against that attack.",{active:{charge:1,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(3)]}}],
+    ["Reflex Recorder",NERV,3,VEKTOR,"Reaction, when an attack targets you: gain +3 AC against that attack.",{active:{charge:2,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(3)]}}],
     ["Proximity Reducer",NERV,1,VEKTOR,"Reaction, when an attack targets you: gain +2 AC against that attack.",{active:{charge:1,action:"Reaction",duration:thisAttack,turnOnly:true,changes:[armorClass(2)]}}],
     ["Synaptic Accelerator",NERV,3,VEKTOR,"+3 to initiative, you cannot be surprised, and you have advantage on attack rolls during the first round of combat.",{changes:[initiative(3)]}],
     ["Catch Me If You Can",NERV,2,VEKTOR,"+5 ft Speed, and opportunity attacks against you are made with disadvantage.",{changes:[speed(5)]}],
@@ -174,29 +174,29 @@
     ["Neo Fiber",NERV,2,VEKTOR,"+2 to Dexterity saving throws.",{changes:[save("dex",2)]}],
     ["No Pain No Gain",NERV,3,BASTION,"While you are below half your maximum HP, you gain +2 to attack rolls and +2d6 to weapon damage rolls."],
     ["Pain Distributor",NERV,3,HELIX,"Resistance to psychic damage, and advantage on saving throws against being Stunned or Incapacitated.",{changes:[...resist("psychic")]}],
-    ["Pain Reductor",NERV,3,HELIX,"Pain editor: reduce all damage you take by 3.",{changes:[...soak(ALL_DAMAGE,3)]}],
+    ["Pain Reductor",NERV,3,HELIX,"Pain editor: reduce all damage you take by 4.",{changes:[...soak(ALL_DAMAGE,4)]}],
     ["Tyrosine Injector",NERV,5,HELIX,"+5 to initiative, and +15 ft Speed during the first round of combat.",{changes:[initiative(5)]}],
 
     // ---- Circulatory System ------------------------------------------------
-    ["Biomonitor",CIRC,1,HELIX,"Reaction, when you drop below half your maximum HP: regain 2d8 + your proficiency bonus HP.",{active:{charge:2,action:"Reaction",heal:"2d8 + @prof"}}],
-    ["Blood Pump",CIRC,4,HELIX,"Bonus action: regain 6d8 + 10 HP.",{active:{charge:4,action:"Bonus action",heal:"6d8 + 10"}}],
-    ["Sudden Aid",CIRC,4,HELIX,"Bonus action: regain 3d8 + your Constitution modifier HP and end the Poisoned, Blinded, Deafened or Stunned condition on yourself.",{active:{charge:3,action:"Bonus action",heal:"3d8 + @abilities.con.mod"}}],
+    ["Biomonitor",CIRC,1,HELIX,"Reaction, when you drop below half your maximum HP: regain 3d8 + your proficiency bonus HP.",{active:{charge:2,action:"Reaction",heal:"3d8 + @prof"}}],
+    ["Blood Pump",CIRC,4,HELIX,"Bonus action: regain 6d8 + 10 HP.",{active:{charge:6,action:"Bonus action",heal:"6d8 + 10"}}],
+    ["Sudden Aid",CIRC,4,HELIX,"Bonus action: regain 3d8 + your Constitution modifier HP and end the Poisoned, Blinded, Deafened or Stunned condition on yourself.",{active:{charge:4,action:"Bonus action",heal:"3d8 + @abilities.con.mod"}}],
     ["Heal On Kill",CIRC,2,HELIX,"Once per turn, when you reduce a hostile creature to 0 HP, regain 2d8 HP."],
     ["Blood Depleter",CIRC,3,KUROHANE,"Your melee attacks deal +2d6 damage to creatures that are below half their maximum HP."],
     ["Enhanced Blood Vessels",CIRC,3,HELIX,"When you finish a rest, regain HP equal to half your maximum.",{restHealHalf:true}],
     ["Viral Venom",CIRC,4,HELIX,"Once per turn, one of your melee hits also deals 3d6 poison damage, and the target must succeed on a DC 15 Constitution save or be Poisoned until the end of its next turn."],
-    ["Micro Generator",CIRC,4,JADE,"Reaction, when you take damage: discharge. Each creature within 10 ft of you takes 6d6 lightning damage, or half on a successful DC 15 Dexterity save.",{active:{charge:3,action:"Reaction",roll:"6d6"}}],
+    ["Micro Generator",CIRC,4,JADE,"Reaction, when you take damage: discharge. Each creature within 10 ft of you takes 6d6 lightning damage, or half on a successful DC 15 Dexterity save.",{active:{charge:4,action:"Reaction",roll:"6d6"}}],
     ["Regeneration Lattice",CIRC,3,HELIX,"At the start of each of your turns in combat, if you have at least 1 HP and are below your maximum, regain 5 HP.",{regen:5}],
-    ["Second Heart",CIRC,5,HELIX,"Reaction, when you drop to 0 HP: your second heart kicks in and you are instead set to half your maximum HP.",{active:{charge:6,action:"Reaction",halfHp:true}}],
+    ["Second Heart",CIRC,5,HELIX,"Reaction, when you drop to 0 HP: your second heart kicks in and you are instead set to half your maximum HP.",{active:{charge:10,action:"Reaction",halfHp:true}}],
 
     // ---- Integumentary System ----------------------------------------------
     ["Nano Tech Plates",SKIN,1,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 2.",{changes:[...soak(PHYSICAL,2)]}],
-    ["Heavy Reactive Plating",SKIN,2,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 2, and you have advantage on saving throws against being knocked Prone.",{changes:[...soak(PHYSICAL,2)]}],
-    ["Reactive Plating",SKIN,3,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 3. A creature that hits you with a melee attack takes 2d6 piercing damage.",{changes:[...soak(PHYSICAL,3)]}],
-    ["Subdermal Plating",SKIN,3,BASTION,"Subdermal armor: reduce bludgeoning, piercing and slashing damage you take by 4.",{changes:[...soak(PHYSICAL,4)]}],
-    ["Subdermal Skin Lattice",SKIN,4,BASTION,"+1 AC, and reduce bludgeoning, piercing and slashing damage you take by 3.",{changes:[armorClass(1),...soak(PHYSICAL,3)]}],
+    ["Heavy Reactive Plating",SKIN,2,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 3, and you have advantage on saving throws against being knocked Prone.",{changes:[...soak(PHYSICAL,3)]}],
+    ["Reactive Plating",SKIN,3,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 4. A creature that hits you with a melee attack takes 2d6 piercing damage.",{changes:[...soak(PHYSICAL,4)]}],
+    ["Subdermal Plating",SKIN,3,BASTION,"Subdermal armor: reduce bludgeoning, piercing and slashing damage you take by 6.",{changes:[...soak(PHYSICAL,6)]}],
+    ["Subdermal Skin Lattice",SKIN,4,BASTION,"+1 AC, and reduce bludgeoning, piercing and slashing damage you take by 5.",{changes:[armorClass(1),...soak(PHYSICAL,5)]}],
     ["Chiton",SKIN,4,BASTION,"Chitin shell: +2 AC.",{changes:[armorClass(2)]}],
-    ["Optical Camo",SKIN,3,KUROHANE,"Bonus action: you become Invisible until the end of your next turn. Attacking does not end it.",{active:{charge:3,action:"Bonus action",duration:forRounds(2),statuses:["invisible"]}}],
+    ["Optical Camo",SKIN,3,KUROHANE,"Bonus action: you become Invisible until the end of your next turn. Attacking does not end it.",{active:{charge:5,action:"Bonus action",duration:forRounds(2),statuses:["invisible"]}}],
 
     // ---- Legs --------------------------------------------------------------
     ["Boosted Tendons",LEGS,1,FORGE,"Your jump distance is doubled and you gain +5 ft Speed.",{changes:[speed(5)]}],
