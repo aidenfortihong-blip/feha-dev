@@ -372,3 +372,9 @@ User brief: as faithful to Cyberpunk 2077 / Edgerunners as a turn-based table al
 - Nothing is created on load. GM button "Import FEHA NPCs" in the Actors tab header (`renderActorDirectory`) -> DialogV2 confirm -> `import()` creates folder "FEHA NPCS" > faction and skips NPCs that already exist (`flags.fleshEnshrouded.npcKey`). `import({rebuild:true})` replaces the gear on existing catalog NPCs.
 - Actors are unlinked `npc` type, flat AC, walk 30, default mystery-man art, hostile disposition (civilians neutral).
 - The 29 were imported into the live world on 2026-10-01 from the test branch (GM login "Evan (DM)").
+
+### §18 additions (same day)
+
+- NPC catalog 1.1.0: 46 NPCs. New factions "Kurohane Group" (11, incl. tier-5 "Adam Smasher": `TIERS[5]`, `best()` selector allows band-5 weapons) and "Bastion Strategic" (6); Marble Vigil has 7. Portraits are still the default silhouette: the user rejected the AI pack found online, image search sites are blocked in the Claude browser, and files cannot be moved into Forge from this side. Agreed route: the user uploads a folder of art to Forge and Claude matches images to NPCs.
+- Cyberware catalog 2.1.2: world items are filed under their maker's folder inside "02 — CYBERWARE" (`makerFolders()`); cyberdecks get the same description card as other chrome (card line "CYBERDECK // N RAM // N QUICKHACK SLOTS"), with price and capacity cost brought in line; their RAM / slot flags and effect text are untouched.
+- item-cp.css: item sheet title scales to fit long names (container query); not visually confirmed.
