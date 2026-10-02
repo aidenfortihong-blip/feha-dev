@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.1.1";
+  const VERSION = "2.1.2";
   const STOCK_SCHEMA_VERSION = "2.0.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -780,7 +780,7 @@
 
       // Only the GM can reroll stock; players do not get the button.
       const reroll = root.querySelector("#reroll-stock");
-      if (reroll && !game.user?.isGM && !reroll.hidden) reroll.hidden = true;
+      if (reroll && !game.user?.isGM && reroll.style.display !== "none") reroll.style.display = "none";
 
       for (const card of root.querySelectorAll(".item-card")) {
         const item = weaponItemForCard(card);
