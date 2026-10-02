@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_SHEET requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.7.1";
+  const VERSION = "1.7.2";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
 
@@ -957,10 +957,12 @@
           box-shadow:0 0 9px #3fe1ff44;
         }
 
+        /* Wraps instead of three equal columns: a long damage formula ran
+           into the RANGE label. */
         [data-feha-canonical-weapon-sheet] .feha-ws-readiness-meta {
-          display:grid;
-          grid-template-columns:repeat(3,minmax(0,1fr));
-          gap:5px;
+          display:flex;
+          flex-wrap:wrap;
+          gap:3px 12px;
           color:#667d85;
           font-size:10px;
           letter-spacing:.04em;
