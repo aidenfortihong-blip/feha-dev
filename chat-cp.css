@@ -475,3 +475,68 @@ html body #players #players-expand:focus-visible {
   color: var(--fcc-yellow) !important;
   outline: none !important;
 }
+
+/* ---- Left bar: layer / tool buttons and scene navigation ------------------ */
+
+html body #scene-controls,
+html body #scene-navigation {
+  opacity: 1 !important;
+}
+
+html body #scene-controls .ui-control,
+html body #scene-navigation .ui-control {
+  background: rgba(10, 10, 10, .92) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+  transition: border-color .12s, color .12s, background-color .12s;
+}
+
+html body #scene-controls .ui-control:hover,
+html body #scene-controls .ui-control:focus-visible,
+html body #scene-navigation .ui-control:hover,
+html body #scene-navigation .ui-control:focus-visible {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
+
+/* The open layer is a solid yellow block; a selected tool is outlined. */
+html body #scene-controls #scene-controls-layers .ui-control[aria-pressed="true"] {
+  background: var(--fcc-yellow) !important;
+  border-color: var(--fcc-yellow) !important;
+  color: #0a0a0a !important;
+}
+
+html body #scene-controls #scene-controls-tools .ui-control[aria-pressed="true"] {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+  box-shadow: inset 0 -2px 0 var(--fcc-yellow) !important;
+}
+
+html body #scene-navigation .ui-control.scene {
+  border-left: 3px solid var(--fcc-line) !important;
+  font-family: var(--fcc-display) !important;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+html body #scene-navigation .ui-control.scene.view {
+  border-left-color: var(--fcc-yellow) !important;
+}
+
+html body #scene-navigation .ui-control.scene .icons .icon {
+  color: var(--fcc-cyan) !important;
+}
+
+html body #scene-navigation .ui-control.scene:hover .icons .icon {
+  color: inherit !important;
+}
+
+html body #scene-navigation .scene-player {
+  border-radius: 0 !important;
+  font-family: var(--fcc-mono) !important;
+}
