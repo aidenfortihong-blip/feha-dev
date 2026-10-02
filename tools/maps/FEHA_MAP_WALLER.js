@@ -112,13 +112,15 @@
   }
 
   // The black area outside (and between) the rooms.
-  function blackMask(data,gw,gh) {
+  function blackMask(data,gw,gh,flat = null) {
     const total = gw * gh;
     let mask = new Uint8Array(total);
 
     for (let i = 0; i < total; i++) {
       const o = i * 4;
-      mask[i] = Math.max(data[o],data[o + 1],data[o + 2]) < opts.dark ? 1 : 0;
+      mask[i] = flat
+        ? (Math.abs(data[o] - flat[0]) <= 7 && Math.abs(data[o + 1] - flat[1]) <= 7 && Math.abs(data[o + 2] - flat[2]) <= 7 ? 1 : 0)
+        : (Math.max(data[o],data[o + 1],data[o + 2]) < opts.dark ? 1 : 0);
     }
 
     // Drop thin dark lines and specks, then grow back.
@@ -351,8 +353,23 @@
     const sy = dims.sceneHeight / gh;
     const toScene = ([x,y]) => [Math.round(dims.sceneX + x * sx),Math.round(dims.sceneY + y * sy)];
 
-    const black = blackMask(data,gw,gh);
-    const blackShare = black.reduce((sum,v) => sum + v,0) / black.length;
+    let black = blackMask(data,gw,gh);
+    let blackShare = black.reduce((sum,v) => sum + v,0) / black.length;
+
+    // Some maps sit on a flat dark grey instead of black. When all four
+    // corners share one dark colour, treat that colour as the border.
+    if (blackShare < 0.01) {
+      const corner = (x,y) => { const o = (y * gw + x) * 4; return [data[o],data[o + 1],data[o + 2]]; };
+      const corners = [corner(2,2),corner(gw - 3,2),corner(2,gh - 3),corner(gw - 3,gh - 3)];
+      const same = corners.every(c => c.every((v,k) => Math.abs(v - corners[0][k]) <= 6));
+
+      if (same && Math.max(...corners[0]) < 70) {
+        const grey = blackMask(data,gw,gh,corners[0]);
+        const share = grey.reduce((sum,v) => sum + v,0) / grey.length;
+
+        if (share >= 0.03) { black = grey; blackShare = share; }
+      }
+    }
     const lines = blackShare < 0.01 ? [] : trace(black,gw,gh);
     const walls = [];
 
