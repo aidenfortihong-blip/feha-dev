@@ -673,3 +673,29 @@ html body #hotbar .slot .key {
   color: var(--fcc-yellow) !important;
   font-family: var(--fcc-mono) !important;
 }
+
+/* The controls row, the editor toolbar and the chat box stack as one block
+   with no dead space between them. */
+html body #chat .chat-form {
+  gap: 0 !important;
+}
+
+html body #chat #chat-controls {
+  padding: 4px !important;
+  background: var(--fcc-panel) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-bottom: 0 !important;
+}
+
+html body #chat .chat-form .chat-input {
+  gap: 0 !important;
+}
+
+html body #chat .chat-form .editor-menu {
+  padding: 2px 0 !important;
+  border-width: 0 0 1px !important;
+}
+
+html body #chat .chat-form .editor-content {
+  padding-top: 6px !important;
+}
