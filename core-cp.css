@@ -1,0 +1,553 @@
+/* FEHA // CORE + SHEET SKIN
+   Everything Foundry and dnd5e draw themselves and the other skins do not
+   cover: application windows, character / NPC sheets, roll dialogs,
+   notifications, the pause banner, tooltips, context menus and the token HUD.
+
+   It works mostly by re-pointing the fonts and colours those surfaces already
+   read from CSS variables, so their layout is left alone. Same language as
+   chat-cp.css: flat black panels, hairline borders, square corners, red rail,
+   yellow for the active thing. */
+
+:root {
+  --fco-bg: #0a0a0a;
+  --fco-panel: #141414;
+  --fco-raised: #1c1c1c;
+  --fco-line: #333333;
+  --fco-line-soft: #262626;
+  --fco-white: #f2f2f2;
+  --fco-muted: #9a9a9a;
+  --fco-red: #ff5e57;
+  --fco-red-deep: #5a1512;
+  --fco-yellow: #f3e600;
+  --fco-cyan: #5ef6ff;
+  --fco-display: "Chakra Petch", "Rajdhani", "Arial Narrow", sans-serif;
+  --fco-body: "Rajdhani", "Segoe UI", sans-serif;
+  --fco-mono: "Share Tech Mono", "Consolas", monospace;
+}
+
+/* ---- Variables Foundry and dnd5e read ------------------------------------- */
+
+html body,
+html body .application,
+html body .window-app,
+html body .dnd5e2,
+html body .themed {
+  --font-primary: var(--fco-body);
+  --font-body: var(--fco-body);
+  --font-sans: var(--fco-body);
+  --font-serif: var(--fco-body);
+  --font-h1: var(--fco-display);
+  --font-h2: var(--fco-display);
+  --font-h3: var(--fco-display);
+  --font-mono: var(--fco-mono);
+
+  --dnd5e-font-roboto: var(--fco-body);
+  --dnd5e-font-roboto-condensed: var(--fco-body);
+  --dnd5e-font-roboto-slab: var(--fco-display);
+  --dnd5e-font-modesto: var(--fco-display);
+
+  --background: var(--fco-panel);
+  --sidebar-background: var(--fco-bg);
+  --color-border: var(--fco-line);
+  --color-warm-2: var(--fco-red);
+  --color-shadow-primary: var(--fco-red);
+  --color-text-primary: var(--fco-white);
+  --color-text-secondary: var(--fco-muted);
+  --color-form-label: var(--fco-white);
+  --color-form-hint: var(--fco-muted);
+  --color-scrollbar: var(--fco-line);
+  --color-text-selection-bg: #5a5600;
+
+  --color-level-info-bg: var(--fco-panel);
+  --color-level-warning-bg: var(--fco-panel);
+  --color-level-error-bg: var(--fco-panel);
+
+  --dnd5e-color-gold: #8a8a8a;
+  --dnd5e-color-scrollbar: var(--fco-line);
+  --dnd5e-color-card: var(--fco-panel);
+  --dnd5e-color-parchment: var(--fco-panel);
+  --dnd5e-background-card: var(--fco-panel);
+  --dnd5e-border-gold: 1px solid var(--fco-line);
+  --dnd5e-border-dotted: 1px solid var(--fco-line-soft);
+  --dnd5e-border-groove: 1px solid var(--fco-line);
+  --dnd5e-color-groove: var(--fco-line);
+  --dnd5e-color-dark: var(--fco-bg);
+  --dnd5e-color-dark-gray: var(--fco-bg);
+  --dnd5e-color-light-gray: var(--fco-line);
+  --dnd5e-color-hd-1: var(--fco-bg);
+  --dnd5e-color-hd-2: var(--fco-raised);
+  --dnd5e-color-hd-3: var(--fco-bg);
+  --dnd5e-color-maroon: var(--fco-red);
+  --dnd5e-color-crimson: var(--fco-red-deep);
+  --dnd5e-color-blue: var(--fco-cyan);
+  --dnd5e-color-hp-1: #0d3438;
+  --dnd5e-color-hp-2: var(--fco-cyan);
+  --dnd5e-color-hp-3: #1c8f98;
+  --dnd5e-color-sc-1: var(--fco-raised);
+}
+
+/* ---- Application windows --------------------------------------------------- */
+
+html body .application:not(.dialog),
+html body .window-app {
+  background: var(--fco-panel) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-top: 2px solid var(--fco-red) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .6) !important;
+  color: var(--fco-white);
+  font-family: var(--fco-body);
+}
+
+html body .application .window-header,
+html body .window-app .window-header {
+  background: var(--fco-bg) !important;
+  border-bottom: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  color: var(--fco-white) !important;
+  text-shadow: none !important;
+}
+
+html body .application .window-header .window-title,
+html body .window-app .window-header .window-title {
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+html body .application .window-header button.header-control,
+html body .window-app .window-header a.header-button {
+  border-radius: 0 !important;
+  color: var(--fco-muted) !important;
+}
+
+html body .application .window-header button.header-control:hover,
+html body .application .window-header button.header-control:focus-visible,
+html body .window-app .window-header a.header-button:hover {
+  background: var(--fco-yellow) !important;
+  color: #0a0a0a !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+html body .application .window-content,
+html body .window-app .window-content {
+  border-radius: 0 !important;
+}
+
+/* Plain windows (settings, configuration, pickers): flat panel. Sheets with
+   their own art direction (FEHA weapon sheets, the chrome and market windows)
+   paint over this themselves. */
+html body .application:not(.sheet):not(.dialog) > .window-content,
+html body .window-app:not(.sheet) > .window-content {
+  background: var(--fco-panel) !important;
+  color: var(--fco-white) !important;
+}
+
+/* ---- Form controls everywhere --------------------------------------------- */
+
+html body .application input[type="text"],
+html body .application input[type="number"],
+html body .application input[type="search"],
+html body .application input[type="password"],
+html body .application select,
+html body .application textarea,
+html body .window-app input[type="text"],
+html body .window-app input[type="number"],
+html body .window-app input[type="search"],
+html body .window-app select,
+html body .window-app textarea {
+  border-radius: 0 !important;
+  font-family: var(--fco-body);
+}
+
+html body .application:not(.sheet) input[type="text"],
+html body .application:not(.sheet) input[type="number"],
+html body .application:not(.sheet) input[type="search"],
+html body .application:not(.sheet) select,
+html body .application:not(.sheet) textarea,
+html body .window-app:not(.sheet) input[type="text"],
+html body .window-app:not(.sheet) input[type="number"],
+html body .window-app:not(.sheet) select,
+html body .window-app:not(.sheet) textarea {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  color: var(--fco-white) !important;
+}
+
+html body .application input:focus-visible,
+html body .application select:focus-visible,
+html body .application textarea:focus-visible,
+html body .window-app input:focus-visible,
+html body .window-app select:focus-visible {
+  border-color: var(--fco-yellow) !important;
+  box-shadow: none !important;
+  outline: 1px solid var(--fco-yellow) !important;
+  outline-offset: 0;
+}
+
+html body .application:not(.sheet) .window-content button:not(.header-control):not(.icon),
+html body .application .form-footer button,
+html body .window-app:not(.sheet) .window-content button {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+html body .application:not(.sheet) .window-content button:not(.header-control):not(.icon):hover,
+html body .application:not(.sheet) .window-content button:not(.header-control):not(.icon):focus-visible,
+html body .application .form-footer button:hover,
+html body .application .form-footer button:focus-visible,
+html body .window-app:not(.sheet) .window-content button:hover {
+  background: var(--fco-yellow) !important;
+  border-color: var(--fco-yellow) !important;
+  color: #0a0a0a !important;
+  outline: none !important;
+}
+
+html body .application nav.tabs,
+html body .window-app nav.tabs {
+  border-color: var(--fco-line) !important;
+}
+
+html body .application:not(.sheet) nav.tabs > [data-tab],
+html body .window-app:not(.sheet) nav.tabs > [data-tab] {
+  border-radius: 0 !important;
+  color: var(--fco-muted) !important;
+  font-family: var(--fco-display) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+}
+
+html body .application:not(.sheet) nav.tabs > [data-tab].active,
+html body .window-app:not(.sheet) nav.tabs > [data-tab].active {
+  color: var(--fco-yellow) !important;
+  box-shadow: inset 0 -2px 0 var(--fco-yellow) !important;
+}
+
+/* ---- dnd5e roll dialogs ---------------------------------------------------- */
+
+html body .application.roll-configuration .window-content,
+html body .application.dnd5e2.dialog .window-content {
+  background: var(--fco-panel) !important;
+  color: var(--fco-white) !important;
+}
+
+html body .application.roll-configuration .window-header .window-title,
+html body .application.roll-configuration .window-subtitle {
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  text-shadow: none !important;
+}
+
+html body .application.roll-configuration fieldset,
+html body .application.dnd5e2 fieldset {
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+}
+
+html body .application.roll-configuration legend,
+html body .application.dnd5e2 fieldset > legend {
+  color: var(--fco-yellow) !important;
+  font-family: var(--fco-display) !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+html body .application.roll-configuration .formula,
+html body .application.roll-configuration .dice-formula {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  color: var(--fco-cyan) !important;
+  font-family: var(--fco-mono) !important;
+}
+
+/* ---- dnd5e actor sheets ---------------------------------------------------- */
+
+html body .application.dnd5e2.sheet.actor {
+  --dnd5e-sheet-bg: var(--fco-panel);
+}
+
+html body .application.dnd5e2.sheet.actor > .window-content {
+  background: var(--fco-panel) !important;
+  color: var(--fco-white);
+}
+
+/* The banner art (dragon, parchment) becomes a flat scanline panel. */
+html body .application.dnd5e2.sheet.actor .sheet-header {
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 94, 87, .05) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #1a0d0c 0%, var(--fco-bg) 100%) !important;
+  border-bottom: 1px solid var(--fco-red) !important;
+  box-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet.actor .sheet-header::before,
+html body .application.dnd5e2.sheet.actor .sheet-header::after {
+  background: none !important;
+  border: 0 !important;
+}
+
+html body .application.dnd5e2.sheet.actor .sheet-header .document-name,
+html body .application.dnd5e2.sheet.actor .sheet-header input.document-name {
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+}
+
+html body .application.dnd5e2.sheet .pills-group h3,
+html body .application.dnd5e2.sheet .items-header,
+html body .application.dnd5e2.sheet .card .header,
+html body .application.dnd5e2.sheet h3.icon,
+html body .application.dnd5e2.sheet .filigree-box > h3 {
+  color: var(--fco-yellow) !important;
+  font-family: var(--fco-display) !important;
+  letter-spacing: .1em;
+  text-shadow: none !important;
+  text-transform: uppercase;
+}
+
+/* The ornate SVG frames around skill and save boxes. */
+html body .application.dnd5e2.sheet filigree-box,
+html body .application.dnd5e2.sheet .filigree-box {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet filigree-box .backdrop,
+html body .application.dnd5e2.sheet .filigree-box .backdrop,
+html body .application.dnd5e2.sheet filigree-box svg.filigree,
+html body .application.dnd5e2.sheet .filigree-box svg {
+  display: none !important;
+}
+
+html body .application.dnd5e2.sheet .card,
+html body .application.dnd5e2.sheet .pill,
+html body .application.dnd5e2.sheet .pills .pill,
+html body .application.dnd5e2.sheet .meter,
+html body .application.dnd5e2.sheet .meter.progress,
+html body .application.dnd5e2.sheet .portrait,
+html body .application.dnd5e2.sheet .portrait img,
+html body .application.dnd5e2.sheet .item-image,
+html body .application.dnd5e2.sheet .gold-icon,
+html body .application.dnd5e2.sheet button,
+html body .application.dnd5e2.sheet input,
+html body .application.dnd5e2.sheet select,
+html body .application.dnd5e2.sheet .drop-area,
+html body .application.dnd5e2.sheet .items-section,
+html body .application.dnd5e2.sheet .items-header {
+  border-radius: 0 !important;
+}
+
+html body .application.dnd5e2.sheet .meter.progress::before {
+  border-radius: 0 !important;
+}
+
+html body .application.dnd5e2.sheet .meter .label,
+html body .application.dnd5e2.sheet .meter .label .value,
+html body .application.dnd5e2.sheet .meter .label .max {
+  color: var(--fco-white) !important;
+  font-family: var(--fco-mono) !important;
+  text-shadow: 0 0 2px #000 !important;
+}
+
+/* Vertical tab rail on the right edge of the sheet. */
+html body .application.dnd5e2.sheet.vertical-tabs nav.tabs {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet.vertical-tabs nav.tabs > .item,
+html body .application.dnd5e2.sheet.vertical-tabs nav.tabs > [data-tab] {
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: var(--fco-muted) !important;
+}
+
+html body .application.dnd5e2.sheet.vertical-tabs nav.tabs > .item.active,
+html body .application.dnd5e2.sheet.vertical-tabs nav.tabs > [data-tab].active {
+  background: var(--fco-yellow) !important;
+  color: #0a0a0a !important;
+}
+
+html body .application.dnd5e2.sheet .items-section .items-header {
+  background: var(--fco-raised) !important;
+  border: 1px solid var(--fco-line) !important;
+  box-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet .items-section .item {
+  border-color: var(--fco-line-soft) !important;
+}
+
+/* ---- Notifications --------------------------------------------------------- */
+
+html body #notifications .notification {
+  background: var(--fco-panel) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-left: 3px solid var(--fco-cyan) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .55) !important;
+  color: var(--fco-white) !important;
+  font-family: var(--fco-display) !important;
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-shadow: none !important;
+}
+
+html body #notifications .notification.warning {
+  border-left-color: var(--fco-yellow) !important;
+}
+
+html body #notifications .notification.error {
+  border-left-color: var(--fco-red) !important;
+}
+
+html body #notifications .notification.success {
+  border-left-color: #59e38c !important;
+}
+
+html body #notifications .notification.info > i,
+html body #notifications .notification.info > .icon {
+  color: var(--fco-cyan) !important;
+}
+
+html body #notifications .notification.warning > i {
+  color: var(--fco-yellow) !important;
+}
+
+html body #notifications .notification.error > i {
+  color: var(--fco-red) !important;
+}
+
+html body #notifications .notification .close {
+  border-radius: 0 !important;
+  color: var(--fco-muted) !important;
+}
+
+/* ---- Pause banner ----------------------------------------------------------- */
+
+html body #pause {
+  background: linear-gradient(90deg, transparent 0%, rgba(10, 10, 10, .88) 22%, rgba(10, 10, 10, .88) 78%, transparent 100%) !important;
+  border-top: 1px solid var(--fco-red);
+  border-bottom: 1px solid var(--fco-red);
+}
+
+/* The dnd5e ampersand is replaced by a blinking status block. */
+html body #pause img {
+  display: none !important;
+}
+
+html body #pause figcaption {
+  color: var(--fco-yellow) !important;
+  font-family: var(--fco-display) !important;
+  font-size: 34px !important;
+  font-weight: 700 !important;
+  letter-spacing: .32em !important;
+  text-shadow: 0 0 18px rgba(243, 230, 0, .35) !important;
+  text-transform: uppercase !important;
+}
+
+html body #pause figcaption::before {
+  content: "SESSION // HOLD";
+  display: block;
+  margin-bottom: 4px;
+  color: var(--fco-red);
+  font-family: var(--fco-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .3em;
+  text-shadow: none;
+}
+
+/* ---- Tooltips, context menus, token HUD ----------------------------------- */
+
+html body #tooltip,
+html body .locked-tooltip {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-left: 2px solid var(--fco-yellow) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .6) !important;
+  color: var(--fco-white) !important;
+  font-family: var(--fco-body) !important;
+  text-shadow: none !important;
+}
+
+html body #context-menu,
+html body nav#context-menu,
+html body .context-menu {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .6) !important;
+  color: var(--fco-white) !important;
+  font-family: var(--fco-body) !important;
+}
+
+html body #context-menu li.context-item,
+html body .context-menu li.context-item {
+  border-radius: 0 !important;
+  color: var(--fco-white) !important;
+  text-shadow: none !important;
+}
+
+html body #context-menu li.context-item:hover,
+html body .context-menu li.context-item:hover {
+  background: var(--fco-yellow) !important;
+  color: #0a0a0a !important;
+}
+
+html body #token-hud .palette,
+html body #token-hud button.control-icon,
+html body #token-hud .control-icon,
+html body #token-hud .attribute input {
+  background: rgba(10, 10, 10, .9) !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fco-white) !important;
+}
+
+html body #token-hud .control-icon:hover,
+html body #token-hud .control-icon.active {
+  border-color: var(--fco-yellow) !important;
+  color: var(--fco-yellow) !important;
+}
+
+html body #token-hud .attribute input {
+  font-family: var(--fco-mono) !important;
+}
+
+/* Scrollbars inside every window. */
+html body .application ::-webkit-scrollbar-thumb,
+html body .window-app ::-webkit-scrollbar-thumb {
+  background: var(--fco-line) !important;
+  border-radius: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body #pause figcaption {
+    text-shadow: none !important;
+  }
+}
