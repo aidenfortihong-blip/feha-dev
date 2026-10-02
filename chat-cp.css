@@ -422,12 +422,18 @@ html body #players #players-inactive li.player .player-name {
 
 html body #players #performance-stats {
   align-items: center;
+  flex-wrap: nowrap !important;
   gap: 12px;
   margin: 2px 0 0 !important;
   padding: 6px 10px !important;
   border-top: 1px solid var(--fcc-line) !important;
   font-family: var(--fcc-mono) !important;
   font-size: 11px;
+}
+
+html body #players #performance-stats > div {
+  flex: 0 0 auto !important;
+  white-space: nowrap;
 }
 
 html body #players #performance-stats label {
@@ -452,6 +458,7 @@ html body #players #performance-stats .poor .average {
 }
 
 html body #players #players-expand {
+  flex: 0 0 24px !important;
   width: 24px !important;
   height: 24px !important;
   margin-left: auto;
