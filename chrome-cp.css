@@ -760,7 +760,7 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-statusbar b {
    ========================================================================== */
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .adk-v6-main {
-  grid-template-columns: minmax(0, 1fr) 330px !important;
+  grid-template-columns: minmax(0, 1fr) clamp(330px, 27%, 480px) !important;
 }
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app.cp-rd .adk-v6-systems,
@@ -1153,4 +1153,25 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
 #adk-chrome-manager-34 .adk-v6-hardware-dossier .feha-cw-activate:focus-visible {
   background: #f3e600 !important;
   color: #0a0a0a !important;
+}
+
+/* Full-screen fit. The inspector column was a fixed 330px, which is fine in a
+   small window but cramped at 1920: labels clipped (THROUGHPUT), the browse
+   button wrapped, and port hints truncated. It now grows with the window
+   (see the clamp on .adk-v6-main above), and these labels never wrap. */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-command {
+  min-height: 78px !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics span {
+  letter-spacing: .2px !important;
+  white-space: nowrap !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-browse span {
+  white-space: nowrap !important;
+}
+
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-header small {
+  white-space: nowrap !important;
 }
