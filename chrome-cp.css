@@ -1182,3 +1182,10 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-browse span {
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .inspector-header small {
   white-space: nowrap !important;
 }
+
+/* The app's header row was a fixed 68px, so a taller header (capacity +
+   charge) slid under the body and looked clipped. The row now fits its
+   content. */
+html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-app {
+  grid-template-rows: auto minmax(0, 1fr) 22px !important;
+}
