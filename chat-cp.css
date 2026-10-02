@@ -358,3 +358,113 @@ html body .application.dialog .form-footer button:focus-visible {
   color: #0a0a0a !important;
   outline: none !important;
 }
+
+/* ---- Player list + connection readout (bottom left) ----------------------- */
+
+html body #players {
+  opacity: 1 !important;
+  font-family: var(--fcc-body) !important;
+}
+
+html body #players #players-active,
+html body #players #players-inactive {
+  background: rgba(10, 10, 10, .92) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-left: 3px solid var(--fcc-yellow) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #players #players-inactive {
+  border-left-color: var(--fcc-line) !important;
+}
+
+html body #players #players-active::before {
+  content: "SESSION // ONLINE";
+  display: block;
+  padding: 6px 10px 0;
+  color: var(--fcc-yellow);
+  font-family: var(--fcc-mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+}
+
+html body #players li.player {
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px !important;
+  color: var(--fcc-white) !important;
+}
+
+/* The status marker keeps each player's own colour, as a square. */
+html body #players li.player::before {
+  width: 9px !important;
+  height: 9px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #players li.player .player-name {
+  color: var(--fcc-white) !important;
+  font-family: var(--fcc-display) !important;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+html body #players #players-inactive li.player .player-name {
+  color: var(--fcc-muted) !important;
+  font-weight: 600;
+}
+
+html body #players #performance-stats {
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0 0 !important;
+  padding: 6px 10px !important;
+  border-top: 1px solid var(--fcc-line) !important;
+  font-family: var(--fcc-mono) !important;
+  font-size: 11px;
+}
+
+html body #players #performance-stats label {
+  color: var(--fcc-muted) !important;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+html body #players #performance-stats .average {
+  color: var(--fcc-cyan) !important;
+}
+
+html body #players #performance-stats .average-poor .average,
+html body #players #performance-stats .warn .average,
+html body #players #performance-stats .average.warn {
+  color: var(--fcc-yellow) !important;
+}
+
+html body #players #performance-stats .bad .average,
+html body #players #performance-stats .poor .average {
+  color: var(--fcc-red) !important;
+}
+
+html body #players #players-expand {
+  width: 24px !important;
+  height: 24px !important;
+  margin-left: auto;
+  background: var(--fcc-bg) !important;
+  border: 1px solid var(--fcc-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--fcc-white) !important;
+}
+
+html body #players #players-expand:hover,
+html body #players #players-expand:focus-visible {
+  border-color: var(--fcc-yellow) !important;
+  color: var(--fcc-yellow) !important;
+  outline: none !important;
+}
