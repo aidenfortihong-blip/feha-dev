@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.2";
+  const VERSION = "1.4.3";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -901,11 +901,16 @@
     const amount =
       Math.max(0,Math.floor(Number(roll.total ?? 0)));
 
-    await damageLocal(
-      actor,
-      amount,
-      tick.damageType ?? ""
-    );
+    // The card reports what the target actually took: armor can reduce or
+    // cancel grenade damage.
+    const applied =
+      (
+        await damageLocal(
+          actor,
+          amount,
+          tick.damageType ?? ""
+        )
+      ).damage;
 
     try {
       await ChatMessage.create({
@@ -915,7 +920,7 @@
           '<strong>'+esc(effect.name ?? "GRENADE EFFECT")+'</strong>'+
           '<div style="margin-top:4px">'+
           esc(tick.formula)+' '+esc(tick.damageType ?? "")+
-          ' → <strong>'+amount+'</strong> damage</div>'+
+          ' → <strong>'+applied+'</strong> damage</div>'+
           '</div>'
       });
     } catch {}
