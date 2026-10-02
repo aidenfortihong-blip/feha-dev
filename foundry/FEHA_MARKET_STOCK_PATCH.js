@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.1.0";
+  const VERSION = "2.1.1";
   const STOCK_SCHEMA_VERSION = "2.0.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
@@ -351,6 +351,11 @@
     const flags = item.flags?.[FLAG] ?? {};
     if (flags.marketPurchased !== true || !flags.marketSourceId) return;
     if (!flags.marketShop || !flags.marketShopTier) return;
+
+    // A copy of a bought item keeps the purchase flags; only a buy stamped in
+    // the last ten minutes takes the item off the shelf.
+    const boughtAt = Date.parse(flags.marketPurchasedAt ?? "");
+    if (!Number.isFinite(boughtAt) || Math.abs(Date.now() - boughtAt) > 600000) return;
 
     try {
       registerSettings();
