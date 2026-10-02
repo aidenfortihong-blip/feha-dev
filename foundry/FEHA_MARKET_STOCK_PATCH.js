@@ -778,6 +778,10 @@
     try {
       ensureMarketWeaponStyles();
 
+      // Only the GM can reroll stock; players do not get the button.
+      const reroll = root.querySelector("#reroll-stock");
+      if (reroll && !game.user?.isGM && !reroll.hidden) reroll.hidden = true;
+
       for (const card of root.querySelectorAll(".item-card")) {
         const item = weaponItemForCard(card);
 
