@@ -699,3 +699,12 @@ html body #chat .chat-form .editor-menu {
 html body #chat .chat-form .editor-content {
   padding-top: 6px !important;
 }
+
+/* No dead band between the last message and the controls row. */
+html body #chat {
+  gap: 0 !important;
+}
+
+html body #chat .chat-scroll {
+  padding-bottom: 0 !important;
+}
