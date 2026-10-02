@@ -1160,7 +1160,14 @@ html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-tech-readout {
    button wrapped, and port hints truncated. It now grows with the window
    (see the clamp on .adk-v6-main above), and these labels never wrap. */
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .adk-v6-command {
+  /* Grow to fit the capacity + charge block at any text size, instead of a
+     fixed height the block can spill out of. */
+  height: auto !important;
   min-height: 78px !important;
+  grid-template-rows: auto !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  flex: 0 0 auto !important;
 }
 
 html body #adk-chrome-manager-34#adk-chrome-manager-34 .dossier-metrics span {
