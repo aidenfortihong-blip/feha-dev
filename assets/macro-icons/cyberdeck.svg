@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#071a1c"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M14 2H126V114L114 126H2V14Z" fill="url(#bg)" stroke="#5ef6ff" stroke-width="3"/>
+  <!-- deck body -->
+  <g fill="none" stroke="#5ef6ff" stroke-width="4" filter="url(#glow)">
+    <path d="M18 74H110V100L102 108H18Z"/>
+    <path d="M28 84H62M28 94H50"/>
+    <rect x="76" y="83" width="22" height="14"/>
+  </g>
+  <!-- uplink: signal chevrons rising from the deck -->
+  <g fill="none" stroke="#f3e600" stroke-width="5" stroke-linecap="square" filter="url(#glow)">
+    <path d="M44 56L64 40L84 56"/>
+    <path d="M32 64L64 28"/>
+    <path d="M96 64L64 28"/>
+  </g>
+  <g fill="#f3e600"><rect x="60" y="16" width="8" height="8"/></g>
+  <g fill="#5ef6ff" fill-opacity=".9"><rect x="22" y="112" width="6" height="6"/><rect x="32" y="112" width="6" height="6"/><rect x="42" y="112" width="6" height="6" fill-opacity=".35"/></g>
+</svg>

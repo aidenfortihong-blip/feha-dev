@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101010"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M14 2H126V114L114 126H2V14Z" fill="url(#bg)" stroke="#f2f2f2" stroke-width="3"/>
+  <!-- scan brackets -->
+  <g fill="none" stroke="#f3e600" stroke-width="4">
+    <path d="M22 40V22H40M88 22H106V40M106 88V106H88M40 106H22V88"/>
+  </g>
+  <!-- face / ID silhouette -->
+  <g fill="none" stroke="#5ef6ff" stroke-width="4" filter="url(#glow)">
+    <path d="M64 34C76 34 82 44 82 56C82 70 74 78 64 78C54 78 46 70 46 56C46 44 52 34 64 34Z"/>
+    <path d="M38 98C42 88 52 82 64 82C76 82 86 88 90 98"/>
+  </g>
+  <!-- scan line -->
+  <path d="M18 60H110" stroke="#ff5e57" stroke-width="3" filter="url(#glow)"/>
+</svg>

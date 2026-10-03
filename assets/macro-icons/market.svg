@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1802"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M14 2H126V114L114 126H2V14Z" fill="url(#bg)" stroke="#f3e600" stroke-width="3"/>
+  <!-- credit chip -->
+  <g fill="none" stroke="#f3e600" stroke-width="4" filter="url(#glow)">
+    <path d="M20 34H100L110 44V96H28L18 86V36Z"/>
+    <rect x="30" y="48" width="18" height="14"/>
+    <path d="M36 48V62M30 55H48"/>
+  </g>
+  <!-- CR mark -->
+  <g fill="none" stroke="#ff5e57" stroke-width="6" stroke-linecap="square" filter="url(#glow)">
+    <path d="M78 52H62V80H78"/>
+    <path d="M84 80V52H96L100 58V64L96 68H84M94 68L100 80"/>
+  </g>
+  <path d="M28 104H60" stroke="#f3e600" stroke-width="3" stroke-opacity=".5"/>
+</svg>
