@@ -11,7 +11,7 @@
 // unused. See FEHA_CYBERWARE_RUNTIME.
 
 (() => {
-  const VERSION = "2.3.1";
+  const VERSION = "2.3.2";
   const FLAG = "fleshEnshrouded";
   const BACKUP_KEY = "fehaCyberwareBackup2026-10-01";
   const ROOT_FOLDER = "02 — CYBERWARE";
@@ -36,6 +36,27 @@
   const CORVUS = "Corvus Neural";
 
   const PRICE = {1:500,2:1200,3:3000,4:7500,5:18000};
+
+  // Price within a Mk follows what the piece does (GM decision 2026-10-03):
+  // build-defining chrome costs double, narrow utility 40% less. Effects are
+  // unchanged. Prices round to 50.
+  const PREMIUM = 2;
+  const UTILITY = 0.6;
+  const PRICE_SCALE = {
+    "Sandevistan C1":PREMIUM,"Sandevistan C2":PREMIUM,"Sandevistan C3":PREMIUM,
+    "Sandevistan C4":PREMIUM,"Sandevistan Apogee":PREMIUM,
+    "Berserk C1":PREMIUM,"Berserk C2":PREMIUM,"Berserk C3":PREMIUM,
+    "Berserk C4":PREMIUM,"Berserk C5":PREMIUM,
+    "Second Heart":PREMIUM,"Cyberware Capacity Booster":PREMIUM,
+    "Detector Rush":UTILITY,"Stamina Regen Booster":UTILITY,"Rapid Muscle Nourisher":UTILITY,
+    "Joint Lock":UTILITY,"Boosted Tendons":UTILITY,"Titanium Infused Bones":UTILITY,
+    "Subdermal Co-Processor":UTILITY,"Neo Fiber":UTILITY,"Compiling Skeleton":UTILITY,
+    "Kiroshi Optics Piercing":UTILITY,"Mask CW":UTILITY,"Oil Dispenser":UTILITY,
+    "Smart Return Actuator":UTILITY,"Throwing Ballistic Calibrator":UTILITY,
+    "Throwing Range Servos":UTILITY,"Mechatronic Core":UTILITY,"Rockerboy Interface Tattoo":UTILITY
+  };
+  const priceFor = (name,mk) =>
+    Math.round((PRICE[mk] * (PRICE_SCALE[name] ?? 1)) / 50) * 50;
   const AVAILABILITY = {1:"Common",2:"Professional",3:"Restricted",4:"Black Market",5:"Prototype"};
   const POWER_BAND = {1:"Civilian",2:"Professional",3:"Restricted",4:"Elite",5:"Prototype"};
   const PHYSICAL = ["bludgeoning","piercing","slashing"];
@@ -205,7 +226,7 @@
     ["Nano Tech Plates",SKIN,1,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 2.",{changes:[...soak(PHYSICAL,2)]}],
     ["Heavy Reactive Plating",SKIN,2,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 3, and you have advantage on saving throws against being knocked Prone.",{changes:[...soak(PHYSICAL,3)]}],
     ["Reactive Plating",SKIN,3,BASTION,"Reduce bludgeoning, piercing and slashing damage you take by 4. A creature that hits you with a melee attack takes 2d6 piercing damage.",{changes:[...soak(PHYSICAL,4)]}],
-    ["Subdermal Plating",SKIN,3,BASTION,"Subdermal armor: reduce bludgeoning, piercing and slashing damage you take by 6.",{changes:[...soak(PHYSICAL,6)]}],
+    ["Subdermal Plating",SKIN,3,BASTION,"Subdermal armor: reduce bludgeoning, piercing and slashing damage you take by 4.",{changes:[...soak(PHYSICAL,4)]}],
     ["Subdermal Skin Lattice",SKIN,4,BASTION,"+1 AC, and reduce bludgeoning, piercing and slashing damage you take by 5.",{changes:[armorClass(1),...soak(PHYSICAL,5)]}],
     ["Chiton",SKIN,5,BASTION,"Chitin shell: +2 AC, and reduce bludgeoning, piercing and slashing damage you take by 6.",{changes:[armorClass(2),...soak(PHYSICAL,6)]}],
     ["Optical Camo",SKIN,3,KUROHANE,"Bonus action: you become Invisible until the end of your next turn. Attacking does not end it.",{active:{charge:5,action:"Bonus action",duration:forRounds(2),statuses:["invisible"]}}],
@@ -248,7 +269,7 @@
     company,
     effectText,
     capacityCost:mk + (slot === OS || slot === ARMS ? 1 : 0),
-    price:PRICE[mk],
+    price:priceFor(name,mk),
     ...(extra ?? {})
   }));
 

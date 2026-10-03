@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.5.0";
+  const VERSION = "4.5.1";
   const FLAG = "fleshEnshrouded";
   const REWRITE = "4.4-unified";
 
@@ -193,11 +193,11 @@
   ];
 
   const TIER = {
-    1:{label:"Mk.I",quality:"Civilian",availability:"Common",price:2500,tierIdentity:"Entry-level civilian software with narrow, reliable utility."},
-    2:{label:"Mk.II",quality:"Professional",availability:"Professional",price:6000,tierIdentity:"Professional-grade tactical software with dependable field value."},
-    3:{label:"Mk.III",quality:"High-Grade",availability:"Restricted",price:15000,tierIdentity:"Restricted combat-grade software with strong encounter impact."},
-    4:{label:"Mk.IV",quality:"Elite",availability:"Black Market",price:35000,tierIdentity:"Elite intrusion software capable of decisive control or major damage."},
-    5:{label:"Mk.V",quality:"Prototype",availability:"Prototype",price:80000,tierIdentity:"Prototype-tier software with encounter-defining or extreme effects."}
+    1:{label:"Mk.I",quality:"Civilian",availability:"Common",price:750,tierIdentity:"Entry-level civilian software with narrow, reliable utility."},
+    2:{label:"Mk.II",quality:"Professional",availability:"Professional",price:1800,tierIdentity:"Professional-grade tactical software with dependable field value."},
+    3:{label:"Mk.III",quality:"High-Grade",availability:"Restricted",price:4500,tierIdentity:"Restricted combat-grade software with strong encounter impact."},
+    4:{label:"Mk.IV",quality:"Elite",availability:"Black Market",price:11250,tierIdentity:"Elite intrusion software capable of decisive control or major damage."},
+    5:{label:"Mk.V",quality:"Prototype",availability:"Prototype",price:27000,tierIdentity:"Prototype-tier software with encounter-defining or extreme effects."}
   };
 
   const normalize = value => String(value ?? "")
