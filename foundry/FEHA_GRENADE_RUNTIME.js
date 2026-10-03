@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.4.7";
+  const VERSION = "1.4.8";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -217,18 +217,23 @@
     };
   }
 
+  // game.combat is the encounter the tracker shows, not necessarily the one
+  // being fought: a leftover active encounter, or a GM looking at another
+  // one, used to switch off the once-per-turn limits and make turn-based
+  // effects expire after a few seconds. Prefer the shown encounter, then any
+  // started one that fits.
   function combatForActor(actor) {
-    const combat = game.combat;
-    if (!combat?.started) return null;
-
-    return list(combat.combatants)
-      .find(entry =>
+    const fits = combat =>
+      Boolean(combat?.started) &&
+      list(combat.combatants).some(entry =>
         String(entry?.actorId ?? entry?.actor?.id ?? "") ===
         String(actor?.id ?? "")
-      )
-      ? combat
-      : null;
+      );
+
+    if (fits(game.combat)) return game.combat;
+    return list(game.combats).find(fits) ?? null;
   }
+
 
   function bonusActionStamp(actor) {
     const combat = combatForActor(actor);
@@ -537,17 +542,18 @@
     };
   }
 
+  // game.combat is the encounter the tracker shows, not necessarily the one
+  // being fought: a leftover active encounter, or a GM looking at another
+  // one, used to switch off the once-per-turn limits and make turn-based
+  // effects expire after a few seconds. Prefer the shown encounter, then any
+  // started one that fits.
   function currentCombatForScene(scene) {
-    const combat = game.combat;
+    const fits = combat =>
+      Boolean(combat?.started) &&
+      String(combat.scene?.id ?? combat.sceneId ?? "") === String(scene?.id ?? "");
 
-    if (
-      !combat?.started ||
-      String(combat.scene?.id ?? combat.sceneId ?? "") !== String(scene?.id ?? "")
-    ) {
-      return null;
-    }
-
-    return combat;
+    if (fits(game.combat)) return game.combat;
+    return list(game.combats).find(fits) ?? null;
   }
 
   function timedExpiry(scene,token,turns=1) {

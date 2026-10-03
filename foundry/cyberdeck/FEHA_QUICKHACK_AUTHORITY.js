@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.2.5";
+  const VERSION = "2.2.6";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -732,17 +732,18 @@
       }) ?? null;
   }
 
+  // game.combat is the encounter the tracker shows, not necessarily the one
+  // being fought: a leftover active encounter, or a GM looking at another
+  // one, used to switch off the once-per-turn limits and make turn-based
+  // effects expire after a few seconds. Prefer the shown encounter, then any
+  // started one that fits.
   function currentCombatForScene(scene) {
-    const combat = game.combat;
+    const fits = combat =>
+      Boolean(combat?.started) &&
+      String(combat.scene?.id ?? combat.sceneId ?? "") === String(scene?.id ?? "");
 
-    if (
-      !combat?.started ||
-      String(combat.scene?.id ?? combat.sceneId ?? "") !== String(scene?.id ?? "")
-    ) {
-      return null;
-    }
-
-    return combat;
+    if (fits(game.combat)) return game.combat;
+    return list(game.combats).find(fits) ?? null;
   }
 
   function expiryFor(base,durationTurns) {

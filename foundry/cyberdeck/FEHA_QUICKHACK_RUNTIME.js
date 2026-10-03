@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.1.1";
   const FLAG = "fleshEnshrouded";
   const PICKER_ID = "feha-qh-runtime-picker";
 
@@ -135,19 +135,21 @@
     };
   }
 
+  // game.combat is the encounter the tracker shows, not necessarily the one
+  // being fought: a leftover active encounter, or a GM looking at another
+  // one, used to switch off the once-per-turn limits and make turn-based
+  // effects expire after a few seconds. Prefer the shown encounter, then any
+  // started one that fits.
   function combatForActor(actor) {
-    const combat = game.combat;
-    if (!combat?.started) return null;
+    const fits = combat =>
+      Boolean(combat?.started) &&
+      list(combat.combatants).some(entry =>
+        String(entry?.actorId ?? entry?.actor?.id ?? "") ===
+        String(actor?.id ?? "")
+      );
 
-    const combatant =
-      list(combat.combatants)
-        .find(entry =>
-          String(entry?.actorId ?? entry?.actor?.id ?? "") ===
-          String(actor?.id ?? "")
-        ) ??
-      null;
-
-    return combatant ? combat : null;
+    if (fits(game.combat)) return game.combat;
+    return list(game.combats).find(fits) ?? null;
   }
 
   function turnStamp(actor) {
