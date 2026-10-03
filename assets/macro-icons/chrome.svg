@@ -4,18 +4,19 @@
     <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
   <path d="M14 2H126V114L114 126H2V14Z" fill="url(#bg)" stroke="#ff5e57" stroke-width="3"/>
-  <g stroke="#ff5e57" stroke-opacity=".18" stroke-width="1"><path d="M8 40H120M8 64H120M8 88H120"/></g>
-  <!-- cyberarm: forearm plates, wrist joint, three-finger hand -->
-  <g fill="none" stroke="#ff5e57" stroke-width="5" stroke-linejoin="miter" stroke-linecap="square" filter="url(#glow)">
-    <path d="M28 104L52 80"/>
-    <path d="M38 112L60 90"/>
-    <path d="M22 96L46 72L68 94L44 118"/>
-    <circle cx="66" cy="66" r="8"/>
-    <path d="M74 58L88 44L98 54"/>
-    <path d="M80 70L96 62L104 72"/>
-    <path d="M70 76L82 92L94 88"/>
+  <!-- optic implant: eye outline, iris ring, pupil, reticle ticks -->
+  <g fill="none" stroke="#ff5e57" stroke-width="5" filter="url(#glow)">
+    <path d="M14 64C30 40 46 32 64 32C82 32 98 40 114 64C98 88 82 96 64 96C46 96 30 88 14 64Z"/>
+    <circle cx="64" cy="64" r="20"/>
   </g>
-  <g fill="#f3e600"><rect x="62" y="62" width="8" height="8"/></g>
-  <path d="M96 14H114V32" fill="none" stroke="#f3e600" stroke-width="3"/>
-  <path d="M14 96V114H32" fill="none" stroke="#f3e600" stroke-width="3" stroke-opacity=".0"/>
+  <circle cx="64" cy="64" r="8" fill="#f3e600" filter="url(#glow)"/>
+  <g stroke="#f3e600" stroke-width="3">
+    <path d="M64 38V46M64 82V90M38 64H46M82 64H90"/>
+  </g>
+  <!-- circuit traces out of the implant -->
+  <g fill="none" stroke="#ff5e57" stroke-width="3" stroke-opacity=".7">
+    <path d="M96 84L108 96H120"/>
+    <path d="M32 44L22 34H10"/>
+  </g>
+  <g fill="#ff5e57"><rect x="116" y="93" width="6" height="6"/><rect x="6" y="31" width="6" height="6"/></g>
 </svg>
