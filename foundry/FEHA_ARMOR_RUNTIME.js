@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.3.2";
+  const VERSION = "1.3.3";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -515,7 +515,11 @@
     async init() {
       installHooks();
 
-      const combat = game.combat ?? null;
+      // The running fight, even when the tracker shows another encounter.
+      const combat =
+        (game.combat?.started ? game.combat : null) ??
+        list(game.combats).find(entry => entry?.started) ??
+        null;
       const current = combatantActor(combat);
       const stamp = combatStamp(combat);
       if (current && stamp) {
