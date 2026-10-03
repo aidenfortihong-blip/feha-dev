@@ -18,7 +18,7 @@
   const PORTRAIT =
     "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png";
 
-  const ROOT_FOLDER = "ADK Campaign PCs";
+  const ROOT_FOLDER = "PLAYER CHARACTERS";
   const PC_FOLDER = "OMEGA — Streetkids";
   const BUILD_VERSION = "1.0";
   const PERSONAL_FEATURE = "Kinetic Shift";

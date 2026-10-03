@@ -210,7 +210,7 @@
   function insideDoThese(item){
     let folder=item?.folder??null, guard=0;
     while(folder&&guard++<50){
-      if(String(folder?.name??"").trim().toLowerCase()==="do these") return true;
+      if(["do these","firearms"].includes(String(folder?.name??"").trim().toLowerCase())) return true;
       folder=folder?.folder??folder?.parent??null;
     }
     return false;

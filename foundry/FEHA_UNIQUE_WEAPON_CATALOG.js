@@ -8,7 +8,7 @@
   const VERSION = "1.3.0";
   const REWRITE = "unique-1.1-unified";
   const FLAG = "fleshEnshrouded";
-  const ROOT_NAME = "Do these";
+  const ROOT_NAME = "FIREARMS";
   const UNIQUE_FOLDERS = new Set(["-other","other","-unique","unique"]);
 
   const DEFINITIONS = Object.freeze([

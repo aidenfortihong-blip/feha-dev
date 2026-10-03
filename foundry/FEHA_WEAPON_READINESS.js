@@ -13,7 +13,10 @@
   const REVIEW_IMPORT = "2026-09-30-do-these-export-1";
   const DESCRIPTION_REPAIR = "2026-09-30-final-card-repair-1";
   const FLAG = "fleshEnshrouded";
-  const REVIEW_ROOT = "Do these";
+  // The firearm catalog folder. "Do these" is its old name, kept so an older
+  // world still migrates.
+  const REVIEW_ROOT = "FIREARMS";
+  const REVIEW_ROOT_NAMES = ["firearms","do these"];
   const STOCK_KEY = "adkMarketStockV16";
   const quarantinedIdentifierWarnings = new Set();
 
@@ -65,7 +68,14 @@
     "-Helix":"Helix Vitae",
     "-Jade Arc":"Jade Arc Systems",
     "-Kurohane":"Kurohane Group",
-    "-Vektor":"Vektor Dynamics"
+    "-Vektor":"Vektor Dynamics",
+    "Bastion Strategic":"Bastion Strategic",
+    "Corvus Neural":"Corvus Neural",
+    "ForgeLine Industries":"ForgeLine Industries",
+    "Helix Vitae":"Helix Vitae",
+    "Jade Arc Systems":"Jade Arc Systems",
+    "Kurohane Group":"Kurohane Group",
+    "Vektor Dynamics":"Vektor Dynamics"
   });
 
   const SPECIAL_OVERRIDES = Object.freeze({
@@ -113,8 +123,9 @@
     return (
       list(game.folders).find(folder =>
         String(folder?.type ?? "") === "Item" &&
-        String(folder?.name ?? "").trim().toLowerCase() ===
-          REVIEW_ROOT.toLowerCase()
+        REVIEW_ROOT_NAMES.includes(
+          String(folder?.name ?? "").trim().toLowerCase()
+        )
       ) ??
       null
     );
