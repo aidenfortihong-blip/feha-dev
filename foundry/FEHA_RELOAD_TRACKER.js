@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.6.0";
+  const VERSION = "2.6.1";
   const FLAG = "fleshEnshrouded";
   const LEGACY_HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
@@ -97,6 +97,19 @@
     return [combat.id,Number(round ?? 0),Number(turn ?? 0)].join(":");
   }
 
+  // The started encounter the wielder is in. game.combat is only the one the
+  // tracker shows, which can be a different, leftover encounter.
+  function combatFor(actor) {
+    const fits = combat =>
+      Boolean(combat?.started) &&
+      [...(combat.combatants ?? [])].some(entry =>
+        String(entry?.actorId ?? entry?.actor?.id ?? "") === String(actor?.id ?? "")
+      );
+
+    if (fits(game.combat)) return game.combat;
+    return [...(game.combats ?? [])].find(fits) ?? game.combat;
+  }
+
   async function writeState(item,{used,reload,shotTurn}) {
     const actor = actorFor(item);
     if (!actor || actor.isOwner === false) {
@@ -146,7 +159,7 @@
       reload:0,
       // Remembered so turn-end rules (Helix Self-Charging Cell) know whether
       // this weapon fired during the wielder's turn.
-      shotTurn:turnStamp()
+      shotTurn:turnStamp(combatFor(actorFor(item)))
     });
   }
 
