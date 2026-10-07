@@ -10,10 +10,11 @@
 //   await HW.open(sceneId)                 load the full-size picture
 //   HW.tiles(sceneId)                      the reading crops for this map
 //   HW.view(sceneId,[x0,y0,x1,y1])         show a crop with a percent grid and the proposal
-//   HW.prop[sceneId] = {walls,doors,lights,note}  all in percent of the map
+//   HW.prop[sceneId] = {walls,doors,lights,open,note}  all in percent of the map
 //        walls:  [[x,y,x,y,...], ...]      polylines
 //        doors:  [[x,y,x,y], ...]
 //        lights: [[x,y,"#colour",squares], ...]   (leave out to keep the lights as they are)
+//        open:   [[x,y], ...]              wall ends left open on purpose (checked)
 //   HW.tidy(sceneId)                       straighten lines, join near-miss corners
 //   HW.check(sceneId)                      loose ends and other mistakes
 //   await HW.commit(sceneId,{state})       write it; state "done" or "open"
@@ -42,9 +43,9 @@
     };
   }
 
-  // Reading crops: about 16 grid squares a side, overlapping by 2%, so wall
+  // Reading crops: about 10 grid squares a side, overlapping by 2%, so wall
   // lines are thick enough to place within half a percent.
-  function tiles(id,squares = 16) {
+  function tiles(id,squares = 10) {
     const scene = game.scenes.get(id);
     const d = scene.dimensions;
     const nx = Math.max(1,Math.ceil(d.sceneWidth / scene.grid.size / squares));
@@ -189,7 +190,8 @@
   }
 
   // Loose ends: a wall or door end that touches nothing else and is not on
-  // the map edge. Most are gaps players could see or walk through.
+  // the map edge. Most are gaps players could see or walk through. Ends of a
+  // deliberate opening go in P.open ([[x,y],...]) once checked by eye.
   function check(id) {
     const P = prop[id] ?? {};
     const ends = [];
@@ -208,6 +210,7 @@
     const loose = [];
     for (const [x,y,i] of ends) {
       if (x <= 0.5 || y <= 0.5 || x >= 99.5 || y >= 99.5) continue;
+      if ((P.open ?? []).some(([ox,oy]) => Math.hypot(ox - x,oy - y) <= 0.8)) continue;
       const touches = all.some(({s},j) => j !== i && onSeg(x,y,s));
       if (!touches) loose.push([Math.round(x * 10) / 10,Math.round(y * 10) / 10]);
     }
