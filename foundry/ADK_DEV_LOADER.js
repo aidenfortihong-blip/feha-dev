@@ -52,6 +52,7 @@
     quickhackRuntime:"foundry/cyberdeck/FEHA_QUICKHACK_RUNTIME.js",
     cameras:"foundry/cyberdeck/FEHA_CAMERAS.js",
     uiText:"foundry/FEHA_UI_TEXT.js",
+    sheetQuickhacks:"foundry/FEHA_SHEET_QUICKHACKS.js",
     sync:"foundry/FEHA_MULTIPLAYER_SYNC.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js",
     manifest:"version.json"
@@ -224,7 +225,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -354,6 +355,7 @@
     evaluate(source.quickhackRuntime,files.quickhackRuntime,sha);
     evaluate(source.cameras,files.cameras,sha);
     evaluate(source.uiText,files.uiText,sha);
+    evaluate(source.sheetQuickhacks,files.sheetQuickhacks,sha);
     evaluate(source.sync,files.sync,sha);
 
     if (!globalThis.FEHA_CYBER_CORE) {
@@ -403,6 +405,7 @@
       "quickhackRuntime",
       "cameras",
       "uiText",
+      "sheetQuickhacks",
       "multiplayerSync"
     ];
 

@@ -747,3 +747,155 @@ html body .application.dnd5e2.sheet i.currency.gp {
 }
 
 html body .application.dnd5e2.sheet i.currency.gp::before { content: "CR"; }
+
+/* ---- Quickhacks tab (replaces Spells on actor sheets) -------------------- */
+
+html body .application.dnd5e2.sheet .tab.feha-qh-tab > :not(.feha-qh-sheet) {
+  display: none !important;
+}
+
+html body .feha-qh-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 2px;
+  color: var(--fco-white);
+  font-family: var(--fco-body);
+}
+
+html body .feha-qh-sheet > header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--fco-red);
+}
+
+html body .feha-qh-sheet > header small {
+  color: var(--fco-red);
+  font-family: var(--fco-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+}
+
+html body .feha-qh-sheet > header h3 {
+  margin: 2px 0 0;
+  border: 0;
+  color: var(--fco-white);
+  font-family: var(--fco-display);
+  font-size: 22px;
+  letter-spacing: .08em;
+}
+
+html body .feha-qh-count {
+  color: var(--fco-muted);
+  font-family: var(--fco-mono);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+html body .feha-qh-sheet [data-feha-qh-open-deck] {
+  min-height: 34px;
+  padding: 0 14px;
+  background: var(--fco-yellow) !important;
+  border: 1px solid var(--fco-yellow) !important;
+  border-radius: 0 !important;
+  color: #0a0a0a !important;
+  font-family: var(--fco-display) !important;
+  font-weight: 700;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+html body .feha-qh-sheet [data-feha-qh-open-deck]:hover,
+html body .feha-qh-sheet [data-feha-qh-open-deck]:focus-visible {
+  background: #0a0a0a !important;
+  color: var(--fco-yellow) !important;
+  outline: none;
+}
+
+html body .feha-qh-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+html body .feha-qh-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto 64px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: var(--fco-bg);
+  border: 1px solid var(--fco-line);
+  border-left: 3px solid var(--fco-line);
+  cursor: pointer;
+}
+
+html body .feha-qh-row.is-loaded {
+  border-left-color: var(--fco-cyan);
+}
+
+html body .feha-qh-row:hover,
+html body .feha-qh-row:focus-visible {
+  border-color: var(--fco-yellow);
+  outline: none;
+}
+
+html body .feha-qh-row img {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--fco-line);
+  object-fit: contain;
+}
+
+html body .feha-qh-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+html body .feha-qh-copy b {
+  font-family: var(--fco-display);
+  font-size: 14px;
+  letter-spacing: .03em;
+}
+
+html body .feha-qh-copy small {
+  overflow: hidden;
+  color: var(--fco-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body .feha-qh-stat {
+  color: var(--fco-white);
+  font-family: var(--fco-mono);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+html body .feha-qh-state {
+  color: var(--fco-muted);
+  font-family: var(--fco-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-align: right;
+}
+
+html body .feha-qh-row.is-loaded .feha-qh-state {
+  color: var(--fco-cyan);
+}
+
+html body .feha-qh-empty {
+  padding: 18px;
+  border: 1px dashed #5a5a5a;
+  color: #b5b5b5;
+  font-family: var(--fco-display);
+  text-align: center;
+}
