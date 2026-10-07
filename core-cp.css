@@ -969,7 +969,7 @@ html body #hotbar #action-bar .slot.open {
   display: none !important;
 }
 
-html body:not(.feha-player) #hotbar:hover #action-bar .slot.open {
+html body:not(.feha-player) #hotbar #action-bar .slot.open {
   display: flex !important;
 }
 
