@@ -914,3 +914,13 @@ html body .locked-tooltip.item-tooltip * {
   word-break: normal;
   hyphens: none;
 }
+
+/* FEHA has one currency, credits, kept in the gold slot. The other coin
+   fields and dnd5e's coin manager are hidden. */
+html body .application.dnd5e2.sheet section.currency label:has(i.currency.pp),
+html body .application.dnd5e2.sheet section.currency label:has(i.currency.ep),
+html body .application.dnd5e2.sheet section.currency label:has(i.currency.sp),
+html body .application.dnd5e2.sheet section.currency label:has(i.currency.cp),
+html body .application.dnd5e2.sheet section.currency [data-action="currency"] {
+  display: none !important;
+}

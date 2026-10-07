@@ -12,7 +12,7 @@
     throw new Error("FEHA_SHEET_QUICKHACKS requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const FLAG = "fleshEnshrouded";
   const TAB = "spells";
   const hooks = [];
@@ -91,6 +91,12 @@
       nav.setAttribute("aria-label","Quickhacks");
       const icon = nav.querySelector("i");
       if (icon) icon.className = "fas fa-microchip";
+    }
+
+    // The gold slot holds credits (the only FEHA currency).
+    for (const node of root.querySelectorAll('section.currency label:has(i.currency.gp), section.currency i.currency.gp')) {
+      if (node.tagName === "LABEL") node.setAttribute("aria-label","Credits");
+      else node.setAttribute("data-tooltip","Credits");
     }
 
     tab.classList.add("feha-qh-tab");
