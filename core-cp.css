@@ -985,11 +985,24 @@ html body #hotbar #action-bar {
 
 /* Scenes tab: wall status labels (GM only, FEHA_SCENE_WALL_STATUS). */
 #scenes .directory-item.scene[data-feha-wall] { position: relative; }
+#scenes .directory-item.scene[data-feha-wall] > .entry-name { padding-right: 72px; }
 #scenes .feha-wall-tag {
-  position: absolute; right: 4px; bottom: 4px; pointer-events: auto;
-  padding: 1px 5px; font: 600 10px/14px var(--fco-mono); letter-spacing: .06em;
-  background: #0a0a0acc; border: 1px solid currentColor; color: var(--fco-muted);
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%); pointer-events: auto;
+  width: auto; height: auto; min-height: 0; margin: 0; padding: 1px 5px; border-radius: 0; cursor: pointer;
+  font: 600 10px/14px var(--fco-mono); letter-spacing: .06em;
+  background: #0a0a0acc; border: 1px solid currentColor; color: var(--fco-muted); box-shadow: none;
 }
+#scenes .feha-wall-tag:hover, #scenes .feha-wall-tag:focus-visible { background: #000; outline: 1px solid currentColor; outline-offset: 1px; }
+.feha-wall-pick {
+  position: fixed; z-index: 10000; transform: translateX(-100%); display: flex; flex-direction: column; min-width: 150px;
+  padding: 4px; background: var(--fco-bg); border: 1px solid var(--fco-red); box-shadow: 0 6px 18px #000a;
+}
+.feha-wall-pick button {
+  width: 100%; height: 26px; margin: 0; padding: 0 8px; text-align: left; border: 0; border-radius: 0;
+  font: 600 11px var(--fco-mono); letter-spacing: .06em; color: var(--fco-white); background: transparent; box-shadow: none;
+}
+.feha-wall-pick button:hover, .feha-wall-pick button:focus-visible { background: var(--fco-red-deep); color: var(--fco-yellow); outline: none; }
+.feha-wall-pick button[aria-current="true"] { color: var(--fco-cyan); }
 #scenes [data-feha-wall="done"] > .feha-wall-tag { color: #3dff8a; }
 #scenes [data-feha-wall="pack"] > .feha-wall-tag { color: var(--fco-cyan); }
 #scenes [data-feha-wall="border"] > .feha-wall-tag { color: var(--fco-yellow); }

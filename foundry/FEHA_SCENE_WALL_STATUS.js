@@ -10,7 +10,7 @@
 //
 // The state is kept on the scene in flags.fleshEnshrouded.wallStatus. Scenes
 // without it are read from their walls. The chips above the list count each
-// state and filter the list; right-click a scene to mark it WALLED, OPEN or NO WALLS.
+// state and filter the list; click a tag to mark the map WALLED, OPEN or NO WALLS by hand.
 // The hand-walling tool (tools/maps/FEHA_HAND_WALLER.js) writes WALLED / OPEN.
 // Players never see any of this.
 
@@ -95,13 +95,20 @@
 
       let tag = li.querySelector(":scope > .feha-wall-tag");
       if (!tag) {
-        tag = document.createElement("span");
+        tag = document.createElement("button");
+        tag.type = "button";
         tag.className = "feha-wall-tag";
+        tag.addEventListener("click",event => {
+          event.preventDefault();
+          event.stopPropagation();
+          openPicker(tag,game.scenes.get(li.dataset.entryId));
+        });
         li.append(tag);
       }
 
       tag.textContent = STATES[key].label;
-      tag.dataset.tooltip = STATES[key].hint + (saved?.note ? " // " + saved.note : "");
+      tag.dataset.tooltip = STATES[key].hint + (saved?.note ? " // " + saved.note : "") + " (click to change)";
+      tag.setAttribute("aria-label","Wall status: " + STATES[key].label);
     }
 
     const header = root.querySelector(".directory-header");
@@ -137,20 +144,51 @@
     for (const key of Object.keys(STATES)) root.classList.toggle("feha-wall-only-"+key,filter === key);
   }
 
-  function menu(app,entries) {
-    const sceneOf = li => game.scenes.get(li.closest("[data-entry-id]")?.dataset.entryId);
+  // Clicking a tag opens a small picker with the states a GM decides; AUTO
+  // drops the saved state so the walls decide again.
+  const PICK = ["done","open","none","auto"];
 
-    // Only the states a GM decides; the others come from the walls.
-    for (const key of ["done","open","none"]) {
-      const info = STATES[key];
-      entries.push({
-        label:"Walls: " + info.label,
-        icon:"fa-solid fa-border-all",
-        group:"feha-walls",
-        visible:li => game.user?.isGM === true && state(sceneOf(li)) !== key,
-        onClick:async (event,li) => { await set(sceneOf(li),key); }
-      });
-    }
+  function closePicker() {
+    document.querySelector(".feha-wall-pick")?.remove();
+    document.removeEventListener("pointerdown",outside,true);
+    document.removeEventListener("keydown",onKey,true);
+  }
+
+  function outside(event) {
+    if (!event.target.closest(".feha-wall-pick")) closePicker();
+  }
+
+  function onKey(event) {
+    if (event.key === "Escape") closePicker();
+  }
+
+  function openPicker(tag,scene) {
+    closePicker();
+    const current = scene.flags?.[NS]?.[KEY]?.state ?? "auto";
+    const pick = document.createElement("div");
+    pick.className = "feha-wall-pick";
+    pick.setAttribute("role","menu");
+    pick.innerHTML = PICK.map(key =>
+      '<button type="button" role="menuitem" data-feha-wall-set="'+key+'"'+(key === current ? ' aria-current="true"' : '')+'>'+
+      (key === "auto" ? "AUTO (FROM WALLS)" : STATES[key].label)+'</button>'
+    ).join("");
+
+    const box = tag.getBoundingClientRect();
+    pick.style.top = Math.round(box.bottom + 2) + "px";
+    pick.style.left = Math.round(Math.min(box.right,window.innerWidth - 8)) + "px";
+    pick.addEventListener("click",async event => {
+      const button = event.target.closest("[data-feha-wall-set]");
+      if (!button) return;
+      closePicker();
+      const key = button.dataset.fehaWallSet;
+      if (key === "auto") await scene.update({["flags."+NS+".-="+KEY]:null});
+      else await set(scene,key);
+    });
+
+    document.body.append(pick);
+    pick.querySelector("button")?.focus();
+    document.addEventListener("pointerdown",outside,true);
+    document.addEventListener("keydown",onKey,true);
   }
 
   // A GM drawing walls by hand on an unfinished map marks it GM EDIT.
@@ -190,7 +228,6 @@
       }
 
       hooks.push(["renderSceneDirectory",Hooks.on("renderSceneDirectory",repaint)]);
-      hooks.push(["getSceneContextOptions",Hooks.on("getSceneContextOptions",menu)]);
       hooks.push(["updateScene",Hooks.on("updateScene",onSceneUpdate)]);
       hooks.push(["createWall",Hooks.on("createWall",onWallChange)]);
       for (const event of ["createWall","deleteWall","createScene","deleteScene"]) {
@@ -198,8 +235,7 @@
       }
 
       globalThis.FEHA_SCENE_WALL_STATUS = api;
-      // Rebuild the directory so the context menu picks up the new entries.
-      ui.scenes?.render?.();
+      paint();
       console.log("FEHA SCENE WALL STATUS",VERSION,"ready",counts());
     },
 
@@ -209,6 +245,7 @@
       }
 
       clearTimeout(timer);
+      closePicker();
       const root = ui.scenes?.element;
       root?.querySelector?.("."+BAR)?.remove();
       for (const tag of root?.querySelectorAll?.(".feha-wall-tag") ?? []) tag.remove();
