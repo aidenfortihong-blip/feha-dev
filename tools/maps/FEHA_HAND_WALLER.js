@@ -321,7 +321,7 @@
     const d = scene.dimensions;
     const pc = (x,y) => [Math.round((x - d.sceneX) / d.sceneWidth * 1000) / 10,Math.round((y - d.sceneY) / d.sceneHeight * 1000) / 10];
     const walls = FEHAMapWaller.results[id].walls.filter(w => !w.door).map(w => [...pc(w.c[0],w.c[1]),...pc(w.c[2],w.c[3])]);
-    prop[id] = {walls,doors:[],lights:[]};
+    prop[id] = {walls,doors:[]};
     return out;
   }
 
