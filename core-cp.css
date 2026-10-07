@@ -1003,14 +1003,14 @@ html body #hotbar #action-bar {
 .feha-wall-pick button:hover, .feha-wall-pick button:focus-visible { background: var(--fco-red-deep); color: var(--fco-yellow); outline: none; }
 .feha-wall-pick button[aria-current="true"] { color: var(--fco-cyan); }
 /* The sidebar button skin uses !important; the tags and pressed filters need their own colours. */
-html body #sidebar-content #scenes .feha-wall-tag { color: var(--fco-muted) !important; border-color: currentColor !important; background: #0a0a0acc !important; font-family: var(--fco-mono) !important; font-size: 10px; letter-spacing: .06em; }
+html body #sidebar-content #scenes .directory-item > .feha-wall-tag { color: var(--fco-muted) !important; border-color: currentColor !important; background: #0a0a0acc !important; font-family: var(--fco-mono) !important; font-size: 10px; letter-spacing: .06em; }
 html body #sidebar-content #scenes [data-feha-wall="done"] > .feha-wall-tag { color: #3dff8a !important; }
 html body #sidebar-content #scenes [data-feha-wall="pack"] > .feha-wall-tag { color: var(--fco-cyan) !important; }
 html body #sidebar-content #scenes [data-feha-wall="border"] > .feha-wall-tag { color: var(--fco-yellow) !important; }
 html body #sidebar-content #scenes [data-feha-wall="gm"] > .feha-wall-tag { color: #c792ff !important; }
 html body #sidebar-content #scenes [data-feha-wall="none"] > .feha-wall-tag { color: var(--fco-red) !important; }
 html body #sidebar-content #scenes .feha-wall-tag:hover, html body #sidebar-content #scenes .feha-wall-tag:focus-visible { background: #000 !important; outline: 1px solid currentColor !important; outline-offset: 1px; }
-html body #sidebar-content #scenes .feha-wall-bar button { font-family: var(--fco-mono) !important; font-size: 10px; }
+html body #sidebar-content #scenes .feha-wall-bar > button { font-family: var(--fco-mono) !important; font-size: 10px; }
 html body #sidebar-content #scenes .feha-wall-bar button[aria-pressed="true"] { border-color: var(--fco-cyan) !important; color: var(--fco-cyan) !important; }
 #scenes .feha-wall-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 6px; }
 #scenes .feha-wall-bar-title { font: 600 11px var(--fco-mono); color: var(--fco-muted); letter-spacing: .1em; margin-right: 2px; }
