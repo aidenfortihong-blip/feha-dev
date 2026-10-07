@@ -249,7 +249,7 @@
         [{
           name:"Cyberware Cache",
           type:"container",
-          img:"icons/containers/bags/pack-leather-black-brown.webp",
+          img:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/FEHA/macro-icons/feha-cache.svg",
           system:{
             quantity:1,
             weight:{
