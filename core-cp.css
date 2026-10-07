@@ -924,3 +924,38 @@ html body .application.dnd5e2.sheet section.currency label:has(i.currency.cp),
 html body .application.dnd5e2.sheet section.currency [data-action="currency"] {
   display: none !important;
 }
+
+/* Container tiles in the inventory (the Cyberware Cache): one square FEHA
+   frame, the icon kept square, and no capacity bar when the container has no
+   weight limit (dnd5e drew an empty bar across the top). */
+html body .application.dnd5e2.sheet .containers .container {
+  background: var(--fco-bg) !important;
+  border: 1px solid var(--fco-cyan) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  box-shadow: none !important;
+}
+
+html body .application.dnd5e2.sheet .containers .container img {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 8px;
+  object-fit: contain;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+html body .application.dnd5e2.sheet .containers .container .meter.progress[aria-valuemax="Infinity"] {
+  display: none !important;
+}
+
+html body .application.dnd5e2.sheet .containers .container .meter.progress {
+  height: 3px !important;
+  background: var(--fco-raised) !important;
+  border-radius: 0 !important;
+}
+
+html body .application.dnd5e2.sheet .containers .container .meter.progress::before {
+  background: var(--fco-cyan) !important;
+  border-radius: 0 !important;
+}

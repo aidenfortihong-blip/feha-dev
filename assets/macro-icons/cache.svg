@@ -1,21 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#071a1c"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient>
     <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <path d="M14 2H126V114L114 126H2V14Z" fill="url(#bg)" stroke="#5ef6ff" stroke-width="3"/>
+  <!-- Glyph only, no frame or background: the sheet draws the tile. -->
   <!-- hard case: handle, lid seam, cut corners -->
-  <g fill="none" stroke="#5ef6ff" stroke-width="4" filter="url(#glow)">
-    <path d="M50 38V28H78V38"/>
-    <path d="M24 38H104L112 46V98L104 106H24L16 98V46Z"/>
-    <path d="M16 62H112"/>
+  <g fill="none" stroke="#5ef6ff" stroke-width="5" filter="url(#glow)">
+    <path d="M48 30V18H80V30"/>
+    <path d="M20 30H108L118 40V102L108 112H20L10 102V40Z"/>
+    <path d="M10 60H118"/>
   </g>
   <!-- chip emblem on the lid -->
-  <g fill="none" stroke="#f3e600" stroke-width="3">
-    <rect x="54" y="74" width="20" height="20"/>
-    <path d="M58 74V68M64 74V68M70 74V68M58 94V100M64 94V100M70 94V100M54 80H48M54 88H48M74 80H80M74 88H80"/>
+  <g fill="none" stroke="#f3e600" stroke-width="4">
+    <rect x="52" y="74" width="24" height="24"/>
+    <path d="M57 74V67M64 74V67M71 74V67M57 98V105M64 98V105M71 98V105M52 81H45M52 91H45M76 81H83M76 91H83"/>
   </g>
-  <rect x="61" y="81" width="6" height="6" fill="#f3e600"/>
+  <rect x="60" y="82" width="8" height="8" fill="#f3e600"/>
   <!-- latches -->
-  <g fill="#ff5e57"><rect x="30" y="58" width="10" height="8"/><rect x="88" y="58" width="10" height="8"/></g>
+  <g fill="#ff5e57"><rect x="24" y="55" width="12" height="10"/><rect x="92" y="55" width="12" height="10"/></g>
 </svg>
