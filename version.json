@@ -1,8 +1,10 @@
 {
-  "version": "0.12.7",
-  "updated": "2026-10-03",
-  "scope": "balance-and-folders",
+  "version": "0.12.8",
+  "updated": "2026-10-07",
+  "scope": "sheet-polish",
   "notes": [
+    "Character sheets: the Spells tab is now the Quickhacks tab (quickhacks with Mk, RAM and loaded state, plus a button to the Cyberdeck); quickhacks no longer show as feats. Species and background slots are hidden. Credits are the only currency shown. The Cyberware Cache has a FEHA icon. Item hover cards are wide enough for their stats.",
+    "A gun that shares a name with a quickhack (Optic Zero) is no longer treated as a quickhack.",
     "Prices: chrome within a Mk now follows impact (Sandevistans, Berserks, Second Heart and the Capacity Booster cost double; narrow utility pieces 40% less). Quickhacks cost 750 / 1,800 / 4,500 / 11,250 / 27,000 by Mk. Neural Adaptation Kit 7,500. Subdermal Plating reduces physical damage by 4.",
     "Folders: the firearm catalog folder may be called FIREARMS and its maker folders by full company name; the PC folder is PLAYER CHARACTERS.",
     "Combat test: quickhack and grenade once-per-turn limits, turn-based effect durations and the weapon fired-this-turn mark now follow the fight the character is in. With another encounter selected in the tracker (this world has a leftover active one), the limits were off and effects wore off after a few seconds.",
