@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.5.1";
+  const VERSION = "4.5.2";
   const FLAG = "fleshEnshrouded";
   const REWRITE = "4.4-unified";
 
@@ -220,6 +220,10 @@
     if (typeof value === "string") {
       return byAlias.get(normalize(value)) ?? null;
     }
+
+    // Quickhacks are software, never weapons. Some unique guns share a name
+    // with a quickhack (Optic Zero, Motor Lock, Ghost Key).
+    if (value?.type === "weapon") return null;
 
     const itemFlags = value?.flags?.[FLAG] ?? {};
     const sourcePath = String(itemFlags.sourcePath ?? "");
