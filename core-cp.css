@@ -982,3 +982,38 @@ html body #hotbar #action-bar {
   flex-wrap: nowrap;
   width: auto !important;
 }
+
+/* Scenes tab: wall status labels (GM only, FEHA_SCENE_WALL_STATUS). */
+#scenes .directory-item.scene[data-feha-wall] { position: relative; }
+#scenes .feha-wall-tag {
+  position: absolute; right: 4px; bottom: 4px; pointer-events: auto;
+  padding: 1px 5px; font: 600 10px/14px var(--fco-mono); letter-spacing: .06em;
+  background: #0a0a0acc; border: 1px solid currentColor; color: var(--fco-muted);
+}
+#scenes [data-feha-wall="done"] > .feha-wall-tag { color: #3dff8a; }
+#scenes [data-feha-wall="pack"] > .feha-wall-tag { color: var(--fco-cyan); }
+#scenes [data-feha-wall="border"] > .feha-wall-tag { color: var(--fco-yellow); }
+#scenes [data-feha-wall="gm"] > .feha-wall-tag { color: #c792ff; }
+#scenes [data-feha-wall="none"] > .feha-wall-tag { color: var(--fco-red); }
+#scenes .feha-wall-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 6px; }
+#scenes .feha-wall-bar-title { font: 600 11px var(--fco-mono); color: var(--fco-muted); letter-spacing: .1em; margin-right: 2px; }
+#scenes .feha-wall-bar button {
+  flex: 0 0 auto; width: auto; height: 22px; padding: 0 6px; margin: 0;
+  font: 600 10px var(--fco-mono); letter-spacing: .05em; line-height: 20px;
+  color: var(--fco-white); background: var(--fco-panel); border: 1px solid var(--fco-line); border-radius: 0;
+}
+#scenes .feha-wall-bar button b { color: var(--fco-yellow); font-weight: 600; }
+#scenes .feha-wall-bar button:hover, #scenes .feha-wall-bar button:focus-visible { border-color: var(--fco-red); outline: none; }
+#scenes .feha-wall-bar button[aria-pressed="true"] { border-color: var(--fco-cyan); color: var(--fco-cyan); }
+#scenes.feha-wall-only-done .directory-item.scene:not([data-feha-wall="done"]),
+#scenes.feha-wall-only-done .directory-item.folder:not(:has([data-feha-wall="done"])) { display: none !important; }
+#scenes.feha-wall-only-pack .directory-item.scene:not([data-feha-wall="pack"]),
+#scenes.feha-wall-only-pack .directory-item.folder:not(:has([data-feha-wall="pack"])) { display: none !important; }
+#scenes.feha-wall-only-border .directory-item.scene:not([data-feha-wall="border"]),
+#scenes.feha-wall-only-border .directory-item.folder:not(:has([data-feha-wall="border"])) { display: none !important; }
+#scenes.feha-wall-only-open .directory-item.scene:not([data-feha-wall="open"]),
+#scenes.feha-wall-only-open .directory-item.folder:not(:has([data-feha-wall="open"])) { display: none !important; }
+#scenes.feha-wall-only-gm .directory-item.scene:not([data-feha-wall="gm"]),
+#scenes.feha-wall-only-gm .directory-item.folder:not(:has([data-feha-wall="gm"])) { display: none !important; }
+#scenes.feha-wall-only-none .directory-item.scene:not([data-feha-wall="none"]),
+#scenes.feha-wall-only-none .directory-item.folder:not(:has([data-feha-wall="none"])) { display: none !important; }
