@@ -899,3 +899,18 @@ html body .feha-qh-empty {
   font-family: var(--fco-display);
   text-align: center;
 }
+
+/* Item hover cards carry the FEHA stat grid (three columns); at dnd5e's
+   320px a word like BLUDGEONING broke in two. */
+html body #tooltip.item-tooltip,
+html body .locked-tooltip.item-tooltip {
+  max-width: 420px !important;
+  width: 400px;
+}
+
+html body #tooltip.item-tooltip *,
+html body .locked-tooltip.item-tooltip * {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
