@@ -959,3 +959,26 @@ html body .application.dnd5e2.sheet .containers .container .meter.progress::befo
   background: var(--fco-cyan) !important;
   border-radius: 0 !important;
 }
+
+/* ---- Hotbar ---------------------------------------------------------------
+   The bar holds the three FEHA launchers (Market, Cyberdeck, Chrome). Empty
+   slots are hidden; a GM sees them again while hovering the bar, so macros
+   can still be dropped onto it. Players get only the filled slots and none of
+   the page, lock, clear, mute or menu controls. */
+html body #hotbar #action-bar .slot.open {
+  display: none !important;
+}
+
+html body:not(.feha-player) #hotbar:hover #action-bar .slot.open {
+  display: flex !important;
+}
+
+html body.feha-player #hotbar #hotbar-controls-right,
+html body.feha-player #hotbar #hotbar-controls-left {
+  display: none !important;
+}
+
+html body #hotbar #action-bar {
+  flex-wrap: nowrap;
+  width: auto !important;
+}

@@ -4,6 +4,9 @@
 // the deck or not) and opens the Cyberdeck, and the quickhacks stop showing
 // up as feats in the Features tab. Display only: loading, running and RAM stay
 // in the Cyberdeck.
+//
+// It also marks the page body "feha-player" for non-GM users, so the
+// stylesheet can give players the trimmed hotbar (core-cp.css).
 
 (() => {
   const core = globalThis.FEHA_CYBER_CORE;
@@ -12,7 +15,7 @@
     throw new Error("FEHA_SHEET_QUICKHACKS requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const TAB = "spells";
   const hooks = [];
@@ -142,6 +145,8 @@
     quickhacks,
 
     async init() {
+      document.body.classList.toggle("feha-player",!game.user?.isGM);
+
       for (const event of ["renderActorSheetV2","renderActorSheet"]) {
         hooks.push([event,Hooks.on(event,onRender)]);
       }
@@ -155,6 +160,8 @@
     },
 
     async destroy() {
+      document.body.classList.remove("feha-player");
+
       for (const [event,id] of hooks.splice(0)) {
         try { Hooks.off(event,id); } catch {}
       }
