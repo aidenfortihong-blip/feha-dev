@@ -14,6 +14,7 @@
 //        walls:  [[x,y,x,y,...], ...]      polylines
 //        doors:  [[x,y,x,y], ...]
 //        lights: [[x,y,"#colour",squares], ...]   (leave out to keep the lights as they are)
+//        bars:   [[x,y,x,y], ...]          bars, fences, glass: block movement, not sight
 //        open:   [[x,y], ...]              wall ends left open on purpose (checked)
 //   HW.simplify(sceneId)                   after HW.auto: join and straighten the traced outline
 //   HW.tidy(sceneId)                       straighten lines, join near-miss corners
@@ -113,6 +114,11 @@
       for (let i = 0; i < line.length; i += 2) i ? g.lineTo(X(line[i]),Y(line[i + 1])) : g.moveTo(X(line[i]),Y(line[i + 1]));
       g.stroke();
     }
+    g.lineWidth = 3;
+    g.strokeStyle = "#00e5ff";
+    g.setLineDash([6,4]);
+    for (const d of P.bars ?? []) { g.beginPath(); g.moveTo(X(d[0]),Y(d[1])); g.lineTo(X(d[2]),Y(d[3])); g.stroke(); }
+    g.setLineDash([]);
     g.lineWidth = 5;
     g.strokeStyle = "#00ff66";
     for (const d of P.doors ?? []) { g.beginPath(); g.moveTo(X(d[0]),Y(d[1])); g.lineTo(X(d[2]),Y(d[3])); g.stroke(); }
@@ -205,7 +211,7 @@
       const t = Math.max(0,Math.min(1,((x - a) * dx + (y - b) * dy) / len));
       return Math.hypot(a + t * dx - x,b + t * dy - y) <= near;
     };
-    const all = [...segs.map(s => ({s,door:false})),...doors.map(s => ({s,door:true}))];
+    const all = [...segs.map(s => ({s,door:false})),...doors.map(s => ({s,door:true})),...(P.bars ?? []).map(s => ({s,door:false}))];
     for (const [i,{s}] of all.entries()) ends.push([s[0],s[1],i],[s[2],s[3],i]);
 
     const loose = [];
@@ -248,6 +254,8 @@
 
     for (const [x0,y0,x1,y1] of segments(P)) walls.push({c:[...pt(x0,y0),...pt(x1,y1)],...full,door:0,flags:TAG});
     for (const q of P.doors ?? []) walls.push({c:[...pt(q[0],q[1]),...pt(q[2],q[3])],...full,door:1,ds:0,flags:TAG});
+    // Bars, fences, glass: block movement only.
+    for (const q of P.bars ?? []) walls.push({c:[...pt(q[0],q[1]),...pt(q[2],q[3])],move:20,sight:0,light:0,sound:0,door:0,flags:TAG});
 
     // Neon colours pulse slowly, warm orange flickers faintly, the rest is static.
     const lights = (P.lights ?? []).map(([x,y,color,squares = 4]) => {
