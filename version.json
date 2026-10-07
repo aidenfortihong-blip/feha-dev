@@ -1,8 +1,9 @@
 {
-  "version": "0.12.8",
+  "version": "0.12.9",
   "updated": "2026-10-07",
-  "scope": "sheet-polish",
+  "scope": "hotbar",
   "notes": [
+    "Hotbar: just Market, Cyberdeck and Chrome. Empty slots are hidden (a GM sees them while hovering the bar); players also lose the page, lock, clear, mute and menu buttons.",
     "Character sheets: the Spells tab is now the Quickhacks tab (quickhacks with Mk, RAM and loaded state, plus a button to the Cyberdeck); quickhacks no longer show as feats. Species and background slots are hidden. Credits are the only currency shown. The Cyberware Cache has a FEHA icon. Item hover cards are wide enough for their stats.",
     "A gun that shares a name with a quickhack (Optic Zero) is no longer treated as a quickhack.",
     "Prices: chrome within a Mk now follows impact (Sandevistans, Berserks, Second Heart and the Capacity Booster cost double; narrow utility pieces 40% less). Quickhacks cost 750 / 1,800 / 4,500 / 11,250 / 27,000 by Mk. Neural Adaptation Kit 7,500. Subdermal Plating reduces physical damage by 4.",

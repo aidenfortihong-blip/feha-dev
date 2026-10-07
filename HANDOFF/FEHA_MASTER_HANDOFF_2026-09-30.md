@@ -477,3 +477,7 @@ Full combat on a throwaway scene with TEST Gunner and the two dummies: initiativ
 - `FEHA_QUICKHACK_CATALOG.definition` rejects weapon items (unique guns named Optic Zero / Motor Lock / Ghost Key matched quickhacks by name).
 - World: dnd5e setting `currencyWeight` turned off (29,000 credits weighed 580 lb). Cyberware Cache items use `FEHA/macro-icons/feha-cache.svg`.
 - Cleanup done at the GM's request: old combats, Ponyboy's duplicate Dense Marrow, backup journals, DEV macros, FEHA TEST actors, merged GitHub branches (`checkpoint-before-claude` and unmerged `design/*` kept).
+
+## 26. Hotbar (0.12.9, 2026-10-07)
+
+Every user's hotbar is slot 1 Market, 2 Cyberdeck, 3 Chrome (world data; Entry Gateway and Reloader taken off, both still in the Macros directory). `core-cp.css` hides empty slots (`.slot.open`), shows them to GMs on hover, and hides the hotbar side controls for players. `FEHA_SHEET_QUICKHACKS` adds `body.feha-player` for non-GM users. Players open the main menu with Esc and set volume in the Playlists tab.
