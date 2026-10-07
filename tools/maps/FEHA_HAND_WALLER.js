@@ -314,7 +314,7 @@
   // drawn on a flat black surround; always check it by eye before committing.
   // Start with dark:3 (pure black only); raise it if the outline has gaps.
   async function auto(id,options = {}) {
-    Object.assign(FEHAMapWaller.opts,{gw:960,dark:3,open:3,close:0,tol:2.2,minArea:0.002,islands:true,doors:false,whiteLights:true},options);
+    Object.assign(FEHAMapWaller.opts,{gw:960,dark:3,open:3,close:0,tol:2.2,minArea:0.002,islands:true,doors:false,whiteLights:true,test:null},options);
     delete FEHAMapWaller.results[id];
     const out = await FEHAMapWaller.analyze([id]);
     const scene = game.scenes.get(id);

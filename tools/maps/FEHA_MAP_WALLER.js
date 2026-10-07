@@ -121,7 +121,10 @@
 
     for (let i = 0; i < total; i++) {
       const o = i * 4;
-      mask[i] = flat
+      // opts.test(r,g,b) picks the outside by colour (space, sky, water) instead of darkness.
+      mask[i] = opts.test
+        ? (opts.test(data[o],data[o + 1],data[o + 2]) ? 1 : 0)
+        : flat
         ? (Math.abs(data[o] - flat[0]) <= 7 && Math.abs(data[o + 1] - flat[1]) <= 7 && Math.abs(data[o + 2] - flat[2]) <= 7 ? 1 : 0)
         : (Math.max(data[o],data[o + 1],data[o + 2]) < opts.dark ? 1 : 0);
     }
