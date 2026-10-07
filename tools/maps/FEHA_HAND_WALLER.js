@@ -13,7 +13,7 @@
 //   HW.prop[sceneId] = {walls,doors,lights,note}  all in percent of the map
 //        walls:  [[x,y,x,y,...], ...]      polylines
 //        doors:  [[x,y,x,y], ...]
-//        lights: [[x,y,"#colour",squares], ...]
+//        lights: [[x,y,"#colour",squares], ...]   (leave out to keep the lights as they are)
 //   HW.tidy(sceneId)                       straighten lines, join near-miss corners
 //   HW.check(sceneId)                      loose ends and other mistakes
 //   await HW.commit(sceneId,{state})       write it; state "done" or "open"
@@ -254,6 +254,9 @@
       return {x:X,y:Y,walls:true,vision:false,flags:TAG,config:{dim:Math.min(squares,6) * scene.grid.distance,bright:0,color,alpha:0.08,angle:360,luminosity:0,attenuation:0.85,coloration:1,animation}};
     });
 
+    // A proposal without a lights list leaves the lights alone.
+    const touchLights = Array.isArray(P.lights);
+
     // Snapshot for undo: every wall and every light of ours, as they are now.
     const mine = doc => doc.flags?.[NS]?.walledBy === "claude";
     const before = {
@@ -263,7 +266,7 @@
     };
 
     const removeWalls = scene.walls.filter(w => replace || mine(w)).map(w => w.id);
-    const removeLights = scene.lights.filter(mine).map(l => l.id);
+    const removeLights = touchLights ? scene.lights.filter(mine).map(l => l.id) : [];
     if (removeWalls.length) await scene.deleteEmbeddedDocuments("Wall",removeWalls);
     if (walls.length) await scene.createEmbeddedDocuments("Wall",walls);
     if (removeLights.length) await scene.deleteEmbeddedDocuments("AmbientLight",removeLights);
@@ -271,12 +274,12 @@
 
     const doors = (P.doors ?? []).length;
     await scene.update({
-      [`flags.${NS}.mapPass`]:{by:"claude",on:today(),walls:walls.length,doors,lights:lights.length,hand:true,rule:2},
+      [`flags.${NS}.mapPass`]:{by:"claude",on:today(),walls:walls.length,doors,lights:touchLights ? lights.length : "kept",hand:true,rule:2},
       [`flags.${NS}.proposal`]:P,
       [`flags.${NS}.undo`]:before,
       [`flags.${NS}.wallStatus`]:{state,by:"claude",on:today(),walls:scene.walls.size,doors:scene.walls.filter(w => w.door).length,lights:scene.lights.size,note:note ?? P.note ?? ""}
     });
-    return `${scene.name}: ${walls.length} walls (${doors} doors), ${lights.length} lights, marked ${state}`;
+    return `${scene.name}: ${walls.length} walls (${doors} doors), ${touchLights ? lights.length + " lights" : "lights kept"}, marked ${state}`;
   }
 
   // Put back the walls and our lights from before the last commit.
