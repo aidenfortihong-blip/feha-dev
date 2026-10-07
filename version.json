@@ -1,8 +1,9 @@
 {
-  "version": "0.12.9",
+  "version": "0.12.10",
   "updated": "2026-10-07",
-  "scope": "hotbar",
+  "scope": "gm-hotbar",
   "notes": [
+    "GMs always see the full hotbar; players keep the three-button bar.",
     "Hotbar: just Market, Cyberdeck and Chrome. Empty slots are hidden (a GM sees them while hovering the bar); players also lose the page, lock, clear, mute and menu buttons.",
     "Character sheets: the Spells tab is now the Quickhacks tab (quickhacks with Mk, RAM and loaded state, plus a button to the Cyberdeck); quickhacks no longer show as feats. Species and background slots are hidden. Credits are the only currency shown. The Cyberware Cache has a FEHA icon. Item hover cards are wide enough for their stats.",
     "A gun that shares a name with a quickhack (Optic Zero) is no longer treated as a quickhack.",

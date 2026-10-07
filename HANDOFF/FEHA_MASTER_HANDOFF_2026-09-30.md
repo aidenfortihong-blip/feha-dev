@@ -481,3 +481,7 @@ Full combat on a throwaway scene with TEST Gunner and the two dummies: initiativ
 ## 26. Hotbar (0.12.9, 2026-10-07)
 
 Every user's hotbar is slot 1 Market, 2 Cyberdeck, 3 Chrome (world data; Entry Gateway and Reloader taken off, both still in the Macros directory). `core-cp.css` hides empty slots (`.slot.open`), shows them to GMs on hover, and hides the hotbar side controls for players. `FEHA_SHEET_QUICKHACKS` adds `body.feha-player` for non-GM users. Players open the main menu with Esc and set volume in the Playlists tab.
+
+## 27. Pre-session bug test (0.12.10, 2026-10-07)
+
+GMs see the full hotbar at all times (`core-cp.css`). Bug test on throwaway copies, all passing: Market in four shops, chrome install and activation, Cyberdeck and quickhacks (Quickhacks tab), weapons, grenade, all 24 consumables (once per character per rest, reset by a long rest), combat turn limits, camera dialog, Entry Gateway, every actor sheet in Session 1 and the Navy folder. World file check: 1,193 unique files (scene backgrounds, tokens, tiles, actor/item/macro images, music) exist except the Streets of Alabastra background (`Maps in use/` is empty on Forge). Fixed: The Convenience Store token "Devan Ilic" pointed at Rui Faustino's actor. Hikaru (empty NPC) and Xiao (no HP) are unfinished Session 1 NPCs, left to the GM.
