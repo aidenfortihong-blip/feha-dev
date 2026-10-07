@@ -249,7 +249,7 @@
         [{
           name:"Cyberware Cache",
           type:"container",
-          img:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/FEHA/macro-icons/feha-cache.svg",
+          img:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/FEHA/macro-icons/feha-cache-tile.svg",
           system:{
             quantity:1,
             weight:{
