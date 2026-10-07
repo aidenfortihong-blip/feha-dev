@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#071a1c"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M14 2H126V114L114 126H2V14Z" fill="url(#bg)" stroke="#5ef6ff" stroke-width="3"/>
+  <!-- hard case: handle, lid seam, cut corners -->
+  <g fill="none" stroke="#5ef6ff" stroke-width="4" filter="url(#glow)">
+    <path d="M50 38V28H78V38"/>
+    <path d="M24 38H104L112 46V98L104 106H24L16 98V46Z"/>
+    <path d="M16 62H112"/>
+  </g>
+  <!-- chip emblem on the lid -->
+  <g fill="none" stroke="#f3e600" stroke-width="3">
+    <rect x="54" y="74" width="20" height="20"/>
+    <path d="M58 74V68M64 74V68M70 74V68M58 94V100M64 94V100M70 94V100M54 80H48M54 88H48M74 80H80M74 88H80"/>
+  </g>
+  <rect x="61" y="81" width="6" height="6" fill="#f3e600"/>
+  <!-- latches -->
+  <g fill="#ff5e57"><rect x="30" y="58" width="10" height="8"/><rect x="88" y="58" width="10" height="8"/></g>
+</svg>

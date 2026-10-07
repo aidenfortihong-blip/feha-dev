@@ -693,3 +693,57 @@ html body .window-app fieldset > legend {
   letter-spacing: .08em;
   text-transform: uppercase;
 }
+
+/* Species and background are not used in FEHA: their empty "Add" slots are
+   hidden. Other empty slots (Add Class) keep a readable outline. */
+html body .application.dnd5e2.sheet .pill-lg.empty[data-item-type="race"],
+html body .application.dnd5e2.sheet .pill-lg.empty[data-item-type="background"] {
+  display: none !important;
+}
+
+html body .application.dnd5e2.sheet .pill-lg.empty {
+  border-color: #5a5a5a !important;
+  color: #b5b5b5 !important;
+}
+
+html body .application.dnd5e2.sheet .pill-lg.empty:hover,
+html body .application.dnd5e2.sheet .pill-lg.empty:focus-visible {
+  border-color: var(--fco-yellow) !important;
+  color: var(--fco-yellow) !important;
+}
+
+/* Currency: dnd5e's coin pictures become flat chips. FEHA keeps credits in
+   the gold slot, so that one reads CR; the unused coins stay dim. */
+html body .application.dnd5e2.sheet i.currency {
+  display: inline-grid !important;
+  place-items: center;
+  width: 26px !important;
+  height: 18px !important;
+  background: var(--fco-bg) !important;
+  background-image: none !important;
+  border: 1px solid var(--fco-line) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+  color: var(--fco-muted) !important;
+  font-family: var(--fco-mono) !important;
+  font-size: 10px !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+}
+
+html body .application.dnd5e2.sheet i.currency::before {
+  font-family: var(--fco-mono) !important;
+  font-weight: 400 !important;
+}
+
+html body .application.dnd5e2.sheet i.currency.pp::before { content: "PP"; }
+html body .application.dnd5e2.sheet i.currency.ep::before { content: "EP"; }
+html body .application.dnd5e2.sheet i.currency.sp::before { content: "SP"; }
+html body .application.dnd5e2.sheet i.currency.cp::before { content: "CP"; }
+
+html body .application.dnd5e2.sheet i.currency.gp {
+  border-color: var(--fco-yellow) !important;
+  color: var(--fco-yellow) !important;
+}
+
+html body .application.dnd5e2.sheet i.currency.gp::before { content: "CR"; }
