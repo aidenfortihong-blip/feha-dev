@@ -15,6 +15,7 @@
 //        doors:  [[x,y,x,y], ...]
 //        lights: [[x,y,"#colour",squares], ...]   (leave out to keep the lights as they are)
 //        open:   [[x,y], ...]              wall ends left open on purpose (checked)
+//   HW.simplify(sceneId)                   after HW.auto: join and straighten the traced outline
 //   HW.tidy(sceneId)                       straighten lines, join near-miss corners
 //   HW.check(sceneId)                      loose ends and other mistakes
 //   await HW.commit(sceneId,{state})       write it; state "done" or "open"
@@ -316,6 +317,53 @@
     return out;
   }
 
+  // Join the proposal's segments into chains and straighten them: points
+  // closer than tol (percent) to the line are dropped, chains shorter than
+  // minLength are thrown away (specks the tracer picked up). Use after HW.auto.
+  function simplify(id,{tol = 0.5,minLength = 2} = {}) {
+    const P = prop[id];
+    const key = (x,y) => Math.round(x * 10) + "_" + Math.round(y * 10);
+    const ends = new Map();
+    const segs = segments(P).map((s,i) => ({s,i,used:false}));
+    for (const g of segs) for (const k of [key(g.s[0],g.s[1]),key(g.s[2],g.s[3])]) (ends.get(k) ?? ends.set(k,[]).get(k)).push(g);
+
+    const chains = [];
+    for (const start of segs) {
+      if (start.used) continue;
+      start.used = true;
+      const pts = [[start.s[0],start.s[1]],[start.s[2],start.s[3]]];
+      for (const forward of [true,false]) {
+        for (;;) {
+          const tip = forward ? pts[pts.length - 1] : pts[0];
+          const next = (ends.get(key(...tip)) ?? []).find(g => !g.used);
+          if (!next) break;
+          next.used = true;
+          const a = [next.s[0],next.s[1]], b = [next.s[2],next.s[3]];
+          const far = key(...a) === key(...tip) ? b : a;
+          forward ? pts.push(far) : pts.unshift(far);
+        }
+      }
+      chains.push(pts);
+    }
+
+    const rdp = (pts) => {
+      if (pts.length < 3) return pts;
+      const [a,b] = [pts[0],pts[pts.length - 1]];
+      const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx,dy);
+      let worst = 0, at = 0;
+      for (let i = 1; i < pts.length - 1; i++) {
+        const d = len ? Math.abs(dy * pts[i][0] - dx * pts[i][1] + b[0] * a[1] - b[1] * a[0]) / len : Math.hypot(pts[i][0] - a[0],pts[i][1] - a[1]);
+        if (d > worst) { worst = d; at = i; }
+      }
+      return worst > tol ? [...rdp(pts.slice(0,at + 1)).slice(0,-1),...rdp(pts.slice(at))] : [a,b];
+    };
+    const length = pts => pts.slice(1).reduce((sum,p,i) => sum + Math.hypot(p[0] - pts[i][0],p[1] - pts[i][1]),0);
+    const r = v => Math.round(v * 10) / 10;
+
+    P.walls = chains.filter(c => length(c) >= minLength).map(c => rdp(c).flatMap(([x,y]) => [r(x),r(y)]));
+    return {chains:chains.length,kept:P.walls.length,segments:segments(P).length};
+  }
+
   // Cut a doorway out of the proposal: the part of any wall segment lying
   // along the door line is removed and a door is put in its place.
   function door(id,line,tolerance = 1.2) {
@@ -380,5 +428,5 @@
     return out;
   }
 
-  globalThis.HW = {open,tiles,view,verify,tidy,check,commit,undo,prop,queue,next,report,auto,door,close:() => document.getElementById("__sheet")?.remove()};
+  globalThis.HW = {open,tiles,view,verify,tidy,simplify,check,commit,undo,prop,queue,next,report,auto,door,close:() => document.getElementById("__sheet")?.remove()};
 })();
