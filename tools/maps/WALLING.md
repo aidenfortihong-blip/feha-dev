@@ -66,16 +66,17 @@ into GM EDIT.
 
 ## Tracing (HW.auto)
 
- (needs ) traces the outside of the map; then
- joins and straightens it. Always check it by eye.
+`HW.auto(id,opts)` (needs `FEHA_MAP_WALLER.js`) traces the outside of the map;
+then `HW.simplify(id)` joins and straightens it. Always check it by eye.
 
-- Black surround: . Dark grey wall masses: .
-  Thin black wall lines on a grey street: .
-- Outside by colour with : space   (or max<22); earth .
+- Black surround: `{dark:8}`. Dark grey wall masses: `{dark:24,open:2,minArea:0.001}`.
+  Thin black wall lines on a grey street: `{dark:22,open:1,minArea:0.0008}`.
+- Outside by colour with `opts.test(r,g,b)`: space `sat>0.45 && b>g*1.35`
+  (or max<22); earth `r>g*1.15 && g>b*1.1 && r>60`.
 - It traces dark furniture and pits too: drop those chains (small boxes inside
   rooms) and anything off the building. Thin coloured room walls are not traced:
   add them by hand.
-- A doorway the tracer closed:  cuts it when the traced wall
+- A doorway the tracer closed: `HW.door(id,line)` cuts it when the traced wall
   lies along the line; otherwise add the wall pieces and the door by hand.
 
 ## Calls made on the Nebula pass (2026-10-07)
@@ -84,7 +85,7 @@ into GM EDIT.
   catwalk factories) are OPEN: edges are drops, not walls.
 - One-hall maps (engine room, prison ward, server hall, cargo corridor) get the
   outer walls only; machines, racks, crates and railings are not walls.
-- Glass window walls and cell fronts are bars (: block movement only).
+- Glass window walls and cell fronts are bars (`bars`: block movement only).
 - Coloured ticks on Nebula walls are lights, not doors. Where a room has no drawn
   door, one door goes where it meets the main room so it can be reached.
 - Screenshots in the browser pane can lag a step: take a second one before judging.
