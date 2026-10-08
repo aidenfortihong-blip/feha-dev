@@ -64,5 +64,27 @@ into GM EDIT.
    (they are kept on the scene for `undo`, and in the journal
    "FEHA Wall Backup 2026-10-02").
 
-`HW.auto(id)` (needs `FEHA_MAP_WALLER.js`) traces maps drawn on flat black;
-always check it by eye before committing.
+## Tracing (HW.auto)
+
+ (needs ) traces the outside of the map; then
+ joins and straightens it. Always check it by eye.
+
+- Black surround: . Dark grey wall masses: .
+  Thin black wall lines on a grey street: .
+- Outside by colour with : space   (or max<22); earth .
+- It traces dark furniture and pits too: drop those chains (small boxes inside
+  rooms) and anything off the building. Thin coloured room walls are not traced:
+  add them by hand.
+- A doorway the tracer closed:  cuts it when the traced wall
+  lies along the line; otherwise add the wall pieces and the door by hand.
+
+## Calls made on the Nebula pass (2026-10-07)
+
+- Open-air maps (streets, plazas, platforms on water, landing pads, tower tops,
+  catwalk factories) are OPEN: edges are drops, not walls.
+- One-hall maps (engine room, prison ward, server hall, cargo corridor) get the
+  outer walls only; machines, racks, crates and railings are not walls.
+- Glass window walls and cell fronts are bars (: block movement only).
+- Coloured ticks on Nebula walls are lights, not doors. Where a room has no drawn
+  door, one door goes where it meets the main room so it can be reached.
+- Screenshots in the browser pane can lag a step: take a second one before judging.
