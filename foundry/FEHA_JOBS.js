@@ -225,8 +225,8 @@
 
     for (const tier of want) {
       const options = fresh.filter(j => j.tier === tier);
-      // Hand-written jobs first (about two in three), generated gigs fill in.
-      if (options.length && Math.random() < 0.67) {
+      // Hand-written jobs first (about four in five), generated gigs fill in.
+      if (options.length && Math.random() < 0.8) {
         const def = pick(options);
         fresh.splice(fresh.indexOf(def),1);
         const job = fromCatalog(def);
@@ -452,7 +452,7 @@
 }
 #${ROOT_ID} *{box-sizing:border-box;border-radius:0}
 #${ROOT_ID} button{font-family:var(--fj-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
-  background:transparent;color:var(--fj-text);border:1px solid var(--fj-line);padding:6px 12px;min-height:32px;line-height:1;width:auto;margin:0}
+  background:transparent;color:var(--fj-text);border:1px solid var(--fj-line);padding:6px 12px;min-height:32px;height:auto;line-height:1;width:auto;margin:0;flex:0 0 auto}
 #${ROOT_ID} button:hover{border-color:var(--fj-red);background:var(--fj-red-faint)}
 #${ROOT_ID} button:active{transform:translateY(1px)}
 #${ROOT_ID} button:focus-visible,#${ROOT_ID} input:focus-visible,#${ROOT_ID} select:focus-visible,#${ROOT_ID} [tabindex]:focus-visible{outline:2px solid var(--fj-cyan);outline-offset:2px}
@@ -462,7 +462,7 @@
 #${ROOT_ID} .fj-primary:hover{background:#ff7a74;border-color:#ff7a74}
 #${ROOT_ID} .fj-go{background:var(--fj-yellow);color:#141200;border-color:var(--fj-yellow)}
 #${ROOT_ID} .fj-go:hover{background:#fff46a;border-color:#fff46a}
-#${ROOT_ID} input,#${ROOT_ID} select{background:#0a0405;color:var(--fj-text);border:1px solid var(--fj-line);font-family:var(--fj-mono);height:32px;padding:0 8px}
+#${ROOT_ID} input,#${ROOT_ID} select{background:#0a0405;color:var(--fj-text);border:1px solid var(--fj-line);font-family:var(--fj-mono);height:32px;padding:0 8px;width:auto;flex:0 0 auto;margin:0}
 
 #${ROOT_ID} .fj-head{display:flex;align-items:center;gap:18px;padding:14px 22px 12px;border-bottom:1px solid var(--fj-red);
   box-shadow:0 1px 0 rgba(255,94,87,.25),0 6px 18px -8px rgba(255,94,87,.55);flex-wrap:wrap;cursor:move;user-select:none}
@@ -489,7 +489,7 @@
 #${ROOT_ID} .fj-list{overflow:auto;padding:14px 12px 14px 22px;display:flex;flex-direction:column;gap:8px;border-right:1px solid rgba(255,94,87,.16)}
 #${ROOT_ID} .fj-empty{color:var(--fj-muted);padding:24px 4px;font-size:15px}
 #${ROOT_ID} .fj-card{position:relative;display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;width:100%;
-  padding:10px 12px 10px 16px;background:var(--fj-panel);border:1px solid rgba(255,94,87,.18);text-transform:none;letter-spacing:0;font-weight:500;min-height:0;line-height:1.3}
+  padding:10px 12px 10px 16px;flex:0 0 auto;background:var(--fj-panel);border:1px solid rgba(255,94,87,.18);text-transform:none;letter-spacing:0;font-weight:500;min-height:0;line-height:1.3}
 #${ROOT_ID} .fj-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--fj-tc)}
 #${ROOT_ID} .fj-card[aria-current="true"]{border-color:var(--fj-cyan);background:var(--fj-panel-2);box-shadow:inset 0 0 0 1px var(--fj-cyan-faint)}
 #${ROOT_ID} .fj-card.is-locked{opacity:.62}
