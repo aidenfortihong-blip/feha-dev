@@ -433,10 +433,13 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
           g.fillStyle = head.color; g.font = font("",fs,mono);
           g.fillText(n,x0,yy);
           g.fillStyle = "#e9e4ee"; g.font = font(600,fs,display);
+          // Long names shrink to fit (down to 72%), and only then get cut.
           let label = name.toUpperCase();
-          const maxW = colW - fs * 3.6;
+          const maxW = colW - fs * 3.3;
+          let size = fs;
+          while (g.measureText(label).width > maxW && size > fs * 0.72) { size -= 1; g.font = font(600,size,display); }
           while (g.measureText(label).width > maxW && label.length > 4) label = label.slice(0,-2) + "…";
-          g.fillText(label,x0 + fs * 3.4,yy);
+          g.fillText(label,x0 + fs * 3.1,yy);
           yy += lh;
         }
         yy += Math.round(lh * 0.4);
