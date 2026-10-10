@@ -27,7 +27,7 @@
   // Night City district -> Alabastra district. gang: who runs the street
   // there (lore only; their fighters use the NPC catalog's Street roster).
   const DISTRICTS = {
-    "New Niemir":     {was:"Watson",            at:[2150,1290], blurb:"Refugee district: Sloviti families and other climate refugees in old megablocks. Curfews, CivCorp patrols and the 'drug epidemic' raids. Home of the crew.",
+    "New Niemir":     {was:"Watson",            at:[2560,1200], blurb:"Refugee district: Sloviti families and other climate refugees in old megablocks. Curfews, CivCorp patrols and the 'drug epidemic' raids. Home of the crew.",
       gang:["The Niemir Wolves","Sloviti street crew that grew out of a neighbourhood watch. Protective of their own, brutal to informants."]},
     "The Docks":      {was:"Northside / Arasaka Waterfront", at:[1640,1130], blurb:"Container yards, Kurohane's waterfront terminal and the warehouses where customs never looks. Carp-Line's turf.",
       gang:["Rustwater Boys","Dock smugglers and cargo thieves who rent themselves to whoever pays the night shift."]},
