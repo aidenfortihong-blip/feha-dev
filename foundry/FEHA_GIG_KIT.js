@@ -91,7 +91,7 @@
     if (f?.spot) beats.push({at:f.spot,title:"The meet",text:`${f.handle} lays out the job. Pay is ${(job.pay ?? 0).toLocaleString("en-US")} each, half up front if the crew asks nicely. ${job.brief ?? ""}`});
     beats.push({at:job.spot ?? (job.map ? "scene:" + job.map : null),title:"The job",
       text:(job.objectives ?? []).join(". ") + ".",checks:KIND_CHECKS[job.kind] ?? [],enemies});
-    if (job.twist) beats.push({at:job.spot ?? null,title:"The turn",text:job.twist});
+    if (job.twist) beats.push({at:job.spot ?? (job.map ? "scene:" + job.map : null),title:"The turn",text:job.twist});
     if (f?.spot) beats.push({at:f.spot,title:"Payday",text:`Back to ${f.handle} to get paid.`});
     return {hook:f ? `“${f.voice}” — ${f.handle}` : "",beats,npcs:[],wrap:"Pay out on the board. Partial results: pay less, or keep the cred."};
   }
