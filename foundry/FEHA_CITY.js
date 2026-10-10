@@ -342,7 +342,7 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
   const PIN_DX = 58;
   const KEY_PATH = "feha-city";
   const KEY_FILE = "alabastra-key.png";
-  const KEY_W = 1150;
+  const KEY_W = 1220;
 
   // Legend rows by section. Repeated chains (30-33, 47-48) collapse to one row.
   function keySections() {
@@ -416,8 +416,8 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     const colW = (W - pad * 2 - gap) / 2;
     const count = col => col.reduce((n,[,rows]) => n + rows.length + 2,0);
     const rowsMax = Math.max(count(left),count(right));
-    const lh = Math.min(46 * S,Math.floor((H - y - 90 * S) / rowsMax));
-    const fs = Math.floor(lh * 0.66);
+    const lh = Math.min(56 * S,Math.floor((H - y - 90 * S) / rowsMax));
+    const fs = Math.floor(lh * 0.62);
 
     const drawCol = (col,x0) => {
       let yy = y + lh;
