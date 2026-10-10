@@ -493,14 +493,25 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     return path + (path.includes("?") ? "&" : "?") + "v=" + Date.now();
   }
 
-  // Widen the scene so the image keeps its size on the left and the key fits
-  // inside the scene on the right. The image is anchored left, so every
-  // image coordinate stays sceneX + x.
+  // Widen the scene so the key fits inside it, right of the city image.
+  // A v14 level background always stretches to the scene, so the image moves
+  // to a locked tile at its own size on the left (every image coordinate
+  // stays sceneX + x) and the level background becomes a plain dark colour.
+  // Token vision and fog are off: it's a map to look at, not to explore.
   async function layoutScene(scene) {
     const width = IMG_W + KEY_GAP + KEY_W;
-    const bg = scene.background;
-    if (scene.width === width && scene.height === IMG_H && bg.fit === "height" && bg.anchorX === 0) return false;
-    await scene.update({width,height:IMG_H,"background.fit":"height","background.anchorX":0,"background.anchorY":0.5});
+    const level = scene.levels?.contents?.[0] ?? null;
+    const imageTile = scene.tiles.find(t => t.flags?.[FLAG]?.cityImage);
+    const src = imageTile?.texture?.src ?? level?.background?.src ?? scene.background?.src;
+    if (!src) throw new Error("The world map has no image.");
+    if (scene.width !== width || scene.height !== IMG_H || scene.tokenVision || scene.fog?.exploration) {
+      await scene.update({width,height:IMG_H,tokenVision:false,"fog.exploration":false});
+    }
+    const {sceneX:ox,sceneY:oy} = scene.dimensions;
+    const data = {texture:{src},x:ox + IMG_W / 2,y:oy + IMG_H / 2,width:IMG_W,height:IMG_H,sort:-1000,locked:true,flags:{[FLAG]:{cityImage:true}}};
+    if (imageTile) await imageTile.update(data);
+    else await scene.createEmbeddedDocuments("Tile",[data]);
+    if (level?.background?.src) await level.update({"background.src":null,"background.color":"#0b0b10"});
     return true;
   }
 
