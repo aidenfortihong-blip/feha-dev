@@ -194,7 +194,7 @@
     // the time, of a kind that suits the job. Its name goes in the brief and
     // its own battle map comes with it.
     const district = Math.random() < 0.6 ? fixer.district : pick(G.DISTRICTS);
-    const spot = pickSpot(kindName,district);
+    const spot = pickSpot(kindName,district,t);
     const map = spot?.map ?? pick(G.PLACES[pick(kind.places)]);
     const bare = (spot?.name ?? map).replace(/^the /i,"");
     const place = /(Street|Streets|Alley|Road|'s)$/.test(bare) || /'s/.test(bare) ? bare : "the " + bare;
@@ -258,13 +258,15 @@
     "Smuggling":["land","shop","living"]
   };
 
-  function pickSpot(kindName,district) {
+  // Corporate HQs are only for City and Elite work.
+  function pickSpot(kindName,district,tier=1) {
     const c = city();
     if (!c?.placesIn) return null;
     const cats = KIND_SPOTS[kindName] ?? [];
-    const here = c.placesIn(district).filter(p => p.cat !== "crew");
+    const ok = p => p.cat !== "crew" && (tier >= 3 || p.cat !== "corp");
+    const here = c.placesIn(district).filter(ok);
     const fits = here.filter(p => cats.includes(p.cat));
-    const pool = fits.length ? fits : here.length ? here : c.PLACES.map(p => c.place(p[0])).filter(p => p.cat !== "crew" && cats.includes(p.cat));
+    const pool = fits.length ? fits : here.length ? here : c.PLACES.map(p => c.place(p[0])).filter(p => ok(p) && cats.includes(p.cat));
     return pool.length ? pick(pool) : null;
   }
 
