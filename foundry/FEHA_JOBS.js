@@ -684,7 +684,7 @@
 #${ROOT_ID} .fj-card:hover{background:var(--fj-panel-2);border-color:var(--fj-line)}
 #${ROOT_ID} .fj-card .k{font-family:var(--fj-mono);font-size:11px;letter-spacing:.14em;color:var(--fj-muted);text-transform:uppercase}
 #${ROOT_ID} .fj-card .k b{color:var(--fj-accent);font-weight:400}
-#${ROOT_ID} .fj-card .t{font-size:20px;font-weight:700;letter-spacing:.03em;line-height:1.1}
+#${ROOT_ID} .fj-card .ttl{font-size:20px;font-weight:700;letter-spacing:.03em;line-height:1.1}
 #${ROOT_ID} .fj-card .b{color:var(--fj-muted);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #${ROOT_ID} .fj-card .f{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px}
 #${ROOT_ID} .fj-card .pay{margin-left:auto;font-family:var(--fj-mono);font-size:14px;color:var(--fj-yellow)}
@@ -878,7 +878,7 @@
     const f = fixerOf(job);
     return `<button type="button" class="fj-card fj-tc${job.tier}" data-job="${esc(job.id)}"${accent(f)}>
       <span class="k"><b>${esc(f?.handle ?? job.fixer)}</b> // ${esc(job.kind)} // ${esc(spotLabel(job) ?? job.district)}</span>
-      <span class="t">${esc(job.title)}</span>
+      <span class="ttl">${esc(job.title)}</span>
       <span class="b">${esc(job.brief)}</span>
       <span class="f"><span class="fj-tag t">${esc(tierInfo(job.tier).label)}</span>
         ${job.for ? `<span class="fj-tag me">FOR ${esc(String(job.for).toUpperCase())}</span>` : ""}
