@@ -1,21 +1,24 @@
-// FEHA // JOB BOARD
+// FEHA // JOB BOARD 2
 //
-// Fixer jobs for the crew. Players open the board from the hotbar (ADK //
-// JOBS), read the offers and ask for one; the GM approves, runs it at the
-// table and marks it done, which pays every crew member in credits and
-// Street Cred. Street Cred gates the higher tiers.
+// Fixer work for the crew, set up like a phone's contact list. Fixers sit in
+// rings (Street, District, City, Elite); the crew's shared Street Cred opens
+// each ring, and the GM can open any fixer early. Every open fixer keeps a
+// couple of jobs on offer at their own level and posts a new one when a job
+// is finished, so the board fills itself.
+//
+// A player picks a job and their crew and asks for it; the GM confirms; the
+// crew plays it out; the GM pays out. Every crew member gets the credits
+// (through ADKWallet, so the Market and wallet stay in step) and the crew's
+// Street Cred goes up.
 //
 // State lives in one world setting (SETTING). Only a GM writes it: player
-// requests travel to the active GM as a User#query (CH), the same channel
-// style as the rest of FEHA (the installed module has no socket). Street
-// Cred is an actor flag (flags.fleshEnshrouded.streetCred); credits go
-// through ADKWallet so the Market and wallet stay in step.
-//
-// Jobs come from FEHA_JOB_CATALOG: hand-written jobs (used once each until
-// the GM resets them) and generated gigs rolled from its tables.
+// requests reach the active GM as a User#query (CH), like the rest of FEHA
+// (the installed module has no socket). Jobs come from FEHA_JOB_CATALOG
+// (written jobs, used once each until the GM resets them, plus generated
+// gigs) and sit at a spot on the FEHA_CITY map.
 
 (() => {
-  const VERSION = "1.0.0";
+  const VERSION = "2.0.0";
   const core = globalThis.FEHA_CYBER_CORE;
 
   if (!core) {
@@ -24,6 +27,7 @@
 
   const FLAG = "fleshEnshrouded";
   const SETTING = "fehaJobBoardV1";
+  const STATE_V = 2;
   const CH = "feha.jobs";
   const ROOT_ID = "feha-jobs";
   const STYLE_ID = "feha-jobs-css";
@@ -33,15 +37,18 @@
   const PLAYABLE = ["ponyboy","sasha","zach","derke"];
   const HISTORY_MAX = 80;
   const OPEN = ["offered","requested","active"];
+  const PERSONAL = "_personal";
 
   const hooks = [];
   let queryHandler = null;
   let keyHandler = null;
-  let ui$ = {tab:"offers",selected:null,crew:null,rollTier:1,fixer:null,draft:null};
+  // view: contacts | mine | done | gm.  fixer: selected contact.  job: open job.
+  let ui$ = {view:"contacts",fixer:null,job:null,crew:null,rollTier:1,draft:null};
 
   // ------------------------------------------------------------- helpers
 
   const cat = () => globalThis.FEHA_JOB_CATALOG;
+  const city = () => globalThis.FEHA_CITY ?? null;
   const esc = value => String(value ?? "")
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
@@ -49,19 +56,18 @@
     .replace(/[̀-ͯ]/g,"").toLowerCase().trim();
   const rid = () => foundry.utils.randomID();
   const pick = list => list[Math.floor(Math.random() * list.length)];
-  const roll = (min,max,step=50) =>
-    Math.round((min + Math.random() * (max - min)) / step) * step;
+  const roll = (min,max,step=50) => Math.round((min + Math.random() * (max - min)) / step) * step;
   const money = n => "€$ " + Math.round(Number(n) || 0).toLocaleString("en-US");
   const fill = (text,ctx) => String(text).replace(/\{(\w+)\}/g,(m,k) => ctx[k] ?? m);
-  const tierInfo = tier => cat()?.TIERS?.[tier] ?? {label:"TIER "+tier,pay:[0,0],cred:0,need:0};
+  const tierInfo = tier => cat()?.TIERS?.[tier] ?? {label:"RISK " + tier,risk:String(tier),pay:[0,0],cred:0};
   const isActiveGM = () => Boolean(game.user?.isGM && (game.users.activeGM ?? game.user) === game.user);
-
-  function credOf(actor) {
-    return Math.max(0,Math.floor(Number(actor?.flags?.[FLAG]?.streetCred) || 0));
-  }
+  const fixers = () => cat()?.FIXERS ?? [];
+  const rings = () => cat()?.RINGS ?? [];
+  const fixerOf = key => fixers().find(f => f.key === (typeof key === "string" ? key : key?.fixer)) ?? null;
+  const ringOf = fixer => rings().find(r => r.ring === fixer?.ring) ?? null;
 
   function rankOf(cred) {
-    let label = "NOBODY";
+    let label = "NOBODIES";
     for (const [min,name] of cat()?.RANKS ?? []) if (cred >= min) label = name;
     return label;
   }
@@ -73,41 +79,33 @@
   }
 
   function myActor() {
-    const sync = globalThis.FEHA_MULTIPLAYER_SYNC;
-    const viaSync = sync?.localActor?.() ?? null;
+    const viaSync = globalThis.FEHA_MULTIPLAYER_SYNC?.localActor?.() ?? null;
     if (viaSync) return viaSync;
     const assigned = game.user?.character ?? null;
     if (assigned) return assigned;
     return crewActors().find(a => a.isOwner) ?? null;
   }
 
-  function fixerOf(job) {
-    return cat()?.FIXERS?.find(f => f.key === job?.fixer) ?? null;
-  }
+  const crewNames = ids => (ids ?? []).map(id => game.actors.get(id)?.name).filter(Boolean).join(", ") || "nobody";
+  const spotLabel = job => city()?.place?.(job?.spot)?.label ?? null;
 
-  // City map spot for a job (FEHA_CITY), and its label.
-  const city = () => globalThis.FEHA_CITY ?? null;
-  const spotOf = job => job?.spot ?? city()?.spotFor?.({district:job?.district,map:job?.map,fixer:job?.fixer,key:job?.key}) ?? null;
-  const spotLabel = job => city()?.place?.(spotOf(job))?.label ?? null;
   async function marker(job,on) {
     try {
-      if (on) await city()?.setJobMarker?.({...job,spot:spotOf(job)});
+      if (on) await city()?.setJobMarker?.(job);
       else await city()?.clearJobMarker?.(job.id);
     } catch (err) { console.warn("FEHA JOBS // city marker failed",err); }
   }
 
   function sceneFor(name) {
     if (!name) return null;
-    const exact = game.scenes.find(s => s.name === name);
-    if (exact) return exact;
     const lower = norm(name);
-    return game.scenes.find(s => norm(s.name).startsWith(lower)) ?? null;
+    return game.scenes.find(s => s.name === name) ?? game.scenes.find(s => norm(s.name).startsWith(lower)) ?? null;
   }
 
   // -------------------------------------------------------------- state
 
   function registerSetting() {
-    if (game.settings.settings.has("world."+SETTING)) return;
+    if (game.settings.settings.has("world." + SETTING)) return;
     game.settings.register("world",SETTING,{
       scope:"world",
       config:false,
@@ -121,7 +119,9 @@
   function read() {
     const raw = foundry.utils.deepClone(game.settings.get("world",SETTING) ?? {});
     raw.v ??= 1;
-    raw.size ??= 8;
+    raw.cred = Math.max(0,Math.floor(Number(raw.cred) || 0));
+    raw.unlocked ??= [];
+    raw.perFixer ??= 2;
     raw.jobs ??= {};
     raw.used ??= [];
     return raw;
@@ -133,6 +133,7 @@
       .filter(j => !OPEN.includes(j.status))
       .sort((a,b) => (b.updated ?? 0) - (a.updated ?? 0));
     for (const old of done.slice(HISTORY_MAX)) delete state.jobs[old.id];
+    state.v = STATE_V;
     await game.settings.set("world",SETTING,state);
   }
 
@@ -141,7 +142,28 @@
       .filter(j => statuses.includes(j.status))
       .sort((a,b) => (a.tier - b.tier) || ((a.created ?? 0) - (b.created ?? 0)));
 
+  // A fixer works with the crew once its ring's cred is reached, or when the
+  // GM has opened them early.
+  function isOpen(fixer,state) {
+    if (!fixer) return false;
+    if (state.unlocked.includes(fixer.key)) return true;
+    return state.cred >= (ringOf(fixer)?.need ?? 0);
+  }
+
+  function nextRing(state) {
+    return rings().find(r => state.cred < r.need) ?? null;
+  }
+
   // -------------------------------------------------------- job creation
+
+  // Put a job on the city map. If its spot is in another district (the only
+  // place with its battle map), the job moves there, so WHERE matches the pin.
+  function placeJob(job) {
+    job.spot = city()?.spotFor?.({district:job.district,map:job.map,fixer:job.fixer,key:job.key}) ?? null;
+    const at = city()?.place?.(job.spot);
+    if (at && city()?.DISTRICTS?.[job.district] && at.district !== job.district) job.district = at.district;
+    return job;
+  }
 
   function fromCatalog(def) {
     const now = Date.now();
@@ -157,14 +179,12 @@
     });
   }
 
-  function generate(tier=null) {
+  // A generated gig from one fixer at one of their ring's levels.
+  function generate(fixer,tier=null) {
     const C = cat();
     const G = C.gen;
-    const fixers = tier
-      ? C.FIXERS.filter(f => tier >= f.tiers[0] && tier <= f.tiers[1])
-      : C.FIXERS;
-    const fixer = pick(fixers.length ? fixers : C.FIXERS);
-    const t = tier ?? (fixer.tiers[0] + Math.floor(Math.random() * (fixer.tiers[1] - fixer.tiers[0] + 1)));
+    fixer ??= pick(C.FIXERS);
+    const t = tier ?? pick(fixer.tiers ?? [1]);
     const kindName = pick(Object.keys(G.KINDS));
     const kind = G.KINDS[kindName];
     const inTier = Object.entries(G.FACTIONS).filter(([,f]) => t >= f.tiers[0] && t <= f.tiers[1]);
@@ -173,14 +193,13 @@
     const map = pick(G.PLACES[pick(kind.places)]);
     const bare = map.replace(/^the /i,"");
     const place = /(Street|Streets|Alley|Road)$/.test(bare) ? bare : "the " + bare;
-    const factionText = fdef.label ?? faction;
     const whoPool = G.WHO.filter(w => !w.toLowerCase().includes(faction.toLowerCase()));
-    const ctx = {item:pick(G.ITEMS),who:pick(whoPool.length ? whoPool : G.WHO),place,faction:factionText};
+    const ctx = {item:pick(G.ITEMS),who:pick(whoPool.length ? whoPool : G.WHO),place,faction:fdef.label ?? faction};
     const cap = text => text.charAt(0).toUpperCase() + text.slice(1);
 
-    // Enemies: rank-and-file from below the job's tier (3-5 of them) and,
-    // from tier II up, one leader at or just under the tier. Cyberpsycho
-    // gigs are the psycho(s) instead.
+    // Enemies: rank-and-file from below the level (3-5 of them) and, from
+    // moderate risk up, one leader at or just under it. Cyberpsycho gigs
+    // are the psycho(s) instead.
     const counts = new Map();
     const add = name => counts.set(name,(counts.get(name) ?? 0) + 1);
     if (kindName === "Cyberpsycho") {
@@ -199,15 +218,15 @@
 
     const info = tierInfo(t);
     const now = Date.now();
-    return {
+    return placeJob({
       id:rid(),
-      key:"gen-"+rid(),
+      key:"gen-" + rid(),
       src:"generated",
       fixer:fixer.key,
       tier:t,
       kind:kindName,
       title:pick(kind.titles),
-      district:Math.random() < 0.5 ? fixer.district : pick(G.DISTRICTS),
+      district:Math.random() < 0.6 ? fixer.district : pick(G.DISTRICTS),
       map,
       enemies:[...counts.entries()],
       pay:roll(info.pay[0],info.pay[1]),
@@ -219,69 +238,54 @@
       crew:[],
       created:now,
       updated:now
-    };
+    });
   }
 
-  // Put a job on the city map. If its spot is in another district (the only
-  // place with its battle map), the job moves there, so WHERE matches the pin.
-  function placeJob(job) {
-    job.spot = city()?.spotFor?.({district:job.district,map:job.map,fixer:job.fixer,key:job.key}) ?? null;
-    const at = city()?.place?.(job.spot);
-    if (at && city()?.DISTRICTS?.[job.district] && at.district !== job.district) job.district = at.district;
-    return job;
-  }
-
-  // Highest tier any crew member can take, used to aim new offers.
-  function partyTier() {
-    const best = Math.max(0,...crewActors().map(credOf));
-    let tier = 1;
-    for (const [t,info] of Object.entries(cat().TIERS)) if (best >= info.need) tier = Math.max(tier,Number(t));
-    return tier;
-  }
-
-  // Replace the open offers with a fresh set: mostly jobs the crew can take,
-  // one or two a tier above to aim for. Requested and active jobs stay.
-  function rollOffers(state) {
-    for (const job of jobsWith(state,"offered")) delete state.jobs[job.id];
-    const reach = partyTier();
+  // Keep every open fixer at perFixer offers (written jobs first, gigs to
+  // fill), and one personal job on offer while there are any left. Returns
+  // how many jobs were posted.
+  function topUp(state,{only=null}={}) {
+    let posted = 0;
     const used = new Set(state.used);
-    const taken = new Set(jobsWith(state,"requested","active").map(j => j.key));
-    const unused = cat().JOBS.filter(j => !used.has(j.key) && !taken.has(j.key));
-    const fresh = unused.filter(j => !j.for);
-    const size = Math.max(3,Math.min(16,Number(state.size) || 8));
-
-    // At most one personal job per board (about three boards in five), for
-    // a crew member who is in the world and within reach.
-    const names = new Set(crewActors().map(a => norm(a.name)));
-    const personal = unused.filter(j => j.for && names.has(norm(j.for)) && j.tier <= reach);
-    let slots = size;
-    if (personal.length && Math.random() < 0.6) {
-      const job = fromCatalog(pick(personal));
-      state.jobs[job.id] = job;
-      slots -= 1;
-    }
-
-    const stretch = reach < 5 ? Math.min(2,Math.max(1,Math.floor(slots / 5))) : 0;
-    const want = [];
-    for (let i = 0; i < slots - stretch; i++) want.push(1 + Math.floor(Math.random() * reach));
-    for (let i = 0; i < stretch; i++) want.push(Math.min(5,reach + 1));
-
-    for (const tier of want) {
-      const options = fresh.filter(j => j.tier === tier);
-      // Hand-written jobs first (about four in five), generated gigs fill in.
-      if (options.length && Math.random() < 0.8) {
-        const def = pick(options);
-        fresh.splice(fresh.indexOf(def),1);
-        const job = fromCatalog(def);
+    const live = new Set(jobsWith(state,...OPEN).map(j => j.key));
+    const per = Math.max(1,Math.min(4,Number(state.perFixer) || 2));
+    for (const fixer of fixers()) {
+      if (only && fixer.key !== only) continue;
+      if (!isOpen(fixer,state)) continue;
+      const mine = jobsWith(state,"offered").filter(j => j.fixer === fixer.key && !j.for);
+      const fresh = cat().JOBS.filter(j => j.fixer === fixer.key && !j.for && !used.has(j.key) && !live.has(j.key));
+      for (let i = mine.length; i < per; i++) {
+        const def = fresh.length && Math.random() < 0.85 ? fresh.splice(Math.floor(Math.random() * fresh.length),1)[0] : null;
+        const job = def ? fromCatalog(def) : generate(fixer);
         state.jobs[job.id] = job;
-      } else {
-        const job = placeJob(generate(tier));
-        state.jobs[job.id] = job;
+        live.add(job.key);
+        posted++;
       }
     }
+    if (!only && !jobsWith(state,"offered").some(j => j.for)) {
+      const names = new Set(crewActors().map(a => norm(a.name)));
+      const personal = cat().JOBS.filter(j => j.for && names.has(norm(j.for)) && !used.has(j.key) && !live.has(j.key));
+      if (personal.length) {
+        const job = fromCatalog(pick(personal));
+        state.jobs[job.id] = job;
+        posted++;
+      }
+    }
+    return posted;
   }
 
-  // ----------------------------------------------------- GM-side actions
+  // Version 1 kept Street Cred per character and offers in one big pile:
+  // carry the highest character cred over to the crew and re-post offers.
+  function migrate(state) {
+    if (state.v >= STATE_V) return false;
+    const best = Math.max(0,...crewActors().map(a => Math.floor(Number(a.flags?.[FLAG]?.streetCred) || 0)));
+    state.cred = Math.max(state.cred,best);
+    for (const job of jobsWith(state,"offered")) delete state.jobs[job.id];
+    topUp(state);
+    return true;
+  }
+
+  // ----------------------------------------------------------- chat cards
 
   async function chat(content,{gmOnly=false}={}) {
     const data = {content,speaker:{alias:"FIXER NET"}};
@@ -289,35 +293,47 @@
     try { await ChatMessage.create(data); } catch (err) { console.warn("FEHA JOBS // chat failed",err); }
   }
 
-  const crewNames = ids => ids.map(id => game.actors.get(id)?.name).filter(Boolean).join(", ") || "nobody";
-
-  // Chat card for a job event. tone: offer | request | go | done | fail.
-  function chatCard(job,{kicker,tone,body}) {
-    const fixer = job ? fixerOf(job) : null;
+  // tone: offer | request | go | done | fail
+  function chatCard(job,{kicker,tone,body,fixer=null}) {
+    fixer ??= job ? fixerOf(job) : null;
     return `<div class="feha-job-card fjc-${tone}"${fixer?.color ? ` style="--fjc-accent:${esc(fixer.color)}"` : ""}>
       <div class="fjc-k"><span>${esc(kicker)}</span>${fixer ? `<span>${esc(fixer.handle)}</span>` : ""}</div>
       ${job ? `<div class="fjc-t">${esc(job.title)}</div>
-      <div class="fjc-m">${esc(tierInfo(job.tier).label)} · ${esc(job.kind)} · ${esc(job.district)}</div>` : ""}
+      <div class="fjc-m">${esc(tierInfo(job.tier).label)} · ${esc(job.kind)} · ${esc(spotLabel(job) ?? job.district)}</div>` : ""}
       <div class="fjc-b">${body}</div>
     </div>`;
   }
+
+  // New fixers the crew's cred just opened up.
+  async function announceUnlocks(before,after,state) {
+    for (const fixer of fixers()) {
+      const need = ringOf(fixer)?.need ?? 0;
+      if (state.unlocked.includes(fixer.key)) continue;
+      if (before < need && after >= need) {
+        await chat(chatCard(null,{fixer,kicker:"NEW CONTACT",tone:"go",
+          body:`<div class="fjc-t">${esc(fixer.handle)} wants to talk</div><p>${esc(fixer.name)} · ${esc(fixer.district)}</p><p class="fjc-q">“${esc(fixer.voice)}”</p>`}));
+      }
+    }
+  }
+
+  // ----------------------------------------------------- GM-side actions
 
   const actions = {
     async request({jobId,actorId,crew,userId}) {
       const state = read();
       const job = state.jobs[jobId];
-      if (!job || job.status !== "offered") throw new Error("That job is no longer on the board.");
+      if (!job || job.status !== "offered") throw new Error("That job is no longer on offer.");
       const actor = game.actors.get(actorId);
       const user = game.users.get(userId);
       if (!actor || !user) throw new Error("Unknown character.");
-      if (!user.isGM && !actor.testUserPermission(user,"OWNER")) throw new Error("You can only ask for a job as your own character.");
-      const need = tierInfo(job.tier).need;
-      if (!user.isGM && credOf(actor) < need) throw new Error(`${actor.name} needs ${need} Street Cred for this job.`);
+      if (!user.isGM && !actor.testUserPermission(user,"OWNER")) throw new Error("You can only take a job as your own character.");
+      if (!user.isGM && !job.for && !isOpen(fixerOf(job),state)) throw new Error("That fixer won't work with the crew yet.");
       const ids = [...new Set([actorId,...(crew ?? [])])].filter(id => game.actors.get(id));
       Object.assign(job,{status:"requested",crew:ids,requestedBy:userId,requestedAs:actorId,updated:Date.now()});
       await write(state);
-      await chat(chatCard(job,{kicker:"REQUEST",tone:"request",body:`<p><b>${esc(actor.name)}</b> wants this job.</p><p>Crew: ${esc(crewNames(ids))}</p><p class="fjc-hint">Open Jobs on the hotbar to approve or decline.</p>`}),{gmOnly:true});
-      ui.notifications.info(`FIXER NET // ${actor.name} asked for "${job.title}".`);
+      await chat(chatCard(job,{kicker:"WAITING FOR GM",tone:"request",
+        body:`<p><b>${esc(actor.name)}</b> wants to take this job.</p><p>Crew: ${esc(crewNames(ids))}</p><p class="fjc-hint">Open Jobs → GM DESK to confirm or decline.</p>`}),{gmOnly:true});
+      ui.notifications.info(`FIXER NET // ${actor.name} wants "${job.title}". Confirm it on the GM desk.`);
       return {ok:true};
     },
 
@@ -326,7 +342,7 @@
       const job = state.jobs[jobId];
       if (!job || job.status !== "requested") throw new Error("That request is no longer open.");
       const user = game.users.get(userId);
-      if (!user?.isGM && job.requestedBy !== userId) throw new Error("Only the player who asked can withdraw.");
+      if (!user?.isGM && job.requestedBy !== userId) throw new Error("Only the player who asked can cancel.");
       Object.assign(job,{status:"offered",crew:[],requestedBy:null,requestedAs:null,updated:Date.now()});
       await write(state);
       return {ok:true};
@@ -337,13 +353,14 @@
       const job = state.jobs[jobId];
       if (!job || !["offered","requested"].includes(job.status)) throw new Error("That job can't be started.");
       if (crew?.length) job.crew = crew.filter(id => game.actors.get(id));
-      if (!job.crew.length) throw new Error("Pick at least one crew member.");
+      if (!job.crew?.length) throw new Error("Pick at least one crew member.");
       Object.assign(job,{status:"active",started:Date.now(),updated:Date.now()});
       if (job.src === "catalog" && !state.used.includes(job.key)) state.used.push(job.key);
       await write(state);
       await marker(job,true);
       const fixer = fixerOf(job);
-      await chat(chatCard(job,{kicker:"JOB ACCEPTED",tone:"go",body:`<p>Crew: <b>${esc(crewNames(job.crew))}</b></p>${fixer ? `<p class="fjc-q">“${esc(fixer.voice)}”</p>` : ""}`}));
+      await chat(chatCard(job,{kicker:"JOB ON",tone:"go",
+        body:`<p>Crew: <b>${esc(crewNames(job.crew))}</b></p>${fixer ? `<p class="fjc-q">“${esc(fixer.voice)}”</p>` : ""}`}));
       return {ok:true};
     },
 
@@ -351,53 +368,52 @@
       const state = read();
       const job = state.jobs[jobId];
       if (!job || job.status !== "requested") throw new Error("That request is no longer open.");
-      const who = game.actors.get(job.requestedAs)?.name ?? "The crew";
+      const who = game.actors.get(job.requestedAs)?.name ?? "the crew";
       Object.assign(job,{status:"offered",crew:[],requestedBy:null,requestedAs:null,updated:Date.now()});
       await write(state);
-      await chat(chatCard(job,{kicker:"TURNED DOWN",tone:"fail",body:`<p>The fixer turned ${esc(who)} down. Not this one.</p>`}));
+      await chat(chatCard(job,{kicker:"NOT THIS ONE",tone:"fail",body:`<p>The fixer passed on ${esc(who)} for this one.</p>`}));
       return {ok:true};
     },
 
     async complete({jobId,pay,cred}) {
       const state = read();
       const job = state.jobs[jobId];
-      if (!job || job.status !== "active") throw new Error("Only an active job can be paid out.");
+      if (!job || job.status !== "active") throw new Error("Only a job in progress can be paid out.");
       const each = Math.max(0,Math.round(Number(pay ?? job.pay) || 0));
-      const credEach = Math.max(0,Math.round(Number(cred ?? job.cred) || 0));
+      const credUp = Math.max(0,Math.round(Number(cred ?? job.cred) || 0));
       const wallet = globalThis.ADKWallet;
+      if (each && !wallet?.addCredits) throw new Error("The credits wallet isn't loaded; nothing was paid.");
       const paid = [];
       for (const id of job.crew) {
         const actor = game.actors.get(id);
         if (!actor) continue;
-        if (each) {
-          if (wallet?.addCredits) await wallet.addCredits(actor,each);
-          else throw new Error("The credits wallet isn't loaded; nothing was paid.");
-        }
-        if (credEach) await actor.update({[`flags.${FLAG}.streetCred`]:credOf(actor) + credEach});
+        if (each) await wallet.addCredits(actor,each);
         paid.push(actor.name);
       }
-      Object.assign(job,{status:"done",paid:each,credPaid:credEach,finished:Date.now(),updated:Date.now()});
+      const before = state.cred;
+      state.cred += credUp;
+      Object.assign(job,{status:"done",paid:each,credPaid:credUp,finished:Date.now(),updated:Date.now()});
+      topUp(state);
       await write(state);
       await marker(job,false);
-      await chat(chatCard(job,{kicker:"JOB DONE",tone:"done",body:`<div class="fjc-pay"><span>${money(each)}</span><span>+${credEach} CRED</span></div><p>${esc(paid.join(", ") || "Nobody")} ${paid.length === 1 ? "gets" : "each get"} the payout.</p>`}));
+      await chat(chatCard(job,{kicker:"PAID",tone:"done",
+        body:`<div class="fjc-pay"><span>${money(each)} each</span><span>+${credUp} CREW CRED</span></div><p>${esc(paid.join(", ") || "Nobody")} got paid. Crew cred is now ${state.cred}.</p>`}));
+      await announceUnlocks(before,state.cred,state);
       return {ok:true};
     },
 
     async fail({jobId,cred}) {
       const state = read();
       const job = state.jobs[jobId];
-      if (!job || job.status !== "active") throw new Error("Only an active job can fail.");
-      const credEach = Math.round(Number(cred) || 0);
-      if (credEach) {
-        for (const id of job.crew) {
-          const actor = game.actors.get(id);
-          if (actor) await actor.update({[`flags.${FLAG}.streetCred`]:Math.max(0,credOf(actor) + credEach)});
-        }
-      }
-      Object.assign(job,{status:"failed",credPaid:credEach,finished:Date.now(),updated:Date.now()});
+      if (!job || job.status !== "active") throw new Error("Only a job in progress can fail.");
+      const delta = Math.round(Number(cred) || 0);
+      state.cred = Math.max(0,state.cred + delta);
+      Object.assign(job,{status:"failed",credPaid:delta,finished:Date.now(),updated:Date.now()});
+      topUp(state);
       await write(state);
       await marker(job,false);
-      await chat(chatCard(job,{kicker:"JOB FAILED",tone:"fail",body:`<p>${credEach ? `${credEach > 0 ? "+" : ""}${credEach} Street Cred for ${esc(crewNames(job.crew))}.` : "No pay. The fixer will remember."}</p>`}));
+      await chat(chatCard(job,{kicker:"JOB FAILED",tone:"fail",
+        body:`<p>${delta ? `${delta > 0 ? "+" : ""}${delta} crew cred.` : "No pay. The fixer will remember."}</p>`}));
       return {ok:true};
     },
 
@@ -415,29 +431,48 @@
     async remove({jobId}) {
       const state = read();
       delete state.jobs[jobId];
+      topUp(state);
       await write(state);
       await marker({id:jobId},false);
       return {ok:true};
     },
 
-    // A GM-written job (story beats, one-offs). Posted straight to the board.
+    // Swap a fixer's open offers for new ones (or every open fixer's).
+    async refresh({fixer}) {
+      const state = read();
+      for (const job of jobsWith(state,"offered")) if (!job.for && (!fixer || job.fixer === fixer)) delete state.jobs[job.id];
+      topUp(state,{only:fixer ?? null});
+      await write(state);
+      return {ok:true};
+    },
+
+    async rollOne({fixer,tier}) {
+      const state = read();
+      const f = fixerOf(fixer) ?? pick(fixers());
+      const job = generate(f,tier ? Number(tier) : null);
+      state.jobs[job.id] = job;
+      await write(state);
+      return {ok:true,id:job.id};
+    },
+
+    // A GM-written job (story beats, one-offs), posted under a fixer.
     async write({draft}) {
       const d = draft ?? {};
       const title = String(d.title ?? "").trim();
       if (!title) throw new Error("Give the job a title.");
-      const tier = Math.max(1,Math.min(5,Number(d.tier) || 1));
-      const fixer = cat().FIXERS.find(f => f.key === d.fixer) ? d.fixer : cat().FIXERS[0].key;
+      const fixer = fixerOf(d.fixer) ?? fixers()[0];
+      const tier = Math.max(1,Math.min(5,Number(d.tier) || fixer.tiers?.[0] || 1));
       const lines = value => String(value ?? "").split(/\r?\n/).map(s => s.trim()).filter(Boolean);
       const now = Date.now();
-      const job = {
+      const job = placeJob({
         id:rid(),
-        key:"custom-"+rid(),
+        key:"custom-" + rid(),
         src:"custom",
-        fixer,
+        fixer:fixer.key,
         tier,
         kind:String(d.kind ?? "").trim() || "Job",
         title,
-        district:String(d.district ?? "").trim() || fixerOf({fixer})?.district || "Alabastra",
+        district:String(d.district ?? "").trim() || fixer.district,
         map:String(d.map ?? "").trim(),
         enemies:[],
         pay:Math.max(0,Math.round(Number(d.pay) || tierInfo(tier).pay[0])),
@@ -449,33 +484,40 @@
         crew:[],
         created:now,
         updated:now
-      };
-      placeJob(job);
+      });
       const state = read();
       state.jobs[job.id] = job;
       await write(state);
       return {ok:true,id:job.id};
     },
 
-    async newOffers() {
+    async setCred({cred}) {
       const state = read();
-      rollOffers(state);
+      const before = state.cred;
+      state.cred = Math.max(0,Math.round(Number(cred) || 0));
+      topUp(state);
       await write(state);
-      await chat(chatCard(null,{kicker:"FIXER NET",tone:"offer",body:`<div class="fjc-t">New work on the board</div><p>${jobsWith(state,"offered").length} jobs posted. Open <b>Jobs</b> on the hotbar.</p>`}));
+      await announceUnlocks(before,state.cred,state);
       return {ok:true};
     },
 
-    async rollOne({tier}) {
+    async setUnlocked({fixer,open}) {
       const state = read();
-      const job = placeJob(generate(Math.max(1,Math.min(5,Number(tier) || 1))));
-      state.jobs[job.id] = job;
+      state.unlocked = state.unlocked.filter(k => k !== fixer);
+      if (open) state.unlocked.push(fixer);
+      else for (const job of jobsWith(state,"offered")) if (job.fixer === fixer && !job.for) delete state.jobs[job.id];
+      topUp(state);
       await write(state);
-      return {ok:true,id:job.id};
+      const f = fixerOf(fixer);
+      if (open && f) await chat(chatCard(null,{fixer:f,kicker:"NEW CONTACT",tone:"go",
+        body:`<div class="fjc-t">${esc(f.handle)} wants to talk</div><p>${esc(f.name)} · ${esc(f.district)}</p><p class="fjc-q">“${esc(f.voice)}”</p>`}));
+      return {ok:true};
     },
 
-    async setSize({size}) {
+    async setPerFixer({per}) {
       const state = read();
-      state.size = Math.max(3,Math.min(16,Number(size) || 8));
+      state.perFixer = Math.max(1,Math.min(4,Number(per) || 2));
+      topUp(state);
       await write(state);
       return {ok:true};
     },
@@ -487,15 +529,16 @@
       return {ok:true};
     },
 
-    async setCred({actorId,cred}) {
-      const actor = game.actors.get(actorId);
-      if (!actor) throw new Error("Unknown character.");
-      await actor.update({[`flags.${FLAG}.streetCred`]:Math.max(0,Math.round(Number(cred) || 0))});
-      return {ok:true};
+    async topUp() {
+      const state = read();
+      const migrated = migrate(state);
+      const posted = topUp(state);
+      if (migrated || posted) await write(state);
+      return {ok:true,posted};
     }
   };
 
-  // Players may only ask and withdraw; everything else is GM-only.
+  // Players may only ask and cancel; everything else is GM-only.
   const PLAYER_ACTIONS = new Set(["request","withdraw"]);
 
   async function run(kind,payload={}) {
@@ -504,7 +547,7 @@
     if (game.user.isGM) return actions[kind](payload);
     if (!PLAYER_ACTIONS.has(kind)) throw new Error("Only the GM can do that.");
     const gm = game.users.activeGM;
-    if (!gm) throw new Error("No GM is online to take the request.");
+    if (!gm) throw new Error("No GM is online to confirm the job.");
     const result = await gm.query(CH,{kind,payload},{timeout:15000});
     if (!result?.ok) throw new Error(result?.error ?? "The GM's game didn't answer.");
     return result;
@@ -528,7 +571,7 @@
   --fj-bg:#0b0507;--fj-panel:#150a0d;--fj-panel-2:#1d0d12;--fj-panel-3:#251117;
   --fj-line:rgba(255,94,87,.28);--fj-line-soft:rgba(255,94,87,.14);
   --fj-red:#ff5e57;--fj-red-faint:rgba(255,94,87,.12);--fj-cyan:#5ef2ff;--fj-cyan-faint:rgba(94,242,255,.10);
-  --fj-yellow:#f3e600;--fj-text:#f1e6e3;--fj-muted:#c39c98;--fj-dim:#8f706c;
+  --fj-yellow:#f3e600;--fj-green:#37e07c;--fj-text:#f1e6e3;--fj-muted:#c39c98;--fj-dim:#8f706c;
   --fj-t1:#bdb7b5;--fj-t2:#37e07c;--fj-t3:#2f8dff;--fj-t4:#b45cff;--fj-t5:#ff9d2e;
   --fj-display:"Rajdhani","Roboto Condensed","Arial Narrow",sans-serif;
   --fj-mono:"Share Tech Mono",ui-monospace,monospace;
@@ -564,12 +607,13 @@
 #${ROOT_ID} .fj-go{background:var(--fj-yellow);color:#141200;border-color:var(--fj-yellow)}
 #${ROOT_ID} .fj-go:hover{background:#fff46a;border-color:#fff46a}
 #${ROOT_ID} .fj-ghost{border-color:transparent;color:var(--fj-muted)}
+#${ROOT_ID} .fj-mini{min-height:24px;padding:3px 8px;font-size:12px}
 #${ROOT_ID} input,#${ROOT_ID} select,#${ROOT_ID} textarea{background:#0a0405;color:var(--fj-text);border:1px solid var(--fj-line);font-family:var(--fj-mono);font-size:13px;
   height:32px;padding:0 8px;width:auto;flex:0 0 auto;margin:0}
 #${ROOT_ID} textarea{height:auto;min-height:72px;padding:8px;width:100%;resize:vertical;line-height:1.4}
 
 /* header */
-#${ROOT_ID} .fj-head{display:flex;align-items:center;gap:18px;padding:14px 22px 12px;border-bottom:1px solid var(--fj-red);
+#${ROOT_ID} .fj-head{display:flex;align-items:center;gap:22px;padding:14px 22px 12px;border-bottom:1px solid var(--fj-red);
   box-shadow:0 1px 0 rgba(255,94,87,.25),0 6px 18px -8px rgba(255,94,87,.55);flex-wrap:wrap;cursor:move;user-select:none;
   background:linear-gradient(180deg,rgba(255,94,87,.07),transparent)}
 #${ROOT_ID} .fj-brand{display:flex;flex-direction:column;min-width:0}
@@ -578,91 +622,115 @@
 @keyframes fj-blink{50%{opacity:.25}}
 #${ROOT_ID} .fj-title{font-size:32px;font-weight:700;letter-spacing:.14em;line-height:1;color:var(--fj-text);margin:3px 0 0;border:0;text-shadow:0 0 18px rgba(255,94,87,.35)}
 #${ROOT_ID} .fj-title b{color:var(--fj-red);font-weight:700}
-#${ROOT_ID} .fj-crew{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
-#${ROOT_ID} .fj-chip{display:flex;flex-direction:column;gap:2px;padding:5px 10px 6px;border:1px solid var(--fj-line-soft);background:var(--fj-panel);min-width:104px;cursor:default}
-#${ROOT_ID} .fj-chip.is-me{border-color:var(--fj-cyan);background:var(--fj-cyan-faint)}
-#${ROOT_ID} .fj-chip b{font-size:13px;letter-spacing:.08em;text-transform:uppercase}
-#${ROOT_ID} .fj-chip span{font-family:var(--fj-mono);font-size:11px;color:var(--fj-muted)}
-#${ROOT_ID} .fj-chip span em{color:var(--fj-yellow);font-style:normal}
-#${ROOT_ID} .fj-meter{height:3px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
+#${ROOT_ID} .fj-cred{margin-left:auto;display:grid;grid-template-columns:auto 1fr;gap:2px 14px;align-items:center;min-width:300px;max-width:420px;padding:6px 12px;border:1px solid var(--fj-line-soft);background:var(--fj-panel)}
+#${ROOT_ID} .fj-cred .n{grid-row:1/4;font-family:var(--fj-display);font-size:40px;font-weight:700;color:var(--fj-yellow);line-height:1;text-shadow:0 0 14px rgba(243,230,0,.35)}
+#${ROOT_ID} .fj-cred .l{font-family:var(--fj-mono);font-size:11px;letter-spacing:.18em;color:var(--fj-muted)}
+#${ROOT_ID} .fj-cred .r{font-size:15px;font-weight:700;letter-spacing:.1em}
+#${ROOT_ID} .fj-cred .nx{font-family:var(--fj-mono);font-size:11px;color:var(--fj-muted)}
+#${ROOT_ID} .fj-meter{height:4px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
 #${ROOT_ID} .fj-meter i{position:absolute;inset:0 auto 0 0;background:var(--fj-yellow);box-shadow:0 0 6px rgba(243,230,0,.6)}
 #${ROOT_ID} .fj-close{min-width:36px;padding:6px 10px}
 
-/* tab bar */
+/* nav */
 #${ROOT_ID} .fj-bar{display:flex;align-items:center;gap:4px;padding:10px 22px;border-bottom:1px solid var(--fj-line-soft);flex-wrap:wrap}
 #${ROOT_ID} .fj-tab{border-color:transparent;color:var(--fj-muted)}
 #${ROOT_ID} .fj-tab:hover{color:var(--fj-text)}
 #${ROOT_ID} .fj-tab[aria-pressed="true"]{color:var(--fj-cyan);border-color:var(--fj-cyan);background:var(--fj-cyan-faint)}
-#${ROOT_ID} .fj-tab .fj-count{font-family:var(--fj-mono);margin-left:6px;color:var(--fj-yellow)}
-#${ROOT_ID} .fj-tab .fj-alert{display:inline-block;margin-left:6px;padding:2px 5px;background:var(--fj-yellow);color:#141200;font-family:var(--fj-mono);font-size:11px;letter-spacing:.06em}
-#${ROOT_ID} .fj-tools{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-#${ROOT_ID} .fj-tools .fj-sep{width:1px;height:22px;background:var(--fj-line-soft);margin:0 4px}
+#${ROOT_ID} .fj-count{font-family:var(--fj-mono);margin-left:6px;color:var(--fj-yellow)}
+#${ROOT_ID} .fj-alert{display:inline-block;margin-left:6px;padding:2px 5px;background:var(--fj-yellow);color:#141200;font-family:var(--fj-mono);font-size:11px;letter-spacing:.06em}
+#${ROOT_ID} .fj-how{margin-left:auto;font-family:var(--fj-mono);font-size:12px;color:var(--fj-muted);letter-spacing:.04em}
+#${ROOT_ID} .fj-how b{color:var(--fj-text);font-weight:400}
 
 /* body */
-#${ROOT_ID} .fj-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(310px,430px) 1fr}
-#${ROOT_ID} .fj-listwrap{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--fj-line-soft)}
-#${ROOT_ID} .fj-filter{display:flex;gap:6px;align-items:center;padding:10px 12px 0 22px;flex-wrap:wrap;font-family:var(--fj-mono);font-size:11px;letter-spacing:.12em;color:var(--fj-muted)}
-#${ROOT_ID} .fj-filter button{min-height:26px;padding:4px 8px;font-size:12px}
-#${ROOT_ID} .fj-filter button[aria-pressed="true"]{border-color:var(--fj-cyan);color:var(--fj-cyan);background:var(--fj-cyan-faint)}
-#${ROOT_ID} .fj-list{flex:1;overflow:auto;overscroll-behavior:contain;padding:12px 12px 16px 22px;display:flex;flex-direction:column;gap:8px}
-#${ROOT_ID} .fj-empty{color:var(--fj-muted);padding:28px 4px;font-size:16px;max-width:46ch}
+#${ROOT_ID} .fj-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(290px,360px) 1fr}
+#${ROOT_ID} .fj-side{overflow:auto;overscroll-behavior:contain;padding:12px 12px 18px 22px;border-right:1px solid var(--fj-line-soft);display:flex;flex-direction:column;gap:6px}
+#${ROOT_ID} .fj-main{overflow:auto;overscroll-behavior:contain;padding:18px 28px 26px;position:relative}
+#${ROOT_ID} .fj-full{grid-column:1/-1}
+#${ROOT_ID} .fj-ring{display:flex;justify-content:space-between;align-items:baseline;margin:12px 0 4px;font-family:var(--fj-mono);font-size:11px;letter-spacing:.2em;color:var(--fj-red)}
+#${ROOT_ID} .fj-ring:first-child{margin-top:0}
+#${ROOT_ID} .fj-ring span{color:var(--fj-dim);letter-spacing:.1em}
+#${ROOT_ID} .fj-ring.is-open span{color:var(--fj-green)}
+#${ROOT_ID} .fj-contact{display:grid;grid-template-columns:42px 1fr auto;gap:2px 12px;align-items:center;text-align:left;width:100%;padding:8px 10px;
+  background:var(--fj-panel);border:1px solid var(--fj-line-soft);text-transform:none;letter-spacing:0;font-weight:500;min-height:0;line-height:1.25}
+#${ROOT_ID} .fj-contact:hover{background:var(--fj-panel-2);border-color:var(--fj-line)}
+#${ROOT_ID} .fj-contact[aria-current="true"]{border-color:var(--fj-cyan);background:var(--fj-panel-3);box-shadow:inset 3px 0 0 var(--fj-accent)}
+#${ROOT_ID} .fj-contact .who{font-size:17px;font-weight:700;letter-spacing:.04em}
+#${ROOT_ID} .fj-contact .sub{grid-column:2;font-family:var(--fj-mono);font-size:11px;letter-spacing:.08em;color:var(--fj-muted);text-transform:uppercase}
+#${ROOT_ID} .fj-contact .badge{grid-row:1/3;grid-column:3;font-family:var(--fj-mono);font-size:12px;padding:2px 7px;border:1px solid var(--fj-line);color:var(--fj-yellow)}
+#${ROOT_ID} .fj-contact .badge.zero{color:var(--fj-dim)}
+#${ROOT_ID} .fj-contact.is-locked{opacity:.55}
+#${ROOT_ID} .fj-contact.is-locked .fj-mono{background:#2a1a1e;color:var(--fj-dim)}
+#${ROOT_ID} .fj-mono{grid-row:1/3;width:42px;height:42px;display:grid;place-items:center;font-family:var(--fj-mono);font-size:15px;
+  color:#0b0507;background:var(--fj-accent);clip-path:polygon(0 0,100% 0,100% 72%,72% 100%,0 100%)}
+#${ROOT_ID} .fj-empty{color:var(--fj-muted);padding:24px 4px;font-size:16px;max-width:52ch}
 #${ROOT_ID} .fj-empty b{display:block;font-family:var(--fj-mono);font-size:11px;letter-spacing:.2em;color:var(--fj-red);margin-bottom:6px;font-weight:400}
 
+/* fixer page */
+#${ROOT_ID} .fj-fixer{display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start;padding:14px 16px;border:1px solid var(--fj-line-soft);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--fj-accent) 10%,transparent),transparent 60%),var(--fj-panel);margin-bottom:16px;border-left:3px solid var(--fj-accent)}
+#${ROOT_ID} .fj-fixer .fj-mono{grid-row:auto;width:64px;height:64px;font-size:22px}
+#${ROOT_ID} .fj-fixer .h{font-family:var(--fj-mono);font-size:12px;letter-spacing:.2em;color:var(--fj-accent)}
+#${ROOT_ID} .fj-fixer .who{font-size:22px;font-weight:700;letter-spacing:.04em;line-height:1.1}
+#${ROOT_ID} .fj-fixer q{display:block;color:var(--fj-text);font-style:italic;margin-top:6px;opacity:.9}
+#${ROOT_ID} .fj-fixer p{margin:6px 0 0;color:var(--fj-muted);font-size:14px;max-width:78ch}
+#${ROOT_ID} .fj-fixer .meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-family:var(--fj-mono);font-size:12px;color:var(--fj-muted);align-items:center}
+#${ROOT_ID} .fj-fixer .meta b{color:var(--fj-text);font-weight:400}
+
 /* job cards */
-#${ROOT_ID} .fj-card{position:relative;display:grid;grid-template-columns:38px 1fr auto;gap:2px 12px;text-align:left;width:100%;
-  padding:10px 12px 10px 14px;flex:0 0 auto;background:var(--fj-panel);border:1px solid var(--fj-line-soft);
-  text-transform:none;letter-spacing:0;font-weight:500;min-height:0;line-height:1.3}
+#${ROOT_ID} .fj-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+#${ROOT_ID} .fj-card{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;padding:12px 14px 12px 16px;
+  background:var(--fj-panel);border:1px solid var(--fj-line-soft);text-transform:none;letter-spacing:0;font-weight:500;min-height:0;line-height:1.3}
 #${ROOT_ID} .fj-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fj-tc)}
 #${ROOT_ID} .fj-card:hover{background:var(--fj-panel-2);border-color:var(--fj-line)}
-#${ROOT_ID} .fj-card[aria-current="true"]{border-color:var(--fj-cyan);background:var(--fj-panel-3);box-shadow:inset 0 0 0 1px var(--fj-cyan-faint),0 0 18px -8px var(--fj-cyan)}
-#${ROOT_ID} .fj-card.is-locked .fj-n,#${ROOT_ID} .fj-card.is-locked .fj-p{opacity:.55}
-#${ROOT_ID} .fj-mono{grid-row:1/4;align-self:start;width:38px;height:38px;display:grid;place-items:center;font-family:var(--fj-mono);font-size:14px;
-  color:#0b0507;background:var(--fj-accent);clip-path:polygon(0 0,100% 0,100% 72%,72% 100%,0 100%)}
-#${ROOT_ID} .fj-card .fj-k{grid-column:2/4;font-family:var(--fj-mono);font-size:11px;letter-spacing:.14em;color:var(--fj-muted);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#${ROOT_ID} .fj-card .fj-k b{color:var(--fj-accent);font-weight:400}
-#${ROOT_ID} .fj-card .fj-n{font-size:18px;font-weight:700;letter-spacing:.03em;color:var(--fj-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#${ROOT_ID} .fj-card .fj-p{font-family:var(--fj-mono);font-size:13px;color:var(--fj-yellow);white-space:nowrap;align-self:center}
-#${ROOT_ID} .fj-card .fj-s{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+#${ROOT_ID} .fj-card .k{font-family:var(--fj-mono);font-size:11px;letter-spacing:.14em;color:var(--fj-muted);text-transform:uppercase}
+#${ROOT_ID} .fj-card .k b{color:var(--fj-accent);font-weight:400}
+#${ROOT_ID} .fj-card .t{font-size:20px;font-weight:700;letter-spacing:.03em;line-height:1.1}
+#${ROOT_ID} .fj-card .b{color:var(--fj-muted);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#${ROOT_ID} .fj-card .f{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px}
+#${ROOT_ID} .fj-card .pay{margin-left:auto;font-family:var(--fj-mono);font-size:14px;color:var(--fj-yellow)}
 #${ROOT_ID} .fj-tag{font-family:var(--fj-mono);font-size:11px;letter-spacing:.1em;padding:1px 6px;border:1px solid var(--fj-line);color:var(--fj-muted);text-transform:uppercase;white-space:nowrap}
 #${ROOT_ID} .fj-tag.t{color:var(--fj-tc);border-color:var(--fj-tc)}
 #${ROOT_ID} .fj-tag.me{color:var(--fj-cyan);border-color:var(--fj-cyan)}
 #${ROOT_ID} .fj-tag.st-requested{color:#141200;background:var(--fj-yellow);border-color:var(--fj-yellow)}
 #${ROOT_ID} .fj-tag.st-active{color:#031417;background:var(--fj-cyan);border-color:var(--fj-cyan)}
-#${ROOT_ID} .fj-tag.st-done{color:var(--fj-t2);border-color:var(--fj-t2)}
+#${ROOT_ID} .fj-tag.st-done{color:var(--fj-green);border-color:var(--fj-green)}
 #${ROOT_ID} .fj-tag.st-failed{color:var(--fj-red);border-color:var(--fj-red)}
-#${ROOT_ID} .fj-tag.lock{color:var(--fj-red);border-color:var(--fj-red)}
 
-/* detail */
-#${ROOT_ID} .fj-detail{overflow:auto;overscroll-behavior:contain;padding:18px 28px 26px;position:relative}
-#${ROOT_ID} .fj-fixer{display:grid;grid-template-columns:56px 1fr;gap:14px;align-items:start;padding:12px 14px;border:1px solid var(--fj-line-soft);
-  background:linear-gradient(90deg,color-mix(in srgb,var(--fj-accent) 9%,transparent),transparent 60%),var(--fj-panel);margin-bottom:18px;border-left:3px solid var(--fj-accent)}
-#${ROOT_ID} .fj-fixer .fj-mono{grid-row:auto;width:56px;height:56px;font-size:20px}
-#${ROOT_ID} .fj-fixer .fj-h{font-size:12px;font-family:var(--fj-mono);letter-spacing:.2em;color:var(--fj-accent)}
-#${ROOT_ID} .fj-fixer .fj-who{font-size:16px;font-weight:700;letter-spacing:.02em}
-#${ROOT_ID} .fj-fixer q{display:block;color:var(--fj-text);font-style:italic;margin-top:4px;opacity:.85}
-#${ROOT_ID} .fj-fixer p{margin:4px 0 0;color:var(--fj-muted);font-size:14px;max-width:78ch}
-#${ROOT_ID} .fj-hero{position:relative}
-#${ROOT_ID} .fj-hero .fj-wm{position:absolute;right:0;top:-10px;font-family:var(--fj-display);font-size:92px;font-weight:700;line-height:1;color:var(--fj-tc);opacity:.10;pointer-events:none;letter-spacing:-.02em}
-#${ROOT_ID} h2.fj-jt{font-size:36px;font-weight:700;letter-spacing:.06em;line-height:1.02;margin:0 0 10px;border:0;color:var(--fj-text);text-transform:uppercase;max-width:22ch}
-#${ROOT_ID} .fj-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:16px;font-family:var(--fj-mono);font-size:13px;color:var(--fj-muted);align-items:center}
-#${ROOT_ID} .fj-meta b{color:var(--fj-text);font-weight:400}
-#${ROOT_ID} .fj-meta .pay b{color:var(--fj-yellow)}
-#${ROOT_ID} .fj-meta .tier b{color:var(--fj-tc)}
-#${ROOT_ID} .fj-brief{font-size:17px;max-width:68ch;margin:0 0 6px}
+/* job page */
+#${ROOT_ID} .fj-back{margin-bottom:12px}
+#${ROOT_ID} .fj-job{border-top:3px solid var(--fj-tc)}
+#${ROOT_ID} .fj-job h2{font-size:36px;font-weight:700;letter-spacing:.05em;line-height:1.02;margin:14px 0 6px;border:0;color:var(--fj-text);text-transform:uppercase}
+#${ROOT_ID} .fj-job .by{font-family:var(--fj-mono);font-size:12px;letter-spacing:.14em;color:var(--fj-muted);text-transform:uppercase}
+#${ROOT_ID} .fj-job .by b{color:var(--fj-accent);font-weight:400}
+#${ROOT_ID} .fj-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 16px}
+#${ROOT_ID} .fj-fact{padding:8px 10px;border:1px solid var(--fj-line-soft);background:var(--fj-panel)}
+#${ROOT_ID} .fj-fact .l{font-family:var(--fj-mono);font-size:10px;letter-spacing:.2em;color:var(--fj-dim)}
+#${ROOT_ID} .fj-fact .v{font-size:17px;font-weight:700;letter-spacing:.03em;line-height:1.15;margin-top:2px}
+#${ROOT_ID} .fj-fact.risk .v{color:var(--fj-tc)}
+#${ROOT_ID} .fj-fact.pay .v{color:var(--fj-yellow);font-family:var(--fj-mono);font-weight:400}
+#${ROOT_ID} .fj-fact.cred .v{color:var(--fj-cyan);font-family:var(--fj-mono);font-weight:400}
+#${ROOT_ID} .fj-fact .s{font-family:var(--fj-mono);font-size:11px;color:var(--fj-muted)}
+#${ROOT_ID} .fj-status{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;margin:0 0 16px;border:1px solid var(--fj-line);background:var(--fj-panel-2)}
+#${ROOT_ID} .fj-status .dot{width:10px;height:10px;margin-top:5px;flex:0 0 auto;background:var(--fj-muted)}
+#${ROOT_ID} .fj-status.offered .dot{background:var(--fj-green)} #${ROOT_ID} .fj-status.requested .dot{background:var(--fj-yellow)}
+#${ROOT_ID} .fj-status.active .dot{background:var(--fj-cyan)} #${ROOT_ID} .fj-status.failed .dot{background:var(--fj-red)}
+#${ROOT_ID} .fj-status b{display:block;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+#${ROOT_ID} .fj-status span{color:var(--fj-muted);font-size:14px}
+#${ROOT_ID} .fj-brief{font-size:17px;max-width:70ch;margin:0 0 6px}
 #${ROOT_ID} h3.fj-sh{font-family:var(--fj-mono);font-size:12px;letter-spacing:.22em;color:var(--fj-red);margin:18px 0 8px;border:0;font-weight:400;text-transform:uppercase;display:flex;align-items:center;gap:10px}
 #${ROOT_ID} h3.fj-sh::after{content:"";flex:1;height:1px;background:var(--fj-line-soft)}
-#${ROOT_ID} ol.fj-obj{margin:0;padding:0;list-style:none;max-width:68ch;counter-reset:obj}
+#${ROOT_ID} ol.fj-obj{margin:0;padding:0;list-style:none;max-width:70ch;counter-reset:obj}
 #${ROOT_ID} ol.fj-obj li{counter-increment:obj;display:grid;grid-template-columns:28px 1fr;gap:8px;padding:5px 0;border-bottom:1px dashed var(--fj-line-soft)}
 #${ROOT_ID} ol.fj-obj li::before{content:counter(obj,decimal-leading-zero);font-family:var(--fj-mono);color:var(--fj-cyan);font-size:13px;padding-top:1px}
 #${ROOT_ID} .fj-gm{margin-top:20px;padding:12px 14px;border:1px dashed rgba(243,230,0,.45);background:rgba(243,230,0,.035)}
 #${ROOT_ID} .fj-gm h3.fj-sh{color:var(--fj-yellow);margin-top:4px}
 #${ROOT_ID} .fj-gm h3.fj-sh::after{background:rgba(243,230,0,.2)}
-#${ROOT_ID} .fj-gm p{margin:4px 0 10px;max-width:68ch}
-#${ROOT_ID} .fj-gm-hidden{margin-top:20px;font-family:var(--fj-mono);font-size:12px;color:var(--fj-dim);letter-spacing:.12em}
+#${ROOT_ID} .fj-gm p{margin:4px 0 10px;max-width:70ch}
 #${ROOT_ID} .fj-enemies{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
 #${ROOT_ID} .fj-enemies button{text-transform:none;letter-spacing:.02em;font-weight:600;min-height:28px;padding:4px 8px}
 #${ROOT_ID} .fj-enemies span.fj-tag{font-size:12px;padding:4px 8px;text-transform:none;letter-spacing:.02em}
-#${ROOT_ID} .fj-act{margin-top:22px;padding:14px 16px;border:1px solid var(--fj-line-soft);background:var(--fj-panel);display:flex;flex-direction:column;gap:10px}
+#${ROOT_ID} .fj-act{margin-top:22px;padding:14px 16px;border:1px solid var(--fj-line);background:var(--fj-panel);display:flex;flex-direction:column;gap:10px}
+#${ROOT_ID} .fj-act .step{font-family:var(--fj-mono);font-size:11px;letter-spacing:.18em;color:var(--fj-dim)}
 #${ROOT_ID} .fj-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 #${ROOT_ID} .fj-crewpick{display:flex;gap:8px;flex-wrap:wrap}
 #${ROOT_ID} .fj-crewpick label{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--fj-line);cursor:pointer;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:13px;user-select:none}
@@ -676,46 +744,31 @@
 #${ROOT_ID} .fj-tc1{--fj-tc:var(--fj-t1)} #${ROOT_ID} .fj-tc2{--fj-tc:var(--fj-t2)} #${ROOT_ID} .fj-tc3{--fj-tc:var(--fj-t3)}
 #${ROOT_ID} .fj-tc4{--fj-tc:var(--fj-t4)} #${ROOT_ID} .fj-tc5{--fj-tc:var(--fj-t5)}
 
-/* fixers tab */
-#${ROOT_ID} .fj-fixers{grid-column:1/-1;overflow:auto;overscroll-behavior:contain;padding:18px 22px 26px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-content:start}
-#${ROOT_ID} .fj-fx{display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--fj-line-soft);border-top:3px solid var(--fj-accent);
-  background:linear-gradient(180deg,color-mix(in srgb,var(--fj-accent) 8%,transparent),transparent 45%),var(--fj-panel)}
-#${ROOT_ID} .fj-fx header{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:center}
-#${ROOT_ID} .fj-fx .fj-mono{grid-row:auto;width:48px;height:48px;font-size:17px}
-#${ROOT_ID} .fj-fx .fj-h{font-family:var(--fj-mono);font-size:12px;letter-spacing:.2em;color:var(--fj-accent)}
-#${ROOT_ID} .fj-fx .fj-who{font-size:17px;font-weight:700}
-#${ROOT_ID} .fj-fx .fj-d{font-family:var(--fj-mono);font-size:11px;letter-spacing:.1em;color:var(--fj-muted);text-transform:uppercase}
-#${ROOT_ID} .fj-fx q{font-style:italic;color:var(--fj-text);opacity:.85}
-#${ROOT_ID} .fj-fx p{margin:0;color:var(--fj-muted);font-size:14px;flex:1}
-#${ROOT_ID} .fj-fx .fj-stats{display:flex;gap:14px;font-family:var(--fj-mono);font-size:12px;color:var(--fj-muted)}
-#${ROOT_ID} .fj-fx .fj-stats b{color:var(--fj-yellow);font-weight:400}
-#${ROOT_ID} .fj-mini{min-height:22px;padding:2px 6px;font-size:11px;margin-left:6px}
-#${ROOT_ID} .fj-fx footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-
-/* write-a-job form + cred panel */
-#${ROOT_ID} .fj-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;max-width:820px}
+/* GM desk */
+#${ROOT_ID} .fj-desk{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;align-content:start}
+#${ROOT_ID} .fj-box{border:1px solid var(--fj-line-soft);background:var(--fj-panel);padding:12px 14px}
+#${ROOT_ID} .fj-box h3.fj-sh{margin-top:0}
+#${ROOT_ID} .fj-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:7px 0;border-bottom:1px dashed var(--fj-line-soft)}
+#${ROOT_ID} .fj-line:last-child{border-bottom:0}
+#${ROOT_ID} .fj-line .grow{flex:1;min-width:160px}
+#${ROOT_ID} .fj-line .grow b{display:block;font-size:16px;letter-spacing:.03em}
+#${ROOT_ID} .fj-line .grow span{font-family:var(--fj-mono);font-size:11px;color:var(--fj-muted);letter-spacing:.06em}
+#${ROOT_ID} .fj-switch[aria-pressed="true"]{border-color:var(--fj-green);color:var(--fj-green)}
+#${ROOT_ID} .fj-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 #${ROOT_ID} .fj-form label{flex-direction:column;align-items:stretch;gap:4px}
 #${ROOT_ID} .fj-form label input,#${ROOT_ID} .fj-form label select{width:100%}
 #${ROOT_ID} .fj-form .w2{grid-column:span 2} #${ROOT_ID} .fj-form .w4{grid-column:1/-1}
-#${ROOT_ID} .fj-credtable{width:100%;max-width:640px;border-collapse:collapse;font-family:var(--fj-mono);font-size:13px;margin-bottom:6px;background:transparent;border:0}
-#${ROOT_ID} .fj-credtable tr,#${ROOT_ID} .fj-credtable thead{background:transparent}
-#${ROOT_ID} .fj-credtable tbody tr:nth-child(even){background:rgba(255,94,87,.035)}
-#${ROOT_ID} .fj-credtable td,#${ROOT_ID} .fj-credtable th{border-bottom:1px solid var(--fj-line-soft);padding:7px 8px;text-align:left;font-weight:400}
-#${ROOT_ID} .fj-credtable th{color:var(--fj-dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
-#${ROOT_ID} .fj-credtable input{width:90px}
-#${ROOT_ID} .fj-credtable .fj-meter{width:120px;display:inline-block;vertical-align:middle}
 
 @media (max-width:900px){
   #${ROOT_ID}{inset:0;clip-path:none}
-  #${ROOT_ID} .fj-body{grid-template-columns:1fr;grid-template-rows:minmax(170px,40%) 1fr}
-  #${ROOT_ID} .fj-listwrap{border-right:0;border-bottom:1px solid var(--fj-line-soft)}
-  #${ROOT_ID} .fj-list{padding:10px 16px}
-  #${ROOT_ID} .fj-filter{padding:10px 16px 0}
-  #${ROOT_ID} .fj-detail{padding:14px 16px}
+  #${ROOT_ID} .fj-body{grid-template-columns:1fr;grid-template-rows:minmax(170px,38%) 1fr}
+  #${ROOT_ID} .fj-side{border-right:0;border-bottom:1px solid var(--fj-line-soft);padding:10px 16px}
+  #${ROOT_ID} .fj-main{padding:14px 16px}
   #${ROOT_ID} .fj-head,#${ROOT_ID} .fj-bar{padding-left:16px;padding-right:16px}
-  #${ROOT_ID} h2.fj-jt{font-size:27px}
+  #${ROOT_ID} .fj-job h2{font-size:27px}
+  #${ROOT_ID} .fj-facts{grid-template-columns:1fr 1fr}
   #${ROOT_ID} .fj-form{grid-template-columns:1fr 1fr}
-  #${ROOT_ID} .fj-crew{display:none}
+  #${ROOT_ID} .fj-how{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   #${ROOT_ID},#${ROOT_ID} .fj-eyebrow i{animation:none}
@@ -735,7 +788,7 @@
 .chat-message .feha-job-card .fjc-b p{margin:5px 0 0}
 .chat-message .feha-job-card .fjc-q{font-style:italic;opacity:.85}
 .chat-message .feha-job-card .fjc-hint{font-size:12px;opacity:.7}
-.chat-message .feha-job-card .fjc-pay{display:flex;gap:12px;margin-top:6px;font-family:"Share Tech Mono",monospace;font-size:15px}
+.chat-message .feha-job-card .fjc-pay{display:flex;gap:12px;margin-top:6px;font-family:"Share Tech Mono",monospace;font-size:15px;flex-wrap:wrap}
 .chat-message .feha-job-card .fjc-pay span:first-child{color:#f3e600}
 .chat-message .feha-job-card .fjc-pay span:last-child{color:#5ef2ff}
 `;
@@ -753,67 +806,36 @@
   const sfx = kind => { try { globalThis.FEHA_SOUNDS?.play?.(kind,{cooldown:0}); } catch {} };
 
   const HIDE_KEY = "feha-jobs-hide-gm";
-  function hideGM() {
-    try { return localStorage.getItem(HIDE_KEY) === "1"; } catch { return false; }
-  }
-  function setHideGM(on) {
-    try { localStorage.setItem(HIDE_KEY,on ? "1" : "0"); } catch {}
-  }
+  const hideGM = () => { try { return localStorage.getItem(HIDE_KEY) === "1"; } catch { return false; } };
+  const setHideGM = on => { try { localStorage.setItem(HIDE_KEY,on ? "1" : "0"); } catch {} };
 
-  const initials = fixer => String(fixer?.handle ?? "??").replace(/[^A-Z0-9 ]/gi,"").split(/\s+/).filter(Boolean).map(w => w[0]).join("").slice(0,2).toUpperCase() || "??";
-  const accent = fixer => fixer?.color ? ` style="--fj-accent:${esc(fixer.color)}"` : "";
-  const monogram = fixer => `<span class="fj-mono" aria-hidden="true">${esc(initials(fixer))}</span>`;
+  const initials = f => String(f?.handle ?? "??").replace(/[^A-Z0-9 ]/gi,"").split(/\s+/).filter(Boolean).map(w => w[0]).join("").slice(0,2).toUpperCase() || "??";
+  const accent = f => f?.color ? ` style="--fj-accent:${esc(f.color)}"` : "";
+  const monogram = (f,locked=false) => `<span class="fj-mono" aria-hidden="true">${locked ? "?" : esc(initials(f))}</span>`;
 
-  function nextRank(cred) {
-    const ranks = cat()?.RANKS ?? [];
-    let floor = 0, next = null;
-    for (const [min] of ranks) {
-      if (cred >= min) floor = min;
-      else if (next === null) next = min;
-    }
-    return {floor,next,pct:next === null ? 100 : Math.round(100 * (cred - floor) / Math.max(1,next - floor))};
-  }
+  const STATUS = {
+    offered:  ["AVAILABLE","Pick your crew and take it. The GM confirms before it starts."],
+    requested:["WAITING FOR THE GM","The GM has to confirm this job before it starts."],
+    active:   ["IN PROGRESS","Play it out. The GM pays out when it's done."],
+    done:     ["PAID",""],
+    failed:   ["FAILED",""]
+  };
 
   function statusTag(job) {
-    const label = {offered:"",requested:"REQUESTED",active:"ACTIVE",done:"DONE",failed:"FAILED"}[job.status] ?? "";
-    return label ? `<span class="fj-tag st-${job.status}">${label}</span>` : "";
+    if (job.status === "offered") return "";
+    return `<span class="fj-tag st-${job.status}">${esc(STATUS[job.status]?.[0] ?? job.status)}</span>`;
   }
 
-  function lockedFor(job,actor) {
-    if (game.user.isGM || job.status !== "offered") return false;
-    return credOf(actor) < tierInfo(job.tier).need;
-  }
-
-  function card(job,me) {
-    const fixer = fixerOf(job);
-    const locked = lockedFor(job,me);
-    const forMe = job.for && me && norm(job.for) === norm(me.name);
-    return `
-      <button type="button" class="fj-card fj-tc${job.tier}${locked ? " is-locked" : ""}" data-job="${esc(job.id)}"
-        aria-current="${ui$.selected === job.id}"${accent(fixer)}>
-        ${monogram(fixer)}
-        <span class="fj-k"><b>${esc(fixer?.handle ?? job.fixer)}</b> // ${esc(job.kind)} // ${esc(spotLabel(job) ? spotLabel(job).replace(/^\S+ · /,"") : job.district)}</span>
-        <span class="fj-n">${esc(job.title)}</span>
-        <span class="fj-p">${money(job.pay)}</span>
-        <span class="fj-s">
-          <span class="fj-tag t">${esc(tierInfo(job.tier).label)}</span>
-          <span class="fj-tag">+${job.cred} CRED</span>
-          ${job.for ? `<span class="fj-tag${forMe ? " me" : ""}">FOR ${esc(String(job.for).toUpperCase())}</span>` : ""}
-          ${job.src === "custom" ? `<span class="fj-tag">STORY</span>` : ""}
-          ${statusTag(job)}
-          ${locked ? `<span class="fj-tag lock">NEEDS ${tierInfo(job.tier).need} CRED</span>` : ""}
-        </span>
-      </button>`;
-  }
-
-  function crewChips(me) {
-    return crewActors().map(a => {
-      const cred = credOf(a);
-      const r = nextRank(cred);
-      return `<div class="fj-chip${me?.id === a.id ? " is-me" : ""}" title="${esc(a.name)}: ${cred} Street Cred${r.next !== null ? ` (${r.next - cred} to next rank)` : ""}">
-        <b>${esc(a.name)}</b><span><em>${cred}</em> CRED · ${esc(rankOf(cred))}</span>
-        <span class="fj-meter" aria-hidden="true"><i style="width:${r.pct}%"></i></span></div>`;
-    }).join("");
+  function credBlock(state) {
+    const next = nextRing(state);
+    const prev = [...rings()].reverse().find(r => state.cred >= r.need) ?? rings()[0];
+    const pct = next ? Math.round(100 * (state.cred - (prev?.need ?? 0)) / Math.max(1,next.need - (prev?.need ?? 0))) : 100;
+    return `<div class="fj-cred" title="Crew Street Cred: every finished job raises it, and more cred opens bigger fixers.">
+      <span class="n">${state.cred}</span>
+      <span class="l">CREW STREET CRED · <b class="r">${esc(rankOf(state.cred))}</b></span>
+      <span class="fj-meter" aria-hidden="true"><i style="width:${pct}%"></i></span>
+      <span class="nx">${next ? `${next.need - state.cred} more to open ${esc(next.label)} fixers` : "Every fixer in the city knows you"}</span>
+    </div>`;
   }
 
   function crewPicker(selected,{disabled=false}={}) {
@@ -821,199 +843,250 @@
       <label><input type="checkbox" data-crew="${esc(a.id)}" ${selected.includes(a.id) ? "checked" : ""} ${disabled ? "disabled" : ""}> ${esc(a.name)}</label>`).join("")}</div>`;
   }
 
+  // ---- contacts list
+
+  function contactList(state,me) {
+    const isGM = game.user.isGM;
+    const offered = jobsWith(state,"offered");
+    const personal = offered.filter(j => j.for);
+    const parts = [];
+    if (personal.length) {
+      parts.push(`<div class="fj-ring is-open">PERSONAL <span>FOR THE CREW</span></div>`);
+      parts.push(`<button type="button" class="fj-contact" data-fixer="${PERSONAL}" aria-current="${ui$.fixer === PERSONAL}" style="--fj-accent:var(--fj-cyan)">
+        <span class="fj-mono" aria-hidden="true">★</span><span class="who">Personal</span>
+        <span class="badge">${personal.length}</span><span class="sub">Jobs about the crew themselves</span></button>`);
+    }
+    for (const ring of rings()) {
+      const list = fixers().filter(f => f.ring === ring.ring);
+      if (!list.length) continue;
+      const open = state.cred >= ring.need;
+      parts.push(`<div class="fj-ring${open ? " is-open" : ""}">${esc(ring.label)} <span>${open ? "OPEN" : `${ring.need} CRED`}</span></div>`);
+      for (const f of list) {
+        const unlocked = isOpen(f,state);
+        const count = offered.filter(j => j.fixer === f.key && !j.for).length;
+        const hidden = !unlocked && !isGM;
+        parts.push(`<button type="button" class="fj-contact${unlocked ? "" : " is-locked"}" data-fixer="${esc(f.key)}" aria-current="${ui$.fixer === f.key}"${accent(f)}>
+          ${monogram(f,hidden)}<span class="who">${hidden ? "???" : esc(f.handle)}</span>
+          <span class="badge${count ? "" : " zero"}">${unlocked ? count : "LOCKED"}</span>
+          <span class="sub">${hidden ? `Opens at ${ring.need} crew cred` : `${esc(f.district)}${unlocked ? "" : " · locked"}`}</span></button>`);
+      }
+    }
+    return parts.join("");
+  }
+
+  function jobCard(job) {
+    const f = fixerOf(job);
+    return `<button type="button" class="fj-card fj-tc${job.tier}" data-job="${esc(job.id)}"${accent(f)}>
+      <span class="k"><b>${esc(f?.handle ?? job.fixer)}</b> // ${esc(job.kind)} // ${esc(spotLabel(job) ?? job.district)}</span>
+      <span class="t">${esc(job.title)}</span>
+      <span class="b">${esc(job.brief)}</span>
+      <span class="f"><span class="fj-tag t">${esc(tierInfo(job.tier).label)}</span>
+        ${job.for ? `<span class="fj-tag me">FOR ${esc(String(job.for).toUpperCase())}</span>` : ""}
+        ${job.src === "custom" ? `<span class="fj-tag">STORY</span>` : ""}
+        ${statusTag(job)}<span class="pay">${money(job.pay)}</span></span>
+    </button>`;
+  }
+
+  function fixerPage(state) {
+    const isGM = game.user.isGM;
+    const offered = jobsWith(state,"offered");
+    if (ui$.fixer === PERSONAL) {
+      const list = offered.filter(j => j.for);
+      return `<div class="fj-fixer" style="--fj-accent:var(--fj-cyan)"><span class="fj-mono" aria-hidden="true">★</span><div>
+        <div class="h">PERSONAL</div><div class="who">Jobs about the crew</div>
+        <p>Work tied to Ponyboy, Sasha, Zach and Derke's own lives. These are always open, whoever the crew can reach.</p></div></div>
+        <div class="fj-cards">${list.map(jobCard).join("") || `<div class="fj-empty">Nothing personal right now.</div>`}</div>`;
+    }
+    const f = fixerOf(ui$.fixer);
+    if (!f) return `<div class="fj-empty"><b>FIXER NET</b>Pick a contact on the left to see their work.</div>`;
+    const ring = ringOf(f);
+    const unlocked = isOpen(f,state);
+    if (!unlocked && !isGM) {
+      return `<div class="fj-fixer" style="--fj-accent:#3a2a2e">${monogram(f,true)}<div><div class="h">${esc(ring?.label ?? "")} FIXER</div>
+        <div class="who">???</div><p>This fixer won't talk to the crew yet. Reach <b>${ring?.need ?? 0} crew Street Cred</b> and they'll get in touch.</p></div></div>`;
+    }
+    const list = offered.filter(j => j.fixer === f.key && !j.for);
+    const where = f.spot ? city()?.place?.(f.spot)?.label : null;
+    return `<div class="fj-fixer"${accent(f)}>${monogram(f)}<div>
+      <div class="h">${esc(f.handle)} · ${esc(ring?.label ?? "")} FIXER</div><div class="who">${esc(f.name)}</div>
+      <q>${esc(f.voice)}</q><p>${esc(f.blurb)}</p>
+      <div class="meta"><span>DISTRICT <b>${esc(f.district)}</b></span>${where ? `<span>FIND THEM AT <b>${esc(where)}</b></span>` : ""}
+        <span>WORK <b>${esc(f.tiers.map(t => tierInfo(t).risk).join(" / "))} RISK</b></span>
+        ${isGM && where && city()?.worldScene?.() ? `<button type="button" class="fj-ghost fj-mini" data-act="citymap" data-spot="${esc(f.spot)}">Show on city map</button>` : ""}
+        ${isGM ? `<button type="button" class="fj-ghost fj-mini" data-act="refresh" data-fixer="${esc(f.key)}" title="Swap this fixer's offers for new ones">New jobs</button>` : ""}
+        ${isGM && !unlocked ? `<span class="fj-tag">LOCKED FOR PLAYERS</span>` : ""}</div></div></div>
+      <h3 class="fj-sh">JOBS ON OFFER</h3>
+      <div class="fj-cards">${list.map(jobCard).join("") || `<div class="fj-empty">${unlocked ? "Nothing on offer right now." : "Locked: no offers until the crew can reach this fixer (open them early on the GM desk)."}</div>`}</div>`;
+  }
+
+  // ---- job page
+
   function gmBlock(job) {
-    if (hideGM()) return `<div class="fj-gm-hidden">GM NOTES HIDDEN. Use SHOW GM NOTES in the toolbar to see the twist, enemies and map.</div>`;
+    if (hideGM()) return `<div class="fj-note" style="margin-top:20px">GM notes hidden (GM desk → Show GM notes).</div>`;
     const enemies = (job.enemies ?? []).map(([name,count]) => {
       const actor = game.actors.getName(name);
       return actor
         ? `<button type="button" data-act="sheet" data-actor="${esc(actor.id)}" title="Open ${esc(name)}">${esc(name)} ×${count}</button>`
         : `<span class="fj-tag" title="Not imported yet (Actors tab → NPC import)">${esc(name)} ×${count}</span>`;
     }).join("");
-    const scene = sceneFor(job.map);
-    return `
-      <section class="fj-gm" aria-label="GM only">
-        <h3 class="fj-sh">GM ONLY // TWIST</h3>
-        <p>${esc(job.twist || "None.")}</p>
-        <h3 class="fj-sh">ENEMIES</h3>
-        <div class="fj-enemies">${enemies || `<span class="fj-note">None listed.</span>`}</div>
-        <h3 class="fj-sh">SUGGESTED MAP</h3>
-        <div class="fj-row">
-          <span>${esc(job.map || "—")}</span>
-          ${scene ? `<button type="button" data-act="viewmap" data-scene="${esc(scene.id)}" title="Preview on your screen only; players stay where they are">View map</button>` : (job.map ? `<span class="fj-note">No scene with that name.</span>` : "")}
-        </div>
-      </section>`;
+    const scene = sceneFor(city()?.place?.(job.spot)?.map ?? job.map) ?? sceneFor(job.map);
+    return `<section class="fj-gm" aria-label="GM only">
+      <h3 class="fj-sh">GM ONLY · THE TWIST</h3><p>${esc(job.twist || "None.")}</p>
+      <h3 class="fj-sh">ENEMIES</h3><div class="fj-enemies">${enemies || `<span class="fj-note">None listed.</span>`}</div>
+      <h3 class="fj-sh">BATTLE MAP</h3><div class="fj-row"><span>${esc(scene?.name ?? job.map ?? "—")}</span>
+        ${scene ? `<button type="button" data-act="viewmap" data-scene="${esc(scene.id)}" title="Open on your screen only">Open battle map</button>` : ""}</div>
+    </section>`;
   }
 
-  function actionBlock(job,me) {
+  function actionBlock(job,state,me) {
     const isGM = game.user.isGM;
-    const need = tierInfo(job.tier).need;
-
     if (job.status === "offered") {
       if (isGM) {
-        const crew = ui$.crew ?? crewActors().map(a => a.id);
-        return `<div class="fj-act">
-          <span class="fj-note">Start this job now for the crew you tick (no request needed).</span>
-          ${crewPicker(crew)}
+        return `<div class="fj-act"><span class="step">GM · START IT DIRECTLY</span>
+          <span class="fj-note">Tick the crew and start the job. No player request needed.</span>
+          ${crewPicker(ui$.crew ?? crewActors().map(a => a.id))}
           <div class="fj-row"><button type="button" class="fj-go" data-act="approve">Start job</button>
           <button type="button" class="fj-ghost" data-act="remove">Take off board</button></div></div>`;
       }
       if (!me) return `<div class="fj-act"><span class="fj-note warn">You need a character to take jobs.</span></div>`;
-      const locked = credOf(me) < need;
-      const crew = ui$.crew ?? [me.id];
-      return `<div class="fj-act">
-        ${locked ? `<span class="fj-note warn">${esc(me.name)} needs ${need} Street Cred for ${esc(tierInfo(job.tier).label)} (has ${credOf(me)}). Finish lower-tier jobs to get there.</span>` : `<span class="fj-note">Pick who's coming. The GM approves the job before it starts.</span>`}
-        ${crewPicker(crew,{disabled:locked})}
-        <div class="fj-row"><button type="button" class="fj-primary" data-act="request" ${locked ? "disabled" : ""}>Ask for this job</button></div></div>`;
+      const locked = !job.for && !isOpen(fixerOf(job),state);
+      return `<div class="fj-act"><span class="step">STEP 1 · WHO'S GOING?</span>
+        ${crewPicker(ui$.crew ?? [me.id],{disabled:locked})}
+        <span class="step">STEP 2 · TAKE IT</span>
+        ${locked ? `<span class="fj-note warn">This fixer won't work with the crew yet.</span>` : `<span class="fj-note">The GM gets a message and confirms the job.</span>`}
+        <div class="fj-row"><button type="button" class="fj-primary" data-act="request" ${locked ? "disabled" : ""}>Take this job</button></div></div>`;
     }
-
     if (job.status === "requested") {
       const who = game.actors.get(job.requestedAs)?.name ?? "Someone";
       if (isGM) {
-        return `<div class="fj-act">
-          <span class="fj-note"><b>${esc(who)}</b> asked for this job. Adjust the crew if needed.</span>
+        return `<div class="fj-act"><span class="step">GM · CONFIRM</span>
+          <span class="fj-note"><b>${esc(who)}</b> wants this job. Change the crew if needed.</span>
           ${crewPicker(ui$.crew ?? job.crew)}
-          <div class="fj-row"><button type="button" class="fj-go" data-act="approve">Approve</button>
+          <div class="fj-row"><button type="button" class="fj-go" data-act="approve">Confirm job</button>
           <button type="button" data-act="decline">Decline</button></div></div>`;
       }
-      const mine = job.requestedBy === game.user.id;
-      return `<div class="fj-act"><span class="fj-note">Waiting for the GM. Crew: ${esc(crewNames(job.crew))}.</span>
-        ${mine ? `<div class="fj-row"><button type="button" data-act="withdraw">Withdraw request</button></div>` : ""}</div>`;
+      return `<div class="fj-act"><span class="fj-note">Crew: ${esc(crewNames(job.crew))}.</span>
+        ${job.requestedBy === game.user.id ? `<div class="fj-row"><button type="button" data-act="withdraw">Cancel request</button></div>` : ""}</div>`;
     }
-
     if (job.status === "active") {
-      if (!isGM) return `<div class="fj-act"><span class="fj-note">In progress. Crew: ${esc(crewNames(job.crew))}. The GM pays out when it's done.</span></div>`;
-      return `<div class="fj-act">
-        <span class="fj-note">Crew: <b>${esc(crewNames(job.crew))}</b>. Pay is per crew member. Change it for a partial or bonus result${job.kind === "Cyberpsycho" ? " (non-lethal pays double)" : ""}.</span>
+      if (!isGM) return `<div class="fj-act"><span class="fj-note">Crew: ${esc(crewNames(job.crew))}.</span></div>`;
+      return `<div class="fj-act"><span class="step">GM · WHEN IT'S OVER</span>
+        <span class="fj-note">Crew: <b>${esc(crewNames(job.crew))}</b>. Pay is per crew member; change it for a partial or bonus result${job.kind === "Cyberpsycho" ? " (non-lethal pays double)" : ""}.</span>
         <div class="fj-row fj-pay">
           <label>PAY EACH <input type="number" min="0" step="50" data-field="pay" value="${job.pay}"></label>
-          <label>CRED EACH <input type="number" min="0" step="1" data-field="cred" value="${job.cred}"></label>
+          <label>CREW CRED <input type="number" min="0" step="1" data-field="cred" value="${job.cred}"></label>
           ${job.kind === "Cyberpsycho" ? `<button type="button" data-act="double" title="Non-lethal takedown">×2 non-lethal</button>` : ""}
-          <button type="button" class="fj-go" data-act="complete">Pay out</button>
-        </div>
+          <button type="button" class="fj-go" data-act="complete">Pay out</button></div>
         <div class="fj-row fj-pay">
           <label>CRED ON FAIL <input type="number" step="1" data-field="failcred" value="0"></label>
           <button type="button" data-act="fail">Mark failed</button>
-          <button type="button" class="fj-ghost" data-act="reopen">Back to board</button>
-        </div></div>`;
+          <button type="button" class="fj-ghost" data-act="reopen">Back on offer</button></div></div>`;
     }
-
-    const result = job.status === "done"
-      ? `Paid ${money(job.paid)} and +${job.credPaid ?? 0} Street Cred each to ${esc(crewNames(job.crew))}.`
-      : `Failed. Crew: ${esc(crewNames(job.crew))}.`;
-    return `<div class="fj-act"><span class="fj-note">${result}</span>
-      ${isGM ? `<div class="fj-row"><button type="button" data-act="reopen">Put back on board</button><button type="button" class="fj-ghost" data-act="remove">Delete record</button></div>` : ""}</div>`;
+    return isGM ? `<div class="fj-act"><div class="fj-row"><button type="button" data-act="reopen">Offer it again</button>
+      <button type="button" class="fj-ghost" data-act="remove">Delete record</button></div></div>` : "";
   }
 
-  function detail(job,me) {
-    if (!job) {
-      return `<div class="fj-empty"><b>NO JOB SELECTED</b>${ui$.tab === "offers" ? "Pick a job on the left to read the brief." : "Pick an entry on the left."}</div>`;
-    }
-    const fixer = fixerOf(job);
+  function jobPage(job,state,me) {
+    const f = fixerOf(job);
     const info = tierInfo(job.tier);
-    return `
-      ${fixer ? `<div class="fj-fixer"${accent(fixer)}>${monogram(fixer)}<div><div class="fj-h">${esc(fixer.handle)}</div>
-        <div class="fj-who">${esc(fixer.name)} · ${esc(fixer.district)}</div>
-        <q>${esc(fixer.voice)}</q><p>${esc(fixer.blurb)}</p></div></div>` : ""}
-      <div class="fj-hero fj-tc${job.tier}">
-        <span class="fj-wm" aria-hidden="true">${esc(info.label.replace("TIER ",""))}</span>
-        <h2 class="fj-jt">${esc(job.title)}</h2>
-        <div class="fj-meta">
-          <span class="tier">TIER <b>${esc(info.label.replace("TIER ",""))}</b></span>
-          <span>TYPE <b>${esc(job.kind)}</b></span>
-          <span>WHERE <b>${esc(job.district)}</b>${spotLabel(job) ? ` · <b>${esc(spotLabel(job))}</b>` : ""}</span>
-          ${game.user.isGM && spotOf(job) && city()?.worldScene?.() ? `<button type="button" class="fj-ghost" data-act="citymap" data-spot="${esc(spotOf(job))}" title="Open the city map on your screen and point at this spot">Show on city map</button>` : ""}
-          <span class="pay">PAY <b>${money(job.pay)}</b> each</span>
-          <span>CRED <b>+${job.cred}</b></span>
-          ${info.need ? `<span>NEEDS <b>${info.need}</b> cred</span>` : ""}
-          ${job.for ? `<span class="fj-tag me">FOR ${esc(String(job.for).toUpperCase())}</span>` : ""}
-          ${job.src === "generated" ? `<span class="fj-tag">GIG</span>` : job.src === "custom" ? `<span class="fj-tag">STORY</span>` : ""}
-          ${statusTag(job)}
+    const where = spotLabel(job);
+    const [head,line] = STATUS[job.status] ?? [job.status,""];
+    const result = job.status === "done"
+      ? `Paid ${money(job.paid)} each to ${crewNames(job.crew)}; +${job.credPaid ?? 0} crew cred.`
+      : job.status === "failed" ? `Crew: ${crewNames(job.crew)}.` : line;
+    const statusLine = game.user.isGM && job.status === "requested" ? "A player asked for this job. Confirm or decline it below." : result;
+    return `<button type="button" class="fj-ghost fj-mini fj-back" data-act="back">← ${esc(ui$.view === "contacts" ? (ui$.fixer === PERSONAL ? "Personal" : f?.handle ?? "Back") : "Back")}</button>
+      <article class="fj-job fj-tc${job.tier}"${accent(f)}>
+        <div class="by"><b>${esc(f?.handle ?? job.fixer)}</b> · ${esc(f?.name ?? "")}${job.for ? ` · <span class="fj-tag me">FOR ${esc(String(job.for).toUpperCase())}</span>` : ""}</div>
+        <h2>${esc(job.title)}</h2>
+        <div class="fj-facts">
+          <div class="fj-fact risk"><div class="l">RISK</div><div class="v">${esc(info.risk)}</div><div class="s">${esc(job.kind)}</div></div>
+          <div class="fj-fact"><div class="l">WHERE</div><div class="v">${esc(where ?? job.district)}</div><div class="s">${esc(job.district)}
+            ${game.user.isGM && job.spot && city()?.worldScene?.() ? ` · <button type="button" class="fj-ghost fj-mini" data-act="citymap" data-spot="${esc(job.spot)}">Map</button>` : ""}</div></div>
+          <div class="fj-fact pay"><div class="l">PAY</div><div class="v">${money(job.pay)}</div><div class="s">each crew member</div></div>
+          <div class="fj-fact cred"><div class="l">STREET CRED</div><div class="v">+${job.cred}</div><div class="s">for the crew</div></div>
         </div>
-      </div>
-      <p class="fj-brief">${esc(job.brief || "No brief.")}</p>
-      ${job.objectives?.length ? `<h3 class="fj-sh">OBJECTIVES</h3><ol class="fj-obj">${job.objectives.map(o => `<li>${esc(o)}</li>`).join("")}</ol>` : ""}
-      ${game.user.isGM ? gmBlock(job) : ""}
-      ${actionBlock(job,me)}`;
+        <div class="fj-status ${esc(job.status)}"><span class="dot"></span><div><b>${esc(head)}</b><span>${esc(statusLine)}</span></div></div>
+        <h3 class="fj-sh">THE JOB</h3>
+        <p class="fj-brief">${esc(job.brief || "No brief.")}</p>
+        ${job.objectives?.length ? `<h3 class="fj-sh">OBJECTIVES</h3><ol class="fj-obj">${job.objectives.map(o => `<li>${esc(o)}</li>`).join("")}</ol>` : ""}
+        ${game.user.isGM ? gmBlock(job) : ""}
+        ${actionBlock(job,state,me)}
+      </article>`;
   }
 
-  function fixersPanel(state) {
-    const all = Object.values(state.jobs);
-    return `<div class="fj-fixers">${(cat()?.FIXERS ?? []).map(f => {
-      const done = all.filter(j => j.fixer === f.key && j.status === "done").length;
-      const open = all.filter(j => j.fixer === f.key && j.status === "offered").length;
-      const [lo,hi] = f.tiers;
-      return `<article class="fj-fx"${accent(f)}>
-        <header>${monogram(f)}<div><div class="fj-h">${esc(f.handle)}</div><div class="fj-who">${esc(f.name)}</div>
-          <div class="fj-d">${esc(f.district)} · ${esc(tierInfo(lo).label)}${hi !== lo ? `–${esc(tierInfo(hi).label.replace("TIER ",""))}` : ""}</div></div></header>
-        <q>${esc(f.voice)}</q>
-        <p>${esc(f.blurb)}</p>
-        ${f.spot && city()?.place?.(f.spot) ? `<div class="fj-d">FIND THEM AT ${esc(city().place(f.spot).label)}${game.user.isGM && city()?.worldScene?.() ? ` <button type="button" class="fj-ghost fj-mini" data-act="citymap" data-spot="${esc(f.spot)}">Map</button>` : ""}</div>` : ""}
-        <footer><div class="fj-stats"><span>DONE <b>${done}</b></span><span>ON BOARD <b>${open}</b></span></div>
-          <button type="button" data-act="fixerjobs" data-fixer="${esc(f.key)}" ${open ? "" : "disabled"}>${open ? "See their jobs" : "Nothing posted"}</button></footer>
-      </article>`;
-    }).join("")}</div>`;
+  // ---- lists: my jobs / done
+
+  function listView(list,emptyHead,emptyBody) {
+    if (!list.length) return `<div class="fj-empty"><b>${esc(emptyHead)}</b>${esc(emptyBody)}</div>`;
+    return `<div class="fj-cards">${list.map(jobCard).join("")}</div>`;
   }
+
+  // ---- GM desk
 
   function writeForm() {
     const d = ui$.draft ?? {};
-    const fixers = (cat()?.FIXERS ?? []).map(f => `<option value="${esc(f.key)}" ${d.fixer === f.key ? "selected" : ""}>${esc(f.handle)} (${esc(f.name)})</option>`).join("");
+    const fx = fixers().map(f => `<option value="${esc(f.key)}" ${d.fixer === f.key ? "selected" : ""}>${esc(f.handle)} (${esc(ringOf(f)?.label ?? "")})</option>`).join("");
     const kinds = [...new Set([...(Object.keys(cat()?.gen?.KINDS ?? {})),"Extraction","Investigation","Story"])];
-    return `
-      <h3 class="fj-sh">WRITE A JOB</h3>
-      <p class="fj-note">Post your own job to the board: a story beat, a favour, anything. Players see everything except the twist.</p>
-      <div class="fj-form">
-        <label class="w2">TITLE <input data-draft="title" autocomplete="off" value="${esc(d.title ?? "")}" maxlength="60" placeholder="e.g. The Long Night"></label>
-        <label>FIXER <select data-draft="fixer">${fixers}</select></label>
-        <label>TIER <select data-draft="tier">${[1,2,3,4,5].map(t => `<option value="${t}" ${Number(d.tier ?? 1) === t ? "selected" : ""}>${tierInfo(t).label}</option>`).join("")}</select></label>
-        <label>TYPE <input data-draft="kind" autocomplete="off" list="fj-kinds" value="${esc(d.kind ?? "")}" placeholder="Recovery"><datalist id="fj-kinds">${kinds.map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
-        <label>WHERE <input data-draft="district" autocomplete="off" list="fj-districts" value="${esc(d.district ?? "")}" placeholder="New Niemir"><datalist id="fj-districts">${(cat()?.gen?.DISTRICTS ?? []).map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
-        <label>PAY EACH <input type="number" min="0" step="50" data-draft="pay" value="${esc(d.pay ?? "")}" placeholder="tier default"></label>
-        <label>CRED <input type="number" min="0" step="1" data-draft="cred" value="${esc(d.cred ?? "")}" placeholder="tier default"></label>
-        <label class="w4">MAP (scene name) <input data-draft="map" autocomplete="off" value="${esc(d.map ?? "")}" placeholder="optional, e.g. Rundown Hotel"></label>
-        <label class="w4">BRIEF <textarea data-draft="brief" rows="3" placeholder="What the fixer tells the crew.">${esc(d.brief ?? "")}</textarea></label>
-        <label class="w4">OBJECTIVES (one per line) <textarea data-draft="objectives" rows="3">${esc(d.objectives ?? "")}</textarea></label>
-        <label class="w4">TWIST (GM only) <textarea data-draft="twist" rows="2">${esc(d.twist ?? "")}</textarea></label>
-      </div>
-      <div class="fj-row" style="margin-top:12px"><button type="button" class="fj-go" data-act="postdraft">Post to board</button>
-        <button type="button" class="fj-ghost" data-act="cleardraft">Clear</button></div>`;
+    return `<div class="fj-form">
+      <label class="w2">TITLE <input data-draft="title" autocomplete="off" value="${esc(d.title ?? "")}" maxlength="60" placeholder="e.g. The Long Night"></label>
+      <label>FIXER <select data-draft="fixer">${fx}</select></label>
+      <label>RISK <select data-draft="tier"><option value="">Fixer's level</option>${[1,2,3,4,5].map(t => `<option value="${t}" ${Number(d.tier) === t ? "selected" : ""}>${esc(tierInfo(t).risk)}</option>`).join("")}</select></label>
+      <label>TYPE <input data-draft="kind" autocomplete="off" list="fj-kinds" value="${esc(d.kind ?? "")}" placeholder="Recovery"><datalist id="fj-kinds">${kinds.map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
+      <label>DISTRICT <input data-draft="district" autocomplete="off" list="fj-districts" value="${esc(d.district ?? "")}" placeholder="fixer's district"><datalist id="fj-districts">${(cat()?.gen?.DISTRICTS ?? []).map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
+      <label>PAY EACH <input type="number" min="0" step="50" data-draft="pay" value="${esc(d.pay ?? "")}" placeholder="default"></label>
+      <label>CREW CRED <input type="number" min="0" step="1" data-draft="cred" value="${esc(d.cred ?? "")}" placeholder="default"></label>
+      <label class="w4">BATTLE MAP (scene name) <input data-draft="map" autocomplete="off" value="${esc(d.map ?? "")}" placeholder="optional, e.g. Rundown Hotel"></label>
+      <label class="w4">THE JOB <textarea data-draft="brief" rows="3" placeholder="What the fixer tells the crew.">${esc(d.brief ?? "")}</textarea></label>
+      <label class="w4">OBJECTIVES (one per line) <textarea data-draft="objectives" rows="3">${esc(d.objectives ?? "")}</textarea></label>
+      <label class="w4">TWIST (GM only) <textarea data-draft="twist" rows="2">${esc(d.twist ?? "")}</textarea></label>
+    </div>
+    <div class="fj-row" style="margin-top:12px"><button type="button" class="fj-go" data-act="postdraft">Post it</button>
+      <button type="button" class="fj-ghost" data-act="cleardraft">Clear</button></div>`;
   }
 
-  function credPanel() {
-    const tiers = Object.entries(cat()?.TIERS ?? {}).map(([t,i]) => `<tr class="fj-tc${t}"><td style="color:var(--fj-tc)">${esc(i.label)}</td><td>${i.need}+</td><td>${money(i.pay[0])} – ${money(i.pay[1])}</td><td>+${i.cred}</td></tr>`).join("");
-    const ranks = (cat()?.RANKS ?? []).map(([min,name]) => `<tr><td>${esc(name)}</td><td>${min}+</td></tr>`).join("");
-    const rules = `
-      <h3 class="fj-sh">HOW IT WORKS</h3>
-      <p class="fj-brief">Every finished job pays each crew member and earns them Street Cred. Cred opens higher tiers with bigger pay. You ask for a job as your own character, the GM approves it, and you play it out at the table.</p>
-      <table class="fj-credtable"><thead><tr><th>Tier</th><th>Cred needed</th><th>Pay each</th><th>Cred earned</th></tr></thead><tbody>${tiers}</tbody></table>
-      <h3 class="fj-sh">RANKS</h3><table class="fj-credtable"><tbody>${ranks}</tbody></table>`;
-    const crew = `
-      <h3 class="fj-sh">THE CREW</h3>
-      <table class="fj-credtable"><thead><tr><th>Character</th><th>Cred</th><th>Rank</th><th>Progress</th>${game.user.isGM ? "<th></th>" : ""}</tr></thead><tbody>
-      ${crewActors().map(a => {
-        const c = credOf(a), r = nextRank(c);
-        return `<tr><td>${esc(a.name)}</td><td>${game.user.isGM
-          ? `<input type="number" min="0" data-credfor="${esc(a.id)}" value="${c}" aria-label="${esc(a.name)} Street Cred">`
-          : c}</td><td>${esc(rankOf(c))}</td><td><span class="fj-meter"><i style="width:${r.pct}%"></i></span> ${r.next !== null ? `${r.next - c} to go` : "MAX"}</td>
-          ${game.user.isGM ? `<td><button type="button" data-act="setcred" data-actor="${esc(a.id)}">Save</button></td>` : ""}</tr>`;
-      }).join("")}</tbody></table>`;
-    if (!game.user.isGM) return crew + rules;
-    const state = read();
-    return crew + `
-      <h3 class="fj-sh">BOARD SETTINGS</h3>
-      <div class="fj-row fj-pay"><label>OFFERS PER BOARD <input type="number" min="3" max="16" data-field="size" value="${state.size}"></label>
-        <button type="button" data-act="setsize">Save</button></div>
-      <p class="fj-note">Hand-written jobs used: ${state.used.length} of ${cat()?.JOBS?.length ?? 0}. Used jobs aren't posted again.
-        <button type="button" class="fj-ghost" data-act="resetused">Make them all available again</button></p>` + rules;
+  function deskView(state) {
+    const requests = jobsWith(state,"requested");
+    const active = jobsWith(state,"active");
+    const line = job => `<div class="fj-line"><div class="grow"><b>${esc(job.title)}</b>
+      <span>${esc(fixerOf(job)?.handle ?? "")} · ${esc(tierInfo(job.tier).risk)} · ${esc(crewNames(job.crew))}</span></div>
+      <button type="button" class="fj-mini" data-job="${esc(job.id)}">Open</button></div>`;
+    const reqLine = job => `<div class="fj-line"><div class="grow"><b>${esc(job.title)}</b>
+      <span>${esc(game.actors.get(job.requestedAs)?.name ?? "?")} asks · crew ${esc(crewNames(job.crew))}</span></div>
+      <button type="button" class="fj-go fj-mini" data-act="approve" data-id="${esc(job.id)}">Confirm</button>
+      <button type="button" class="fj-mini" data-act="decline" data-id="${esc(job.id)}">Decline</button>
+      <button type="button" class="fj-ghost fj-mini" data-job="${esc(job.id)}">Open</button></div>`;
+    const fx = rings().map(r => `<div class="fj-ring is-open">${esc(r.label)} <span>${r.need} CRED</span></div>` + fixers().filter(f => f.ring === r.ring).map(f => {
+      const byCred = state.cred >= r.need;
+      const early = state.unlocked.includes(f.key);
+      return `<div class="fj-line"><div class="grow"><b>${esc(f.handle)}</b><span>${esc(f.district)} · ${byCred ? "open by cred" : early ? "opened early" : "locked"}</span></div>
+        ${byCred ? "" : `<button type="button" class="fj-switch fj-mini" aria-pressed="${early}" data-act="unlock" data-fixer="${esc(f.key)}" data-open="${early ? "0" : "1"}">${early ? "Close" : "Open early"}</button>`}</div>`;
+    }).join("")).join("");
+    return `<div class="fj-desk">
+      <section class="fj-box"><h3 class="fj-sh">REQUESTS TO CONFIRM</h3>${requests.map(reqLine).join("") || `<div class="fj-note">No requests.</div>`}</section>
+      <section class="fj-box"><h3 class="fj-sh">JOBS IN PROGRESS</h3>${active.map(line).join("") || `<div class="fj-note">Nothing running.</div>`}</section>
+      <section class="fj-box"><h3 class="fj-sh">CREW STREET CRED</h3>
+        <div class="fj-row fj-pay"><label>CRED <input type="number" min="0" data-field="crewcred" value="${state.cred}"></label>
+          <button type="button" class="fj-mini" data-act="credstep" data-step="-5">−5</button>
+          <button type="button" class="fj-mini" data-act="credstep" data-step="5">+5</button>
+          <button type="button" data-act="setcred">Save</button></div>
+        <p class="fj-note">Rings open at ${rings().map(r => `${esc(r.label)} ${r.need}`).join(" · ")}.</p>
+        <h3 class="fj-sh">BOARD</h3>
+        <div class="fj-row fj-pay"><label>JOBS PER FIXER <input type="number" min="1" max="4" data-field="per" value="${state.perFixer}"></label>
+          <button type="button" data-act="setper">Save</button>
+          <button type="button" class="fj-primary" data-act="refreshall" title="Swap every open fixer's offers">New jobs for everyone</button></div>
+        <div class="fj-row" style="margin-top:8px">
+          <select data-field="rollfixer" aria-label="Fixer for a new gig">${fixers().map(f => `<option value="${esc(f.key)}">${esc(f.handle)}</option>`).join("")}</select>
+          <button type="button" data-act="rollone">Add a random gig</button>
+          <button type="button" class="fj-ghost" data-act="togglegm" aria-pressed="${hideGM()}">${hideGM() ? "Show GM notes" : "Hide GM notes"}</button></div>
+        <p class="fj-note">Written jobs used: ${state.used.length} of ${cat()?.JOBS?.length ?? 0}. <button type="button" class="fj-ghost fj-mini" data-act="resetused">Make them all available again</button></p>
+      </section>
+      <section class="fj-box"><h3 class="fj-sh">FIXERS</h3>${fx}</section>
+      <section class="fj-box" style="grid-column:1/-1"><h3 class="fj-sh">WRITE A JOB</h3>${writeForm()}</section>
+    </div>`;
   }
 
-  function emptyText(tab) {
-    const gm = game.user.isGM;
-    return {
-      offers:gm ? ["BOARD EMPTY","Press NEW OFFERS to post a set of jobs, or ROLL GIG for a single one."] : ["NO WORK POSTED","The fixers haven't posted anything. Check back after the GM posts new offers."],
-      active:["NOTHING RUNNING","Requested and in-progress jobs show up here."],
-      history:["NO RECORD YET","Finished and failed jobs are kept here."]
-    }[tab] ?? ["",""];
-  }
+  // ---- render
 
   function render() {
     const root = document.getElementById(ROOT_ID);
@@ -1021,60 +1094,49 @@
     const state = read();
     const isGM = game.user.isGM;
     const me = isGM ? null : myActor();
-    const offersAll = jobsWith(state,"offered");
-    const offers = ui$.fixer ? offersAll.filter(j => j.fixer === ui$.fixer) : offersAll;
-    const active = jobsWith(state,"requested","active");
-    const history = Object.values(state.jobs).filter(j => !OPEN.includes(j.status)).sort((a,b) => (b.updated ?? 0) - (a.updated ?? 0));
-    const requests = active.filter(j => j.status === "requested").length;
-    const lists = {offers,active,history};
-    const listTab = ui$.tab in lists;
-    const list = lists[ui$.tab] ?? [];
-    if (listTab && !list.some(j => j.id === ui$.selected)) {
-      ui$.selected = list[0]?.id ?? null;
-      ui$.crew = null;
+    const mine = jobsWith(state,"requested","active");
+    const done = Object.values(state.jobs).filter(j => !OPEN.includes(j.status)).sort((a,b) => (b.updated ?? 0) - (a.updated ?? 0));
+    const requests = mine.filter(j => j.status === "requested").length;
+    if (ui$.view === "gm" && !isGM) ui$.view = "contacts";
+    const job = ui$.job ? state.jobs[ui$.job] ?? null : null;
+    if (ui$.job && !job) ui$.job = null;
+    if (ui$.view === "contacts" && !ui$.fixer) {
+      const first = fixers().find(f => isOpen(f,state));
+      ui$.fixer = first?.key ?? null;
     }
-    const job = listTab ? state.jobs[ui$.selected] ?? null : null;
-    const scroll = root.querySelector(".fj-list")?.scrollTop ?? 0;
-    const tab = (key,label,count,alert=0) =>
-      `<button type="button" class="fj-tab" data-tab="${key}" aria-pressed="${ui$.tab === key}">${label}${count != null ? `<span class="fj-count">${count}</span>` : ""}${alert ? `<span class="fj-alert">${alert} NEW</span>` : ""}</button>`;
-    const filterFixer = ui$.fixer ? fixerOf({fixer:ui$.fixer}) : null;
-    const [emptyHead,emptyBody] = emptyText(ui$.tab);
+    const tab = (key,label,count=null,alert=0) =>
+      `<button type="button" class="fj-tab" data-view="${key}" aria-pressed="${ui$.view === key}">${label}${count != null ? `<span class="fj-count">${count}</span>` : ""}${alert ? `<span class="fj-alert">${alert} TO CONFIRM</span>` : ""}</button>`;
 
     let body;
-    if (ui$.tab === "fixers") body = fixersPanel(state);
-    else if (ui$.tab === "cred") body = `<div class="fj-detail" style="grid-column:1/-1">${credPanel()}</div>`;
-    else if (ui$.tab === "write" && isGM) body = `<div class="fj-detail" style="grid-column:1/-1">${writeForm()}</div>`;
-    else body = `
-      <div class="fj-listwrap">
-        ${ui$.tab === "offers" && filterFixer ? `<div class="fj-filter">SHOWING <button type="button" data-act="clearfilter" aria-pressed="true" title="Show every fixer">${esc(filterFixer.handle)} ✕</button></div>` : ""}
-        <div class="fj-list">${list.length ? list.map(j => card(j,me)).join("") : `<div class="fj-empty"><b>${emptyHead}</b>${emptyBody}</div>`}</div>
-      </div>
-      <div class="fj-detail" aria-live="polite">${detail(job,me)}</div>`;
+    const main = inner => `<div class="fj-main fj-full" aria-live="polite">${inner}</div>`;
+    if (job) {
+      body = ui$.view === "contacts"
+        ? `<div class="fj-side">${contactList(state,me)}</div><div class="fj-main" aria-live="polite">${jobPage(job,state,me)}</div>`
+        : main(jobPage(job,state,me));
+    } else if (ui$.view === "contacts") {
+      body = `<div class="fj-side">${contactList(state,me)}</div><div class="fj-main" aria-live="polite">${fixerPage(state)}</div>`;
+    } else if (ui$.view === "mine") {
+      body = main(`<h3 class="fj-sh">TAKEN JOBS</h3>${listView(mine,"NOTHING TAKEN","Jobs you've asked for or are working show up here.")}`);
+    } else if (ui$.view === "done") {
+      body = main(`<h3 class="fj-sh">FINISHED JOBS</h3>${listView(done,"NO RECORD YET","Paid and failed jobs are kept here.")}`);
+    } else {
+      body = main(deskView(state));
+    }
 
     root.innerHTML = `
       <header class="fj-head" data-drag>
-        <div class="fj-brand"><span class="fj-eyebrow"><i></i>FIXER NET // ALABASTRA // ${offersAll.length} OPEN · ${active.length} LIVE</span><h1 class="fj-title">JOBS<b>.</b></h1></div>
-        <div class="fj-crew">${crewChips(me)}</div>
+        <div class="fj-brand"><span class="fj-eyebrow"><i></i>FIXER NET // ALABASTRA</span><h1 class="fj-title">JOBS<b>.</b></h1></div>
+        ${credBlock(state)}
         <button type="button" class="fj-close" data-act="close" aria-label="Close jobs" title="Close (Esc)">✕</button>
       </header>
       <nav class="fj-bar" aria-label="Job board sections">
-        ${tab("offers","Offers",offersAll.length)}
-        ${tab("active","Active",active.length,isGM ? requests : 0)}
-        ${tab("history","History",history.length)}
-        ${tab("fixers","Fixers",null)}
-        ${tab("cred","Street Cred",null)}
-        ${isGM ? `<div class="fj-tools">
-          <button type="button" class="fj-primary" data-act="newoffers" title="Replace the open offers with a new set">New offers</button>
-          <select data-field="rolltier" aria-label="Tier for a new gig">${[1,2,3,4,5].map(t => `<option value="${t}" ${ui$.rollTier === t ? "selected" : ""}>${tierInfo(t).label}</option>`).join("")}</select>
-          <button type="button" data-act="rollone" title="Add one generated gig of the chosen tier">Roll gig</button>
-          <span class="fj-sep" aria-hidden="true"></span>
-          <button type="button" data-tab="write" aria-pressed="${ui$.tab === "write"}" class="fj-tab">Write job</button>
-          <button type="button" class="fj-ghost" data-act="togglegm" aria-pressed="${hideGM()}" title="Hide twists, enemies and maps while sharing your screen">${hideGM() ? "Show GM notes" : "Hide GM notes"}</button>
-        </div>` : ""}
+        ${tab("contacts","Contacts")}
+        ${tab("mine","Taken jobs",mine.length)}
+        ${tab("done","Finished",done.length)}
+        ${isGM ? tab("gm","GM desk",null,requests) : ""}
+        <span class="fj-how"><b>Pick a fixer</b> → <b>pick a job</b> → <b>take it</b> → GM confirms → play → GM pays</span>
       </nav>
       <div class="fj-body">${body}</div>`;
-    const listEl = root.querySelector(".fj-list");
-    if (listEl) listEl.scrollTop = scroll;
   }
 
   // The board sits above Foundry's dialogs (like the Market), so risky
@@ -1095,9 +1157,7 @@
     return false;
   }
 
-  function selectedCrew(root) {
-    return [...root.querySelectorAll("[data-crew]:checked")].map(el => el.dataset.crew);
-  }
+  const selectedCrew = root => [...root.querySelectorAll("[data-crew]:checked")].map(el => el.dataset.crew);
 
   function readDraft(root) {
     const d = {...(ui$.draft ?? {})};
@@ -1116,66 +1176,70 @@
       return;
     }
     if (root.querySelector("[data-draft]")) ui$.draft = readDraft(root);
-    if (target.dataset.tab) {
-      ui$.tab = target.dataset.tab;
-      ui$.selected = null;
+    if (target.dataset.view) {
+      ui$.view = target.dataset.view;
+      ui$.job = null;
       ui$.crew = null;
       sfx("subsystem_select");
       render();
       return;
     }
-    if (target.dataset.job) {
-      ui$.selected = target.dataset.job;
+    if (target.dataset.fixer && !target.dataset.act) {
+      ui$.fixer = target.dataset.fixer;
+      ui$.job = null;
       ui$.crew = null;
       sfx("select");
       render();
-      root.querySelector(".fj-detail")?.scrollTo?.(0,0);
+      return;
+    }
+    if (target.dataset.job) {
+      ui$.job = target.dataset.job;
+      ui$.crew = null;
+      sfx("select");
+      render();
+      root.querySelector(".fj-main")?.scrollTo?.(0,0);
       return;
     }
 
     const act = target.dataset.act;
     if (!act) return;
-    const jobId = ui$.selected;
+    const jobId = target.dataset.id ?? ui$.job;
     const field = name => root.querySelector(`[data-field="${name}"]`)?.value;
 
     try {
       switch (act) {
         case "close": return close();
+        case "back": ui$.job = null; ui$.crew = null; break;
         case "sheet": return game.actors.get(target.dataset.actor)?.sheet?.render(true);
         case "viewmap": return game.scenes.get(target.dataset.scene)?.view();
-        case "citymap":
-          close();
-          return city()?.showOnMap?.(target.dataset.spot);
+        case "citymap": close(); return city()?.showOnMap?.(target.dataset.spot);
         case "double": {
           const input = root.querySelector('[data-field="pay"]');
           if (input) input.value = String((Number(input.value) || 0) * 2);
           sfx("select");
           return;
         }
-        case "fixerjobs":
-          ui$.fixer = target.dataset.fixer;
-          ui$.tab = "offers";
-          ui$.selected = null;
-          sfx("subsystem_select");
-          break;
-        case "clearfilter": ui$.fixer = null; ui$.selected = null; break;
         case "togglegm": setHideGM(!hideGM()); break;
         case "request": {
           const me = myActor();
           if (!me) throw new Error("You need a character to take jobs.");
           target.disabled = true;
           await run("request",{jobId,actorId:me.id,crew:selectedCrew(root)});
-          ui.notifications.info("FIXER NET // Request sent. The GM will approve or decline it.");
+          ui.notifications.info("FIXER NET // Sent. The GM will confirm the job.");
           sfx("confirm");
-          ui$.tab = "active";
           break;
         }
         case "withdraw": await run("withdraw",{jobId}); sfx("remove"); break;
-        case "approve": await run("approve",{jobId,crew:selectedCrew(root)}); sfx("confirm"); ui$.tab = "active"; break;
+        case "approve": {
+          const crew = target.dataset.id ? (read().jobs[jobId]?.crew ?? []) : selectedCrew(root);
+          await run("approve",{jobId,crew});
+          sfx("confirm");
+          break;
+        }
         case "decline": await run("decline",{jobId}); sfx("remove"); break;
         case "complete": {
           const pay = Number(field("pay")), cred = Number(field("cred"));
-          if (!confirmTwice(target,`Pay ${money(pay)} + ${cred} cred each?`)) return;
+          if (!confirmTwice(target,`Pay ${money(pay)} each + ${cred} cred?`)) return;
           await run("complete",{jobId,pay,cred});
           sfx("install");
           break;
@@ -1185,41 +1249,45 @@
           await run("fail",{jobId,cred:Number(field("failcred"))});
           sfx("error");
           break;
-        case "reopen": await run("reopen",{jobId}); ui$.tab = "offers"; break;
+        case "reopen": await run("reopen",{jobId}); break;
         case "remove":
           if (!confirmTwice(target,"Really remove?")) return;
           await run("remove",{jobId});
+          ui$.job = null;
           sfx("remove");
           break;
-        case "newoffers": {
-          if (!confirmTwice(target,"Replace open offers?")) return;
-          await run("newOffers");
+        case "refresh": await run("refresh",{fixer:target.dataset.fixer}); sfx("scan"); break;
+        case "refreshall":
+          if (!confirmTwice(target,"Swap every offer?")) return;
+          await run("refresh",{fixer:null});
           sfx("scan");
-          ui$.tab = "offers";
-          ui$.fixer = null;
           break;
-        }
         case "rollone": {
-          ui$.rollTier = Number(field("rolltier")) || 1;
-          const result = await run("rollOne",{tier:ui$.rollTier});
+          const result = await run("rollOne",{fixer:field("rollfixer")});
           sfx("scan");
-          ui$.tab = "offers";
-          ui$.fixer = null;
-          ui$.selected = result.id;
+          ui$.view = "contacts";
+          ui$.fixer = field("rollfixer");
+          ui$.job = result.id;
           break;
         }
+        case "unlock": await run("setUnlocked",{fixer:target.dataset.fixer,open:target.dataset.open === "1"}); sfx("confirm"); break;
+        case "credstep": {
+          const input = root.querySelector('[data-field="crewcred"]');
+          if (input) input.value = String(Math.max(0,(Number(input.value) || 0) + Number(target.dataset.step)));
+          return;
+        }
+        case "setcred": await run("setCred",{cred:Number(field("crewcred"))}); sfx("confirm"); break;
+        case "setper": await run("setPerFixer",{per:Number(field("per"))}); sfx("confirm"); break;
         case "postdraft": {
           const result = await run("write",{draft:ui$.draft ?? {}});
           sfx("install");
           ui$.draft = null;
-          ui$.tab = "offers";
-          ui$.fixer = null;
-          ui$.selected = result.id;
+          ui$.view = "contacts";
+          ui$.fixer = read().jobs[result.id]?.fixer ?? ui$.fixer;
+          ui$.job = result.id;
           break;
         }
         case "cleardraft": ui$.draft = null; break;
-        case "setcred": await run("setCred",{actorId:target.dataset.actor,cred:Number(root.querySelector(`[data-credfor="${target.dataset.actor}"]`)?.value)}); sfx("confirm"); break;
-        case "setsize": await run("setSize",{size:Number(field("size"))}); sfx("confirm"); break;
         case "resetused":
           if (!confirmTwice(target,"Reset used jobs?")) return;
           await run("resetUsed");
@@ -1241,7 +1309,7 @@
     if (window.matchMedia("(max-width:900px)").matches) return;
     const rect = root.getBoundingClientRect();
     const dx = event.clientX - rect.left, dy = event.clientY - rect.top;
-    Object.assign(root.style,{inset:"auto",left:rect.left+"px",top:rect.top+"px",width:rect.width+"px",height:rect.height+"px",margin:"0"});
+    Object.assign(root.style,{inset:"auto",left:rect.left + "px",top:rect.top + "px",width:rect.width + "px",height:rect.height + "px",margin:"0"});
     const move = e => {
       root.style.left = Math.max(0,Math.min(window.innerWidth - 120,e.clientX - dx)) + "px";
       root.style.top = Math.max(0,Math.min(window.innerHeight - 60,e.clientY - dy)) + "px";
@@ -1251,12 +1319,17 @@
     window.addEventListener("pointerup",up);
   }
 
-  function open() {
+  async function open() {
     if (!cat()) {
       ui.notifications.error("FIXER NET // The job catalog isn't loaded.");
       return null;
     }
     ensureStyle();
+    // The GM's board fills itself: first open (or after an update) posts the
+    // offers every open fixer should have.
+    if (game.user.isGM) {
+      try { await actions.topUp(); } catch (err) { console.warn("FEHA JOBS // top up failed",err); }
+    }
     let root = document.getElementById(ROOT_ID);
     if (!root) {
       root = document.createElement("section");
@@ -1267,7 +1340,7 @@
       root.addEventListener("pointerdown",onPointerDown);
       document.body.appendChild(root);
     }
-    if (game.user.isGM && jobsWith(read(),"requested").length) ui$.tab = "active";
+    if (game.user.isGM && jobsWith(read(),"requested").length) { ui$.view = "gm"; ui$.job = null; }
     render();
     root.querySelector(".fj-close")?.focus?.();
     sfx("drawer_open");
@@ -1288,9 +1361,9 @@
   function rerender() {
     clearTimeout(renderTimer);
     renderTimer = setTimeout(() => {
-      // Don't wipe a half-written job form under the GM's cursor.
+      // Don't wipe a half-written job or a cred edit under the GM's cursor.
       const root = document.getElementById(ROOT_ID);
-      if (root && ui$.tab === "write" && root.contains(document.activeElement)) return;
+      if (root && root.contains(document.activeElement) && document.activeElement.matches("input,textarea,select")) return;
       render();
     },50);
   }
@@ -1327,7 +1400,6 @@
     read,
     run,
     generate,
-    credOf,
     installHotbar,
 
     async init() {
@@ -1343,7 +1415,7 @@
       };
       document.addEventListener("keydown",keyHandler,true);
       hooks.push(["updateActor",Hooks.on("updateActor",(actor,change) => {
-        if (foundry.utils.hasProperty(change,`flags.${FLAG}`) || foundry.utils.hasProperty(change,"system.currency")) rerender();
+        if (foundry.utils.hasProperty(change,"system.currency")) rerender();
       })]);
       game.adk ??= {};
       game.adk.openJobs = open;
@@ -1351,6 +1423,10 @@
       globalThis.FEHA_JOBS = api;
       if (!globalThis.FEHA_JOBS_NO_HOTBAR) {
         try { await installHotbar(); } catch (err) { console.warn("FEHA JOBS // hotbar install failed",err); }
+      }
+      // Bring an old board up to date and keep offers filled (active GM).
+      if (isActiveGM() && !globalThis.FEHA_JOBS_NO_HOTBAR) {
+        try { await actions.topUp(); } catch (err) { console.warn("FEHA JOBS // top up failed",err); }
       }
       console.log("FEHA JOBS",VERSION,"ready");
     },

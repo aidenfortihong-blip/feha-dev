@@ -7,79 +7,93 @@
 // Job fields: key, fixer, tier (1-5), kind, title, district, map (scene name
 // or name prefix), enemies [[NPC catalog name, count]], pay (credits per
 // crew member), brief and objectives (players see these), twist (GM only).
-// Street Cred and the cred needed to take a job come from TIERS.
+//
+// Fixers sit in RINGS. A fixer only gives work at their ring's level: when
+// the catalog loads, every job is moved to its fixer's level (pay rescaled
+// inside the new band, enemies swapped for the same faction's unit at the
+// new level). Personal jobs (for:) keep their own level. The crew shares one
+// Street Cred; a ring opens when the crew has its cred (or the GM opens a
+// fixer early).
 
 (() => {
-  const VERSION = "1.0.0";
+  const VERSION = "2.0.0";
 
-  // Pay is per crew member. cred = Street Cred earned; need = Street Cred
-  // the requesting character must have to take a job of this tier.
+  // Job levels. risk = what players see; pay is per crew member; cred = crew
+  // Street Cred earned.
   const TIERS = {
-    1:{label:"TIER I",  pay:[400,900],     cred:6,  need:0},
-    2:{label:"TIER II", pay:[1200,2400],   cred:10, need:20},
-    3:{label:"TIER III",pay:[3000,5500],   cred:15, need:50},
-    4:{label:"TIER IV", pay:[7000,12000],  cred:22, need:100},
-    5:{label:"TIER V",  pay:[15000,30000], cred:30, need:170}
+    1:{label:"LOW RISK",      risk:"LOW",       pay:[400,900],     cred:6},
+    2:{label:"MODERATE RISK", risk:"MODERATE",  pay:[1200,2400],   cred:10},
+    3:{label:"HIGH RISK",     risk:"HIGH",      pay:[3000,5500],   cred:15},
+    4:{label:"VERY HIGH RISK",risk:"VERY HIGH", pay:[7000,12000],  cred:22},
+    5:{label:"EXTREME RISK",  risk:"EXTREME",   pay:[15000,30000], cred:30}
   };
 
-  // Street Cred ranks shown on the board (minimum cred for each rank).
+  // Fixer rings: who will work with the crew, by crew Street Cred.
+  const RINGS = [
+    {ring:1,label:"STREET",  need:0,  tiers:[1],   blurb:"Neighbourhood fixers. Small jobs, people you know."},
+    {ring:2,label:"DISTRICT",need:30, tiers:[2],   blurb:"Fixers who run a whole district. Real money, real enemies."},
+    {ring:3,label:"CITY",    need:90, tiers:[3],   blurb:"Fixers the whole city knows. Corp targets and Vigil heat."},
+    {ring:4,label:"ELITE",   need:180,tiers:[4,5], blurb:"The top. Council-level jobs that change Alabastra."}
+  ];
+
+  // Crew ranks (minimum crew Street Cred for each rank).
   const RANKS = [
-    [0,"NOBODY"],[20,"KNOWN"],[50,"RELIABLE"],[100,"RESPECTED"],[170,"NAMED"],[260,"LEGEND"]
+    [0,"NOBODIES"],[30,"KNOWN"],[90,"RESPECTED"],[180,"NAMED"],[300,"LEGENDS"]
   ];
 
   const FIXERS = [
     {
-      key:"vesna", color:"#5ef2ff", name:"Vesna Kral", handle:"VESNA", district:"New Niemir", spot:"26", tiers:[1,4],
+      key:"vesna", color:"#5ef2ff", name:"Vesna Kral", handle:"VESNA", district:"New Niemir", spot:"26", ring:1,
       blurb:"Runs The Wake, the mercs' bar in an old funeral hall, and most of the work in New Niemir passes over her bar. Sloviti, ex-boxer, never forgets a debt.",
       voice:"Do it clean, do it quiet, and come back alive. In that order."
     },
     {
-      key:"babka", color:"#f3e600", spot:"22", name:"Babka Ilinova", handle:"BABKA", district:"New Niemir", tiers:[1,3],
+      key:"babka", color:"#f3e600", spot:"22", name:"Babka Ilinova", handle:"BABKA", district:"New Niemir", ring:1,
       blurb:"Sloviti grandmother who came over on the third refugee wave and never stopped organising. Her jobs keep people fed, housed and out of CivCorp cells. She pays in what she has.",
       voice:"Nobody is coming to save us. So. You will do."
     },
     {
-      key:"kiyama", color:"#ff5e57", spot:"35", name:"Saburo Kiyama", handle:"KIYAMA", district:"Orient Quarter", tiers:[2,4],
+      key:"kiyama", color:"#ff5e57", spot:"35", name:"Saburo Kiyama", handle:"KIYAMA", district:"Orient Quarter", ring:2,
       blurb:"Soft-spoken go-between for the Yakuza family that runs out of the HQ tower. Collections, protection, problems that need to go away quietly.",
       voice:"The family remembers who was useful. It also remembers who was not."
     },
     {
-      key:"dialtone", color:"#b45cff", spot:"19", name:"Reyna Castell", handle:"DIAL TONE", district:"Corporate Plaza", tiers:[2,5],
+      key:"dialtone", color:"#b45cff", spot:"19", name:"Reyna Castell", handle:"DIAL TONE", district:"Corporate Plaza", ring:3,
       blurb:"Netrunner turned broker. Never meets in person; her voice comes out of whatever speaker is closest. Data jobs, corp secrets, anything with a firewall.",
       voice:"Data wants to be free. I just charge a finder's fee."
     },
     {
-      key:"duval", color:"#2f8dff", spot:"39", name:"Maurice Duval", handle:"CARP-LINE", district:"The Docks", tiers:[2,4],
+      key:"duval", color:"#2f8dff", spot:"39", name:"Maurice Duval", handle:"CARP-LINE", district:"The Docks", ring:2,
       blurb:"Ex-Navy quartermaster and loud Vargas loyalist who idolises Admiral Rosa. Moves cargo the Council's customs never see and talks politics the whole time.",
       voice:"The Admiral says the harbour belongs to the people. I say it belongs to whoever's paying the tug."
     },
     {
-      key:"hale", color:"#d9d2c5", spot:"18", name:"Verity Hale", handle:"MS. HALE", district:"Corporate Plaza", tiers:[3,5],
+      key:"hale", color:"#d9d2c5", spot:"18", name:"Verity Hale", handle:"MS. HALE", district:"Corporate Plaza", ring:4,
       blurb:"Corporate facilitator with a spotless suit and no listed employer. Pays the most, explains the least, and has never once said which corp she works for.",
       voice:"Discretion is the deliverable. Everything else is a detail."
     },
     {
-      key:"clerk", color:"#37e07c", spot:"24", name:"Clerk Seven", handle:"CLERK SEVEN", district:"Old Capital", tiers:[1,4],
+      key:"clerk", color:"#37e07c", spot:"24", name:"Clerk Seven", handle:"CLERK SEVEN", district:"Old Capital", ring:2,
       blurb:"A CivCorp records clerk who sells off-book warrants and cyberpsycho sightings before the peacekeepers get to them. Never gives a real name. Non-lethal takedowns pay double.",
       voice:"Officially this file doesn't exist. Unofficially, it pays."
     },
     {
-      key:"ferro", color:"#ff9d2e", spot:"44", name:"Gil Ferro", handle:"FERRO", district:"Cinderline", tiers:[1,3],
+      key:"ferro", color:"#ff9d2e", spot:"44", name:"Gil Ferro", handle:"FERRO", district:"Cinderline", ring:1,
       blurb:"Ex-foreman at the Cinder plants, fired for siding with his crew. Now he finds work for the people the plants chew up, and makes the plants pay for it.",
       voice:"The plant takes a finger, we take a fuse. Fair's fair."
     },
     {
-      key:"padre", color:"#e8e2d6", spot:"67", name:"Inácio Morales", handle:"PADRE", district:"Costa Morta", tiers:[1,3],
+      key:"padre", color:"#e8e2d6", spot:"67", name:"Inácio Morales", handle:"PADRE", district:"Costa Morta", ring:1,
       blurb:"Runs a soup kitchen in the dead mall on the coast. Former priest, current fixer: the church taught him to listen, the coast taught him what to do with what he hears.",
       voice:"I don't ask what you've done. I ask what you'll do next."
     },
     {
-      key:"velvet", color:"#c23bff", spot:"78", name:"Mr. Velvet", handle:"MR. VELVET", district:"The Kennel", tiers:[2,5],
+      key:"velvet", color:"#c23bff", spot:"78", name:"Mr. Velvet", handle:"MR. VELVET", district:"The Kennel", ring:3,
       blurb:"The Kennel boss's broker. Soft voice, perfect manners, and every job he hands out serves the man behind the walls.",
       voice:"My employer values loyalty. He also values results. Please don't make me choose."
     },
     {
-      key:"rhea", color:"#d8b45a", spot:"01", name:"Rhea Coldwater", handle:"COLDWATER", district:"The Barrens", tiers:[1,4],
+      key:"rhea", color:"#d8b45a", spot:"01", name:"Rhea Coldwater", handle:"COLDWATER", district:"The Barrens", ring:2,
       blurb:"Speaks for the Wanderer Clan in the city. Convoys, salvage, water and anything that has to cross the Barrens alive.",
       voice:"Out here the desert's the boss. I just tell you where it's looking."
     }
@@ -862,8 +876,48 @@
     "The client is in the room, disguised, watching the crew work."
   ];
 
+  // ------------------------------------------------- one level per fixer
+
+  // NPC name -> [faction, level], from the generator rosters plus the few
+  // units that only appear in written jobs.
+  const UNIT = new Map();
+  for (const [faction,f] of Object.entries(FACTIONS)) for (const [name,t] of f.roster) UNIT.set(name,[faction,t]);
+
+  function scaleEnemies(enemies,delta) {
+    if (!delta) return enemies;
+    return enemies.map(([name,count]) => {
+      const unit = UNIT.get(name);
+      if (!unit) return [name,count];
+      const [faction,t] = unit;
+      const want = Math.max(1,Math.min(5,t + delta));
+      const roster = FACTIONS[faction].roster;
+      const best = roster.slice().sort((a,b) => Math.abs(a[1] - want) - Math.abs(b[1] - want) || (a[0] === name ? -1 : 0))[0];
+      return [best?.[0] ?? name,count];
+    }).reduce((out,[name,count]) => {
+      const same = out.find(e => e[0] === name);
+      if (same) same[1] += count; else out.push([name,count]);
+      return out;
+    },[]);
+  }
+
+  function retier(job) {
+    if (job.for) return job;
+    const fixer = FIXERS.find(f => f.key === job.fixer);
+    const ring = RINGS.find(r => r.ring === fixer?.ring);
+    if (!ring) return job;
+    const tier = ring.tiers.includes(job.tier) ? job.tier : ring.tiers[0];
+    if (tier === job.tier) return job;
+    const [a,b] = TIERS[job.tier].pay, [c,d] = TIERS[tier].pay;
+    const at = Math.max(0,Math.min(1,(job.pay - a) / Math.max(1,b - a)));
+    const pay = Math.round((c + at * (d - c)) / 50) * 50;
+    return {...job,tier,pay,enemies:scaleEnemies(job.enemies,tier - job.tier),retiered:job.tier};
+  }
+
+  for (const f of FIXERS) f.tiers = RINGS.find(r => r.ring === f.ring)?.tiers ?? [1];
+  for (let i = 0; i < JOBS.length; i++) JOBS[i] = retier(JOBS[i]);
+
   globalThis.FEHA_JOB_CATALOG = {
-    VERSION,TIERS,RANKS,FIXERS,JOBS,
+    VERSION,TIERS,RINGS,RANKS,FIXERS,JOBS,
     gen:{FACTIONS,ITEMS,WHO,PLACES,DISTRICTS,KINDS,TWISTS}
   };
 
