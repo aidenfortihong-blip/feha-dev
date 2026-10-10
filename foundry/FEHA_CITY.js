@@ -635,30 +635,31 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
 
   const handlers = globalThis.__fehaCityHandlers ??= {};
   for (const [type,fn] of Object.entries(handlers)) document.removeEventListener(type,fn,true);
+  // A press that moves more than a few pixels before the click is a drag
+  // (panning or selecting), not a click on the key.
   let down = null;
-  handlers.pointerdown = event => {
-    down = event.button === 0 && event.target?.id === "board" ? {x:event.clientX,y:event.clientY} : null;
-  };
-  handlers.pointerup = event => {
-    const start = down;
-    down = null;
-    if (!start || event.target?.id !== "board") return;
-    if (Math.hypot(event.clientX - start.x,event.clientY - start.y) > 6) return;
-    try {
-      const point = canvas.canvasCoordinatesFromClient({x:event.clientX,y:event.clientY});
-      const id = keyHit(point);
-      if (id) jumpTo(id);
-    } catch (err) { console.warn("FEHA CITY // key click failed",err); }
+  delete handlers.pointerdown;
+  delete handlers.pointerup;
+  handlers.mousedown = event => {
+    down = event.button === 0 ? {x:event.clientX,y:event.clientY} : null;
   };
   handlers.click = async event => {
     const link = event.target?.closest?.(".feha-city-go a[data-uuid]");
-    if (!link) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const scene = await fromUuid(link.dataset.uuid);
-    if (scene?.documentName !== "Scene") return;
-    if (game.user.isGM) return scene.view();
-    ui.notifications.info("FIXER NET // Ask the GM to take you to " + scene.name + ".");
+    if (link) {
+      event.preventDefault();
+      event.stopPropagation();
+      const scene = await fromUuid(link.dataset.uuid);
+      if (scene?.documentName !== "Scene") return;
+      if (game.user.isGM) return scene.view();
+      ui.notifications.info("FIXER NET // Ask the GM to take you to " + scene.name + ".");
+      return;
+    }
+    if (event.target?.id !== "board" || event.button !== 0) return;
+    if (down && Math.hypot(event.clientX - down.x,event.clientY - down.y) > 6) return;
+    try {
+      const id = keyHit(canvas.canvasCoordinatesFromClient({x:event.clientX,y:event.clientY}));
+      if (id) jumpTo(id);
+    } catch (err) { console.warn("FEHA CITY // key click failed",err); }
   };
   for (const [type,fn] of Object.entries(handlers)) document.addEventListener(type,fn,true);
 
