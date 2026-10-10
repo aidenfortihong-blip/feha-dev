@@ -48,6 +48,7 @@
   // ------------------------------------------------------------- helpers
 
   const cat = () => globalThis.FEHA_JOB_CATALOG;
+  const kit = () => globalThis.FEHA_GIG_KIT ?? null;
   const city = () => globalThis.FEHA_CITY ?? null;
   const esc = value => String(value ?? "")
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
@@ -124,6 +125,8 @@
     raw.perFixer ??= 2;
     raw.jobs ??= {};
     raw.used ??= [];
+    raw.favors ??= [];
+    raw.autoPrep ??= true;
     return raw;
   }
 
@@ -159,7 +162,8 @@
   // Put a job on the city map. If its spot is in another district (the only
   // place with its battle map), the job moves there, so WHERE matches the pin.
   function placeJob(job) {
-    job.spot = city()?.spotFor?.({district:job.district,map:job.map,fixer:job.fixer,key:job.key}) ?? null;
+    // Written gigs keep the spot they were written for.
+    if (!(job.book && job.spot && city()?.place?.(job.spot))) job.spot = city()?.spotFor?.({district:job.district,map:job.map,fixer:job.fixer,key:job.key}) ?? null;
     const at = city()?.place?.(job.spot);
     if (at && city()?.DISTRICTS?.[job.district] && at.district !== job.district) job.district = at.district;
     return job;
@@ -189,7 +193,7 @@
     const kind = G.KINDS[kindName];
     const inTier = Object.entries(G.FACTIONS).filter(([,f]) => t >= f.tiers[0] && t <= f.tiers[1]);
     const fitting = inTier.filter(([name]) => !kind.factions || kind.factions.includes(name));
-    const [faction,fdef] = pick(fitting.length ? fitting : inTier.length ? inTier : Object.entries(G.FACTIONS));
+    let [faction,fdef] = pick(fitting.length ? fitting : inTier.length ? inTier : Object.entries(G.FACTIONS));
     // Where: a real spot on the city map, in the fixer's district most of
     // the time, of a kind that suits the job. Its name goes in the brief and
     // its own battle map comes with it.
@@ -198,6 +202,9 @@
     const map = spot?.map ?? pick(G.PLACES[pick(kind.places)]);
     const bare = (spot?.name ?? map).replace(/^the /i,"");
     const place = /(Street|Streets|Alley|Road|'s)$/.test(bare) || /'s/.test(bare) ? bare : "the " + bare;
+    // Street work in a gang district fights that district's gang.
+    const gang = faction === "Street" ? G.GANGS?.[spot?.district ?? district] : null;
+    if (gang) fdef = {label:gang[0],tiers:fdef.tiers,roster:gang[1]};
     const whoPool = G.WHO.filter(w => !w.toLowerCase().includes(faction.toLowerCase()));
     const ctx = {item:pick(G.ITEMS),who:pick(whoPool.length ? whoPool : G.WHO),place,faction:fdef.label ?? faction};
     const cap = text => text.charAt(0).toUpperCase() + text.slice(1);
@@ -387,6 +394,17 @@
       if (job.src === "catalog" && !state.used.includes(job.key)) state.used.push(job.key);
       await write(state);
       await marker(job,true);
+      if (state.autoPrep && !job.prep && kit()) {
+        try {
+          job.prep = await kit().prep(job);
+          const fresh = read();
+          if (fresh.jobs[job.id]) { fresh.jobs[job.id].prep = job.prep; await write(fresh); }
+          ui.notifications.info(`FIXER NET // Gig files ready for "${job.title}": journal and maps in the GIGS folders.`);
+        } catch (err) {
+          console.warn("FEHA JOBS // prep failed",err);
+          ui.notifications.warn("FIXER NET // Couldn't build the gig files: " + (err?.message ?? err));
+        }
+      }
       const fixer = fixerOf(job);
       await chat(chatCard(job,{kicker:"JOB ON",tone:"go",
         body:`<p>Crew: <b>${esc(crewNames(job.crew))}</b></p>${fixer ? `<p class="fjc-q">“${esc(fixer.voice)}”</p>` : ""}`}));
@@ -404,7 +422,7 @@
       return {ok:true};
     },
 
-    async complete({jobId,pay,cred}) {
+    async complete({jobId,pay,cred,rewards,favor}) {
       const state = read();
       const job = state.jobs[jobId];
       if (!job || job.status !== "active") throw new Error("Only a job in progress can be paid out.");
@@ -419,14 +437,23 @@
         if (each) await wallet.addCredits(actor,each);
         paid.push(actor.name);
       }
+      const given = [];
+      for (const r of rewards ?? []) {
+        const actor = game.actors.get(r.actorId);
+        if (!actor || !r.name) continue;
+        try {
+          if (await kit()?.giveItem?.(actor,r.name,Math.max(1,Number(r.qty) || 1))) given.push(`${r.qty > 1 ? r.qty + "× " : ""}${r.name} → ${actor.name}`);
+        } catch (err) { console.warn("FEHA JOBS // reward item failed",r,err); }
+      }
+      if (favor) state.favors.push({id:rid(),text:String(favor),fixer:job.fixer,job:job.title,used:false,at:Date.now()});
       const before = state.cred;
       state.cred += credUp;
-      Object.assign(job,{status:"done",paid:each,credPaid:credUp,finished:Date.now(),updated:Date.now()});
+      Object.assign(job,{status:"done",paid:each,credPaid:credUp,given,favor:favor ?? null,finished:Date.now(),updated:Date.now()});
       topUp(state);
       await write(state);
       await marker(job,false);
       await chat(chatCard(job,{kicker:"PAID",tone:"done",
-        body:`<div class="fjc-pay"><span>${money(each)} each</span><span>+${credUp} CREW CRED</span></div><p>${esc(paid.join(", ") || "Nobody")} got paid. Crew cred is now ${state.cred}.</p>`}));
+        body:`<div class="fjc-pay"><span>${money(each)} each</span><span>+${credUp} CREW CRED</span></div><p>${esc(paid.join(", ") || "Nobody")} got paid. Crew cred is now ${state.cred}.</p>${given.length ? `<p>Loot: ${esc(given.join(", "))}</p>` : ""}${favor ? `<p>Favour: ${esc(favor)}</p>` : ""}`}));
       await announceUnlocks(before,state.cred,state);
       return {ok:true};
     },
@@ -554,6 +581,43 @@
     async resetUsed() {
       const state = read();
       state.used = [];
+      await write(state);
+      return {ok:true};
+    },
+
+    async prep({jobId}) {
+      const state = read();
+      const job = state.jobs[jobId];
+      if (!job) throw new Error("Unknown job.");
+      if (!kit()) throw new Error("The gig kit isn't loaded.");
+      if (job.prep) await kit().cleanup(job.prep);
+      job.prep = await kit().prep(job);
+      const fresh = read();
+      if (fresh.jobs[jobId]) { fresh.jobs[jobId].prep = job.prep; await write(fresh); }
+      return {ok:true};
+    },
+
+    async cleanup({jobId}) {
+      const state = read();
+      const job = state.jobs[jobId];
+      if (!job?.prep) return {ok:true};
+      await kit()?.cleanup?.(job.prep);
+      job.prep = null;
+      await write(state);
+      return {ok:true};
+    },
+
+    async setAutoPrep({on}) {
+      const state = read();
+      state.autoPrep = Boolean(on);
+      await write(state);
+      return {ok:true};
+    },
+
+    async favor({id,used,remove}) {
+      const state = read();
+      if (remove) state.favors = state.favors.filter(f => f.id !== id);
+      else for (const f of state.favors) if (f.id === id) f.used = Boolean(used);
       await write(state);
       return {ok:true};
     },
@@ -773,6 +837,22 @@
 #${ROOT_ID} .fj-tc1{--fj-tc:var(--fj-t1)} #${ROOT_ID} .fj-tc2{--fj-tc:var(--fj-t2)} #${ROOT_ID} .fj-tc3{--fj-tc:var(--fj-t3)}
 #${ROOT_ID} .fj-tc4{--fj-tc:var(--fj-t4)} #${ROOT_ID} .fj-tc5{--fj-tc:var(--fj-t5)}
 
+/* run sheet, rewards */
+#${ROOT_ID} .fj-hook{font-style:italic;color:var(--fj-text);opacity:.9;margin:2px 0 10px}
+#${ROOT_ID} .fj-beat{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px 0;border-bottom:1px dashed rgba(243,230,0,.2)}
+#${ROOT_ID} .fj-beat:last-of-type{border-bottom:0}
+#${ROOT_ID} .fj-beat .bn{font-family:var(--fj-mono);font-size:20px;color:var(--fj-yellow);line-height:1}
+#${ROOT_ID} .fj-beat .bt{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+#${ROOT_ID} .fj-beat .bt b{font-size:17px;letter-spacing:.04em;text-transform:uppercase}
+#${ROOT_ID} .fj-beat .bt span{font-family:var(--fj-mono);font-size:12px;color:var(--fj-muted)}
+#${ROOT_ID} .fj-beat p{margin:6px 0}
+#${ROOT_ID} .fj-checks{margin:4px 0 6px;padding-left:18px;color:var(--fj-muted);font-size:14px}
+#${ROOT_ID} .fj-checks li{margin:2px 0}
+#${ROOT_ID} .fj-reward{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#${ROOT_ID} .fj-reward .money{font-family:var(--fj-mono);font-size:15px;color:var(--fj-yellow);margin-right:6px}
+#${ROOT_ID} .fj-tag.loot{color:var(--fj-text);border-color:var(--fj-t4);font-size:12px;text-transform:none;letter-spacing:.02em}
+#${ROOT_ID} .fj-pay select{min-width:120px}
+
 /* GM desk */
 #${ROOT_ID} .fj-desk{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;align-content:start}
 #${ROOT_ID} .fj-box{border:1px solid var(--fj-line-soft);background:var(--fj-panel);padding:12px 14px}
@@ -950,21 +1030,72 @@
 
   // ---- job page
 
-  function gmBlock(job) {
-    if (hideGM()) return `<div class="fj-note" style="margin-top:20px">GM notes hidden (GM desk → Show GM notes).</div>`;
-    const enemies = (job.enemies ?? []).map(([name,count]) => {
+  function enemyChips(list) {
+    return (list ?? []).map(([name,count]) => {
       const actor = game.actors.getName(name);
       return actor
         ? `<button type="button" data-act="sheet" data-actor="${esc(actor.id)}" title="Open ${esc(name)}">${esc(name)} ×${count}</button>`
-        : `<span class="fj-tag" title="Not imported yet (Actors tab → NPC import)">${esc(name)} ×${count}</span>`;
+        : `<span class="fj-tag" title="Imported when the gig is prepped">${esc(name)} ×${count}</span>`;
     }).join("");
-    const scene = sceneFor(city()?.place?.(job.spot)?.map ?? job.map) ?? sceneFor(job.map);
+  }
+
+  // GM: how to run the gig, beat by beat, with maps, checks and enemies.
+  function gmBlock(job) {
+    if (hideGM()) return `<div class="fj-note" style="margin-top:20px">GM notes hidden (GM desk → Show GM notes).</div>`;
+    const sheet = kit()?.runSheet?.(job);
+    if (!sheet) return "";
+    const prepped = job.prep && game.journal.get(job.prep.journal);
+    const beats = sheet.beats.map(b => {
+      const copy = job.prep?.beatScenes?.[b.n] ? game.scenes.get(job.prep.beatScenes[b.n]) : null;
+      return `<div class="fj-beat"><div class="bn">${String(b.n).padStart(2,"0")}</div><div>
+        <div class="bt"><b>${esc(b.title)}</b>${b.label ? ` · <span>${esc(b.label)}</span>` : ""}
+          ${copy ? `<button type="button" class="fj-mini fj-go" data-act="viewmap" data-scene="${esc(copy.id)}" title="The gig's copy, enemies placed (hidden)">Open gig map</button>` : ""}
+          ${b.scene ? `<button type="button" class="fj-mini fj-ghost" data-act="viewmap" data-scene="${esc(b.scene.id)}">Original map</button>` : ""}
+          ${b.spot && city()?.worldScene?.() ? `<button type="button" class="fj-mini fj-ghost" data-act="citymap" data-spot="${esc(b.spot)}">City map</button>` : ""}</div>
+        <p>${esc(b.text)}</p>
+        ${b.checks.length ? `<ul class="fj-checks">${b.checks.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+        ${b.enemies.length ? `<div class="fj-enemies">${enemyChips(b.enemies)}</div>` : ""}
+      </div></div>`;
+    }).join("");
     return `<section class="fj-gm" aria-label="GM only">
-      <h3 class="fj-sh">GM ONLY · THE TWIST</h3><p>${esc(job.twist || "None.")}</p>
-      <h3 class="fj-sh">ENEMIES</h3><div class="fj-enemies">${enemies || `<span class="fj-note">None listed.</span>`}</div>
-      <h3 class="fj-sh">BATTLE MAP</h3><div class="fj-row"><span>${esc(scene?.name ?? job.map ?? "—")}</span>
-        ${scene ? `<button type="button" data-act="viewmap" data-scene="${esc(scene.id)}" title="Open on your screen only">Open battle map</button>` : ""}</div>
+      <h3 class="fj-sh">GM · HOW TO RUN IT${sheet.written ? "" : " (QUICK SHEET)"}</h3>
+      ${sheet.hook ? `<p class="fj-hook">${esc(sheet.hook)}</p>` : ""}
+      ${beats}
+      ${sheet.npcs.length ? `<h3 class="fj-sh">PEOPLE</h3><ul class="fj-checks">${sheet.npcs.map(n => `<li><b>${esc(n.name)}</b> — ${esc(n.note ?? "")}</li>`).join("")}</ul>` : ""}
+      <h3 class="fj-sh">THE TWIST</h3><p>${esc(sheet.twist || "None.")}</p>
+      ${sheet.wrap ? `<h3 class="fj-sh">WRAPPING UP</h3><p>${esc(sheet.wrap)}</p>` : ""}
+      <h3 class="fj-sh">GIG FILES</h3>
+      <div class="fj-row">${prepped
+        ? `<span class="fj-note">Ready: journal, ${(job.prep.scenes ?? []).length} map cop${(job.prep.scenes ?? []).length === 1 ? "y" : "ies"} with enemies placed hidden${(job.prep.actors ?? []).length ? `, ${job.prep.actors.length} named NPC${job.prep.actors.length === 1 ? "" : "s"}` : ""}.</span>
+           <button type="button" class="fj-mini fj-go" data-act="openjournal" data-journal="${esc(job.prep.journal)}">Open gig journal</button>
+           <button type="button" class="fj-mini" data-act="prep">Rebuild</button>
+           <button type="button" class="fj-mini fj-ghost" data-act="cleanup">Delete gig files</button>`
+        : `<span class="fj-note">One click builds a GIGS folder: a copy of each map with the enemies placed (hidden), the NPCs, and a journal with this run sheet and a player handout.${read().autoPrep ? " Confirming a job does this automatically." : ""}</span>
+           <button type="button" class="fj-mini fj-go" data-act="prep">Prep gig files</button>`}</div>
     </section>`;
+  }
+
+  // Reward line for everyone: items and any favour.
+  function rewardBlock(job) {
+    const r = kit()?.rewardFor?.(job);
+    if (!r || (!r.items.length && !r.favor)) return "";
+    return `<h3 class="fj-sh">REWARD</h3><div class="fj-reward">
+      <span class="money">${money(job.pay)} each</span>
+      ${r.items.map(i => `<span class="fj-tag loot" title="${i.item ? "" : "Not in this world's items"}">${i.qty > 1 ? i.qty + "× " : ""}${esc(i.name)}</span>`).join("")}
+      ${r.favor ? `<span class="fj-tag me">FAVOUR: ${esc(r.favor)}</span>` : ""}</div>`;
+  }
+
+  // GM payout: who gets each reward item.
+  function rewardPicker(job) {
+    const r = kit()?.rewardFor?.(job);
+    if (!r || (!r.items.length && !r.favor)) return "";
+    const crew = (job.crew ?? []).map(id => game.actors.get(id)).filter(Boolean);
+    const rows = r.items.map((i,n) => `<label>${esc((i.qty > 1 ? i.qty + "× " : "") + i.name)}
+      <select data-reward="${n}" data-name="${esc(i.name)}" data-qty="${i.qty}"${i.item ? "" : " disabled"}>
+        ${crew.map((a,k) => `<option value="${esc(a.id)}" ${k === n % Math.max(1,crew.length) ? "selected" : ""}>${esc(a.name)}</option>`).join("")}
+        <option value="">nobody</option></select></label>`).join("");
+    return `<span class="step">REWARD ITEMS</span><div class="fj-row fj-pay">${rows || `<span class="fj-note">No items.</span>`}</div>
+      ${r.favor ? `<label class="fj-note"><input type="checkbox" data-field="favor" checked> Record the favour: ${esc(r.favor)}</label>` : ""}`;
   }
 
   function actionBlock(job,state,me) {
@@ -1006,13 +1137,18 @@
           <label>CREW CRED <input type="number" min="0" step="1" data-field="cred" value="${job.cred}"></label>
           ${job.kind === "Cyberpsycho" ? `<button type="button" data-act="double" title="Non-lethal takedown">×2 non-lethal</button>` : ""}
           <button type="button" class="fj-go" data-act="complete">Pay out</button></div>
+        ${rewardPicker(job)}
         <div class="fj-row fj-pay">
           <label>CRED ON FAIL <input type="number" step="1" data-field="failcred" value="0"></label>
           <button type="button" data-act="fail">Mark failed</button>
           <button type="button" class="fj-ghost" data-act="reopen">Back on offer</button></div></div>`;
     }
-    return isGM ? `<div class="fj-act"><div class="fj-row"><button type="button" data-act="reopen">Offer it again</button>
-      <button type="button" class="fj-ghost" data-act="remove">Delete record</button></div></div>` : "";
+    const loot = job.given?.length ? `<span class="fj-note">Loot: ${esc(job.given.join(", "))}</span>` : "";
+    if (!isGM) return loot ? `<div class="fj-act">${loot}</div>` : "";
+    return `<div class="fj-act">${loot}<div class="fj-row">
+      ${job.prep ? `<button type="button" class="fj-go" data-act="cleanup" title="Deletes the map copies, NPCs and journal this gig made">Delete gig files</button>` : ""}
+      <button type="button" data-act="reopen">Offer it again</button>
+      <button type="button" class="fj-ghost" data-act="remove">Delete record</button></div></div>`;
   }
 
   function jobPage(job,state,me) {
@@ -1039,6 +1175,7 @@
         <h3 class="fj-sh">THE JOB</h3>
         <p class="fj-brief">${esc(job.brief || "No brief.")}</p>
         ${job.objectives?.length ? `<h3 class="fj-sh">OBJECTIVES</h3><ol class="fj-obj">${job.objectives.map(o => `<li>${esc(o)}</li>`).join("")}</ol>` : ""}
+        ${rewardBlock(job)}
         ${game.user.isGM ? gmBlock(job) : ""}
         ${actionBlock(job,state,me)}
       </article>`;
@@ -1049,6 +1186,15 @@
   function listView(list,emptyHead,emptyBody) {
     if (!list.length) return `<div class="fj-empty"><b>${esc(emptyHead)}</b>${esc(emptyBody)}</div>`;
     return `<div class="fj-cards">${list.map(jobCard).join("")}</div>`;
+  }
+
+  function favorsBlock(state) {
+    if (!state.favors.length) return "";
+    const isGM = game.user.isGM;
+    return `<h3 class="fj-sh">FAVOURS THE CREW IS OWED</h3><div class="fj-box" style="margin-bottom:14px">${state.favors.map(f => `<div class="fj-line"><div class="grow"><b${f.used ? ` style="text-decoration:line-through;opacity:.6"` : ""}>${esc(f.text)}</b>
+      <span>${esc(fixerOf(f.fixer)?.handle ?? "")} · from "${esc(f.job)}"${f.used ? " · used" : ""}</span></div>
+      ${isGM ? `<button type="button" class="fj-mini" data-act="favoruse" data-id="${esc(f.id)}" data-used="${f.used ? "0" : "1"}">${f.used ? "Not used" : "Mark used"}</button>
+      <button type="button" class="fj-mini fj-ghost" data-act="favordel" data-id="${esc(f.id)}">Remove</button>` : ""}</div>`).join("")}</div>`;
   }
 
   // ---- GM desk
@@ -1108,7 +1254,8 @@
           <select data-field="rollfixer" aria-label="Fixer for a new gig">${fixers().map(f => `<option value="${esc(f.key)}">${esc(f.handle)}</option>`).join("")}</select>
           <button type="button" data-act="rollone">Add a random gig</button>
           <button type="button" class="fj-ghost" data-act="togglegm" aria-pressed="${hideGM()}">${hideGM() ? "Show GM notes" : "Hide GM notes"}</button></div>
-        <p class="fj-note">Written jobs used: ${state.used.length} of ${cat()?.JOBS?.length ?? 0}. <button type="button" class="fj-ghost fj-mini" data-act="resetused">Make them all available again</button></p>
+        <div class="fj-row" style="margin-top:8px"><button type="button" class="fj-switch fj-mini" aria-pressed="${state.autoPrep}" data-act="autoprep" data-on="${state.autoPrep ? "0" : "1"}">Auto-prep gig files on confirm: ${state.autoPrep ? "ON" : "OFF"}</button></div>
+        <p class="fj-note">Written gigs done: ${state.used.length} of ${cat()?.JOBS?.length ?? 0}. A finished gig is never offered again. <button type="button" class="fj-ghost fj-mini" data-act="resetused">Allow repeats</button></p>
       </section>
       <section class="fj-box"><h3 class="fj-sh">FIXERS</h3>${fx}</section>
       <section class="fj-box" style="grid-column:1/-1"><h3 class="fj-sh">WRITE A JOB</h3>${writeForm()}</section>
@@ -1147,7 +1294,7 @@
     } else if (ui$.view === "mine") {
       body = main(`<h3 class="fj-sh">TAKEN JOBS</h3>${listView(mine,"NOTHING TAKEN","Jobs you've asked for or are working show up here.")}`);
     } else if (ui$.view === "done") {
-      body = main(`<h3 class="fj-sh">FINISHED JOBS</h3>${listView(done,"NO RECORD YET","Paid and failed jobs are kept here.")}`);
+      body = main(favorsBlock(read()) + `<h3 class="fj-sh">FINISHED JOBS</h3>${listView(done,"NO RECORD YET","Paid and failed jobs are kept here.")}`);
     } else {
       body = main(deskView(state));
     }
@@ -1249,6 +1396,25 @@
           return;
         }
         case "togglegm": setHideGM(!hideGM()); break;
+        case "prep":
+          target.disabled = true;
+          target.textContent = "Building…";
+          await run("prep",{jobId});
+          ui.notifications.info("FIXER NET // Gig files ready in the GIGS folders.");
+          sfx("install");
+          break;
+        case "cleanup":
+          if (!confirmTwice(target,"Delete the gig's maps, NPCs and journal?")) return;
+          await run("cleanup",{jobId});
+          sfx("remove");
+          break;
+        case "openjournal": return game.journal.get(target.dataset.journal)?.sheet?.render(true);
+        case "autoprep": await run("setAutoPrep",{on:target.dataset.on === "1"}); break;
+        case "favoruse": await run("favor",{id:target.dataset.id,used:target.dataset.used === "1"}); break;
+        case "favordel":
+          if (!confirmTwice(target,"Remove?")) return;
+          await run("favor",{id:target.dataset.id,remove:true});
+          break;
         case "request": {
           const me = myActor();
           if (!me) throw new Error("You need a character to take jobs.");
@@ -1269,7 +1435,10 @@
         case "complete": {
           const pay = Number(field("pay")), cred = Number(field("cred"));
           if (!confirmTwice(target,`Pay ${money(pay)} each + ${cred} cred?`)) return;
-          await run("complete",{jobId,pay,cred});
+          const rewards = [...root.querySelectorAll("[data-reward]")].filter(el => !el.disabled && el.value).map(el => ({name:el.dataset.name,qty:Number(el.dataset.qty) || 1,actorId:el.value}));
+          const favorBox = root.querySelector('[data-field="favor"]');
+          const favor = favorBox?.checked ? kit()?.rewardFor?.(read().jobs[jobId])?.favor ?? null : null;
+          await run("complete",{jobId,pay,cred,rewards,favor});
           sfx("install");
           break;
         }

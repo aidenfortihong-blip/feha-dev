@@ -748,6 +748,20 @@
     "Navy":          {tiers:[1,3], roster:[["Navy Rating",1],["Navy Marine",2]]}
   };
 
+  // Each district's street gang (FEHA_NPC_CATALOG District Gangs). A
+  // generated street-level gig in that district fights them instead.
+  const GANGS = {
+    "New Niemir":["The Niemir Wolves",[["Niemir Wolf",1],["Niemir Wolves Alpha",2]]],
+    "The Docks":["Rustwater Boys",[["Rustwater Boy",1],["Rustwater Captain",2]]],
+    "Cinderline":["the Sparkers",[["Sparker",2],["Sparker Burnout",3]]],
+    "Costa Morta":["the Drowned",[["Drowned Runner",2],["Drowned Oracle",3]]],
+    "The Kennel":["the Kennel Dogs",[["Kennel Dog",2],["Kennel Houndmaster",3]]],
+    "The Barrens":["the Scorpions",[["Scorpion Raider",1],["Scorpion Chief",3]]],
+    "Corporate Plaza":["Glasshouse",[["Glasshouse Kid",1],["Glasshouse Prince",2]]],
+    "Downtown":["Glasshouse",[["Glasshouse Kid",1],["Glasshouse Prince",2]]],
+    "Old Capital":["Los Viejos",[["Viejo Soldado",1],["Los Viejos Jefe",3]]]
+  };
+
   const ITEMS = [
     "a prototype Corvus neural chip","a stolen Helix Vitae med-crate","a Jade Arc rifle scope","a Kurohane access card",
     "a ledger of Cinder allocations","a braindance master recording","a crate of ForgeLine ammunition","a cyberdeck full of stolen identities",
@@ -876,6 +890,45 @@
     "The client is in the room, disguised, watching the crew work."
   ];
 
+  // ------------------------------------------------------------ gig books
+
+  // foundry/gigs/*.js push {fixer, gigs:[...]} onto FEHA_GIG_BOOKS before
+  // this file runs. A gig names its city spot; district and battle map come
+  // from the spot, enemies from its beats, and pay (unless given) from its
+  // level, steady per gig. A reload pushes the books again: last one wins.
+  function payFor(key,tier) {
+    let h = 0;
+    for (const ch of String(key)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const [a,b] = TIERS[tier].pay;
+    return Math.round((a + (h % 1000) / 999 * (b - a)) / 50) * 50;
+  }
+
+  function fromBook(gig,fixerKey) {
+    const city = globalThis.FEHA_CITY;
+    const place = gig.spot ? city?.place?.(gig.spot) : null;
+    const enemies = new Map();
+    for (const beat of gig.run?.beats ?? []) for (const [name,count] of beat.enemies ?? []) enemies.set(name,(enemies.get(name) ?? 0) + count);
+    const firstScene = (gig.run?.beats ?? []).map(b => String(b.at ?? "")).find(a => a.startsWith("scene:"))?.slice(6);
+    return {
+      fixer:fixerKey,
+      district:place?.district ?? FIXERS.find(f => f.key === fixerKey)?.district ?? "Alabastra",
+      map:place?.map ?? firstScene ?? "",
+      enemies:[...enemies.entries()],
+      pay:gig.pay ?? payFor(gig.key,gig.tier),
+      book:true,
+      ...gig
+    };
+  }
+
+  const bookKeys = new Map();
+  for (const book of globalThis.FEHA_GIG_BOOKS ?? []) {
+    for (const gig of book.gigs ?? []) bookKeys.set(gig.key,fromBook(gig,gig.fixer ?? book.fixer));
+  }
+  for (const gig of bookKeys.values()) {
+    const at = JOBS.findIndex(j => j.key === gig.key);
+    if (at >= 0) JOBS[at] = gig; else JOBS.push(gig);
+  }
+
   // ------------------------------------------------- one level per fixer
 
   // NPC name -> [faction, level], from the generator rosters plus the few
@@ -918,7 +971,7 @@
 
   globalThis.FEHA_JOB_CATALOG = {
     VERSION,TIERS,RINGS,RANKS,FIXERS,JOBS,
-    gen:{FACTIONS,ITEMS,WHO,PLACES,DISTRICTS,KINDS,TWISTS}
+    gen:{FACTIONS,GANGS,ITEMS,WHO,PLACES,DISTRICTS,KINDS,TWISTS}
   };
 
   try {

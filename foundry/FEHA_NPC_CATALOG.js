@@ -42,6 +42,7 @@
   const BASTION = "Bastion Strategic";
   const NAVY = "Navy";
   const CIVILIAN = "Civilians";
+  const GANGS = "District Gangs";
 
   // Weapon picks are selectors, not names, so they survive catalog changes:
   //   w("Pistol",2)                    any pistol up to market band 2
@@ -487,6 +488,168 @@
       consumables:["Helix Health Booster","Helix Health Booster"],
       bio:"Unlicensed, underpaid, and the only clinic most of New Niemir can afford.",
       tactics:"Neutral ground. Whoever starts shooting in the clinic loses a ripperdoc."
+    },
+    {
+      key:"union-steward",name:"Union Steward",faction:CIVILIAN,tier:1,hp:20,ac:11,hostile:false,
+      abilities:ab(12,10,13,12,13,15),
+      weapons:[w("Blunt",1)],
+      bio:"Elected by the shift, not appointed by the Council. Knows every name on the floor and every foreman's weak spot.",
+      tactics:"Talks the crowd down or up. Fights only to cover a retreat."
+    },
+    {
+      key:"journalist",name:"Indie Journalist",faction:CIVILIAN,tier:0,hp:12,ac:11,hostile:false,
+      abilities:ab(9,13,10,14,13,13),
+      chrome:["Kiroshi Optics"],
+      bio:"Records everything through her optics and uploads it to three mirrors before CivCorp can take it down.",
+      tactics:"Hides, keeps recording, and runs the moment she has the shot."
+    },
+    {
+      key:"bouncer",name:"Bouncer",faction:CIVILIAN,tier:1,hp:30,ac:13,
+      abilities:ab(16,11,15,9,11,10),
+      weapons:[w("Baton",1),w("Pistol",1)],armor:"Rivet Work Armor Mk.I",
+      chrome:["Reinforced Muscles"],
+      bio:"Big, bored and paid by the night. Not paid enough to die for the club.",
+      tactics:"Throws people out, not bullets. Pulls the pistol only if someone else does."
+    },
+    {
+      key:"private-guard",name:"Private Security Guard",faction:CORP,tier:1,hp:24,ac:14,
+      abilities:ab(12,13,12,10,11,10),
+      weapons:[w("Pistol",2),w("Baton",1)],armor:"Interface Security Suit Mk.I",
+      bio:"Contract security on a twelve-hour shift. Calls it in first, asks questions never.",
+      tactics:"Radios for backup on the first sight of trouble, then holds a doorway."
+    },
+
+    // ---- District gangs -------------------------------------------------
+    {
+      key:"niemir-wolf",name:"Niemir Wolf",faction:GANGS,tier:1,hp:24,
+      abilities:ab(13,13,13,10,12,11),
+      weapons:[w("Knife",1),w("Pistol",1)],armor:"Living Dermal Suit Mk.I",
+      bio:"New Niemir kid in a Wolves patch. Grew up running watch for the block and never stopped.",
+      tactics:"Fights for the block, not for money. Backs off if the crew is clearly local."
+    },
+    {
+      key:"niemir-alpha",name:"Niemir Wolves Alpha",faction:GANGS,tier:2,
+      abilities:ab(15,14,14,11,13,14),
+      weapons:[w("Shotgun",2),w("Machete",2)],armor:"Living Dermal Suit Mk.II",
+      chrome:["Reinforced Muscles","Kiroshi Optics"],
+      bio:"Runs a Wolves pack. Sloviti, scarred, and more respected in New Niemir than any CivCorp badge.",
+      tactics:"Leads from the front with the shotgun; the pack follows his calls."
+    },
+    {
+      key:"rustwater-boy",name:"Rustwater Boy",faction:GANGS,tier:1,hp:24,
+      abilities:ab(14,12,13,9,10,10),
+      weapons:[w("Blunt",1),w("Pistol",1)],armor:"Rivet Work Armor Mk.I",
+      bio:"Dock smuggler with a cargo hook and a night-shift pass he didn't pay for.",
+      tactics:"Uses crates for cover and the cranes for escape."
+    },
+    {
+      key:"rustwater-captain",name:"Rustwater Captain",faction:GANGS,tier:2,
+      abilities:ab(15,13,15,11,12,12),
+      weapons:[w("SMG",3),w("Blunt",2)],armor:"Rivet Work Armor Mk.II",
+      chrome:["Strong Arms"],
+      grenades:["Grenade Frag Regular Mk.I"],
+      bio:"Runs a Rustwater crew and a tug. Knows every container number by heart.",
+      tactics:"Throws a frag into cover, then pushes with the SMG."
+    },
+    {
+      key:"sparker",name:"Sparker",faction:GANGS,tier:2,
+      abilities:ab(16,13,15,9,9,8),
+      weapons:[w("Blunt",2),w("Shotgun",2)],armor:"Rivet Work Armor Mk.II",
+      chrome:["Berserk C1","Dense Marrow"],
+      bio:"Ex-plant worker with salvaged chrome bolted on by a friend with a welder. Still has the shift badge.",
+      tactics:"Berserk on the first turn, charges the closest target, laughs the whole time."
+    },
+    {
+      key:"sparker-burnout",name:"Sparker Burnout",faction:GANGS,tier:3,
+      abilities:ab(18,14,17,9,9,9),
+      weapons:[w("Heavy Blunt",3),w("LMG",4)],armor:"Rivet Work Armor Mk.III",
+      chrome:["Berserk C2","Strong Arms","Subdermal Plating","Pain Reductor"],
+      bio:"More machine than plant worker now. The Sparkers follow him because he can't feel pain any more.",
+      tactics:"Walks through gunfire with the LMG, Berserk up, and swaps to the hammer up close."
+    },
+    {
+      key:"drowned-runner",name:"Drowned Runner",faction:GANGS,tier:2,hp:30,
+      abilities:ab(9,14,11,16,13,11),
+      weapons:[w("SMG",3)],armor:"Interface Security Suit Mk.I",
+      chrome:["Corvus Paraline","Ram Upgrade"],
+      quickhacks:["Optic Zero","Wiretap","Chrome Lock"],
+      bio:"Netrunner from the dead hotels of Costa Morta. Says the old resort net whispers to her.",
+      tactics:"Hacks from the dark, never in line of sight, and leaves when found."
+    },
+    {
+      key:"drowned-oracle",name:"Drowned Oracle",faction:GANGS,tier:3,hp:60,
+      abilities:ab(9,15,12,18,15,14),
+      weapons:[w("Pistol",3)],armor:"Interface Security Suit Mk.III",
+      chrome:["Corvus Netdriver","Ram Upgrade","Self Ice"],
+      quickhacks:["Synapse Burn","Dead Trigger","System Collapse","Optic Zero"],
+      bio:"The Drowned's prophet. Jacked in for so long the crew can't tell if she's talking to them or the net.",
+      tactics:"Burns the crew's best chrome first, hides behind her runners, and jacks out at a quarter health."
+    },
+    {
+      key:"kennel-dog",name:"Kennel Dog",faction:GANGS,tier:2,
+      abilities:ab(14,14,14,10,12,10),
+      weapons:[w("Assault Rifle",3),w("Knife",1)],armor:"Bastion Combat Plate Mk.II",
+      grenades:["Grenade Frag Regular Mk.II"],
+      bio:"Ex-Bastion soldier who walked over the Kennel wall and never looked back. Still drills like it's basic.",
+      tactics:"Fire and move in pairs, frag on clustered targets. Disciplined; retreats in order."
+    },
+    {
+      key:"kennel-houndmaster",name:"Kennel Houndmaster",faction:GANGS,tier:3,
+      abilities:ab(16,15,16,12,13,13),
+      weapons:[w("Assault Rifle",3),w("Shotgun",3)],armor:"Bastion Combat Plate Mk.III",
+      chrome:["Tactical Icon Processor","Subdermal Plating","Kiroshi Optics"],
+      grenades:["Grenade Frag Regular Mk.II","Grenade Flash Regular Mk.II"],
+      bio:"The Kennel boss's sergeant. Trained half the Dogs himself and remembers which ones flinched.",
+      tactics:"Flashbang, then the Dogs push while he holds the angle with the rifle."
+    },
+    {
+      key:"scorpion-raider",name:"Scorpion Raider",faction:GANGS,tier:1,hp:24,
+      abilities:ab(13,14,13,9,12,9),
+      weapons:[w("Shotgun",2),w("Knife",1)],armor:"Flexweave Mobility Suit Mk.I",
+      bio:"Desert raider in sun-bleached gear. Hits convoys fast and is gone before the dust settles.",
+      tactics:"Ambushes from high ground, then rushes. Flees if the convoy fights back hard."
+    },
+    {
+      key:"scorpion-chief",name:"Scorpion Chief",faction:GANGS,tier:3,
+      abilities:ab(15,16,15,11,14,13),
+      weapons:[w("DMR",3),w("Machete",2)],armor:"Flexweave Mobility Suit Mk.III",
+      chrome:["Kiroshi Optics","Kerenzikov"],
+      grenades:["Grenade Smoke Regular Mk.II"],
+      bio:"Leads the Scorpions since the Council's water contract cut her clan off from the reservoir.",
+      tactics:"Snipes from a ridge, drops smoke to cover her raiders, and parleys if she's losing."
+    },
+    {
+      key:"glasshouse-kid",name:"Glasshouse Kid",faction:GANGS,tier:1,hp:22,
+      abilities:ab(10,14,11,12,9,13),
+      weapons:[w("Pistol",2),w("Knife",1)],armor:"Ghostweave Suit Mk.I",
+      chrome:["Sandevistan C1"],
+      bio:"Corp kid with daddy's credit chip, designer chrome and nothing to lose but a curfew.",
+      tactics:"Pops the Sandevistan for a flashy opener, then panics when hit."
+    },
+    {
+      key:"glasshouse-prince",name:"Glasshouse Prince",faction:GANGS,tier:2,
+      abilities:ab(11,16,12,13,10,15),
+      weapons:[w("SMG",3),w("Katana",2)],armor:"Ghostweave Suit Mk.II",
+      chrome:["Sandevistan C2","Kiroshi Optics"],
+      consumables:["Helix Health Booster"],
+      bio:"Runs Glasshouse from a penthouse his parents don't visit. Bored enough to be dangerous.",
+      tactics:"Sandevistan into melee with the katana, then calls his lawyer."
+    },
+    {
+      key:"viejo-soldado",name:"Viejo Soldado",faction:GANGS,tier:1,hp:24,
+      abilities:ab(13,12,14,10,12,11),
+      weapons:[w("Shotgun Pistol",3),w("Knife",1)],armor:"Flexweave Mobility Suit Mk.I",
+      bio:"Old Capital barrio soldier. Family first, the block second, CivCorp never.",
+      tactics:"Holds the corner and calls the cousins. Never fights alone."
+    },
+    {
+      key:"viejo-jefe",name:"Los Viejos Jefe",faction:GANGS,tier:3,
+      abilities:ab(14,14,15,13,15,16),
+      weapons:[w("Heavy Pistol",3),w("Shotgun",3)],armor:"Flexweave Mobility Suit Mk.III",
+      chrome:["Reflex Recorder","Subdermal Plating"],
+      consumables:["Helix Health Booster"],
+      bio:"Ran the Old Capital since before Vargas. Respects the crew if they respect the neighbourhood.",
+      tactics:"Talks first, always. If it turns, he fights from behind his soldiers with the heavy pistol."
     }
   ];
 

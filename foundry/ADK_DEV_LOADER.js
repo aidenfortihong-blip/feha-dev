@@ -55,7 +55,20 @@
     sheetQuickhacks:"foundry/FEHA_SHEET_QUICKHACKS.js",
     sceneWallStatus:"foundry/FEHA_SCENE_WALL_STATUS.js",
     city:"foundry/FEHA_CITY.js",
+    gigsVesna:"foundry/gigs/FEHA_GIGS_VESNA.js",
+    gigsBabka:"foundry/gigs/FEHA_GIGS_BABKA.js",
+    gigsPadre:"foundry/gigs/FEHA_GIGS_PADRE.js",
+    gigsFerro:"foundry/gigs/FEHA_GIGS_FERRO.js",
+    gigsClerk:"foundry/gigs/FEHA_GIGS_CLERK.js",
+    gigsKiyama:"foundry/gigs/FEHA_GIGS_KIYAMA.js",
+    gigsDuval:"foundry/gigs/FEHA_GIGS_DUVAL.js",
+    gigsRhea:"foundry/gigs/FEHA_GIGS_RHEA.js",
+    gigsDialtone:"foundry/gigs/FEHA_GIGS_DIALTONE.js",
+    gigsVelvet:"foundry/gigs/FEHA_GIGS_VELVET.js",
+    gigsHale:"foundry/gigs/FEHA_GIGS_HALE.js",
+    gigsPersonal:"foundry/gigs/FEHA_GIGS_PERSONAL.js",
     jobCatalog:"foundry/FEHA_JOB_CATALOG.js",
+    gigKit:"foundry/FEHA_GIG_KIT.js",
     jobs:"foundry/FEHA_JOBS.js",
     sync:"foundry/FEHA_MULTIPLAYER_SYNC.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js",
@@ -229,7 +242,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","jobCatalog","jobs","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","gigsVesna","gigsBabka","gigsPadre","gigsFerro","gigsClerk","gigsKiyama","gigsDuval","gigsRhea","gigsDialtone","gigsVelvet","gigsHale","gigsPersonal","jobCatalog","gigKit","jobs","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -362,7 +375,22 @@
     evaluate(source.sheetQuickhacks,files.sheetQuickhacks,sha);
     evaluate(source.sceneWallStatus,files.sceneWallStatus,sha);
     evaluate(source.city,files.city,sha);
+    // Gig books push onto a fresh list each load (no duplicates on reload).
+    globalThis.FEHA_GIG_BOOKS = [];
+    evaluate(source.gigsVesna,files.gigsVesna,sha);
+    evaluate(source.gigsBabka,files.gigsBabka,sha);
+    evaluate(source.gigsPadre,files.gigsPadre,sha);
+    evaluate(source.gigsFerro,files.gigsFerro,sha);
+    evaluate(source.gigsClerk,files.gigsClerk,sha);
+    evaluate(source.gigsKiyama,files.gigsKiyama,sha);
+    evaluate(source.gigsDuval,files.gigsDuval,sha);
+    evaluate(source.gigsRhea,files.gigsRhea,sha);
+    evaluate(source.gigsDialtone,files.gigsDialtone,sha);
+    evaluate(source.gigsVelvet,files.gigsVelvet,sha);
+    evaluate(source.gigsHale,files.gigsHale,sha);
+    evaluate(source.gigsPersonal,files.gigsPersonal,sha);
     evaluate(source.jobCatalog,files.jobCatalog,sha);
+    evaluate(source.gigKit,files.gigKit,sha);
     evaluate(source.jobs,files.jobs,sha);
     evaluate(source.sync,files.sync,sha);
 
