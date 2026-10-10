@@ -230,6 +230,8 @@
     scene ??= game.scenes.find(s => s.name.toLowerCase() === SCENE_NAME);
     if (!scene) throw new Error(`No scene called "${SCENE_NAME}".`);
     const journal = await ensureJournal();
+    // Image coordinates -> canvas coordinates (the scene pads the image).
+    const {sceneX:ox,sceneY:oy} = scene.dimensions;
     const pageFor = new Map(journal.pages.map(pg => [pg.flags?.[FLAG]?.cityId,pg]));
 
     // Notes: one per place, replacing this tool's own notes only.
@@ -238,7 +240,7 @@
     const notes = PLACES.map(p => {
       const c = CATS[p[3]];
       return {
-        x:p[1],y:p[2],
+        x:p[1] + ox,y:p[2] + oy,
         entryId:journal.id,
         pageId:pageFor.get(p[0])?.id ?? null,
         text:label(p),
@@ -257,7 +259,7 @@
     const oldDraw = scene.drawings.filter(d => d.flags?.[FLAG]?.cityDistrict).map(d => d.id);
     if (oldDraw.length) await scene.deleteEmbeddedDocuments("Drawing",oldDraw);
     const drawings = Object.entries(DISTRICTS).map(([name,d]) => ({
-      x:d.at[0] - 300,y:d.at[1] - 40,
+      x:d.at[0] - 300 + ox,y:d.at[1] - 40 + oy,
       shape:{type:"r",width:600,height:80},
       text:name.toUpperCase(),
       fontFamily:"Signika",
