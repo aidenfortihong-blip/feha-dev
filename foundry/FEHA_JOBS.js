@@ -160,28 +160,29 @@
     const fitting = inTier.filter(([name]) => !kind.factions || kind.factions.includes(name));
     const [faction,fdef] = pick(fitting.length ? fitting : inTier.length ? inTier : Object.entries(G.FACTIONS));
     const map = pick(G.PLACES[pick(kind.places)]);
-    const place = /^the /i.test(map) ? map : "the " + map;
-    const ctx = {item:pick(G.ITEMS),who:pick(G.WHO),place,faction:fdef.label ?? faction};
+    const place = "the " + map.replace(/^the /i,"");
+    const factionText = fdef.label ?? faction;
+    const whoPool = G.WHO.filter(w => !w.toLowerCase().includes(faction.toLowerCase()));
+    const ctx = {item:pick(G.ITEMS),who:pick(whoPool.length ? whoPool : G.WHO),place,faction:factionText};
     const cap = text => text.charAt(0).toUpperCase() + text.slice(1);
 
-    // Enemies: 2 + tier bodies from the faction roster at or under the
-    // tier, plus one leader one step up from tier 3.
-    const pool = fdef.roster.filter(([,rt]) => rt <= Math.max(1,t - 1)) .concat(fdef.roster.filter(([,rt]) => rt === t));
-    const roster = pool.length ? pool : fdef.roster;
+    // Enemies: rank-and-file from below the job's tier (3-5 of them) and,
+    // from tier II up, one leader at or just under the tier. Cyberpsycho
+    // gigs are the psycho(s) instead.
     const counts = new Map();
+    const add = name => counts.set(name,(counts.get(name) ?? 0) + 1);
     if (kindName === "Cyberpsycho") {
-      // One psycho at low tiers; a pair, then a Vigil hunter, higher up.
       counts.set("Chromehead",Math.max(1,t - 1));
-      if (t >= 4) counts.set("Marble Vigil Lancer",1);
+      if (t >= 4) add("Marble Vigil Lancer");
     } else {
-      for (let i = 0; i < 2 + t; i++) {
-        const [name] = pick(roster);
-        counts.set(name,(counts.get(name) ?? 0) + 1);
+      const lowest = Math.min(...fdef.roster.map(([,rt]) => rt));
+      const below = fdef.roster.filter(([,rt]) => rt < t);
+      const grunts = below.length ? below : fdef.roster.filter(([,rt]) => rt === lowest);
+      for (let i = 0; i < ({1:3,2:4,3:4,4:5,5:5}[t] ?? 4); i++) add(pick(grunts)[0]);
+      if (t >= 2) {
+        const leaders = fdef.roster.filter(([,rt]) => rt <= t && rt >= t - 1).sort((x,y) => y[1] - x[1]);
+        if (leaders.length) add(leaders[0][0]);
       }
-    }
-    if (t >= 3 && kindName !== "Cyberpsycho") {
-      const leader = fdef.roster.filter(([,rt]) => rt === Math.min(5,t + 1) || rt === t).pop();
-      if (leader) counts.set(leader[0],(counts.get(leader[0]) ?? 0) + 1);
     }
 
     const info = tierInfo(t);
