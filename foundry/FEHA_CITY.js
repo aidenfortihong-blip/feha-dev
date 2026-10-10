@@ -465,7 +465,8 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
   async function buildKey(scene) {
     const {sceneX:ox,sceneY:oy,sceneWidth:sw,sceneHeight:sh} = scene.dimensions;
     const src = await uploadKey(await renderKey(sh));
-    const data = {texture:{src},x:ox + sw + 60,y:oy,width:KEY_W,height:sh,locked:true,flags:{[FLAG]:{cityKey:true}}};
+    // Tile x/y is the tile centre in v14.
+    const data = {texture:{src},x:ox + sw + 60 + KEY_W / 2,y:oy + sh / 2,width:KEY_W,height:sh,locked:true,flags:{[FLAG]:{cityKey:true}}};
     const old = scene.tiles.find(t => t.flags?.[FLAG]?.cityKey);
     if (old) await old.update(data);
     else await scene.createEmbeddedDocuments("Tile",[data]);
