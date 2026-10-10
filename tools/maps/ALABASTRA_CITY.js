@@ -171,6 +171,8 @@
     ["X6",1760,2420,"crew","CivCorp Plaza & General Court","Corporate Plaza","CivCorp's headquarters and the general court it sponsors. Marble Vigil command is on the top floors.","Court"]
   ];
 
+  // Flags are read directly: "fleshEnshrouded" is not a registered flag scope,
+  // so getFlag() throws on it (FEHA writes it through update/create only).
   const esc = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const label = p => (p[0].startsWith("X") ? "" : p[0].replace(/^0/,"").replace(/b$/,"") + " · ") + p[4];
 
@@ -199,7 +201,7 @@
   }
 
   async function ensureJournal() {
-    let journal = game.journal.find(j => j.getFlag(FLAG,"cityGuide"));
+    let journal = game.journal.find(j => j.flags?.[FLAG]?.cityGuide);
     if (!journal) {
       journal = await JournalEntry.create({
         name:JOURNAL_NAME,
@@ -211,7 +213,7 @@
     pages.push({name:"Legend & Districts",type:"text",text:{content:legendHtml()},sort:0,flags:{[FLAG]:{cityId:"_legend"}}});
     PLACES.forEach((p,i) => pages.push({name:label(p),type:"text",text:{content:pageHtml(p)},sort:(i + 1) * 100,flags:{[FLAG]:{cityId:p[0]}}}));
 
-    const byId = new Map(journal.pages.map(pg => [pg.getFlag(FLAG,"cityId"),pg]));
+    const byId = new Map(journal.pages.map(pg => [pg.flags?.[FLAG]?.cityId,pg]));
     const create = [], update = [];
     for (const data of pages) {
       const existing = byId.get(data.flags[FLAG].cityId);
@@ -228,10 +230,10 @@
     scene ??= game.scenes.find(s => s.name.toLowerCase() === SCENE_NAME);
     if (!scene) throw new Error(`No scene called "${SCENE_NAME}".`);
     const journal = await ensureJournal();
-    const pageFor = new Map(journal.pages.map(pg => [pg.getFlag(FLAG,"cityId"),pg]));
+    const pageFor = new Map(journal.pages.map(pg => [pg.flags?.[FLAG]?.cityId,pg]));
 
     // Notes: one per place, replacing this tool's own notes only.
-    const mine = scene.notes.filter(n => n.getFlag(FLAG,"cityId")).map(n => n.id);
+    const mine = scene.notes.filter(n => n.flags?.[FLAG]?.cityId).map(n => n.id);
     if (mine.length) await scene.deleteEmbeddedDocuments("Note",mine);
     const notes = PLACES.map(p => {
       const c = CATS[p[3]];
@@ -252,7 +254,7 @@
     await scene.createEmbeddedDocuments("Note",notes);
 
     // District names as text drawings, replacing this tool's own.
-    const oldDraw = scene.drawings.filter(d => d.getFlag(FLAG,"cityDistrict")).map(d => d.id);
+    const oldDraw = scene.drawings.filter(d => d.flags?.[FLAG]?.cityDistrict).map(d => d.id);
     if (oldDraw.length) await scene.deleteEmbeddedDocuments("Drawing",oldDraw);
     const drawings = Object.entries(DISTRICTS).map(([name,d]) => ({
       x:d.at[0] - 300,y:d.at[1] - 40,
