@@ -507,7 +507,7 @@
   --fj-display:"Rajdhani","Roboto Condensed","Arial Narrow",sans-serif;
   --fj-mono:"Share Tech Mono",ui-monospace,monospace;
   --fj-accent:var(--fj-red);
-  position:fixed;inset:4vh 3vw;z-index:900000;display:flex;flex-direction:column;
+  color-scheme:dark;position:fixed;inset:4vh 3vw;z-index:900000;display:flex;flex-direction:column;
   max-width:1320px;margin:0 auto;color:var(--fj-text);font-family:var(--fj-display);font-size:15px;line-height:1.35;
   background:
     repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px),
@@ -566,7 +566,7 @@
 #${ROOT_ID} .fj-bar{display:flex;align-items:center;gap:4px;padding:10px 22px;border-bottom:1px solid var(--fj-line-soft);flex-wrap:wrap}
 #${ROOT_ID} .fj-tab{border-color:transparent;color:var(--fj-muted)}
 #${ROOT_ID} .fj-tab:hover{color:var(--fj-text)}
-#${ROOT_ID} .fj-tab[aria-selected="true"]{color:var(--fj-cyan);border-color:var(--fj-cyan);background:var(--fj-cyan-faint)}
+#${ROOT_ID} .fj-tab[aria-pressed="true"]{color:var(--fj-cyan);border-color:var(--fj-cyan);background:var(--fj-cyan-faint)}
 #${ROOT_ID} .fj-tab .fj-count{font-family:var(--fj-mono);margin-left:6px;color:var(--fj-yellow)}
 #${ROOT_ID} .fj-tab .fj-alert{display:inline-block;margin-left:6px;padding:2px 5px;background:var(--fj-yellow);color:#141200;font-family:var(--fj-mono);font-size:11px;letter-spacing:.06em}
 #${ROOT_ID} .fj-tools{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -578,7 +578,7 @@
 #${ROOT_ID} .fj-filter{display:flex;gap:6px;align-items:center;padding:10px 12px 0 22px;flex-wrap:wrap;font-family:var(--fj-mono);font-size:11px;letter-spacing:.12em;color:var(--fj-muted)}
 #${ROOT_ID} .fj-filter button{min-height:26px;padding:4px 8px;font-size:12px}
 #${ROOT_ID} .fj-filter button[aria-pressed="true"]{border-color:var(--fj-cyan);color:var(--fj-cyan);background:var(--fj-cyan-faint)}
-#${ROOT_ID} .fj-list{flex:1;overflow:auto;padding:12px 12px 16px 22px;display:flex;flex-direction:column;gap:8px}
+#${ROOT_ID} .fj-list{flex:1;overflow:auto;overscroll-behavior:contain;padding:12px 12px 16px 22px;display:flex;flex-direction:column;gap:8px}
 #${ROOT_ID} .fj-empty{color:var(--fj-muted);padding:28px 4px;font-size:16px;max-width:46ch}
 #${ROOT_ID} .fj-empty b{display:block;font-family:var(--fj-mono);font-size:11px;letter-spacing:.2em;color:var(--fj-red);margin-bottom:6px;font-weight:400}
 
@@ -607,7 +607,7 @@
 #${ROOT_ID} .fj-tag.lock{color:var(--fj-red);border-color:var(--fj-red)}
 
 /* detail */
-#${ROOT_ID} .fj-detail{overflow:auto;padding:18px 28px 26px;position:relative}
+#${ROOT_ID} .fj-detail{overflow:auto;overscroll-behavior:contain;padding:18px 28px 26px;position:relative}
 #${ROOT_ID} .fj-fixer{display:grid;grid-template-columns:56px 1fr;gap:14px;align-items:start;padding:12px 14px;border:1px solid var(--fj-line-soft);
   background:linear-gradient(90deg,color-mix(in srgb,var(--fj-accent) 9%,transparent),transparent 60%),var(--fj-panel);margin-bottom:18px;border-left:3px solid var(--fj-accent)}
 #${ROOT_ID} .fj-fixer .fj-mono{grid-row:auto;width:56px;height:56px;font-size:20px}
@@ -651,7 +651,7 @@
 #${ROOT_ID} .fj-tc4{--fj-tc:var(--fj-t4)} #${ROOT_ID} .fj-tc5{--fj-tc:var(--fj-t5)}
 
 /* fixers tab */
-#${ROOT_ID} .fj-fixers{grid-column:1/-1;overflow:auto;padding:18px 22px 26px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-content:start}
+#${ROOT_ID} .fj-fixers{grid-column:1/-1;overflow:auto;overscroll-behavior:contain;padding:18px 22px 26px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-content:start}
 #${ROOT_ID} .fj-fx{display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--fj-line-soft);border-top:3px solid var(--fj-accent);
   background:linear-gradient(180deg,color-mix(in srgb,var(--fj-accent) 8%,transparent),transparent 45%),var(--fj-panel)}
 #${ROOT_ID} .fj-fx header{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:center}
@@ -670,7 +670,9 @@
 #${ROOT_ID} .fj-form label{flex-direction:column;align-items:stretch;gap:4px}
 #${ROOT_ID} .fj-form label input,#${ROOT_ID} .fj-form label select{width:100%}
 #${ROOT_ID} .fj-form .w2{grid-column:span 2} #${ROOT_ID} .fj-form .w4{grid-column:1/-1}
-#${ROOT_ID} .fj-credtable{width:100%;max-width:640px;border-collapse:collapse;font-family:var(--fj-mono);font-size:13px;margin-bottom:6px}
+#${ROOT_ID} .fj-credtable{width:100%;max-width:640px;border-collapse:collapse;font-family:var(--fj-mono);font-size:13px;margin-bottom:6px;background:transparent;border:0}
+#${ROOT_ID} .fj-credtable tr,#${ROOT_ID} .fj-credtable thead{background:transparent}
+#${ROOT_ID} .fj-credtable tbody tr:nth-child(even){background:rgba(255,94,87,.035)}
 #${ROOT_ID} .fj-credtable td,#${ROOT_ID} .fj-credtable th{border-bottom:1px solid var(--fj-line-soft);padding:7px 8px;text-align:left;font-weight:400}
 #${ROOT_ID} .fj-credtable th{color:var(--fj-dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 #${ROOT_ID} .fj-credtable input{width:90px}
@@ -931,14 +933,14 @@
       <h3 class="fj-sh">WRITE A JOB</h3>
       <p class="fj-note">Post your own job to the board: a story beat, a favour, anything. Players see everything except the twist.</p>
       <div class="fj-form">
-        <label class="w2">TITLE <input data-draft="title" value="${esc(d.title ?? "")}" maxlength="60" placeholder="e.g. The Long Night"></label>
+        <label class="w2">TITLE <input data-draft="title" autocomplete="off" value="${esc(d.title ?? "")}" maxlength="60" placeholder="e.g. The Long Night"></label>
         <label>FIXER <select data-draft="fixer">${fixers}</select></label>
         <label>TIER <select data-draft="tier">${[1,2,3,4,5].map(t => `<option value="${t}" ${Number(d.tier ?? 1) === t ? "selected" : ""}>${tierInfo(t).label}</option>`).join("")}</select></label>
-        <label>TYPE <input data-draft="kind" list="fj-kinds" value="${esc(d.kind ?? "")}" placeholder="Recovery"><datalist id="fj-kinds">${kinds.map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
-        <label>WHERE <input data-draft="district" list="fj-districts" value="${esc(d.district ?? "")}" placeholder="New Niemir"><datalist id="fj-districts">${(cat()?.gen?.DISTRICTS ?? []).map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
+        <label>TYPE <input data-draft="kind" autocomplete="off" list="fj-kinds" value="${esc(d.kind ?? "")}" placeholder="Recovery"><datalist id="fj-kinds">${kinds.map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
+        <label>WHERE <input data-draft="district" autocomplete="off" list="fj-districts" value="${esc(d.district ?? "")}" placeholder="New Niemir"><datalist id="fj-districts">${(cat()?.gen?.DISTRICTS ?? []).map(k => `<option value="${esc(k)}">`).join("")}</datalist></label>
         <label>PAY EACH <input type="number" min="0" step="50" data-draft="pay" value="${esc(d.pay ?? "")}" placeholder="tier default"></label>
         <label>CRED <input type="number" min="0" step="1" data-draft="cred" value="${esc(d.cred ?? "")}" placeholder="tier default"></label>
-        <label class="w4">MAP (scene name) <input data-draft="map" value="${esc(d.map ?? "")}" placeholder="optional, e.g. Rundown Hotel"></label>
+        <label class="w4">MAP (scene name) <input data-draft="map" autocomplete="off" value="${esc(d.map ?? "")}" placeholder="optional, e.g. Rundown Hotel"></label>
         <label class="w4">BRIEF <textarea data-draft="brief" rows="3" placeholder="What the fixer tells the crew.">${esc(d.brief ?? "")}</textarea></label>
         <label class="w4">OBJECTIVES (one per line) <textarea data-draft="objectives" rows="3">${esc(d.objectives ?? "")}</textarea></label>
         <label class="w4">TWIST (GM only) <textarea data-draft="twist" rows="2">${esc(d.twist ?? "")}</textarea></label>
@@ -1005,7 +1007,7 @@
     const job = listTab ? state.jobs[ui$.selected] ?? null : null;
     const scroll = root.querySelector(".fj-list")?.scrollTop ?? 0;
     const tab = (key,label,count,alert=0) =>
-      `<button type="button" class="fj-tab" role="tab" data-tab="${key}" aria-selected="${ui$.tab === key}">${label}${count != null ? `<span class="fj-count">${count}</span>` : ""}${alert ? `<span class="fj-alert">${alert} NEW</span>` : ""}</button>`;
+      `<button type="button" class="fj-tab" data-tab="${key}" aria-pressed="${ui$.tab === key}">${label}${count != null ? `<span class="fj-count">${count}</span>` : ""}${alert ? `<span class="fj-alert">${alert} NEW</span>` : ""}</button>`;
     const filterFixer = ui$.fixer ? fixerOf({fixer:ui$.fixer}) : null;
     const [emptyHead,emptyBody] = emptyText(ui$.tab);
 
@@ -1016,7 +1018,7 @@
     else body = `
       <div class="fj-listwrap">
         ${ui$.tab === "offers" && filterFixer ? `<div class="fj-filter">SHOWING <button type="button" data-act="clearfilter" aria-pressed="true" title="Show every fixer">${esc(filterFixer.handle)} ✕</button></div>` : ""}
-        <div class="fj-list" role="list">${list.length ? list.map(j => card(j,me)).join("") : `<div class="fj-empty"><b>${emptyHead}</b>${emptyBody}</div>`}</div>
+        <div class="fj-list">${list.length ? list.map(j => card(j,me)).join("") : `<div class="fj-empty"><b>${emptyHead}</b>${emptyBody}</div>`}</div>
       </div>
       <div class="fj-detail" aria-live="polite">${detail(job,me)}</div>`;
 
@@ -1026,7 +1028,7 @@
         <div class="fj-crew">${crewChips(me)}</div>
         <button type="button" class="fj-close" data-act="close" aria-label="Close jobs" title="Close (Esc)">✕</button>
       </header>
-      <nav class="fj-bar" role="tablist" aria-label="Job lists">
+      <nav class="fj-bar" aria-label="Job board sections">
         ${tab("offers","Offers",offersAll.length)}
         ${tab("active","Active",active.length,isGM ? requests : 0)}
         ${tab("history","History",history.length)}
@@ -1037,7 +1039,7 @@
           <select data-field="rolltier" aria-label="Tier for a new gig">${[1,2,3,4,5].map(t => `<option value="${t}" ${ui$.rollTier === t ? "selected" : ""}>${tierInfo(t).label}</option>`).join("")}</select>
           <button type="button" data-act="rollone" title="Add one generated gig of the chosen tier">Roll gig</button>
           <span class="fj-sep" aria-hidden="true"></span>
-          <button type="button" data-tab="write" aria-selected="${ui$.tab === "write"}" class="fj-tab">Write job</button>
+          <button type="button" data-tab="write" aria-pressed="${ui$.tab === "write"}" class="fj-tab">Write job</button>
           <button type="button" class="fj-ghost" data-act="togglegm" aria-pressed="${hideGM()}" title="Hide twists, enemies and maps while sharing your screen">${hideGM() ? "Show GM notes" : "Hide GM notes"}</button>
         </div>` : ""}
       </nav>
