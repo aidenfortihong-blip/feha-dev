@@ -336,10 +336,143 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     return journal;
   }
 
+  // ------------------------------------------------------------- the key
+
+  // Pins are drawn this far right of their tag's centre (tags are ~70 px).
+  const PIN_DX = 58;
+  const KEY_PATH = "feha-city";
+  const KEY_FILE = "alabastra-key.png";
+  const KEY_W = 1150;
+
+  // Legend rows by section. Repeated chains (30-33, 47-48) collapse to one row.
+  function keySections() {
+    const rows = cat => {
+      const out = [];
+      for (const p of PLACES.filter(q => q[3] === cat)) {
+        const n = num(p[0]);
+        const last = out[out.length - 1];
+        if (last && last.name === p[4]) {
+          if (n && n !== last.to) last.to = n;
+          continue;
+        }
+        out.push({from:n,to:n,name:p[4]});
+      }
+      const pad = n => /^H/.test(n) ? n : n.padStart(2,"0");
+      return out.map(r => [r.from ? (r.to !== r.from ? pad(r.from) + "-" + pad(r.to) : pad(r.from)) : "•",r.name]);
+    };
+    const fx = fixers().map(f => [f.spot ? num(f.spot).padStart(2,"0") : "•",f.handle + " · " + f.district]);
+    const dist = Object.entries(DISTRICTS).map(([name,d]) => ["",name + (d.gang ? " · " + d.gang[0] : "")]);
+    return {
+      left:[["mega",rows("mega")],["living",rows("living")],["bar",rows("bar")],["shop",rows("shop")]],
+      right:[["ripper",rows("ripper")],["land",rows("land")],["corp",rows("corp")],["crew",rows("crew")],
+        ["fixers",fx,{label:"FIXERS",color:"#ff5e57"}],["districts",dist,{label:"DISTRICTS & GANGS",color:"#f3e600"}]]
+    };
+  }
+
+  // Draws the key as an image the height of the map, in the style of the
+  // map's own legend panel.
+  async function renderKey(heightUnits) {
+    const S = 2;
+    const W = KEY_W * S, H = heightUnits * S;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    const display = "Rajdhani", mono = "Share Tech Mono";
+    try {
+      await Promise.all([
+        document.fonts.load("700 40px " + display),
+        document.fonts.load("600 40px " + display),
+        document.fonts.load("40px \"" + mono + "\"")
+      ]);
+    } catch {}
+    const font = (weight,size,family) => (weight ? weight + " " : "") + Math.round(size) + "px " + (family === mono ? "\"" + mono + "\"" : family);
+
+    g.fillStyle = "#0c0d14"; g.fillRect(0,0,W,H);
+    g.strokeStyle = "#f3e600"; g.lineWidth = 6 * S;
+    g.beginPath(); g.moveTo(30*S,120*S); g.lineTo(30*S,30*S); g.lineTo(220*S,30*S); g.stroke();
+    g.beginPath(); g.moveTo(W - 30*S,H - 120*S); g.lineTo(W - 30*S,H - 30*S); g.lineTo(W - 220*S,H - 30*S); g.stroke();
+    g.lineWidth = 2 * S; g.strokeStyle = "rgba(243,230,0,.35)";
+    g.strokeRect(14*S,14*S,W - 28*S,H - 28*S);
+
+    const pad = 70 * S;
+    let y = 150 * S;
+    g.textBaseline = "alphabetic";
+    const spaced = (text,x,yy,gap) => { let cx = x; for (const ch of text) { g.fillText(ch,cx,yy); cx += g.measureText(ch).width + gap; } };
+    g.fillStyle = "#f1e6e3"; g.font = font(700,120*S,display);
+    spaced("ALABASTRA",pad,y,26*S);
+    y += 70 * S;
+    g.fillStyle = "#f3e600"; g.font = font(600,44*S,display);
+    spaced("CITY OF THE CORPORATE COUNCIL",pad,y,6*S);
+    y += 46 * S;
+    g.fillStyle = "#8f8a9a"; g.font = font("",22*S,mono);
+    g.fillText("Map render: CD Projekt RED · Piggyback Interactive · Kama. Names and legend: FEHA.",pad,y);
+    y += 80 * S;
+    g.fillStyle = "#f1e6e3"; g.font = font(700,64*S,display);
+    g.fillText("LEGEND",pad,y);
+    y += 30 * S;
+
+    const {left,right} = keySections();
+    const gap = 40 * S;
+    const colW = (W - pad * 2 - gap) / 2;
+    const count = col => col.reduce((n,[,rows]) => n + rows.length + 2,0);
+    const rowsMax = Math.max(count(left),count(right));
+    const lh = Math.min(46 * S,Math.floor((H - y - 90 * S) / rowsMax));
+    const fs = Math.floor(lh * 0.66);
+
+    const drawCol = (col,x0) => {
+      let yy = y + lh;
+      for (const [key,rows,meta] of col) {
+        const head = meta ?? CATS[key];
+        yy += Math.round(lh * 0.6);
+        g.fillStyle = head.color;
+        g.beginPath(); g.moveTo(x0,yy - fs * 0.75); g.lineTo(x0 + fs * 0.55,yy - fs * 0.4); g.lineTo(x0,yy - fs * 0.05); g.fill();
+        g.font = font(700,fs * 1.08,display);
+        g.fillText(head.label,x0 + fs * 0.85,yy);
+        yy += lh;
+        for (const [n,name] of rows) {
+          g.fillStyle = head.color; g.font = font("",fs,mono);
+          g.fillText(n,x0,yy);
+          g.fillStyle = "#e9e4ee"; g.font = font(600,fs,display);
+          let label = name.toUpperCase();
+          const maxW = colW - fs * 3.6;
+          while (g.measureText(label).width > maxW && label.length > 4) label = label.slice(0,-2) + "…";
+          g.fillText(label,x0 + fs * 3.4,yy);
+          yy += lh;
+        }
+        yy += Math.round(lh * 0.4);
+      }
+    };
+    drawCol(left,pad);
+    drawCol(right,pad + colW + gap);
+
+    return new Promise(res => c.toBlob(res,"image/png"));
+  }
+
+  async function uploadKey(blob) {
+    const FP = foundry.applications.apps.FilePicker.implementation;
+    const source = typeof ForgeVTT !== "undefined" && ForgeVTT.usingTheForge ? "forgevtt" : "data";
+    try { await FP.createDirectory(source,KEY_PATH,{}); } catch {}
+    const file = new File([blob],KEY_FILE,{type:"image/png"});
+    const res = await FP.upload(source,KEY_PATH,file,{},{notify:false});
+    const path = res?.path ?? (KEY_PATH + "/" + KEY_FILE);
+    return path + (path.includes("?") ? "&" : "?") + "v=" + Date.now();
+  }
+
+  // Key tile down the right-hand padding of the scene, the map's height.
+  async function buildKey(scene) {
+    const {sceneX:ox,sceneY:oy,sceneWidth:sw,sceneHeight:sh} = scene.dimensions;
+    const src = await uploadKey(await renderKey(sh));
+    const data = {texture:{src},x:ox + sw + 60,y:oy,width:KEY_W,height:sh,locked:true,flags:{[FLAG]:{cityKey:true}}};
+    const old = scene.tiles.find(t => t.flags?.[FLAG]?.cityKey);
+    if (old) await old.update(data);
+    else await scene.createEmbeddedDocuments("Tile",[data]);
+    return src;
+  }
+
   // GM, run by hand: (re)build the guide journal, the pins and the district
   // labels on the world map. Only this tool's own notes and drawings are
   // replaced; job markers are left alone.
-  async function build({scene=null}={}) {
+  async function build({scene=null,withKey=true}={}) {
     if (!game.user.isGM) throw new Error("GM only.");
     scene ??= worldScene();
     if (!scene) throw new Error(`No scene called "${SCENE_NAME}".`);
@@ -354,12 +487,12 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     const notes = PLACES.map(p => {
       const c = CATS[p[3]];
       return {
-        x:p[1] + ox,y:p[2] + oy,
+        x:p[1] + ox + (p[0].startsWith("X") ? 0 : PIN_DX),y:p[2] + oy,
         entryId:journal.id,
         pageId:pageFor.get(p[0])?.id ?? null,
         text:label(p),
         texture:{src:c.icon,tint:c.color},
-        iconSize:p[3] === "mega" ? 44 : 40,
+        iconSize:p[3] === "mega" ? 36 : 32,
         fontSize:22,
         textAnchor:CONST.TEXT_ANCHOR_POINTS.BOTTOM,
         textColor:c.color,
@@ -386,10 +519,16 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     }));
     await scene.createEmbeddedDocuments("Drawing",drawings);
 
-    return {journal:journal.name,pages:journal.pages.size,notes:notes.length,districts:drawings.length};
+    let key = null;
+    if (withKey) {
+      try { key = await buildKey(scene); }
+      catch (err) { console.warn("FEHA CITY // key failed",err); key = "failed: " + (err?.message ?? err); }
+    }
+
+    return {journal:journal.name,pages:journal.pages.size,notes:notes.length,districts:drawings.length,key};
   }
 
-  const api = {VERSION,DISTRICTS,CATS,PLACES,place,placesIn,spotFor,worldScene,showOnMap,setJobMarker,clearJobMarker,build};
+  const api = {VERSION,DISTRICTS,CATS,PLACES,place,placesIn,spotFor,worldScene,showOnMap,setJobMarker,clearJobMarker,build,renderKey,buildKey};
   globalThis.FEHA_CITY = api;
   try {
     game.adk ??= {};
