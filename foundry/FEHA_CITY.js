@@ -211,15 +211,19 @@
       game.scenes.find(s => s.name.toLowerCase() === SCENE_NAME) ?? null;
   }
 
-  // Best spot for a job: a place in its district with the same battle map,
-  // else the fixer's hangout if it is in that district, else a place in the
-  // district (stable per job key), else the fixer's hangout.
+  // Best spot for a job: a place with the same battle map (in the job's
+  // district if one is there, else the only place in the city that uses
+  // it), else the fixer's hangout if it is in that district, else a place in
+  // the district (stable per job key), else the fixer's hangout.
   function spotFor({district,map,fixer,key} = {}) {
     const hang = fixers().find(f => f.key === fixer)?.spot ?? null;
     const local = PLACES.filter(p => p[5] === district);
     const lower = String(map ?? "").toLowerCase();
-    const sameMap = lower ? local.find(p => p[7].toLowerCase() === lower || lower.startsWith(p[7].toLowerCase())) : null;
+    const fits = p => lower && (p[7].toLowerCase() === lower || lower.startsWith(p[7].toLowerCase()));
+    const sameMap = local.find(fits);
     if (sameMap) return sameMap[0];
+    const anywhere = PLACES.filter(fits);
+    if (anywhere.length === 1) return anywhere[0][0];
     if (hang && byId.get(hang)?.[5] === district) return hang;
     if (local.length) {
       let h = 0;

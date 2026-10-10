@@ -145,17 +145,16 @@
 
   function fromCatalog(def) {
     const now = Date.now();
-    return {
+    return placeJob({
       ...foundry.utils.deepClone(def),
       id:rid(),
       src:"catalog",
-      spot:city()?.spotFor?.({district:def.district,map:def.map,fixer:def.fixer,key:def.key}) ?? null,
       cred:tierInfo(def.tier).cred,
       status:"offered",
       crew:[],
       created:now,
       updated:now
-    };
+    });
   }
 
   function generate(tier=null) {
@@ -223,8 +222,12 @@
     };
   }
 
+  // Put a job on the city map. If its spot is in another district (the only
+  // place with its battle map), the job moves there, so WHERE matches the pin.
   function placeJob(job) {
     job.spot = city()?.spotFor?.({district:job.district,map:job.map,fixer:job.fixer,key:job.key}) ?? null;
+    const at = city()?.place?.(job.spot);
+    if (at && city()?.DISTRICTS?.[job.district] && at.district !== job.district) job.district = at.district;
     return job;
   }
 
