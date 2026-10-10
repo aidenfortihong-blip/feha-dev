@@ -144,7 +144,7 @@
       [b("scene:Sky Cargo","The airship","Wind, cargo bay, Bastion crew.",["Athletics DC 15","Stealth DC 15"],[["Bastion Trooper",3],["Bastion Sergeant",1]])],
       [["Loadmaster Pell","civilian","Bored. Bribeable."]],
       "The pallet lands. The pay records reveal Bastion's whole Kennel spy network.",
-      ["Grenade Frag Homing Mk.III x2","Fire-Control Harness Mk.III"]),
+      ["Frag Grenade Homing Mk.III x2","Fire-Control Harness Mk.III"]),
 
     g("songbird","The Songbird","Protection","78",
       "The Black Pearl's singer is the most famous voice in the city, and a Council spy. Mr. Velvet knows. He wants her protected from Bastion assassins who think she's the Kennel's.",
