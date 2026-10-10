@@ -905,18 +905,21 @@
 
   function fromBook(gig,fixerKey) {
     const city = globalThis.FEHA_CITY;
-    const place = gig.spot ? city?.place?.(gig.spot) : null;
+    // spot may also be "scene:<name>" for a gig away from the city pins.
+    const sceneSpot = String(gig.spot ?? "").startsWith("scene:") ? String(gig.spot).slice(6) : null;
+    const place = gig.spot && !sceneSpot ? city?.place?.(gig.spot) : null;
     const enemies = new Map();
     for (const beat of gig.run?.beats ?? []) for (const [name,count] of beat.enemies ?? []) enemies.set(name,(enemies.get(name) ?? 0) + count);
     const firstScene = (gig.run?.beats ?? []).map(b => String(b.at ?? "")).find(a => a.startsWith("scene:"))?.slice(6);
     return {
       fixer:fixerKey,
       district:place?.district ?? FIXERS.find(f => f.key === fixerKey)?.district ?? "Alabastra",
-      map:place?.map ?? firstScene ?? "",
+      map:place?.map ?? sceneSpot ?? firstScene ?? "",
       enemies:[...enemies.entries()],
       pay:gig.pay ?? payFor(gig.key,gig.tier),
       book:true,
-      ...gig
+      ...gig,
+      spot:place ? gig.spot : null
     };
   }
 

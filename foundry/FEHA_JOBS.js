@@ -850,6 +850,7 @@
 #${ROOT_ID} .fj-checks li{margin:2px 0}
 #${ROOT_ID} .fj-reward{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 #${ROOT_ID} .fj-reward .money{font-family:var(--fj-mono);font-size:15px;color:var(--fj-yellow);margin-right:6px}
+#${ROOT_ID} .fj-reward .fj-tag{white-space:normal;line-height:1.35}
 #${ROOT_ID} .fj-tag.loot{color:var(--fj-text);border-color:var(--fj-t4);font-size:12px;text-transform:none;letter-spacing:.02em}
 #${ROOT_ID} .fj-pay select{min-width:120px}
 
