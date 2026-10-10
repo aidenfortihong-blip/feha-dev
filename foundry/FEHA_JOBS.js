@@ -190,9 +190,14 @@
     const inTier = Object.entries(G.FACTIONS).filter(([,f]) => t >= f.tiers[0] && t <= f.tiers[1]);
     const fitting = inTier.filter(([name]) => !kind.factions || kind.factions.includes(name));
     const [faction,fdef] = pick(fitting.length ? fitting : inTier.length ? inTier : Object.entries(G.FACTIONS));
-    const map = pick(G.PLACES[pick(kind.places)]);
-    const bare = map.replace(/^the /i,"");
-    const place = /(Street|Streets|Alley|Road)$/.test(bare) ? bare : "the " + bare;
+    // Where: a real spot on the city map, in the fixer's district most of
+    // the time, of a kind that suits the job. Its name goes in the brief and
+    // its own battle map comes with it.
+    const district = Math.random() < 0.6 ? fixer.district : pick(G.DISTRICTS);
+    const spot = pickSpot(kindName,district);
+    const map = spot?.map ?? pick(G.PLACES[pick(kind.places)]);
+    const bare = (spot?.name ?? map).replace(/^the /i,"");
+    const place = /(Street|Streets|Alley|Road|'s)$/.test(bare) || /'s/.test(bare) ? bare : "the " + bare;
     const whoPool = G.WHO.filter(w => !w.toLowerCase().includes(faction.toLowerCase()));
     const ctx = {item:pick(G.ITEMS),who:pick(whoPool.length ? whoPool : G.WHO),place,faction:fdef.label ?? faction};
     const cap = text => text.charAt(0).toUpperCase() + text.slice(1);
@@ -218,7 +223,7 @@
 
     const info = tierInfo(t);
     const now = Date.now();
-    return placeJob({
+    const job = {
       id:rid(),
       key:"gen-" + rid(),
       src:"generated",
@@ -226,8 +231,9 @@
       tier:t,
       kind:kindName,
       title:pick(kind.titles),
-      district:Math.random() < 0.6 ? fixer.district : pick(G.DISTRICTS),
+      district:spot?.district ?? district,
       map,
+      spot:spot?.id ?? null,
       enemies:[...counts.entries()],
       pay:roll(info.pay[0],info.pay[1]),
       cred:info.cred,
@@ -238,7 +244,28 @@
       crew:[],
       created:now,
       updated:now
-    });
+    };
+    return job.spot ? job : placeJob(job);
+  }
+
+  // City spot categories that suit each kind of gig.
+  const KIND_SPOTS = {
+    "Recovery":["mega","living","land","shop"], "Delivery":["shop","bar","ripper","living"],
+    "Theft":["shop","corp","land","bar"], "Sabotage":["land","corp","shop"],
+    "Bounty":["bar","living","mega"], "Cyberpsycho":["shop","bar","land","mega"],
+    "Protection":["bar","shop","living","ripper"], "Rescue":["mega","living","ripper","land"],
+    "Data Heist":["corp","ripper","bar"], "Collection":["bar","shop"],
+    "Smuggling":["land","shop","living"]
+  };
+
+  function pickSpot(kindName,district) {
+    const c = city();
+    if (!c?.placesIn) return null;
+    const cats = KIND_SPOTS[kindName] ?? [];
+    const here = c.placesIn(district).filter(p => p.cat !== "crew");
+    const fits = here.filter(p => cats.includes(p.cat));
+    const pool = fits.length ? fits : here.length ? here : c.PLACES.map(p => c.place(p[0])).filter(p => p.cat !== "crew" && cats.includes(p.cat));
+    return pool.length ? pick(pool) : null;
   }
 
   // Keep every open fixer at perFixer offers (written jobs first, gigs to
