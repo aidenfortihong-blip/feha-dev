@@ -3,7 +3,8 @@
   "updated": "2026-10-10",
   "scope": "jobs",
   "notes": [
-    "Jobs: a fourth hotbar button opens the fixer job board. Seven fixers post work (63 hand-written jobs plus endless generated gigs). Players ask for a job and pick their crew; the GM approves, runs it and pays out. Every crew member gets the credits and Street Cred, and Street Cred unlocks higher tiers.",
+    "Jobs: a fourth hotbar button opens the fixer job board. Eleven fixers across the city post work (120 hand-written jobs, 12 of them personal to the crew, plus endless generated gigs). Players ask for a job and pick their crew; the GM approves, runs it and pays out. Every crew member gets the credits and Street Cred, and Street Cred unlocks higher tiers.",
+    "City of Alabastra: the world map is a city map. Twelve districts with their gangs, 103 named places with pins that open the City Guide journal (each with its battle map), and every job sits at a place on it. Active jobs get a marker on the map; the GM can jump from a job to its spot.",
     "Scenes tab (GM only): every map has a wall tag (WALLED, OPEN, PACK, BORDER, GM EDIT, NO WALLS) and the buttons above the list count and filter them. Click a tag to change it. Drawing walls by hand on an unfinished map marks it GM EDIT.",
     "GMs always see the full hotbar; players keep the three-button bar.",
     "Hotbar: just Market, Cyberdeck and Chrome. Empty slots are hidden (a GM sees them while hovering the bar); players also lose the page, lock, clear, mute and menu buttons.",
