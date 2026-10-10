@@ -54,6 +54,7 @@
     uiText:"foundry/FEHA_UI_TEXT.js",
     sheetQuickhacks:"foundry/FEHA_SHEET_QUICKHACKS.js",
     sceneWallStatus:"foundry/FEHA_SCENE_WALL_STATUS.js",
+    city:"foundry/FEHA_CITY.js",
     jobCatalog:"foundry/FEHA_JOB_CATALOG.js",
     jobs:"foundry/FEHA_JOBS.js",
     sync:"foundry/FEHA_MULTIPLAYER_SYNC.js",
@@ -228,7 +229,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","jobCatalog","jobs","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","jobCatalog","jobs","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -360,6 +361,7 @@
     evaluate(source.uiText,files.uiText,sha);
     evaluate(source.sheetQuickhacks,files.sheetQuickhacks,sha);
     evaluate(source.sceneWallStatus,files.sceneWallStatus,sha);
+    evaluate(source.city,files.city,sha);
     evaluate(source.jobCatalog,files.jobCatalog,sha);
     evaluate(source.jobs,files.jobs,sha);
     evaluate(source.sync,files.sync,sha);

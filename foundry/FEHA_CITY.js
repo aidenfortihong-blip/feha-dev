@@ -1,10 +1,12 @@
-// FEHA // ALABASTRA CITY GUIDE
+// FEHA // ALABASTRA CITY
 //
-// Builds the city map legend on the "world map" scene (the NCART map the
-// GM uploaded): one map pin per numbered spot, renamed for Alabastra, each
-// opening a page in the journal "ALABASTRA — CITY GUIDE", plus district
-// labels. Not loaded by the game: fetch + eval in the GM tab, then
-// await ALABASTRA_CITY.build().
+// The city of Alabastra laid over the "world map" scene (the NCART map the
+// GM uploaded): districts with their gangs, and every numbered spot renamed
+// for Alabastra. The job board uses it to put each job somewhere
+// (spotFor), to point at it (showOnMap) and to pin active jobs on the map
+// (setJobMarker / clearJobMarker). game.adk.city.build() (GM, by hand)
+// writes the journal "ALABASTRA — CITY GUIDE", one map pin per spot and
+// the district labels; nothing is written on load.
 //
 // Coordinates are the centres of the numbered tags on that image
 // (4824 x 5187). Numbers follow the original legend so the tags under the
@@ -22,20 +24,33 @@
   const SCENE_NAME = "world map";
   const JOURNAL_NAME = "ALABASTRA — CITY GUIDE";
 
-  // Night City district -> Alabastra district.
+  // Night City district -> Alabastra district. gang: who runs the street
+  // there (lore only; their fighters use the NPC catalog's Street roster).
   const DISTRICTS = {
-    "New Niemir":     {was:"Watson",            at:[2150,1290], blurb:"Refugee district: Sloviti families and other climate refugees in old megablocks. Curfews, CivCorp patrols and the 'drug epidemic' raids. Home of the crew."},
-    "The Docks":      {was:"Northside / Arasaka Waterfront", at:[1640,1130], blurb:"Container yards, Kurohane's waterfront terminal and the warehouses where customs never looks. Carp-Line's turf."},
-    "Orient Quarter": {was:"Japantown",         at:[2620,1980], blurb:"Neon markets, pachinko and the Yakuza family that runs out of the HQ tower."},
-    "The Hills":      {was:"North Oak / Charter Hill", at:[3120,1650], blurb:"Gated estates, a casino and the Kurohane family estate, above the smog line."},
-    "Corporate Plaza":{was:"City Center (Corpo Plaza)", at:[1980,2380], blurb:"The corporate towers and the Corporate Council Spire. CivCorp's general court and the Marble Vigil sit here."},
-    "Downtown":       {was:"City Center (Downtown)", at:[2420,2560], blurb:"Old business district: clubs, broadcasters and money that hasn't made it to the towers yet."},
-    "Old Capital":    {was:"Heywood",           at:[2230,3010], blurb:"Built on the ruins of the old capital. Government blocks turned slums, old money in the walled streets, CivCorp everywhere."},
-    "Cinderline":     {was:"Santo Domingo",     at:[3060,2940], blurb:"The industrial belt that turns Cinder into power. Plants, rail yards and the workers' blocks that run them."},
-    "Costa Morta":    {was:"Pacifica",          at:[1640,3830], blurb:"An abandoned resort coast the investors walked away from. Squats, gangs and a church that still feeds people."},
-    "The Kennel":     {was:"Dogtown",           at:[1960,3600], blurb:"A walled-off zone inside Costa Morta run by its own boss. No CivCorp, no Council, no rules but his."},
-    "The Barrens":    {was:"Badlands",          at:[3950,2150], blurb:"Desert outside the walls: nomad clans, trailer parks, oil and the Cinder wells."},
-    "Naval Station":  {was:"NCX Spaceport",     at:[ 760,1880], blurb:"The Navy's island base. Fleet Admiral Fúlvio Rosa's power base, and a Vargas loyalist stronghold."}
+    "New Niemir":     {was:"Watson",            at:[2150,1290], blurb:"Refugee district: Sloviti families and other climate refugees in old megablocks. Curfews, CivCorp patrols and the 'drug epidemic' raids. Home of the crew.",
+      gang:["The Niemir Wolves","Sloviti street crew that grew out of a neighbourhood watch. Protective of their own, brutal to informants."]},
+    "The Docks":      {was:"Northside / Arasaka Waterfront", at:[1640,1130], blurb:"Container yards, Kurohane's waterfront terminal and the warehouses where customs never looks. Carp-Line's turf.",
+      gang:["Rustwater Boys","Dock smugglers and cargo thieves who rent themselves to whoever pays the night shift."]},
+    "Orient Quarter": {was:"Japantown",         at:[2620,1980], blurb:"Neon markets, pachinko and the Yakuza family that runs out of the HQ tower.",
+      gang:["Tsurugi-gumi","The Yakuza family that runs the Orient Quarter from its HQ tower. Kiyama speaks for them."]},
+    "The Hills":      {was:"North Oak / Charter Hill", at:[3120,1650], blurb:"Gated estates, a casino and the Kurohane family estate, above the smog line.",
+      gang:["Private security","No gangs: Kurohane and Bastion contractors patrol every street."]},
+    "Corporate Plaza":{was:"City Center (Corpo Plaza)", at:[1980,2380], blurb:"The corporate towers and the Corporate Council Spire. CivCorp's general court and the Marble Vigil sit here.",
+      gang:["Glasshouse","Corp kids with chrome and too much money, running drugs to the towers."]},
+    "Downtown":       {was:"City Center (Downtown)", at:[2420,2560], blurb:"Old business district: clubs, broadcasters and money that hasn't made it to the towers yet.",
+      gang:["Glasshouse","The corp-kid crew spills down here at night."]},
+    "Old Capital":    {was:"Heywood",           at:[2230,3010], blurb:"Built on the ruins of the old capital. Government blocks turned slums, old money in the walled streets, CivCorp everywhere.",
+      gang:["Los Viejos","Old barrio crew from before Vargas. Family first, protection rackets second, CivCorp never."]},
+    "Cinderline":     {was:"Santo Domingo",     at:[3060,2940], blurb:"The industrial belt that turns Cinder into power. Plants, rail yards and the workers' blocks that run them.",
+      gang:["The Sparkers","Chrome-crazed ex-plant workers who strip machines and people for parts."]},
+    "Costa Morta":    {was:"Pacifica",          at:[1640,3830], blurb:"An abandoned resort coast the investors walked away from. Squats, gangs and a church that still feeds people.",
+      gang:["The Drowned","Netrunner collective in the dead hotels. Say they hear voices in the old net."]},
+    "The Kennel":     {was:"Dogtown",           at:[1960,3600], blurb:"A walled-off zone inside Costa Morta run by its own boss. No CivCorp, no Council, no rules but his.",
+      gang:["The Kennel Dogs","Ex-Bastion soldiers who guard the walls and answer only to the Kennel's boss."]},
+    "The Barrens":    {was:"Badlands",          at:[3950,2150], blurb:"Desert outside the walls: nomad clans, trailer parks, oil and the Cinder wells.",
+      gang:["The Scorpions","Raiders who hit convoys between the clans and the city."]},
+    "Naval Station":  {was:"NCX Spaceport",     at:[ 760,1880], blurb:"The Navy's island base. Fleet Admiral Fúlvio Rosa's power base, and a Vargas loyalist stronghold.",
+      gang:["The Navy","Marines loyal to Admiral Rosa first and the Council second."]}
   };
 
   const CATS = {
@@ -174,7 +189,93 @@
   // Flags are read directly: "fleshEnshrouded" is not a registered flag scope,
   // so getFlag() throws on it (FEHA writes it through update/create only).
   const esc = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  const label = p => (p[0].startsWith("X") ? "" : p[0].replace(/^0/,"").replace(/b$/,"") + " · ") + p[4];
+  const num = id => id.startsWith("X") ? "" : id.replace(/^0/,"").replace(/b$/,"");
+  const label = p => (num(p[0]) ? num(p[0]) + " · " : "") + p[4];
+  const fixers = () => globalThis.FEHA_JOB_CATALOG?.FIXERS ?? [];
+
+  // ------------------------------------------------------------ lookups
+
+  const byId = new Map(PLACES.map(p => [p[0],p]));
+  const asObj = p => p && {id:p[0],x:p[1],y:p[2],cat:p[3],name:p[4],district:p[5],blurb:p[6],map:p[7],label:label(p)};
+
+  function place(id) {
+    return asObj(byId.get(id));
+  }
+
+  function placesIn(district) {
+    return PLACES.filter(p => p[5] === district).map(asObj);
+  }
+
+  function worldScene() {
+    return game.scenes.find(s => s.flags?.[FLAG]?.cityMap) ??
+      game.scenes.find(s => s.name.toLowerCase() === SCENE_NAME) ?? null;
+  }
+
+  // Best spot for a job: a place in its district with the same battle map,
+  // else the fixer's hangout if it is in that district, else a place in the
+  // district (stable per job key), else the fixer's hangout.
+  function spotFor({district,map,fixer,key} = {}) {
+    const hang = fixers().find(f => f.key === fixer)?.spot ?? null;
+    const local = PLACES.filter(p => p[5] === district);
+    const lower = String(map ?? "").toLowerCase();
+    const sameMap = lower ? local.find(p => p[7].toLowerCase() === lower || lower.startsWith(p[7].toLowerCase())) : null;
+    if (sameMap) return sameMap[0];
+    if (hang && byId.get(hang)?.[5] === district) return hang;
+    if (local.length) {
+      let h = 0;
+      for (const ch of String(key ?? district)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      return local[h % local.length][0];
+    }
+    return hang;
+  }
+
+  // GM only: open the city map on this screen and point at a spot.
+  async function showOnMap(id) {
+    const p = byId.get(id);
+    const scene = worldScene();
+    if (!p || !scene) {
+      ui.notifications.warn("FIXER NET // The city map or that spot isn't set up.");
+      return false;
+    }
+    if (canvas.scene?.id !== scene.id) {
+      await scene.view();
+      await new Promise(r => setTimeout(r,600));
+    }
+    const {sceneX:ox,sceneY:oy} = canvas.dimensions;
+    const point = {x:p[1] + ox,y:p[2] + oy};
+    await canvas.animatePan({...point,scale:0.9,duration:400});
+    try { canvas.ping(point,{color:"#f3e600"}); } catch {}
+    return true;
+  }
+
+  // Job markers: a pin on the city map for every active job (GM writes).
+  async function setJobMarker(job) {
+    const scene = worldScene();
+    const p = byId.get(job?.spot);
+    if (!game.user.isGM || !scene || !p) return;
+    await clearJobMarker(job.id);
+    const {sceneX:ox,sceneY:oy} = scene.dimensions;
+    await scene.createEmbeddedDocuments("Note",[{
+      x:p[1] + ox + 46,y:p[2] + oy - 40,
+      text:"JOB · " + job.title,
+      texture:{src:"icons/svg/target.svg",tint:"#f3e600"},
+      iconSize:46,
+      fontSize:24,
+      textColor:"#f3e600",
+      textAnchor:CONST.TEXT_ANCHOR_POINTS.TOP,
+      global:true,
+      flags:{[FLAG]:{cityJob:job.id}}
+    }]);
+  }
+
+  async function clearJobMarker(jobId) {
+    const scene = worldScene();
+    if (!game.user.isGM || !scene) return;
+    const ids = scene.notes.filter(n => n.flags?.[FLAG]?.cityJob === jobId).map(n => n.id);
+    if (ids.length) await scene.deleteEmbeddedDocuments("Note",ids);
+  }
+
+  // ---------------------------------------------------------- the guide
 
   function sceneLink(name) {
     if (!name) return "";
@@ -184,19 +285,25 @@
   }
 
   function pageHtml(p) {
-    const [, , , cat, name, district, blurb, map] = p;
+    const [id, , , cat, , district, blurb, map] = p;
     const d = DISTRICTS[district];
+    const here = fixers().filter(f => f.spot === id);
     return `<p><strong>${esc(CATS[cat].label)}</strong> · ${esc(district)}${d ? ` <em>(${esc(d.was)})</em>` : ""}</p>
 <p>${esc(blurb)}</p>
+${here.map(f => `<p><strong>Fixer:</strong> ${esc(f.handle)} (${esc(f.name)}) works out of here. <em>"${esc(f.voice)}"</em></p>`).join("")}
+${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])}</p>` : ""}
 <p><strong>Battle map:</strong> ${sceneLink(map)}</p>`;
   }
 
   function legendHtml() {
     const groups = Object.entries(CATS).map(([key,c]) => {
-      const rows = PLACES.filter(p => p[3] === key).map(p => `<li><strong>${esc(p[0].replace(/b$/,""))}</strong> ${esc(p[4])} <em>(${esc(p[5])})</em></li>`).join("");
+      const rows = PLACES.filter(p => p[3] === key).map(p => `<li><strong>${esc(num(p[0]) || "•")}</strong> ${esc(p[4])} <em>(${esc(p[5])})</em></li>`).join("");
       return `<h3 style="color:${c.color}">${esc(c.label)}</h3><ul>${rows}</ul>`;
     }).join("");
-    const districts = Object.entries(DISTRICTS).map(([name,d]) => `<li><strong>${esc(name)}</strong> <em>(${esc(d.was)})</em>: ${esc(d.blurb)}</li>`).join("");
+    const districts = Object.entries(DISTRICTS).map(([name,d]) => {
+      const fx = fixers().filter(f => f.district === name).map(f => f.handle).join(", ");
+      return `<li><strong>${esc(name)}</strong> <em>(${esc(d.was)})</em>: ${esc(d.blurb)}${d.gang ? `<br>Gang: <strong>${esc(d.gang[0])}</strong>. ${esc(d.gang[1])}` : ""}${fx ? `<br>Fixers: <strong>${esc(fx)}</strong>` : ""}</li>`;
+    }).join("");
     return `<h2>Districts</h2><ul>${districts}</ul><h2>Legend</h2>${groups}`;
   }
 
@@ -213,10 +320,10 @@
     pages.push({name:"Legend & Districts",type:"text",text:{content:legendHtml()},sort:0,flags:{[FLAG]:{cityId:"_legend"}}});
     PLACES.forEach((p,i) => pages.push({name:label(p),type:"text",text:{content:pageHtml(p)},sort:(i + 1) * 100,flags:{[FLAG]:{cityId:p[0]}}}));
 
-    const byId = new Map(journal.pages.map(pg => [pg.flags?.[FLAG]?.cityId,pg]));
+    const have = new Map(journal.pages.map(pg => [pg.flags?.[FLAG]?.cityId,pg]));
     const create = [], update = [];
     for (const data of pages) {
-      const existing = byId.get(data.flags[FLAG].cityId);
+      const existing = have.get(data.flags[FLAG].cityId);
       if (existing) update.push({_id:existing.id,name:data.name,"text.content":data.text.content,sort:data.sort});
       else create.push(data);
     }
@@ -225,16 +332,19 @@
     return journal;
   }
 
+  // GM, run by hand: (re)build the guide journal, the pins and the district
+  // labels on the world map. Only this tool's own notes and drawings are
+  // replaced; job markers are left alone.
   async function build({scene=null}={}) {
     if (!game.user.isGM) throw new Error("GM only.");
-    scene ??= game.scenes.find(s => s.name.toLowerCase() === SCENE_NAME);
+    scene ??= worldScene();
     if (!scene) throw new Error(`No scene called "${SCENE_NAME}".`);
+    if (!scene.flags?.[FLAG]?.cityMap) await scene.update({[`flags.${FLAG}.cityMap`]:true});
     const journal = await ensureJournal();
     // Image coordinates -> canvas coordinates (the scene pads the image).
     const {sceneX:ox,sceneY:oy} = scene.dimensions;
     const pageFor = new Map(journal.pages.map(pg => [pg.flags?.[FLAG]?.cityId,pg]));
 
-    // Notes: one per place, replacing this tool's own notes only.
     const mine = scene.notes.filter(n => n.flags?.[FLAG]?.cityId).map(n => n.id);
     if (mine.length) await scene.deleteEmbeddedDocuments("Note",mine);
     const notes = PLACES.map(p => {
@@ -255,7 +365,6 @@
     });
     await scene.createEmbeddedDocuments("Note",notes);
 
-    // District names as text drawings, replacing this tool's own.
     const oldDraw = scene.drawings.filter(d => d.flags?.[FLAG]?.cityDistrict).map(d => d.id);
     if (oldDraw.length) await scene.deleteEmbeddedDocuments("Drawing",oldDraw);
     const drawings = Object.entries(DISTRICTS).map(([name,d]) => ({
@@ -276,5 +385,10 @@
     return {journal:journal.name,pages:journal.pages.size,notes:notes.length,districts:drawings.length};
   }
 
-  globalThis.ALABASTRA_CITY = {VERSION,DISTRICTS,CATS,PLACES,build};
+  const api = {VERSION,DISTRICTS,CATS,PLACES,place,placesIn,spotFor,worldScene,showOnMap,setJobMarker,clearJobMarker,build};
+  globalThis.FEHA_CITY = api;
+  try {
+    game.adk ??= {};
+    game.adk.city = api;
+  } catch {}
 })();

@@ -85,6 +85,17 @@
     return cat()?.FIXERS?.find(f => f.key === job?.fixer) ?? null;
   }
 
+  // City map spot for a job (FEHA_CITY), and its label.
+  const city = () => globalThis.FEHA_CITY ?? null;
+  const spotOf = job => job?.spot ?? city()?.spotFor?.({district:job?.district,map:job?.map,fixer:job?.fixer,key:job?.key}) ?? null;
+  const spotLabel = job => city()?.place?.(spotOf(job))?.label ?? null;
+  async function marker(job,on) {
+    try {
+      if (on) await city()?.setJobMarker?.({...job,spot:spotOf(job)});
+      else await city()?.clearJobMarker?.(job.id);
+    } catch (err) { console.warn("FEHA JOBS // city marker failed",err); }
+  }
+
   function sceneFor(name) {
     if (!name) return null;
     const exact = game.scenes.find(s => s.name === name);
@@ -138,6 +149,7 @@
       ...foundry.utils.deepClone(def),
       id:rid(),
       src:"catalog",
+      spot:city()?.spotFor?.({district:def.district,map:def.map,fixer:def.fixer,key:def.key}) ?? null,
       cred:tierInfo(def.tier).cred,
       status:"offered",
       crew:[],
@@ -196,7 +208,7 @@
       tier:t,
       kind:kindName,
       title:pick(kind.titles),
-      district:fixer.district === "New Niemir" && Math.random() < 0.5 ? "New Niemir" : pick(G.DISTRICTS),
+      district:Math.random() < 0.5 ? fixer.district : pick(G.DISTRICTS),
       map,
       enemies:[...counts.entries()],
       pay:roll(info.pay[0],info.pay[1]),
@@ -209,6 +221,11 @@
       created:now,
       updated:now
     };
+  }
+
+  function placeJob(job) {
+    job.spot = city()?.spotFor?.({district:job.district,map:job.map,fixer:job.fixer,key:job.key}) ?? null;
+    return job;
   }
 
   // Highest tier any crew member can take, used to aim new offers.
@@ -255,7 +272,7 @@
         const job = fromCatalog(def);
         state.jobs[job.id] = job;
       } else {
-        const job = generate(tier);
+        const job = placeJob(generate(tier));
         state.jobs[job.id] = job;
       }
     }
@@ -321,6 +338,7 @@
       Object.assign(job,{status:"active",started:Date.now(),updated:Date.now()});
       if (job.src === "catalog" && !state.used.includes(job.key)) state.used.push(job.key);
       await write(state);
+      await marker(job,true);
       const fixer = fixerOf(job);
       await chat(chatCard(job,{kicker:"JOB ACCEPTED",tone:"go",body:`<p>Crew: <b>${esc(crewNames(job.crew))}</b></p>${fixer ? `<p class="fjc-q">“${esc(fixer.voice)}”</p>` : ""}`}));
       return {ok:true};
@@ -357,6 +375,7 @@
       }
       Object.assign(job,{status:"done",paid:each,credPaid:credEach,finished:Date.now(),updated:Date.now()});
       await write(state);
+      await marker(job,false);
       await chat(chatCard(job,{kicker:"JOB DONE",tone:"done",body:`<div class="fjc-pay"><span>${money(each)}</span><span>+${credEach} CRED</span></div><p>${esc(paid.join(", ") || "Nobody")} ${paid.length === 1 ? "gets" : "each get"} the payout.</p>`}));
       return {ok:true};
     },
@@ -374,6 +393,7 @@
       }
       Object.assign(job,{status:"failed",credPaid:credEach,finished:Date.now(),updated:Date.now()});
       await write(state);
+      await marker(job,false);
       await chat(chatCard(job,{kicker:"JOB FAILED",tone:"fail",body:`<p>${credEach ? `${credEach > 0 ? "+" : ""}${credEach} Street Cred for ${esc(crewNames(job.crew))}.` : "No pay. The fixer will remember."}</p>`}));
       return {ok:true};
     },
@@ -385,6 +405,7 @@
       Object.assign(job,{status:"offered",crew:[],requestedBy:null,requestedAs:null,updated:Date.now()});
       state.used = state.used.filter(k => k !== job.key);
       await write(state);
+      await marker(job,false);
       return {ok:true};
     },
 
@@ -392,6 +413,7 @@
       const state = read();
       delete state.jobs[jobId];
       await write(state);
+      await marker({id:jobId},false);
       return {ok:true};
     },
 
@@ -425,6 +447,7 @@
         created:now,
         updated:now
       };
+      placeJob(job);
       const state = read();
       state.jobs[job.id] = job;
       await write(state);
@@ -441,7 +464,7 @@
 
     async rollOne({tier}) {
       const state = read();
-      const job = generate(Math.max(1,Math.min(5,Number(tier) || 1)));
+      const job = placeJob(generate(Math.max(1,Math.min(5,Number(tier) || 1))));
       state.jobs[job.id] = job;
       await write(state);
       return {ok:true,id:job.id};
@@ -663,6 +686,7 @@
 #${ROOT_ID} .fj-fx p{margin:0;color:var(--fj-muted);font-size:14px;flex:1}
 #${ROOT_ID} .fj-fx .fj-stats{display:flex;gap:14px;font-family:var(--fj-mono);font-size:12px;color:var(--fj-muted)}
 #${ROOT_ID} .fj-fx .fj-stats b{color:var(--fj-yellow);font-weight:400}
+#${ROOT_ID} .fj-mini{min-height:22px;padding:2px 6px;font-size:11px;margin-left:6px}
 #${ROOT_ID} .fj-fx footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 
 /* write-a-job form + cred panel */
@@ -765,7 +789,7 @@
       <button type="button" class="fj-card fj-tc${job.tier}${locked ? " is-locked" : ""}" data-job="${esc(job.id)}"
         aria-current="${ui$.selected === job.id}"${accent(fixer)}>
         ${monogram(fixer)}
-        <span class="fj-k"><b>${esc(fixer?.handle ?? job.fixer)}</b> // ${esc(job.kind)} // ${esc(job.district)}</span>
+        <span class="fj-k"><b>${esc(fixer?.handle ?? job.fixer)}</b> // ${esc(job.kind)} // ${esc(spotLabel(job) ? spotLabel(job).replace(/^\S+ · /,"") : job.district)}</span>
         <span class="fj-n">${esc(job.title)}</span>
         <span class="fj-p">${money(job.pay)}</span>
         <span class="fj-s">
@@ -893,7 +917,8 @@
         <div class="fj-meta">
           <span class="tier">TIER <b>${esc(info.label.replace("TIER ",""))}</b></span>
           <span>TYPE <b>${esc(job.kind)}</b></span>
-          <span>WHERE <b>${esc(job.district)}</b></span>
+          <span>WHERE <b>${esc(job.district)}</b>${spotLabel(job) ? ` · <b>${esc(spotLabel(job))}</b>` : ""}</span>
+          ${game.user.isGM && spotOf(job) && city()?.worldScene?.() ? `<button type="button" class="fj-ghost" data-act="citymap" data-spot="${esc(spotOf(job))}" title="Open the city map on your screen and point at this spot">Show on city map</button>` : ""}
           <span class="pay">PAY <b>${money(job.pay)}</b> each</span>
           <span>CRED <b>+${job.cred}</b></span>
           ${info.need ? `<span>NEEDS <b>${info.need}</b> cred</span>` : ""}
@@ -919,6 +944,7 @@
           <div class="fj-d">${esc(f.district)} · ${esc(tierInfo(lo).label)}${hi !== lo ? `–${esc(tierInfo(hi).label.replace("TIER ",""))}` : ""}</div></div></header>
         <q>${esc(f.voice)}</q>
         <p>${esc(f.blurb)}</p>
+        ${f.spot && city()?.place?.(f.spot) ? `<div class="fj-d">FIND THEM AT ${esc(city().place(f.spot).label)}${game.user.isGM && city()?.worldScene?.() ? ` <button type="button" class="fj-ghost fj-mini" data-act="citymap" data-spot="${esc(f.spot)}">Map</button>` : ""}</div>` : ""}
         <footer><div class="fj-stats"><span>DONE <b>${done}</b></span><span>ON BOARD <b>${open}</b></span></div>
           <button type="button" data-act="fixerjobs" data-fixer="${esc(f.key)}" ${open ? "" : "disabled"}>${open ? "See their jobs" : "Nothing posted"}</button></footer>
       </article>`;
@@ -1114,6 +1140,9 @@
         case "close": return close();
         case "sheet": return game.actors.get(target.dataset.actor)?.sheet?.render(true);
         case "viewmap": return game.scenes.get(target.dataset.scene)?.view();
+        case "citymap":
+          close();
+          return city()?.showOnMap?.(target.dataset.spot);
         case "double": {
           const input = root.querySelector('[data-field="pay"]');
           if (input) input.value = String((Number(input.value) || 0) * 2);
