@@ -68,29 +68,29 @@
   const PLACES = [
     // ---------------------------------------------------- megabuildings
     ["H1", 1992,2552,"mega","Council Residences","Corporate Plaza","Luxury stack for Council staff and mid-level corpos, with private security on every floor.","Highrise Apartment"],
-    ["H2", 1724,2866,"mega","Seawall Stack","Old Capital","Overcrowded block on the old harbour wall. Its lifts haven't worked in years.","Apartment Complex"],
+    ["H2", 1724,2866,"mega","Seawall Stack","Old Capital","Overcrowded block on the old harbour wall. Its lifts haven't worked in years.","Cyber Slums (District 8)"],
     ["H3", 2372,2742,"mega","Old Senate Block","Old Capital","The old capital's senate offices, cut up into flats after the government ran out of money.","Hotel Corridor"],
     ["H4", 2372,3159,"mega","Praça Block","Old Capital","Market square at the bottom, families stacked forty floors above it.","Apartment Complex"],
-    ["H5", 2397,2444,"mega","Liberdade Stack","Downtown","Built in Vargas's time as 'housing for every worker'. Now a rent trap.","Apartment Complex"],
+    ["H5", 2397,2444,"mega","Liberdade Stack","Downtown","Built in Vargas's time as 'housing for every worker'. Now a rent trap.","Res Cube"],
     ["H6", 2758,2717,"mega","Cinderline Block 6","Cinderline","Company housing for Cinder plant shifts. Rent comes out of wages before payday.","Basement Dwelling"],
-    ["H7", 2882,2813,"mega","Cinderline Block 7","Cinderline","Block 6's twin. Its basement is where the plant's illegal union meets.","Basement"],
-    ["H8", 2493,1820,"mega","Sakura Heights","Orient Quarter","Tower with Yakuza-run shops on its lower floors and a rooftop shrine.","Highrise Apartment"],
+    ["H7", 2882,2813,"mega","Cinderline Block 7","Cinderline","Block 6's twin. Its basement is where the plant's illegal union meets.","Basement — Map 1"],
+    ["H8", 2493,1820,"mega","Sakura Heights","Orient Quarter","Tower with Yakuza-run shops on its lower floors and a rooftop shrine.","Apartment (Arcology Series)"],
     ["H9", 2167,2050,"mega","Meridian Stack","Corporate Plaza","Apartments for corp contractors who can't afford the towers.","Condo"],
-    ["H10",2096,1547,"mega","Zarya Block","New Niemir","Sloviti megablock with its own market, school and community kitchen.","Apartment Complex"],
+    ["H10",2096,1547,"mega","Zarya Block","New Niemir","Sloviti megablock with its own market, school and community kitchen.","The Apartment"],
     ["H11",2096,1167,"mega","Volna Block","New Niemir","Half-finished block taken over by refugee families after the developer left.","Squatters Court"],
-    ["H12",1808, 860,"mega","Pristan Block","The Docks","Dockworkers' block in the shadow of the container cranes.","Apartment Complex"],
+    ["H12",1808, 860,"mega","Pristan Block","The Docks","Dockworkers' block in the shadow of the container cranes.","Apartment — Map 1"],
 
     // ------------------------------------------- hotels, camps, living
     ["01",3836,1018,"living","Wanderer Clan Camp","The Barrens","Nomad clan camp in the hills. Trades parts, fuel and favours.","The Nomad Camp"],
     ["02",1896,3164,"living","Batista's Rooms","Old Capital","Cheap rooms over a market. Batista asks no questions and remembers every face.","Rundown Hotel"],
-    ["03",1446,3589,"living","Hotel Santa Sofia","Costa Morta","Half-built resort hotel on the dead coast, squatted floor by floor.","Rundown Hotel"],
+    ["03",1446,3589,"living","Hotel Santa Sofia","Costa Morta","Half-built resort hotel on the dead coast, squatted floor by floor.","Small Hotel"],
     ["04",1674,1290,"living","Kurohane Plaza Hotel","The Docks","Kurohane-owned luxury hotel on the waterfront. Executive suites, perfect security.","The Koi Hotel"],
-    ["05",2726,4900,"living","Las Palmeras Motel","The Barrens","Motel on the airport road. Truckers, smugglers and nobody else.","Wasteland Motel"],
+    ["05",2726,4900,"living","Las Palmeras Motel","The Barrens","Motel on the airport road. Truckers, smugglers and nobody else.","Wasteland Motel — Map 1"],
     ["06",2224,1522,"living","No Questions Motel","New Niemir","Rooms by the hour in the middle of New Niemir.","Motel Room"],
-    ["07",4730,2456,"living","Dustline Camp","The Barrens","The biggest nomad camp, on the far edge of the Barrens.","The Nomad Camp"],
-    ["08",3494,2512,"living","Red Ridge Trailer Park","The Barrens","Trailer park where evicted Cinderline workers end up.","Trailer Park"],
-    ["09",3756,2686,"living","Last Light Motel","The Barrens","Motel at the city limits. The last place before the desert.","Wasteland Motel"],
-    ["11",2108,4226,"living","Tango Motel","The Barrens","Roadside motel south of the city, on the smugglers' route.","Wasteland Motel"],
+    ["07",4730,2456,"living","Dustline Camp","The Barrens","The biggest nomad camp, on the far edge of the Barrens.","Nomad Houndkeeper"],
+    ["08",3494,2512,"living","Red Ridge Trailer Park","The Barrens","Trailer park where evicted Cinderline workers end up.","Trailer Park — Map 1"],
+    ["09",3756,2686,"living","Last Light Motel","The Barrens","Motel at the city limits. The last place before the desert.","Wasteland Motel — Map 2"],
+    ["11",2108,4226,"living","Tango Motel","The Barrens","Roadside motel south of the city, on the smugglers' route.","Wasteland Motel — Map 3"],
     ["12",2348,2391,"living","Hotel Kasumi","Downtown","Discreet business hotel where deals get signed off the record.","Discreet Hotel Lobby"],
 
     // --------------------------------------------- bars, pubs and clubs
@@ -98,57 +98,57 @@
     ["14",2454,2276,"bar","Dicey's","Downtown","Dance bar with rigged dice tables in the back room.","Small Dance Bar"],
     ["15",2194,2796,"bar","El Lobo Cojo","Old Capital","Old neighbourhood bar. Everyone knows everyone, and everyone owes someone.","Dive Bar"],
     ["16",2054,2854,"bar","El Gallo Flaco","Old Capital","Taco bar and message drop for the Old Capital's street crews.","Food Shack"],
-    ["17",1806,2046,"bar","Voltage","Corporate Plaza","Neon club where corp kids buy what their parents banned.","Synth Club"],
+    ["17",1806,2046,"bar","Voltage","Corporate Plaza","Neon club where corp kids buy what their parents banned.","Synth Club — Main Map (No Grid)"],
     ["18",1904,2516,"bar","Cinders","Corporate Plaza","Upscale bar in a Council tower. Ms. Hale takes meetings here.","Cocktail Lounge"],
     ["19",1968,2074,"bar","Sympathy","Corporate Plaza","Quiet lounge with booths that block every signal. Dial Tone's drop point.","The VIP Lounge"],
     ["20",2010,3525,"bar","Iron Hearts Club","The Kennel","The Kennel's biggest club, where the boss's people spend his money.","Industrial Club"],
     ["21",2318,1516,"bar","The Red Crane","New Niemir","Yakuza-owned club on New Niemir's edge.","Viper Club"],
     ["22",2243,1394,"bar","Mila's","New Niemir","Sloviti bar with a back room for union meetings. Babka holds court here.","Basement Bar"],
     ["23",2038,3104,"bar","Steelrain","Old Capital","Metal bar for chromeheads and the people who fight them.","Dead Space Cyberpunk Bar"],
-    ["24",2482,2790,"bar","Red Clay","Old Capital","Dockside dive where Clerk Seven sells warrants out of a corner booth.","Dive Bar"],
+    ["24",2482,2790,"bar","Red Clay","Old Capital","Dockside dive where Clerk Seven sells warrants out of a corner booth.","Pool Bar — Map 1"],
     ["25",1988,1700,"bar","The Picket Line","New Niemir","Workers' bar. Strike posters on the walls, a CivCorp informant at the bar.","Cyber Bar"],
     ["26",2184,1684,"bar","The Wake","New Niemir","Mercs' bar built into an old funeral hall. Every fixer in the city drinks here.","Cocktail Bar"],
-    ["27",2522,2690,"bar","The Last Stand","Downtown","Veterans' bar. Navy loyalists, old soldiers and Vargas portraits.","Pool Bar"],
-    ["28",1566,3703,"bar","The Lantern","Costa Morta","Beach bar in a dead resort, lit by stolen Cinder.","Food Shack"],
+    ["27",2522,2690,"bar","The Last Stand","Downtown","Veterans' bar. Navy loyalists, old soldiers and Vargas portraits.","Pool Bar — Map 2"],
+    ["28",1566,3703,"bar","The Lantern","Costa Morta","Beach bar in a dead resort, lit by stolen Cinder.","Hookah Lounge"],
     ["29",1938,1052,"bar","Totenhaus","The Docks","Gang bar by the docks. Don't go in without an invitation.","Booster Basement"],
 
     // -------------------------------------------------- shops & markets
-    ["30",2384,2628,"shop","Vektor Outlet","Downtown","Vektor Dynamics' official gun store. Medium everything, warranty included.","Gunstore"],
-    ["31",1856,2804,"shop","Vektor Outlet","Old Capital","Vektor Dynamics store behind steel shutters.","Gunstore"],
-    ["32",1560,3558,"shop","Vektor Outlet","Costa Morta","Vektor's last store on the dead coast, guarded day and night.","Gunstore"],
-    ["33",2213,1572,"shop","Vektor Outlet","New Niemir","Vektor store whose prices are a week's wages for a New Niemir family.","Gunstore"],
-    ["34",1910,3218,"shop","Batista's Market","Old Capital","Market under Batista's Rooms. Anything for sale, eventually.","Market Stalls"],
-    ["35",2504,1740,"shop","Sakura Night Market","Orient Quarter","Night market under the Yakuza's protection. Kiyama has a table at the back.","Market Stalls"],
-    ["36",1946, 892,"shop","Dead Ringer Clothing","The Docks","Second-hand clothes, some of them still warm.","Street Clothier"],
+    ["30",2384,2628,"shop","Vektor Outlet","Downtown","Vektor Dynamics' official gun store. Medium everything, warranty included.","Gunstore — Map 1"],
+    ["31",1856,2804,"shop","Vektor Outlet","Old Capital","Vektor Dynamics store behind steel shutters.","Gunstore — Map 2"],
+    ["32",1560,3558,"shop","Vektor Outlet","Costa Morta","Vektor's last store on the dead coast, guarded day and night.","Gunstore — Map 3"],
+    ["33",2213,1572,"shop","Vektor Outlet","New Niemir","Vektor store whose prices are a week's wages for a New Niemir family.","Shopfront"],
+    ["34",1910,3218,"shop","Batista's Market","Old Capital","Market under Batista's Rooms. Anything for sale, eventually.","City Store"],
+    ["35",2504,1740,"shop","Sakura Night Market","Orient Quarter","Night market under the Yakuza's protection. Kiyama has a table at the back.","Market Street"],
+    ["36",1946, 892,"shop","Dead Ringer Clothing","The Docks","Second-hand clothes, some of them still warm.","Cyberpunk Old Pawn Shop"],
     ["37",2072,3423,"shop","Kennel Market","The Kennel","Black market inside the Kennel walls. Military surplus and worse.","Guns Marketplace"],
-    ["38",2338,1134,"shop","True Aim Firearms","New Niemir","Gun shop with a basement range and no paperwork.","Gunstore"],
-    ["39",1831, 760,"shop","Pier 9 Market","The Docks","Dockside market for things that fell off ships. Carp-Line's office is above it.","Market Stalls"],
+    ["38",2338,1134,"shop","True Aim Firearms","New Niemir","Gun shop with a basement range and no paperwork.","Sports Store"],
+    ["39",1831, 760,"shop","Pier 9 Market","The Docks","Dockside market for things that fell off ships. Carp-Line's office is above it.","Dock"],
     ["40",1860,2216,"shop","Shirogane Tailors","Corporate Plaza","Corp tailoring. Armour woven into the lining.","Bespoke Tailor Shop"],
     ["41",2234,1134,"shop","Niemir Bazaar","New Niemir","The district's main market: food, parts, pickles and gossip.","Market Stalls"],
     ["42",1676,3713,"shop","Stacks Market","Costa Morta","Market in shipping containers stacked on the beach.","Cyber Market"],
     ["43",1908,2152,"shop","Iron Psalm Records","Corporate Plaza","Record shop that sells banned music to people with money.","Music Store"],
-    ["44",3198,3437,"shop","Dam Market","Cinderline","Market at the dam road, for plant workers coming off shift.","Market Stalls"],
-    ["45",2640,1460,"shop","Jade Arc Showroom","Orient Quarter","Jade Arc Systems' energy weapons, behind bulletproof glass.","Guns Marketplace"],
+    ["44",3198,3437,"shop","Dam Market","Cinderline","Market at the dam road, for plant workers coming off shift.","Junkstore — Map 1"],
+    ["45",2640,1460,"shop","Jade Arc Showroom","Orient Quarter","Jade Arc Systems' energy weapons, behind bulletproof glass.","Showroom — Main Map"],
     ["46",2336,3103,"shop","Cinderline Market","Old Capital","Market on the line between the Old Capital and Cinderline.","Ghetto Markets"],
     ["47",3018,3044,"shop","Sleek Threads","Cinderline","Clothes shop for workers who want to look like corpos for one night.","Street Clothier"],
-    ["48",2051,1330,"shop","Sleek Threads","New Niemir","Sleek Threads' New Niemir branch.","Street Clothier"],
+    ["48",2051,1330,"shop","Sleek Threads","New Niemir","Sleek Threads' New Niemir branch.","Esoteric Curio Shop"],
     ["48b",1586,2590,"shop","Sleek Threads","Corporate Plaza","Sleek Threads' flagship on the plaza.","Corpo Attire"],
-    ["49",1876,2572,"shop","Rewind Records","Corporate Plaza","Music and braindance shop. Old recordings in the back, new ones by request.","Music Store"],
+    ["49",1876,2572,"shop","Rewind Records","Corporate Plaza","Music and braindance shop. Old recordings in the back, new ones by request.","Electronics Store — Map 1"],
 
     // ------------------------------------------------------- ripperdocs
     ["50",2290,1078,"ripper","Kowal Clinic","New Niemir","Sloviti ripperdoc who fixes refugees for free on Sundays.","Ripperdoc Clinic"],
     ["51",1570,2034,"ripper","Council Implants","Corporate Plaza","Corp clinic: clean, licensed and tracked by CivCorp.","Cybernetics Boutique Clinic & Spa"],
-    ["52",1566,3754,"ripper","Costa Clinic","Costa Morta","Beach shack ripperdoc. Cheap, fast, unsterile.","Ripperdoc - Back-Alley Bazaar"],
-    ["53",1969, 952,"ripper","Doc Rydel","The Docks","Dockside ripperdoc who patches up anyone who pays.","Ripperdoc Clinic"],
-    ["54",2301,1194,"ripper","Dr. Nickel","New Niemir","Chrome dealer and ripperdoc in a back alley off the bazaar.","Ripperdoc - Back-Alley Bazaar"],
-    ["55",2676,1812,"ripper","Thumbs' Clinic","Orient Quarter","Yakuza ripperdoc. Discreet, and he reports to Kiyama.","Ripperdoc Clinic"],
+    ["52",1566,3754,"ripper","Costa Clinic","Costa Morta","Beach shack ripperdoc. Cheap, fast, unsterile.","Patch & Go - Minute Clinic"],
+    ["53",1969, 952,"ripper","Doc Rydel","The Docks","Dockside ripperdoc who patches up anyone who pays.","Medical Ward"],
+    ["54",2301,1194,"ripper","Dr. Nickel","New Niemir","Chrome dealer and ripperdoc in a back alley off the bazaar.","Ripperdoc - Back-Alley Bazaar [Dr.Chrome]"],
+    ["55",2676,1812,"ripper","Thumbs' Clinic","Orient Quarter","Yakuza ripperdoc. Discreet, and he reports to Kiyama.","Massage Spa - Red Dragon - Part 1"],
     ["56",2318,1460,"ripper","Insta-Chrome","New Niemir","Walk-in implant chain. Payment plans, remote repossession.","Body Augments"],
-    ["57",2858,2276,"ripper","Novak's Clinic","The Hills","Private clinic for people who can afford discretion.","Cybernetics Boutique Clinic & Spa"],
-    ["58",3302,3437,"ripper","Otávio's Clinic","Cinderline","Treats plant injuries the company insurance won't cover.","Ripperdoc Clinic"],
-    ["59",2052,1600,"ripper","Bogdan's Clinic","New Niemir","Old ripperdoc everyone in New Niemir trusts. Knows the crew's families.","Ripperdoc Clinic"],
-    ["60",1594,2752,"ripper","Springside Doc","Old Capital","Ripperdoc in a flooded basement. Waders recommended.","Ripperdoc Clinic"],
-    ["61",1560,3611,"ripper","Seawind Ripper","Costa Morta","Coastal ripperdoc who buys chrome off corpses and doesn't ask whose.","Ripperdoc - Back-Alley Bazaar"],
-    ["62",1992,3619,"ripper","Refuge Clinic","The Kennel","The Kennel's only clinic, under the boss's protection.","Medical Ward"],
+    ["57",2858,2276,"ripper","Novak's Clinic","The Hills","Private clinic for people who can afford discretion.","Hospital Ward"],
+    ["58",3302,3437,"ripper","Otávio's Clinic","Cinderline","Treats plant injuries the company insurance won't cover.","Emergency Room"],
+    ["59",2052,1600,"ripper","Bogdan's Clinic","New Niemir","Old ripperdoc everyone in New Niemir trusts. Knows the crew's families.","Barber"],
+    ["60",1594,2752,"ripper","Springside Doc","Old Capital","Ripperdoc in a flooded basement. Waders recommended.","Sewer Slums"],
+    ["61",1560,3611,"ripper","Seawind Ripper","Costa Morta","Coastal ripperdoc who buys chrome off corpses and doesn't ask whose.","Junkstore — Map 2"],
+    ["62",1992,3619,"ripper","Refuge Clinic","The Kennel","The Kennel's only clinic, under the boss's protection.","Donor Clinic — Map 1"],
 
     // -------------------------------------------------------- landmarks
     ["63",3142,1522,"land","Kurohane Estate","The Hills","The Kurohane family estate. Gardens, guards and old money.","Sky Mansion Gardens"],
@@ -156,17 +156,17 @@
     ["65",1366,4388,"land","Helix Vitae Protein Flats","The Barrens","Miles of protein farms that feed the city. Striking here is illegal.","Protein Farms"],
     ["66",2966,1926,"land","Hall of Ashes","The Hills","Columbarium for the city's dead. The poor rent their niches by the year.","Cyberpunk Church"],
     ["67",1632,3389,"land","Vargas Grand Mall","Costa Morta","Sancho Vargas's showcase mall, abandoned when he fell.","Horizon Shopping Mall"],
-    ["68",2642,1760,"land","Lantern Row","Orient Quarter","Red-light street under Yakuza protection.","Red Light District"],
+    ["68",2642,1760,"land","Lantern Row","Orient Quarter","Red-light street under Yakuza protection.","Red Light District — Map 1"],
     ["69",3474,3941,"land","Ninfa Reservoir","The Barrens","The city's water. Whoever controls the dam controls New Niemir's taps.","Water Dam"],
     ["70",1100,2042,"land","Alabastra Naval Station","Naval Station","Navy base on its own island. Admiral Rosa's fleet answers to him first.","Flight Deck"],
     ["71",3720,3321,"land","The Heap","The Barrens","The city landfill. Scavengers, chrome strippers and bodies.","Garbage Dump"],
     ["72",4510,3252,"land","Dustline Rail Station","The Barrens","Freight rail stop the nomads use to move cargo in and out.","Train Repair Yard"],
-    ["73",3414,1408,"land","Hillcrest Casino","The Hills","Council members' casino in the hills.","Casino"],
+    ["73",3414,1408,"land","Hillcrest Casino","The Hills","Council members' casino in the hills.","Casino — Main Map"],
     ["74",1945, 100,"land","Jade Arc Proving Grounds","The Barrens","Jade Arc Systems' weapons range in the northern wastes. Keep out.","Assault Base Alpha"],
     ["75",2047,5016,"land","Alabastra Regional Airport","The Barrens","The city's airport. Every flight checked by CivCorp.","Airdock 6 - Landing platform"],
     ["76",2766,3706,"land","Cinder Collector Array","Cinderline","The dishes that pull the Cinder in. Everything in the city runs on it.","Pump Control"],
     ["77",1653,3901,"land","CivCorp Correctional Facility 4","Costa Morta","Private prison in a dead resort. Its 'drug epidemic' arrests make CivCorp record profits.","Prison Facility"],
-    ["78",1850,3510,"land","The Black Pearl","The Kennel","The Kennel boss's tower-top club. Invitation only.","The VIP Lounge"],
+    ["78",1850,3510,"land","The Black Pearl","The Kennel","The Kennel boss's tower-top club. Invitation only.","VIP Room"],
     ["79",2968,1752,"land","Alabastra Sign","The Hills","The city's name in giant letters over the hills.","Rooftop"],
 
     // ----------------------------------------- corporate & council HQs
@@ -182,7 +182,7 @@
     ["X2",2120,1420,"crew","The 365","New Niemir","The 24/7 convenience store where Ponyboy works double shifts.","The Convenience Store"],
     ["X3",2050,1460,"crew","The Studio Apartment","New Niemir","Where Ponyboy, Sasha and Zach live together.","The Studio Apartment"],
     ["X4",2290,1300,"crew","Union Hall","New Niemir","The basement where the approved union meets, and the unapproved one after it.","Basement Utilities Room"],
-    ["X5",2180,2250,"crew","Kurohane Academy","Corporate Plaza","Kurohane's academy for gifted youth. Zach's old school.","Corporate Atrium"],
+    ["X5",2180,2250,"crew","Kurohane Academy","Corporate Plaza","Kurohane's academy for gifted youth. Zach's old school.","Corporate Atrium — Map 1"],
     ["X6",1760,2420,"crew","CivCorp Plaza & General Court","Corporate Plaza","CivCorp's headquarters and the general court it sponsors. Marble Vigil command is on the top floors.","Court"]
   ];
 
@@ -219,7 +219,10 @@
     const hang = fixers().find(f => f.key === fixer)?.spot ?? null;
     const local = PLACES.filter(p => p[5] === district);
     const lower = String(map ?? "").toLowerCase();
-    const fits = p => lower && (p[7].toLowerCase() === lower || lower.startsWith(p[7].toLowerCase()));
+    const fits = p => {
+      const own = p[7].toLowerCase();
+      return Boolean(lower) && (own === lower || own.startsWith(lower) || lower.startsWith(own));
+    };
     const sameMap = local.find(fits);
     if (sameMap) return sameMap[0];
     const anywhere = PLACES.filter(fits);
@@ -292,11 +295,11 @@
     const [id, , , cat, , district, blurb, map] = p;
     const d = DISTRICTS[district];
     const here = fixers().filter(f => f.spot === id);
-    return `<p><strong>${esc(CATS[cat].label)}</strong> · ${esc(district)}${d ? ` <em>(${esc(d.was)})</em>` : ""}</p>
+    return `<p class="feha-city-go"><strong>▶ BATTLE MAP:</strong> ${sceneLink(map)}</p>
+<p><strong>${esc(CATS[cat].label)}</strong> · ${esc(district)}${d ? ` <em>(${esc(d.was)})</em>` : ""}</p>
 <p>${esc(blurb)}</p>
 ${here.map(f => `<p><strong>Fixer:</strong> ${esc(f.handle)} (${esc(f.name)}) works out of here. <em>"${esc(f.voice)}"</em></p>`).join("")}
-${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])}</p>` : ""}
-<p><strong>Battle map:</strong> ${sceneLink(map)}</p>`;
+${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])}</p>` : ""}`;
   }
 
   function legendHtml() {
@@ -342,26 +345,37 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
   const PIN_DX = 58;
   const KEY_PATH = "feha-city";
   const KEY_FILE = "alabastra-key.png";
-  const KEY_W = 1220;
+  const KEY_W = 1800;
+  const KEY_GAP = 40;
+  // The city image (Map_withNcart_Full.png). The scene is widened so the key
+  // sits inside it, right of the image, where players can see it too.
+  const IMG_W = 4824, IMG_H = 5187;
 
-  // Legend rows by section. Repeated chains (30-33, 47-48) collapse to one row.
+  // Legend rows by section: [number, name, scene name, place id to jump to].
+  // Repeated chains (30-33) collapse to one row and jump to the first.
   function keySections() {
     const rows = cat => {
       const out = [];
       for (const p of PLACES.filter(q => q[3] === cat)) {
         const n = num(p[0]);
         const last = out[out.length - 1];
-        if (last && last.name === p[4]) {
-          if (n && n !== last.to) last.to = n;
+        if (last && last.name === p[4] && n && last.to && /^\d+$/.test(n) && Number(n) === Number(last.to) + 1) {
+          last.to = n;
+          last.scenes.push(p[7]);
           continue;
         }
-        out.push({from:n,to:n,name:p[4]});
+        out.push({from:n,to:n,name:p[4],scenes:[p[7]],id:p[0]});
       }
       const pad = n => /^H/.test(n) ? n : n.padStart(2,"0");
-      return out.map(r => [r.from ? (r.to !== r.from ? pad(r.from) + "-" + pad(r.to) : pad(r.from)) : "•",r.name]);
+      return out.map(r => [
+        r.from ? (r.to !== r.from ? pad(r.from) + "-" + pad(r.to) : pad(r.from)) : "•",
+        r.name,
+        r.scenes.length > 1 ? r.scenes.length + " maps" : r.scenes[0],
+        r.id
+      ]);
     };
-    const fx = fixers().map(f => [f.spot ? num(f.spot).padStart(2,"0") : "•",f.handle + " · " + f.district]);
-    const dist = Object.entries(DISTRICTS).map(([name,d]) => ["",name + (d.gang ? " · " + d.gang[0] : "")]);
+    const fx = fixers().map(f => [f.spot ? num(f.spot).padStart(2,"0") : "•",f.handle,f.district,f.spot ?? null]);
+    const dist = Object.entries(DISTRICTS).map(([name,d]) => ["",name,d.gang?.[0] ?? "","district:" + name]);
     return {
       left:[["mega",rows("mega")],["living",rows("living")],["bar",rows("bar")],["shop",rows("shop")]],
       right:[["ripper",rows("ripper")],["land",rows("land")],["corp",rows("corp")],["crew",rows("crew")],
@@ -370,7 +384,8 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
   }
 
   // Draws the key as an image the height of the map, in the style of the
-  // map's own legend panel.
+  // map's own legend panel. Returns the image and the clickable rows (key
+  // units, from the key's top-left).
   async function renderKey(heightUnits) {
     const S = 2;
     const W = KEY_W * S, H = heightUnits * S;
@@ -395,29 +410,41 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     g.strokeRect(14*S,14*S,W - 28*S,H - 28*S);
 
     const pad = 70 * S;
-    let y = 150 * S;
+    let y = 160 * S;
     g.textBaseline = "alphabetic";
     const spaced = (text,x,yy,gap) => { let cx = x; for (const ch of text) { g.fillText(ch,cx,yy); cx += g.measureText(ch).width + gap; } };
-    g.fillStyle = "#f1e6e3"; g.font = font(700,120*S,display);
-    spaced("ALABASTRA",pad,y,26*S);
-    y += 70 * S;
-    g.fillStyle = "#f3e600"; g.font = font(600,44*S,display);
-    spaced("CITY OF THE CORPORATE COUNCIL",pad,y,6*S);
-    y += 46 * S;
-    g.fillStyle = "#8f8a9a"; g.font = font("",22*S,mono);
+    g.fillStyle = "#f1e6e3"; g.font = font(700,140*S,display);
+    spaced("ALABASTRA",pad,y,32*S);
+    y += 76 * S;
+    g.fillStyle = "#f3e600"; g.font = font(600,50*S,display);
+    spaced("CITY OF THE CORPORATE COUNCIL",pad,y,8*S);
+    y += 50 * S;
+    g.fillStyle = "#8f8a9a"; g.font = font("",24*S,mono);
     g.fillText("Map render: CD Projekt RED · Piggyback Interactive · Kama. Names and legend: FEHA.",pad,y);
+    y += 40 * S;
+    g.fillText("Click a line to find it on the map. Click a pin to open its page and battle map.",pad,y);
     y += 80 * S;
-    g.fillStyle = "#f1e6e3"; g.font = font(700,64*S,display);
+    g.fillStyle = "#f1e6e3"; g.font = font(700,70*S,display);
     g.fillText("LEGEND",pad,y);
     y += 30 * S;
 
     const {left,right} = keySections();
-    const gap = 40 * S;
+    const gap = 50 * S;
     const colW = (W - pad * 2 - gap) / 2;
     const count = col => col.reduce((n,[,rows]) => n + rows.length + 2,0);
     const rowsMax = Math.max(count(left),count(right));
-    const lh = Math.min(56 * S,Math.floor((H - y - 90 * S) / rowsMax));
-    const fs = Math.floor(lh * 0.62);
+    const lh = Math.min(60 * S,Math.floor((H - y - 90 * S) / rowsMax));
+    const fs = Math.floor(lh * 0.6);
+    const hits = [];
+
+    const fit = (text,weight,family,size,maxW,minScale) => {
+      let s = size;
+      g.font = font(weight,s,family);
+      while (g.measureText(text).width > maxW && s > size * minScale) { s -= 1; g.font = font(weight,s,family); }
+      let t = text;
+      while (g.measureText(t).width > maxW && t.length > 4) t = t.slice(0,-2) + "…";
+      return t;
+    };
 
     const drawCol = (col,x0) => {
       let yy = y + lh;
@@ -426,20 +453,24 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
         yy += Math.round(lh * 0.6);
         g.fillStyle = head.color;
         g.beginPath(); g.moveTo(x0,yy - fs * 0.75); g.lineTo(x0 + fs * 0.55,yy - fs * 0.4); g.lineTo(x0,yy - fs * 0.05); g.fill();
-        g.font = font(700,fs * 1.08,display);
+        g.font = font(700,fs * 1.1,display);
         g.fillText(head.label,x0 + fs * 0.85,yy);
         yy += lh;
-        for (const [n,name] of rows) {
+        for (const [n,name,sub,id] of rows) {
+          const textX = x0 + fs * 3.1;
+          const room = x0 + colW - textX;
           g.fillStyle = head.color; g.font = font("",fs,mono);
           g.fillText(n,x0,yy);
-          g.fillStyle = "#e9e4ee"; g.font = font(600,fs,display);
-          // Long names shrink to fit (down to 72%), and only then get cut.
-          let label = name.toUpperCase();
-          const maxW = colW - fs * 3.3;
-          let size = fs;
-          while (g.measureText(label).width > maxW && size > fs * 0.72) { size -= 1; g.font = font(600,size,display); }
-          while (g.measureText(label).width > maxW && label.length > 4) label = label.slice(0,-2) + "…";
-          g.fillText(label,x0 + fs * 3.1,yy);
+          g.fillStyle = "#ece7f1";
+          const nameText = fit(name.toUpperCase(),600,display,fs,room * 0.56,0.8);
+          g.fillText(nameText,textX,yy);
+          const nameW = g.measureText(nameText).width;
+          if (sub) {
+            g.fillStyle = "#8f8a9a";
+            const subText = fit(sub,"",mono,fs * 0.72,room - nameW - fs * 0.8,0.75);
+            g.fillText(subText,textX + nameW + fs * 0.6,yy);
+          }
+          if (id) hits.push({id,x0:x0 / S,y0:(yy - lh * 0.78) / S,x1:(x0 + colW) / S,y1:(yy + lh * 0.22) / S});
           yy += lh;
         }
         yy += Math.round(lh * 0.4);
@@ -448,7 +479,8 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     drawCol(left,pad);
     drawCol(right,pad + colW + gap);
 
-    return new Promise(res => c.toBlob(res,"image/png"));
+    const blob = await new Promise(res => c.toBlob(res,"image/png"));
+    return {blob,hits:hits.map(h => [h.id,Math.round(h.x0),Math.round(h.y0),Math.round(h.x1),Math.round(h.y1)])};
   }
 
   async function uploadKey(blob) {
@@ -461,26 +493,44 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     return path + (path.includes("?") ? "&" : "?") + "v=" + Date.now();
   }
 
-  // Key tile down the right-hand padding of the scene, the map's height.
+  // Widen the scene so the image keeps its size on the left and the key fits
+  // inside the scene on the right. The image is anchored left, so every
+  // image coordinate stays sceneX + x.
+  async function layoutScene(scene) {
+    const width = IMG_W + KEY_GAP + KEY_W;
+    const bg = scene.background;
+    if (scene.width === width && scene.height === IMG_H && bg.fit === "height" && bg.anchorX === 0) return false;
+    await scene.update({width,height:IMG_H,"background.fit":"height","background.anchorX":0,"background.anchorY":0.5});
+    return true;
+  }
+
+  // Key tile inside the scene, right of the image, the map's height.
   async function buildKey(scene) {
-    const {sceneX:ox,sceneY:oy,sceneWidth:sw,sceneHeight:sh} = scene.dimensions;
-    const src = await uploadKey(await renderKey(sh));
+    const {sceneX:ox,sceneY:oy,sceneHeight:sh} = scene.dimensions;
+    const {blob,hits} = await renderKey(sh);
+    const src = await uploadKey(blob);
     // Tile x/y is the tile centre in v14.
-    const data = {texture:{src},x:ox + sw + 60 + KEY_W / 2,y:oy + sh / 2,width:KEY_W,height:sh,locked:true,flags:{[FLAG]:{cityKey:true}}};
+    const data = {
+      texture:{src},
+      x:ox + IMG_W + KEY_GAP + KEY_W / 2,y:oy + sh / 2,width:KEY_W,height:sh,
+      locked:true,
+      flags:{[FLAG]:{cityKey:true,keyRows:hits}}
+    };
     const old = scene.tiles.find(t => t.flags?.[FLAG]?.cityKey);
     if (old) await old.update(data);
     else await scene.createEmbeddedDocuments("Tile",[data]);
     return src;
   }
 
-  // GM, run by hand: (re)build the guide journal, the pins and the district
-  // labels on the world map. Only this tool's own notes and drawings are
-  // replaced; job markers are left alone.
+  // GM, run by hand: (re)build the guide journal, the pins, the district
+  // labels and the key on the world map. Only this tool's own notes,
+  // drawings and tile are replaced; job markers are left alone.
   async function build({scene=null,withKey=true}={}) {
     if (!game.user.isGM) throw new Error("GM only.");
     scene ??= worldScene();
     if (!scene) throw new Error(`No scene called "${SCENE_NAME}".`);
     if (!scene.flags?.[FLAG]?.cityMap) await scene.update({[`flags.${FLAG}.cityMap`]:true});
+    await layoutScene(scene);
     const journal = await ensureJournal();
     // Image coordinates -> canvas coordinates (the scene pads the image).
     const {sceneX:ox,sceneY:oy} = scene.dimensions;
@@ -523,6 +573,12 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     }));
     await scene.createEmbeddedDocuments("Drawing",drawings);
 
+    // Job markers move with the image if the scene was widened.
+    for (const n of scene.notes.filter(n => n.flags?.[FLAG]?.cityJob)) {
+      const job = globalThis.FEHA_JOBS?.read?.()?.jobs?.[n.flags[FLAG].cityJob];
+      if (job) await setJobMarker(job);
+    }
+
     let key = null;
     if (withKey) {
       try { key = await buildKey(scene); }
@@ -532,7 +588,70 @@ ${d?.gang ? `<p><strong>Local gang:</strong> ${esc(d.gang[0])}. ${esc(d.gang[1])
     return {journal:journal.name,pages:journal.pages.size,notes:notes.length,districts:drawings.length,key};
   }
 
-  const api = {VERSION,DISTRICTS,CATS,PLACES,place,placesIn,spotFor,worldScene,showOnMap,setJobMarker,clearJobMarker,build,renderKey,buildKey};
+  // ------------------------------------------------------------ clicks
+
+  // Clicking a line on the key jumps to that spot (everyone). The battle map
+  // link at the top of a City Guide page opens the scene (GM) instead of the
+  // scene's settings.
+  function keyHit(point) {
+    const scene = canvas?.scene;
+    if (!scene?.flags?.[FLAG]?.cityMap) return null;
+    const tile = scene.tiles.find(t => t.flags?.[FLAG]?.cityKey);
+    const rows = tile?.flags?.[FLAG]?.keyRows;
+    if (!tile || !rows?.length) return null;
+    const left = tile.x - tile.width / 2, top = tile.y - tile.height / 2;
+    const kx = (point.x - left) * (KEY_W / tile.width);
+    const ky = (point.y - top) * (scene.dimensions.sceneHeight / tile.height);
+    const row = rows.find(([,x0,y0,x1,y1]) => kx >= x0 && kx <= x1 && ky >= y0 && ky <= y1);
+    return row?.[0] ?? null;
+  }
+
+  async function jumpTo(target) {
+    const {sceneX:ox,sceneY:oy} = canvas.dimensions;
+    let point;
+    if (String(target).startsWith("district:")) {
+      const d = DISTRICTS[String(target).slice(9)];
+      if (!d) return;
+      point = {x:d.at[0] + ox,y:d.at[1] + oy};
+    } else {
+      const p = byId.get(target);
+      if (!p) return;
+      point = {x:p[1] + ox + (p[0].startsWith("X") ? 0 : PIN_DX),y:p[2] + oy};
+    }
+    await canvas.animatePan({...point,scale:Math.max(canvas.stage.scale.x,0.8),duration:500});
+    try { canvas.ping(point,{color:"#f3e600"}); } catch {}
+  }
+
+  const handlers = globalThis.__fehaCityHandlers ??= {};
+  for (const [type,fn] of Object.entries(handlers)) document.removeEventListener(type,fn,true);
+  let down = null;
+  handlers.pointerdown = event => {
+    down = event.button === 0 && event.target?.id === "board" ? {x:event.clientX,y:event.clientY} : null;
+  };
+  handlers.pointerup = event => {
+    const start = down;
+    down = null;
+    if (!start || event.target?.id !== "board") return;
+    if (Math.hypot(event.clientX - start.x,event.clientY - start.y) > 6) return;
+    try {
+      const point = canvas.canvasCoordinatesFromClient({x:event.clientX,y:event.clientY});
+      const id = keyHit(point);
+      if (id) jumpTo(id);
+    } catch (err) { console.warn("FEHA CITY // key click failed",err); }
+  };
+  handlers.click = async event => {
+    const link = event.target?.closest?.(".feha-city-go a[data-uuid]");
+    if (!link) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const scene = await fromUuid(link.dataset.uuid);
+    if (scene?.documentName !== "Scene") return;
+    if (game.user.isGM) return scene.view();
+    ui.notifications.info("FIXER NET // Ask the GM to take you to " + scene.name + ".");
+  };
+  for (const [type,fn] of Object.entries(handlers)) document.addEventListener(type,fn,true);
+
+  const api = {VERSION,DISTRICTS,CATS,PLACES,place,placesIn,spotFor,worldScene,showOnMap,setJobMarker,clearJobMarker,build,renderKey,buildKey,layoutScene,jumpTo};
   globalThis.FEHA_CITY = api;
   try {
     game.adk ??= {};
