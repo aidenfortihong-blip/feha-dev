@@ -405,7 +405,7 @@
   // brief templates; {item}, {who}, {place} and {faction} are filled in.
 
   const FACTIONS = {
-    "Street":        {tiers:[1,2], roster:[["Street Thug",1],["Street Gunner",1],["Chromehead",2],["Street Netrunner",2]]},
+    "Street":        {label:"street gang",tiers:[1,2], roster:[["Street Thug",1],["Street Gunner",1],["Chromehead",2],["Street Netrunner",2]]},
     "Yakuza":        {tiers:[1,4], roster:[["Yakuza Kobun",1],["Yakuza Enforcer",2],["Yakuza Blade",3],["Yakuza Wakagashira",4]]},
     "CivCorp":       {tiers:[1,3], roster:[["CivCorp Peacekeeper",1],["CivCorp Rifleman",2],["CivCorp Riot Enforcer",2],["CivCorp Netrunner",2],["CivCorp Warden",3]]},
     "Marble Vigil":  {tiers:[3,5], roster:[["Marble Vigil Operative",3],["Marble Vigil Marksman",3],["Marble Vigil Breacher",3],["Marble Vigil Netrunner",3],["Marble Vigil Captain",4]]},
@@ -448,7 +448,8 @@
 
   const DISTRICTS = ["New Niemir","Downtown","The Docks","Old Capital","Orient Quarter","Corporate Plaza","Undercity","The Barrens"];
 
-  // Job types for generated gigs. places = PLACES keys that fit.
+  // Job types for generated gigs. places = PLACES keys that fit; factions
+  // (optional) limits who the enemies can be.
   const KINDS = {
     "Recovery":{places:["den","warehouse","street","industrial","home"],
       titles:["Lost and Found","Repo Man","Finders Keepers","Second Hand","Return to Sender"],
@@ -482,7 +483,7 @@
       titles:["Way Out","Extraction","Lifeline","Jailbreak","Bring Them Home"],
       briefs:["{who} is being held by {faction} people at {place}. Get them out.","A {faction} crew took {who}. They're at {place}. Hurry."],
       objectives:["Find {who} at {place}","Get them out alive","Get them somewhere safe"]},
-    "Data Heist":{places:["corp","medical","club"],
+    "Data Heist":{places:["corp","medical","club"],factions:["Kurohane","Bastion","CivCorp","Marble Vigil"],
       titles:["Ghost Protocol","Backdoor","Data Mine","Zero Day","Jack In"],
       briefs:["Copy the files from a {faction} terminal at {place}.","Plug the fixer's shard into a {faction} server at {place} and hold the line."],
       objectives:["Get into {place}","Reach the terminal","Copy the data"]},

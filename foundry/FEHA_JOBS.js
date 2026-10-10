@@ -154,22 +154,30 @@
       : C.FIXERS;
     const fixer = pick(fixers.length ? fixers : C.FIXERS);
     const t = tier ?? (fixer.tiers[0] + Math.floor(Math.random() * (fixer.tiers[1] - fixer.tiers[0] + 1)));
-    const factions = Object.entries(G.FACTIONS).filter(([,f]) => t >= f.tiers[0] && t <= f.tiers[1]);
-    const [faction,fdef] = pick(factions.length ? factions : Object.entries(G.FACTIONS));
     const kindName = pick(Object.keys(G.KINDS));
     const kind = G.KINDS[kindName];
+    const inTier = Object.entries(G.FACTIONS).filter(([,f]) => t >= f.tiers[0] && t <= f.tiers[1]);
+    const fitting = inTier.filter(([name]) => !kind.factions || kind.factions.includes(name));
+    const [faction,fdef] = pick(fitting.length ? fitting : inTier.length ? inTier : Object.entries(G.FACTIONS));
     const map = pick(G.PLACES[pick(kind.places)]);
-    const ctx = {item:pick(G.ITEMS),who:pick(G.WHO),place:map,faction};
+    const place = /^the /i.test(map) ? map : "the " + map;
+    const ctx = {item:pick(G.ITEMS),who:pick(G.WHO),place,faction:fdef.label ?? faction};
+    const cap = text => text.charAt(0).toUpperCase() + text.slice(1);
 
     // Enemies: 2 + tier bodies from the faction roster at or under the
     // tier, plus one leader one step up from tier 3.
     const pool = fdef.roster.filter(([,rt]) => rt <= Math.max(1,t - 1)) .concat(fdef.roster.filter(([,rt]) => rt === t));
     const roster = pool.length ? pool : fdef.roster;
     const counts = new Map();
-    const bodies = kindName === "Cyberpsycho" ? 1 : 2 + t;
-    for (let i = 0; i < bodies; i++) {
-      const [name] = kindName === "Cyberpsycho" ? ["Chromehead"] : pick(roster);
-      counts.set(name,(counts.get(name) ?? 0) + 1);
+    if (kindName === "Cyberpsycho") {
+      // One psycho at low tiers; a pair, then a Vigil hunter, higher up.
+      counts.set("Chromehead",Math.max(1,t - 1));
+      if (t >= 4) counts.set("Marble Vigil Lancer",1);
+    } else {
+      for (let i = 0; i < 2 + t; i++) {
+        const [name] = pick(roster);
+        counts.set(name,(counts.get(name) ?? 0) + 1);
+      }
     }
     if (t >= 3 && kindName !== "Cyberpsycho") {
       const leader = fdef.roster.filter(([,rt]) => rt === Math.min(5,t + 1) || rt === t).pop();
@@ -191,8 +199,8 @@
       enemies:[...counts.entries()],
       pay:roll(info.pay[0],info.pay[1]),
       cred:info.cred,
-      brief:fill(pick(kind.briefs),ctx),
-      objectives:kind.objectives.map(o => fill(o,ctx)),
+      brief:cap(fill(pick(kind.briefs),ctx)),
+      objectives:kind.objectives.map(o => cap(fill(o,ctx))),
       twist:pick(G.TWISTS),
       status:"offered",
       crew:[],
