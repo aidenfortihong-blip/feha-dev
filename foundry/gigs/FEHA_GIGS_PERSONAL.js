@@ -1,4 +1,184 @@
-// FEHA // GIG BOOK · PERSONAL (being written)
+// FEHA // GIG BOOK · PERSONAL (jobs about the crew themselves)
+// for: the crew member it's about. Always on offer whoever the crew can reach;
+// kept at street/district level. Written from the campaign doc's character notes.
+
 (() => {
-  (globalThis.FEHA_GIG_BOOKS ??= []).push({fixer:"personal",gigs:[]});
+  const b = (at,title,text,checks = [],enemies = []) => ({at,title,text,checks,enemies});
+  const g = (who,fixer,tier,key,title,kind,spot,brief,objectives,twist,hook,beats,npcs,wrap,items,favor = null) => ({
+    key:"personal-" + key,fixer,tier,for:who,title,kind,spot,brief,objectives,twist,
+    run:{hook,beats,npcs,wrap},reward:{items,favor}
+  });
+
+  (globalThis.FEHA_GIG_BOOKS ??= []).push({fixer:"vesna",gigs:[
+
+    // ------------------------------------------------------------ PONYBOY
+    g("Ponyboy","vesna",1,"pony-sign","The Old Sign","Recovery","71",
+      "The neon sign from Ponyboy's family repair shop, the one his dad hand-built, turned up at the Heap. A scav crew is about to strip it for copper.",
+      ["Reach the Heap before the scavs strip it","Get the sign out in one piece","Get it somewhere safe"],
+      "The scav who found it recognised the name and has been guarding it for Ponyboy, waiting for someone to come.",
+      "Vesna: “A sign with your family's name on it is sitting in the garbage. Go and get your name back.”",
+      [b("71","The Heap","Trash mountains, a scav camp, the sign glowing faintly under a tarp.",["Survival DC 11 to find it","Athletics DC 13 to carry it out"],[["Street Thug",2]])],
+      [["Old Mags","civilian","Scav. Used to bring her bike to Ponyboy's dad."]],
+      "The sign hangs in the crew's place now. Ponyboy's parents cry when they see a photo.",
+      ["Boosted Tendons","Kurohane Night Cola x2"]),
+
+    g("Ponyboy","vesna",1,"pony-shift","Triple Shift","Protection","X2",
+      "Ponyboy's manager at the 365 scheduled him for a triple shift on the night a gang plans to rob the store. Ponyboy won't skip it. The crew comes along.",
+      ["Get through the night shift","Stop the robbery","Make sure the manager doesn't dock Ponyboy for it"],
+      "The manager scheduled Ponyboy on purpose: he knows Ponyboy won't let the store get robbed and won't ask for overtime.",
+      "“Your friend works too much. Tonight it could kill him. Keep him company.”",
+      [b("X2","The 365","Fluorescent lights, a slushie machine, four masked kids at 3am.",["Persuasion DC 12 to scare them off","Insight DC 12: one is from Ponyboy's old block"],[["Street Gunner",2],["Street Thug",2]])],
+      [["Manager Devan","shopkeeper","Ponyboy's manager. Cheap. Knows exactly what he's doing."]],
+      "If the crew makes the manager pay real overtime, Ponyboy grumbles and is secretly proud of them.",
+      ["Baseball Bat","Helix Stamina Booster x2"]),
+
+    g("Ponyboy","kiyama",2,"pony-competitor","The Competitor","Investigation","45",
+      "The company that crushed Ponyboy's family shop now runs a chain of 'authorised repair' kiosks. One kiosk manager is bragging about how they did it.",
+      ["Find the kiosk manager","Get the story on record","Decide what to do with it"],
+      "The 'accident' that burned the family shop was arson ordered by the chain's regional director, Kiyama knows him.",
+      "Kiyama: “The man who burned your family's shop drinks in my district. I thought you'd like to know.”",
+      [b("45","The kiosk","Bright plastic, a manager who talks too much after two drinks.",["Persuasion DC 13","Deception DC 13 to get him to brag on record"],[["Private Security Guard",2]]),
+       b("H8","The director's flat","Sakura Heights penthouse, the regional director, his bodyguards.",["Intimidation DC 15"],[["Kurohane Security",2],["Yakuza Kobun",1]])],
+      [["Director Lomax","civilian","Regional director. Ordered the fire."]],
+      "The recording is a weapon: lawsuit, blackmail, or the indie press. Ponyboy decides.",
+      ["Power Grip","Bastion Trauma Booster"]),
+
+    g("Ponyboy","babka",1,"pony-pills","Medicine Money","Delivery","81",
+      "Ponyboy's parents' medication was cut from the Helix subsidy list. Babka found a pharmacist who'll sell it at cost, but the pickup is on the other side of a CivCorp sweep.",
+      ["Meet the pharmacist","Get the medicine past the sweep","Deliver it to Ponyboy's parents"],
+      "The pharmacist is the nurse who leaked the formula recall. She's risking her job for a stranger's parents.",
+      "Babka: “Your parents' medicine. Don't argue about paying me back. Go.”",
+      [b("81","Helix Medical Center","The staff exit, a nurse with a bag.",["Stealth DC 12"]),
+       b("scene:Slum Streets","The sweep","CivCorp stopping everyone on the main roads.",["Deception DC 13","Stealth DC 13 through the alleys"],[["CivCorp Peacekeeper",3]])],
+      [["Nurse Halina","civilian","Risks her job for strangers."],["Ponyboy's mother","civilian","Proud. Insists on feeding everyone."]],
+      "The medicine arrives. Ponyboy's mother cooks for the whole crew and won't take no for an answer.",
+      ["Helix Health Booster x2","Biomonitor"],"Ponyboy's family: a home-cooked meal and a bed whenever the crew needs one."),
+
+    // -------------------------------------------------------------- SASHA
+    g("Sasha","babka",1,"sasha-seminar","The Seminar","Protection","X4",
+      "Sasha is running her own netrunning-for-organisers seminar at the union hall. Twenty people signed up. So did a CivCorp netrunner, under a fake name.",
+      ["Help Sasha run the seminar","Spot the infiltrator","Keep the attendees' identities safe"],
+      "The infiltrator is a young CivCorp netrunner who actually wants to learn, and to defect.",
+      "Babka: “Our Sasha teaches tonight. Make sure only students are learning.”",
+      [b("X4","The seminar","Folding chairs, second-hand decks, twenty nervous students.",["Insight DC 13 to spot the infiltrator","Tech DC 13 to firewall the room"],[["CivCorp Netrunner",1]])],
+      [["Kai","civilian","The infiltrator. Twenty. Wants out of CivCorp."]],
+      "If Kai defects, Sasha gains a student who knows CivCorp's network from inside.",
+      ["Corvus Paraline","Corvus Memory Booster x2"],"Kai: one look inside CivCorp's network."),
+
+    g("Sasha","babka",1,"sasha-family","Family Dinner","Investigation","H10",
+      "Sasha's cousin was arrested in a 'drug epidemic' sweep. Her family wants her to stay out of it. Sasha won't. The crew goes with her to Sunday dinner, and then to find the cousin.",
+      ["Survive Sunday dinner with Sasha's family","Find where the cousin is held","Get a lawyer to him"],
+      "Sasha's uncle informed on the cousin to keep CivCorp away from his own business.",
+      "Babka: “Family is hard. Sloviti family is harder. Bring dessert.”",
+      [b("H10","Sunday dinner","A crowded flat, aunts, uncles, pierogi, arguments in two languages.",["Persuasion DC 13 to calm the family","Insight DC 14 on the uncle"]),
+       b("X6","CivCorp Plaza","The cousin is in processing. A lawyer is needed.",["Investigation DC 12"],[["CivCorp Peacekeeper",2]])],
+      [["Uncle Bogdan","civilian","Informed on his own nephew."],["Cousin Petro","civilian","Twenty. Innocent."]],
+      "Petro gets a lawyer. What Sasha does about her uncle is her choice.",
+      ["Kurohane Black Tea x2","Living Dermal Suit Mk.I"]),
+
+    g("Sasha","dialtone",2,"sasha-scholarship","The Scholarship Interview","Data Heist","X5",
+      "Sasha got an interview for a scholarship she applied to in secret. The interview panel is fed by an algorithm that flags 'union associations'. Clean her record before the interview.",
+      ["Get into the scholarship board's records","Scrub Sasha's union associations","Leave everyone else's flags so it isn't noticed"],
+      "Scrubbing only Sasha means leaving everyone else flagged. Scrubbing all of them is harder and riskier.",
+      "Dial Tone: “Clean record, clean future. Or clean everyone's. Your call, darling.”",
+      [b("X5","The academy archives","Servers, a security AI, a tight window.",["Tech DC 14 for Sasha only","Tech DC 17 for everyone"],[["Kurohane Security",3]])],
+      [["Interviewer Dr. Hollis","civilian","Fair, tired, can't override the algorithm."]],
+      "Sasha gets the interview. If everyone was scrubbed, a hundred students get a chance too.",
+      ["Memory Boost","Corvus Black Memory Booster"]),
+
+    g("Sasha","babka",1,"sasha-pantry","The Big Pickle","Smuggling","41",
+      "Sasha's pickle recipe became the bazaar's favourite. A Helix food inspector wants to shut down her 'unlicensed food production'. Babka wants the pantry moved before the raid.",
+      ["Move two hundred jars from the bazaar","Hide them in the union hall cellar","Delay the inspector"],
+      "The inspector has a jar of Sasha's pickles at home and loves them. He's under orders.",
+      "Babka: “They come for our pickles now. Move the jars. Quickly.”",
+      [b("41","The bazaar","Two hundred jars, a handcart, an inspector two streets away.",["Athletics DC 13","Persuasion DC 13 with the inspector"],[["CivCorp Peacekeeper",2]])],
+      [["Inspector Fenn","civilian","Loves the pickles. Hates the job."]],
+      "The pantry survives. The inspector becomes a customer.",
+      ["Helix Stamina Booster x2","Grenade Smoke Regular Mk.I"]),
+
+    // --------------------------------------------------------------- ZACH
+    g("Zach","dialtone",2,"zach-reunion","The Reunion","Protection","X5",
+      "Zach's Kurohane Academy class reunion. He's going. His old bullies will be there. He wants the crew there 'just in case', and won't admit why.",
+      ["Go to the reunion as Zach's plus-ones","Keep Zach from losing his temper","Handle the bullies"],
+      "The worst bully is now a Kurohane counterintel officer, investigating Zach because of his 'associations'.",
+      "Dial Tone: “Reunions are war zones with canapés. Bring armour under the suits.”",
+      [b("X5","The reception","Champagne, old classmates, a bully with a counterintel badge.",["Insight DC 14","Persuasion DC 13 to keep Zach calm (he has disadvantage if insulted)"],[["Kurohane Counterintel Officer",1],["Kurohane Security",2]])],
+      [["Haruto Saitō","civilian","The bully. Now counterintel. Still a bully."]],
+      "Leave with Zach's dignity intact and the counterintel officer's file on the crew deleted.",
+      ["Ghostweave Suit Mk.II","Kurohane Quiet Energy x2"]),
+
+    g("Zach","kiyama",2,"zach-tournament","The Tournament","Collection","scene:Fight Gym",
+      "An underground karate tournament with a prize of €$ 3,000. Zach's old sensei is a judge. Zach wants to enter. The crew wants to make sure the fights are fair.",
+      ["Get Zach into the tournament","Make sure the fights aren't fixed","Win (or lose honourably)"],
+      "The final is fixed: Kiyama bet on the other fighter.",
+      "Kiyama: “A tournament. My money is on another man. Nothing personal.”",
+      [b("scene:Fight Gym","The tournament","Mats, crowds, betting slips.",["Athletics DC 14 per round (three rounds)","Insight DC 14 to spot the fix"],[["Yakuza Kobun",2],["Bouncer",1]])],
+      [["Sensei Mori","civilian","Zach's old teacher. Disappointed in the fix."]],
+      "Win and Zach takes €$ 3,000 and his sensei's respect. Expose the fix and Kiyama is annoyed but amused.",
+      ["Kurohane Night Cola x2","Reinforced Muscles"]),
+
+    g("Zach","babka",1,"zach-kid","The Kid on the Stairs","Rescue","H11",
+      "On his way home, Zach found a kid sleeping on the Volna Block stairs, bruised. His body moved before he thought. Now he needs help finding out who hurt her.",
+      ["Get the kid somewhere safe","Find out who hurt her","Make sure it stops"],
+      "Her stepfather is a CivCorp peacekeeper. Reporting him to CivCorp won't work.",
+      "Babka: “Our Zach found a child. He doesn't know what to do. We know.”",
+      [b("H11","The stairs","A girl, ten, asleep with her shoes on.",["Persuasion DC 12 to get her talking"]),
+       b("H11","Floor 12","The stepfather comes home in uniform.",["Intimidation DC 14"],[["CivCorp Peacekeeper",2]])],
+      [["Mila","civilian","Ten. Brave."],["Officer Krell","civilian","The stepfather."]],
+      "Mila goes to Babka's network. What happens to Krell is up to the crew.",
+      ["Helix Health Booster x2","Kurohane Black Tea"]),
+
+    g("Zach","vesna",1,"zach-debt","Bad with Money","Collection","26",
+      "Zach lent his last paycheck to a 'friend' from work who promised to double it in a crypto scheme. The friend vanished. Zach is too embarrassed to tell anyone. Vesna noticed.",
+      ["Find the 'friend'","Get Zach's money back","Don't make Zach feel worse"],
+      "The friend lost everything too: he was scammed by a Glasshouse kid running a fake investment app.",
+      "Vesna: “Your friend Zach is bad with money. Someone noticed before me. Go and get it back.”",
+      [b("26","The Wake","The friend is drowning his sorrows.",["Persuasion DC 11"]),
+       b("17","Voltage","The Glasshouse kid running the scam.",["Intimidation DC 13","Tech DC 13 to crack the app"],[["Glasshouse Kid",2],["Bouncer",1]])],
+      [["Ollie","civilian","Zach's work friend. Also scammed."]],
+      "Zach gets his money back and promises to never invest again. He will.",
+      ["Kenshin","Kurohane Night Cola x2"]),
+
+    // -------------------------------------------------------------- DERKE
+    g("Derke","clerk",2,"derke-old-crew","The Old Crew","Bounty","23",
+      "Derke's first heist crew from middle school is back in town, pulling jobs with his signature moves. CivCorp thinks it's him.",
+      ["Find the old crew","Make them stop using Derke's tricks","Clear Derke's name with Clerk Seven"],
+      "Their leader, Derke's old best friend, is doing it on purpose to lure Derke back for one last big job.",
+      "Clerk Seven: “Someone is doing your friend's moves on CivCorp's cameras. I can make that go away for a price.”",
+      [b("23","Steelrain","The old crew drinks here.",["Insight DC 13 on the leader"],[["Street Gunner",3]]),
+       b("scene:Rooftop","The rooftop","The leader waits, alone, with a proposal.",["Persuasion DC 14"])],
+      [["Jax","street-thug","Derke's old best friend. Charming, dangerous."]],
+      "Derke decides what to do about Jax. Clerk Seven clears his name either way, for a fee.",
+      ["Catch Me If You Can","Grenade Smoke Regular Mk.II x2"]),
+
+    g("Derke","vesna",1,"derke-sleight","Sleight of Hand","Theft","26",
+      "A pickpocket at The Wake is stealing from regulars, and he's good. Almost as good as Derke. Vesna wants him caught by someone better.",
+      ["Catch the pickpocket in the act","Get the regulars' things back","Decide whether to recruit him"],
+      "The pickpocket is twelve and stealing for his younger siblings.",
+      "Vesna: “A thief in my bar. Better than most. Show him who's best.”",
+      [b("26","The Wake","A busy night, a kid weaving through the crowd.",["Perception DC 14 to spot him","Sleight of Hand DC 14 to steal it all back"])],
+      [["Tavi","civilian","Twelve. Fast hands. Three hungry siblings."]],
+      "If Derke takes him under his wing, Tavi becomes the crew's eyes in New Niemir.",
+      ["Tanto","Helix Stamina Booster x2"],"Tavi: a street kid who runs messages and watches for the crew."),
+
+    g("Derke","kiyama",2,"derke-vault","The Practice Vault","Theft","scene:Bank Vault",
+      "Kiyama heard Derke is the best at getting out of places. He wants proof: a timed run through an old bank vault the family owns, rigged with every trap they have.",
+      ["Get into the vault","Get the token from the centre","Get out under the time limit"],
+      "It isn't a test. Kiyama is recruiting, and the vault holds the family's real secret: a ledger of Kurohane bribes.",
+      "Kiyama: “They say your friend can slip out of anything. Show me.”",
+      [b("scene:Bank Vault","The vault","Lasers, pressure plates, a timer.",["Acrobatics DC 15","Sleight of Hand DC 14","Stealth DC 14"],[["Yakuza Kobun",2]])],
+      [["Kiyama","street-fixer","Watching with a stopwatch."]],
+      "Pass and Kiyama offers Derke a standing job. Find the ledger and the crew knows something dangerous.",
+      ["Kerenzikov","Grenade Flash Regular Mk.II x2"]),
+
+    g("Derke","clerk",2,"derke-file","Derke's File","Data Heist","X6",
+      "CivCorp has a file on Derke going back to middle school. Clerk Seven can get it before it's used against him.",
+      ["Get into CivCorp's juvenile records","Copy Derke's file","Delete the original"],
+      "The file shows a CivCorp officer recruited Derke as an informant when he was thirteen. Derke never knew he was being used.",
+      "Clerk Seven: “Your friend has a file. A thick one. Want to read it before they do?”",
+      [b("X6","Juvenile records","Old servers, a sleepy clerk.",["Tech DC 14","Stealth DC 13"],[["CivCorp Peacekeeper",2],["CivCorp Netrunner",1]])],
+      [["Officer Rane","civilian","The handler. Retired. Still in the city."]],
+      "What Derke does with the truth, and with Officer Rane, is up to him.",
+      ["Memory Boost","Corvus Memory Booster x2"])
+  ]});
 })();
