@@ -160,7 +160,8 @@
     const fitting = inTier.filter(([name]) => !kind.factions || kind.factions.includes(name));
     const [faction,fdef] = pick(fitting.length ? fitting : inTier.length ? inTier : Object.entries(G.FACTIONS));
     const map = pick(G.PLACES[pick(kind.places)]);
-    const place = "the " + map.replace(/^the /i,"");
+    const bare = map.replace(/^the /i,"");
+    const place = /(Street|Streets|Alley|Road)$/.test(bare) ? bare : "the " + bare;
     const factionText = fdef.label ?? faction;
     const whoPool = G.WHO.filter(w => !w.toLowerCase().includes(faction.toLowerCase()));
     const ctx = {item:pick(G.ITEMS),who:pick(whoPool.length ? whoPool : G.WHO),place,faction:factionText};
@@ -176,7 +177,7 @@
       if (t >= 4) add("Marble Vigil Lancer");
     } else {
       const lowest = Math.min(...fdef.roster.map(([,rt]) => rt));
-      const below = fdef.roster.filter(([,rt]) => rt < t);
+      const below = fdef.roster.filter(([,rt]) => rt <= Math.max(lowest,t - 2));
       const grunts = below.length ? below : fdef.roster.filter(([,rt]) => rt === lowest);
       for (let i = 0; i < ({1:3,2:4,3:4,4:5,5:5}[t] ?? 4); i++) add(pick(grunts)[0]);
       if (t >= 2) {
