@@ -291,7 +291,12 @@
       const mine = jobsWith(state,"offered").filter(j => j.fixer === fixer.key && !j.for);
       const fresh = cat().JOBS.filter(j => j.fixer === fixer.key && !j.for && !used.has(j.key) && !live.has(j.key));
       for (let i = mine.length; i < per; i++) {
-        const def = fresh.length && Math.random() < 0.85 ? fresh.splice(Math.floor(Math.random() * fresh.length),1)[0] : null;
+        // Written gigs first (mostly the ones with full run sheets); generated
+        // gigs only once a fixer's written ones are all done.
+        const rich = fresh.filter(j => j.book);
+        const from = rich.length && (Math.random() < 0.75 || rich.length === fresh.length) ? rich : fresh;
+        const def = from.length ? from[Math.floor(Math.random() * from.length)] : null;
+        if (def) fresh.splice(fresh.indexOf(def),1);
         const job = def ? fromCatalog(def) : generate(fixer);
         state.jobs[job.id] = job;
         live.add(job.key);
