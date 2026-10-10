@@ -1265,8 +1265,8 @@
 
   // ------------------------------------------------------------- hotbar
 
-  // Active GM only: make the ADK // JOBS macro and put it in every player's
-  // hotbar slot 4 when that slot is empty.
+  // Active GM only: make the ADK // JOBS macro and put it in every user's
+  // hotbar slot 4 (GMs too) when that slot is empty. A filled slot is left alone.
   async function installHotbar() {
     if (!isActiveGM()) return;
     let macro = game.macros.find(m => m.name === MACRO_NAME);
@@ -1280,7 +1280,6 @@
       });
     }
     for (const user of game.users) {
-      if (user.isGM) continue;
       const current = user.hotbar?.[HOTBAR_SLOT];
       if (current === macro.id) continue;
       if (current && game.macros.get(current)) continue;
