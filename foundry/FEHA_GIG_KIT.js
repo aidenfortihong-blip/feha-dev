@@ -373,7 +373,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     try { return JSON.parse(localStorage.getItem(POS_KEY) || "null"); } catch { return null; }
   }
 
-  function compactSheet(app) {
+  function compactSheet(app,options) {
     const doc = app.document;
     if (!doc?.flags?.[FLAG]?.gigJournal || !game.user.isGM) return;
     app.element?.classList.add("feha-gig-sheet");
@@ -383,8 +383,8 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
       style.textContent = SHEET_CSS;
       document.head.append(style);
     }
-    if (app.__fehaGigPlaced) return;
-    app.__fehaGigPlaced = true;
+    // Only when the window opens, so the GM can still move it while it's up.
+    if (!options?.isFirstRender) return;
     const pos = savedPos() ?? {left:72,top:90,width:380,height:Math.max(360,Math.min(720,window.innerHeight - 200))};
     // The sheet sets its own size and place on first render; move it after.
     requestAnimationFrame(() => { try { app.setPosition(pos); } catch {} });
@@ -402,7 +402,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
   const prior = globalThis.__fehaGigSheetHooks;
   if (prior) for (const [name,id] of prior) Hooks.off(name,id);
   globalThis.__fehaGigSheetHooks = [
-    ["renderJournalEntrySheet",Hooks.on("renderJournalEntrySheet",app => compactSheet(app))],
+    ["renderJournalEntrySheet",Hooks.on("renderJournalEntrySheet",(app,element,context,options) => compactSheet(app,options))],
     ["closeJournalEntrySheet",Hooks.on("closeJournalEntrySheet",app => rememberPos(app))]
   ];
 
