@@ -317,6 +317,27 @@
 
   // Version 1 kept Street Cred per character and offers in one big pile:
   // carry the highest character cred over to the crew and re-post offers.
+  // Written gigs on the board are copies of the gig books. Bring any
+  // unfinished one up to date with the books (roles instead of names, better
+  // maps), keeping its pay, cred, crew, status and city pin.
+  const BOOK_FIELDS = ["title","kind","brief","objectives","twist","run","reward","map"];
+  function syncBook(state) {
+    const changed = [];
+    for (const job of Object.values(state.jobs)) {
+      if (!job.book || ["done","failed"].includes(job.status)) continue;
+      const def = cat()?.JOBS?.find(j => j.key === job.key);
+      if (!def) continue;
+      let diff = false;
+      for (const k of BOOK_FIELDS) {
+        if (JSON.stringify(job[k] ?? null) === JSON.stringify(def[k] ?? null)) continue;
+        job[k] = foundry.utils.deepClone(def[k] ?? null);
+        diff = true;
+      }
+      if (diff) changed.push(job);
+    }
+    return changed;
+  }
+
   function migrate(state) {
     if (state.v >= STATE_V) return false;
     const best = Math.max(0,...crewActors().map(a => Math.floor(Number(a.flags?.[FLAG]?.streetCred) || 0)));
@@ -630,9 +651,15 @@
     async topUp() {
       const state = read();
       const migrated = migrate(state);
+      const synced = syncBook(state);
       const posted = topUp(state);
-      if (migrated || posted) await write(state);
-      return {ok:true,posted};
+      if (migrated || posted || synced.length) await write(state);
+      // Built gig journals get the updated run sheet (their maps are kept).
+      for (const job of synced) {
+        if (!job.prep?.journal) continue;
+        try { await kit()?.refreshJournal?.(job); } catch (err) { console.warn("FEHA JOBS // journal refresh failed",job.title,err); }
+      }
+      return {ok:true,posted,synced:synced.length};
     }
   };
 

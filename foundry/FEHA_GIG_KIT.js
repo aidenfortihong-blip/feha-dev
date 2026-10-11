@@ -393,6 +393,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
         data.ownership = {default:0};
         data.tokens = [];
         foundry.utils.setProperty(data,`flags.${FLAG}.gigScene`,job.id);
+        foundry.utils.setProperty(data,`flags.${FLAG}.gigSource`,b.scene.id);
         copy = await Scene.create(data);
         copies.set(b.scene.id,copy);
         made.scenes.push(copy.id);
@@ -489,6 +490,29 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
   };
   document.addEventListener("click",globalThis.__fehaGigMapClick,true);
 
+  // GM: rewrite a built gig's run sheet from the current gig text, keeping
+  // its map copies. A beat whose map has changed since the gig was built
+  // links the new original map instead of the old copy.
+  async function refreshJournal(job) {
+    const p = job.prep;
+    const journal = p?.journal ? game.journal.get(p.journal) : null;
+    if (!journal || !game.user.isGM) return false;
+    const sheet = runSheet(job);
+    const actors = await ensureNpcs(sheet.beats.flatMap(b => b.enemies.map(([n]) => n)));
+    if (sheet.npcs.length) await stockPeople();
+    const links = {scenes:{}};
+    for (const b of sheet.beats) {
+      const copy = game.scenes.get(p.beatScenes?.[b.n] ?? "");
+      const source = copy?.flags?.[FLAG]?.gigSource;
+      const same = copy && b.scene && (source ? source === b.scene.id : copy.thumb && copy.thumb === b.scene.thumb);
+      if (same) links.scenes[b.n] = copy.uuid;
+      else if (b.scene) links.scenes[b.n] = b.scene.uuid;
+    }
+    const page = journal.pages.find(pg => pg.name === "Run sheet (GM)") ?? journal.pages.contents[0];
+    if (page) await page.update({"text.content":sheetHtml(job,sheet,links,actors)});
+    return true;
+  }
+
   // GM: remove what prep() made (only those documents).
   async function cleanup(p) {
     if (!p || !game.user.isGM) return;
@@ -503,7 +527,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     }
   }
 
-  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,stockNpcs,stockPeople,personActor,personName,NPC_ROOT,KIND_CHECKS,
+  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,stockNpcs,stockPeople,personActor,refreshJournal,personName,NPC_ROOT,KIND_CHECKS,
     resetPools() { pools = null; }};
   globalThis.FEHA_GIG_KIT = api;
   try {
