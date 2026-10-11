@@ -410,7 +410,10 @@
     "hale-mayor-ghost:sancho vargas":"elder",
     "dialtone-ghost:cafe owner":"merchant",
     "babka-underthewall:refugee":"civilian",
-    "duval-rally:speaker":"organizer"
+    "duval-rally:speaker":"organizer",
+    "velvet-dog-show:handler":"worker",
+    "clerk-causeofdeath:coroner":"medic",
+    "hale-board-vote:nurse":"medic"
   };
 
   // What a gig person is: {fighter:true, base} (keeps that NPC's stat block)
