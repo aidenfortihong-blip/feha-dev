@@ -1,8 +1,11 @@
 {
-  "version": "0.12.16",
-  "updated": "2026-10-10",
+  "version": "0.12.17",
+  "updated": "2026-10-11",
   "scope": "jobs",
   "notes": [
+    "Every gig has its people: 505 NPCs in GIG NPCs / People / <fixer> / <gig>, one set per gig, including the 120 older gigs and anyone a gig scene brings in. Generated gigs make one for whoever their story is about.",
+    "Gig people have stat blocks that fit them: fighters use the matching combat NPC; everyone else gets an archetype (child, elder, clergy, medic, official, executive, tech, worker, trader, organiser, journalist, AI, animal, civilian) with abilities, HP by gig level, skills, fitting gear and a bio with their part, scenes, DCs and what they do in a fight. All start neutral.",
+    "Built gig journals refresh once to link everyone.",
     "Gigs already on the board follow the gig books: roles instead of invented names and the new maps, with pay, cred, crew and status kept. Built gig journals get the new run sheet with their people linked, ready to drag in.",
     "Gigs are building blocks: invented names are now roles (the bartender, the old priest) for the GM to name; lore names, fixers and the crew stay.",
     "Every gig scene uses a battle map that fits it (a stairwell, a roof, a records office) and the run sheet names each map.",
