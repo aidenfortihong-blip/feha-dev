@@ -1,8 +1,9 @@
 {
-  "version": "0.12.15",
+  "version": "0.12.16",
   "updated": "2026-10-10",
   "scope": "jobs",
   "notes": [
+    "Gigs already on the board follow the gig books: roles instead of invented names and the new maps, with pay, cred, crew and status kept. Built gig journals get the new run sheet with their people linked, ready to drag in.",
     "Gigs are building blocks: invented names are now roles (the bartender, the old priest) for the GM to name; lore names, fixers and the crew stay.",
     "Every gig scene uses a battle map that fits it (a stairwell, a roof, a records office) and the run sheet names each map.",
     "Gig files: a clean copy of each map plus a compact gig journal that docks on the left beside the map (hook, job, scenes with map links, recommended enemies, people, optional twist, endings, reward). Map links take the GM to the map. Nothing is placed on the maps.",
