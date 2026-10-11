@@ -253,20 +253,262 @@
   const personKey = (job,n) => job.key + ":" + personName(n.name).toLowerCase();
   const personActor = (job,n) => game.actors.find(a => a.flags?.[FLAG]?.gigPerson === personKey(job,n)) ?? null;
 
-  async function stockPeople(jobs = cat()?.JOBS ?? []) {
+  // ------------------------------------------------- gig people stat blocks
+  // Every gig person gets a stat block that fits who they are. Fighters
+  // (a base catalog NPC that fights: thugs, cops, netrunners) keep that NPC's
+  // stats and gear; everyone else is built from an archetype below. The bio
+  // tells the GM their part in the gig, how to handle them and what they do
+  // if it turns violent. DCs scale with the gig's level.
+  const PERSON_TYPES = {
+    child:{label:"Child",ab:[6,14,10,10,11,11],hp:6,ac:11,size:"sm",skills:["ste","slt","prc"],gear:false,
+      who:"A child. Small, quick and frightened, or braver than is sensible.",
+      talk:dc => `Kindness works (Persuasion DC ${dc - 3}). Threats make them cry, freeze or bolt.`,
+      fight:"Doesn't fight. Hides, runs or freezes. Anyone who hurts a child answers for it."},
+    elder:{label:"Elder",ab:[7,8,9,11,14,11],hp:7,ac:10,skills:["ins","his","med"],gear:false,
+      who:"Old, slow on the stairs and quick in the head. Has seen worse than the crew.",
+      talk:dc => `Respect opens them up (Persuasion DC ${dc - 2}). Pressure shuts them for good (Intimidation DC ${dc + 4}).`,
+      fight:"Can't fight. Will stand in the doorway anyway."},
+    clergy:{label:"Clergy",ab:[9,9,10,12,15,14],hp:9,ac:10,skills:["rel","ins","per","med"],gear:false,
+      who:"Keeps a congregation going in a city that would rather it didn't.",
+      talk:dc => `Talks to anyone (Persuasion DC ${dc - 2}) and reads people well (their Insight beats a lie below DC ${dc + 3}).`,
+      fight:"Won't fight. Shields others and prays loudly."},
+    medic:{label:"Medic",ab:[10,12,11,14,14,11],hp:12,ac:11,skills:["med","ins","prc"],gear:"medical",
+      who:"Patches people up for a living. Calm hands, tired eyes.",
+      talk:dc => `Cares about patients first (Persuasion DC ${dc}). Bribes work if someone sick benefits.`,
+      fight:"Ducks, then treats whoever is bleeding, on either side."},
+    official:{label:"Official",ab:[9,10,10,14,12,13],hp:10,ac:10,skills:["inv","ins","per","dec"],gear:false,
+      who:"Paperwork, rules and a desk between them and the crew.",
+      talk:dc => `Follows procedure (Persuasion DC ${dc + 1}); a bribe or the right forms (Deception DC ${dc}) go further. Intimidation works but gets reported.`,
+      fight:"Hits the alarm, then hides under the desk."},
+    executive:{label:"Executive",base:"kurohane-executive",ab:[10,11,11,15,13,15],hp:18,ac:12,skills:["dec","per","ins","his"],gear:true,
+      who:"Corporate. Used to being obeyed and to someone else doing the shooting.",
+      talk:dc => `Negotiates hard (Persuasion DC ${dc + 3}) and lies smoothly (beat their Deception with Insight DC ${dc + 2}). Leverage beats charm.`,
+      fight:"Calls security, then shoots only to get to the exit."},
+    tech:{label:"Tech",ab:[9,12,10,15,12,10],hp:10,ac:11,skills:["inv","arc","prc"],gear:false,
+      who:"Knows how the machines work. Usually more than they're paid to.",
+      talk:dc => `Respects competence (a Tech/Int check DC ${dc} earns their help); Persuasion DC ${dc}.`,
+      fight:"Unplugs something important and runs."},
+    worker:{label:"Worker",ab:[13,11,13,9,11,10],hp:13,ac:11,skills:["ath","prc","sur"],gear:false,
+      who:"Hard hands, long shifts, short patience for corps and cops.",
+      talk:dc => `Straight talk works (Persuasion DC ${dc - 1}); talking down to them doesn't.`,
+      fight:"Swings a tool if cornered. Mostly gets their mates out."},
+    merchant:{label:"Trader",base:"shopkeeper",ab:[10,11,11,12,13,14],hp:14,ac:11,skills:["per","ins","dec"],gear:true,
+      who:"Buys, sells and remembers who owes what.",
+      talk:dc => `Everything has a price (Persuasion DC ${dc}, cheaper with a deal). Spots a bluff (Insight DC ${dc + 1}).`,
+      fight:"Warns once, fires once from behind the counter, then hides."},
+    organizer:{label:"Organiser",base:"organizer",ab:[10,11,12,13,14,16],hp:16,ac:11,skills:["per","ins","prf","his"],gear:true,
+      who:"Holds the neighbourhood together with meetings, lists and nerve.",
+      talk:dc => `On the people's side (Persuasion DC ${dc - 2} if the crew is too). Won't be bullied (Intimidation DC ${dc + 4}).`,
+      fight:"Gets everyone out the back while someone else buys time."},
+    journalist:{label:"Journalist",base:"journalist",ab:[9,13,10,14,13,13],hp:12,ac:11,skills:["inv","ste","per","prc"],gear:true,
+      who:"Records everything. Wants the story more than safety.",
+      talk:dc => `Trades in information (Persuasion DC ${dc}). Anything said near them may end up on air.`,
+      fight:"Hides and keeps recording."},
+    ai:{label:"AI",type:"construct",ab:[1,1,10,18,14,14],hp:1,ac:10,skills:["dec","ins","inv"],gear:false,
+      who:"Not a body: a voice in the speakers or in the crew's implants. No token needed; the NPC is here for its sheet.",
+      talk:dc => `Reasons like a person (Persuasion DC ${dc + 1}); a Tech/Int check DC ${dc + 2} gets past its guard.`,
+      fight:"Can't be shot. Can lock doors, cut lights and call for help."},
+    animal:{label:"Animal",type:"beast",ab:[13,14,12,3,12,7],hp:9,ac:12,size:"sm",skills:["prc"],gear:false,
+      who:"An animal.",
+      talk:dc => `Animal Handling DC ${dc - 2}.`,
+      fight:"Bites if its person is threatened."},
+    civilian:{label:"Civilian",ab:[10,10,10,10,11,10],hp:9,ac:10,skills:["prc","ins"],gear:false,
+      who:"An ordinary person caught up in this.",
+      talk:dc => `Helps if it's safe (Persuasion DC ${dc}). Scares easily (Intimidation DC ${dc - 2}), but will remember it.`,
+      fight:"Runs. Might tell CivCorp afterwards."}
+  };
+
+  const AGE_WORDS = {seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,
+    eighteen:18,nineteen:19,twenty:20,sixty:60,seventy:70,eighty:80,ninety:90};
+  function ageOf(note) {
+    // An age is a number said as one: "Nine,", "Ninety-four.", "Twelve-year-old",
+    // "Sixty years old". "Twelve evicted families" or "Block 6" are not ages.
+    const s = String(note ?? "").toLowerCase();
+    const m = s.match(/\b(seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|sixty|seventy|eighty|ninety)(-(?:one|two|three|four|five|six|seven|eight|nine))?(?=[,.]|-year| years? old)/);
+    if (m) return AGE_WORDS[m[1]] + (m[2] ? 4 : 0);
+    const n = s.match(/\b(\d{1,2})(?:-year| years? old)/);
+    return n ? Number(n[1]) : null;
+  }
+
+  // Which archetype a non-fighting person is. The role's last word is who
+  // they are ("the boy's dad" is a dad); their age, when the note gives one,
+  // wins for children and the very old.
+  function personType(n) {
+    const role = String(n.name ?? "").toLowerCase();
+    const head = role.split(/\s+/).pop() ?? "";
+    const note = String(n.note ?? "").toLowerCase();
+    const age = ageOf(n.note);
+    if (/\bai\b|uploaded mind|concierge/.test(role + " " + note) || /\bvoice\b/.test(role)) return "ai";
+    if (/^(the )?dog$/.test(role)) return "animal";
+    if ((age !== null && age < 17) || (age === null && /^(kid|kids|boy|girl|child|son|daughter|teenager|pickpocket|student|queen)$/.test(head))) return "child";
+    if ((age !== null && age >= 70) || /\b(old|grand|elder|widow|granny|babcia|grandfather|grandmother|oldest)\b/.test(role)) {
+      return /\b(priest|preacher|nun|monk)\b/.test(role) ? "clergy" : "elder";
+    }
+    if (/\b(priest|preacher|nun|choirmaster|monk)\b/.test(role)) return "clergy";
+    if (n.base === "ripperdoc" || /\b(nurse|doctor|doc|medic|coroner|pharmacist|surgeon)\b/.test(role)) return "medic";
+    if (n.base === "kurohane-executive" || /\b(executive|ceo|director|councillor|board member|founder|negotiator|envoy|land agent|corp buyer|developer)\b/.test(role)) return "executive";
+    if (n.base === "journalist" || /\b(journalist|anchor|broadcaster|photographer|reporter)\b/.test(role)) return "journalist";
+    if (/\b(engineer|tech|technician|operator|projectionist|printer|scientist|researcher|archivist|analyst|rigger|forger|spotter|switchman|chemist)\b/.test(role)) return "tech";
+    if (n.base === "organizer" || n.base === "union-steward" || /\b(steward|organiser|organizer|strike|spokes|activist|volunteer|candidate|leader of|teacher)\b/.test(role)) return "organizer";
+    if (/\b(clerk|inspector|lawyer|attorney|judge|supervisor|manager|registrar|interviewer|assessor|admissions|paymaster|station master|harbour master|claims|warden|speaker|curator|cadet|officer)\b/.test(role) && !/\bstore manager\b/.test(role)) return "official";
+    if (n.base === "shopkeeper" || /\b(owner|vendor|stallholder|trader|dealer|fence|bookie|landlord|slumlord|seller|buyer|broker|auctioneer|bartender|host|cook|chef)\b/.test(role)) return "merchant";
+    if (/\b(worker|driver|fisherman|dockworker|mechanic|farmer|diver|boatman|crane|repairman|foreman|gravedigger|scav|keeper|butler|pilot|captain|bosun|loadmaster|courier|smuggler|switchman|sailor|dad|father)\b/.test(role)) return "worker";
+    return "civilian";
+  }
+
+  // NPC catalog keys that are fighters keep their own stat block.
+  const FIGHTER_SKILLS = {
+    "street-netrunner":["inv","ste","arc"],"civcorp-netrunner":["inv","arc","prc"],"corvus-netrunner":["inv","arc","dec"],
+    "kurohane-netrunner":["inv","arc","prc"],"drowned-runner":["inv","arc","ste"],"drowned-oracle":["inv","arc","ins"],
+    "street-fixer":["per","ins","dec","itm"],"kurohane-agent":["dec","ins","ste","prc"],"kurohane-officer":["dec","ins","inv","itm"],
+    "yakuza-kobun":["itm","ath","prc"],"yakuza-enforcer":["itm","ath","ins"],"yakuza-blade":["acr","ste","prc"],"yakuza-wakagashira":["itm","ins","dec","per"]
+  };
+  const isFighter = key => {
+    const def = npcDefs().find(d => d.key === key);
+    return Boolean(def && def.hostile !== false);
+  };
+
+  // People whose role makes them a fighter even though their gig lists them
+  // as a civilian: [role pattern, NPC catalog key to build from].
+  const ROLE_FIGHTERS = [
+    [/\b(peacekeeper|desk sergeant|last officer|officer who wants out|checkpoint officer|records officer)\b/,"civcorp-peacekeeper"],
+    [/\bblockade sergeant\b/,"civcorp-rifleman"],
+    [/\b(depot sergeant|range sergeant|bastion guard)\b/,"bastion-trooper"],
+    [/\bcolonel\b/,"bastion-commander"],
+    [/\bconvoy commander\b/,"kurohane-elite"],
+    [/\b(night guard|gate guard|^guard$|guard)\b/,"private-guard"],
+    [/\bcivcorp netrunner\b|\binfiltrator\b/,"civcorp-netrunner"],
+    [/\bkurohane netrunner\b/,"kurohane-netrunner"],
+    [/^runner$/,"street-netrunner"],
+    [/\bsniper\b/,"kurohane-sniper"],
+    [/\bbully\b/,"kurohane-officer"],
+    [/\brecruiter\b|^handler$/,"kurohane-agent"],
+    [/^(oyabun|rival boss)$/,"yakuza-wakagashira"],
+    [/\b(admiral|fleet admiral)\b/,"navy-marine"],
+    [/\bdeserter\b|^brother$/,"navy-rating"],
+    [/\bbig sparker\b/,"sparker"],
+    [/^boxer$|\bstriker fighter\b/,"bouncer"],
+    [/\bfake sergeant\b/,"street-gunner"],
+    [/\bpatrol captain\b/,"kurohane-guard"]
+  ];
+  // One-off fixes by gig: "<gig key>:<role>" -> archetype or {base}.
+  const PERSON_FIXES = {
+    "velvet-velvet-secret:daughter":"civilian",
+    "kiyama-debt-collector-2:old man":{base:"kurohane-kage"},
+    "ferro-hammer-time:foreman":{base:"bouncer"},
+    "babka-wake:dead striker's brother":{base:"street-thug"},
+    "kiyama-bathhouse-blackmail:lieutenant":{base:"yakuza-enforcer"},
+    "duval-payroll-ship:lieutenant":{base:"navy-marine"},
+    "rhea-convoy-ghost:clan driver":{base:"street-gunner"},
+    "vesna-jukebox:kid's father":"official",
+    "padre-prize-fish:steward":"worker",
+    "hale-cryo-heir:heir":"executive",
+    "hale-forge-strike:labour chief":"executive",
+    "dialtone-memory-market:head of research":"tech",
+    "dialtone-primetime:producer":"tech",
+    "hale-black-ledger:croupier":"merchant",
+    "hale-mayor-ghost:sancho vargas":"elder",
+    "dialtone-ghost:cafe owner":"merchant",
+    "babka-underthewall:refugee":"civilian",
+    "duval-rally:speaker":"organizer"
+  };
+
+  // What a gig person is: {fighter:true, base} (keeps that NPC's stat block)
+  // or {type} (an archetype above).
+  function personKind(job,n) {
+    const role = personName(n.name).toLowerCase();
+    const fix = PERSON_FIXES[job.key + ":" + role];
+    if (fix?.base) return {fighter:true,base:fix.base};
+    if (typeof fix === "string") return {type:fix};
+    if (isFighter(n.base)) return {fighter:true,base:n.base};
+    const hit = ROLE_FIGHTERS.find(([re]) => re.test(role));
+    if (hit && !/^(kid|boy|girl)/.test(role)) return {fighter:true,base:hit[1]};
+    return {type:personType(n)};
+  }
+
+  function scenesWith(job,n) {
+    const words = personName(n.name).toLowerCase().split(/\s+/).filter(w => w.length > 3 && !/^(the|with|from)$/.test(w));
+    const hits = runSheet(job).beats.filter(b => words.some(w => (b.title + " " + b.text).toLowerCase().includes(w)));
+    return hits.map(b => `${b.n}. ${b.title}`);
+  }
+
+  // The stat block and write-up for one gig person, as overrides on the
+  // base actor's data.
+  function personData(job,n,baseData) {
+    const tier = Math.max(1,Math.min(5,Number(job.tier) || 1));
+    const dc = 10 + tier;
+    const kind = personKind(job,n);
+    const def = npcDefs().find(d => d.key === (kind.base ?? n.base)) ?? null;
+    const type = kind.fighter ? null : PERSON_TYPES[kind.type];
+    const data = baseData ? foundry.utils.deepClone(baseData) : {type:"npc",system:{},items:[]};
+    delete data._id;
+    const name = personName(n.name);
+    data.name = name;
+    data.type = "npc";
+    const sys = data.system ??= {};
+    if (type) {
+      const keys = ["str","dex","con","int","wis","cha"];
+      sys.abilities = Object.fromEntries(keys.map((k,i) => [k,{value:type.ab[i]}]));
+      const hp = Math.round(type.hp * (1 + (tier - 1) * 0.15));
+      foundry.utils.setProperty(sys,"attributes.hp",{value:hp,max:hp});
+      foundry.utils.setProperty(sys,"attributes.ac",{calc:"flat",flat:type.ac});
+      foundry.utils.setProperty(sys,"details.cr",type.label === "Executive" ? 0.25 : 0);
+      foundry.utils.setProperty(sys,"details.type",{value:type.type === "construct" ? "construct" : type.type === "beast" ? "beast" : "humanoid"});
+      foundry.utils.setProperty(sys,"traits.size",type.size ?? "med");
+      // Gear: only what this kind of person would carry.
+      if (type.gear === false) data.items = [];
+      else if (type.gear === "medical") data.items = (data.items ?? []).filter(i => !["weapon"].includes(i.type));
+    }
+    const skills = type ? type.skills : (FIGHTER_SKILLS[kind.base] ?? ["ath","itm","prc"]);
+    for (const s of skills) foundry.utils.setProperty(sys,`skills.${s}.value`,1);
+
+    const scenes = scenesWith(job,n);
+    const fixer = fixerOf(job);
+    const sections = [
+      `<p><strong>${esc(job.title)}</strong>${fixer ? ` · ${esc(fixer.handle)}` : ""}${job.for ? ` · about ${esc(job.for)}` : ""}</p>`,
+      `<p><strong>Role:</strong> ${esc(n.note ?? "")}</p>`,
+      `<p><strong>Shows up:</strong> ${scenes.length ? esc(scenes.join(", ")) : "wherever you need them in this gig"}.</p>`,
+      `<p><strong>Who they are:</strong> ${esc(type ? type.who : (def?.bio ?? "A fighter."))}</p>`,
+      `<p><strong>Dealing with them:</strong> ${esc(type ? type.talk(dc) : `They're dangerous. Talking them down: Persuasion or Intimidation DC ${dc + 2}; seeing through them: Insight DC ${dc + 1}.`)}</p>`,
+      `<p><strong>If it gets violent:</strong> ${esc(type ? type.fight : (def?.tactics ?? "Fights."))}</p>`
+    ];
+    foundry.utils.setProperty(sys,"details.biography.value",sections.join(""));
+
+    foundry.utils.setProperty(data,"prototypeToken.name",name);
+    foundry.utils.setProperty(data,"prototypeToken.appendNumber",false);
+    foundry.utils.setProperty(data,"prototypeToken.actorLink",false);
+    foundry.utils.setProperty(data,"prototypeToken.disposition",CONST.TOKEN_DISPOSITIONS.NEUTRAL);
+    if (type?.size === "sm") {
+      foundry.utils.setProperty(data,"prototypeToken.width",1);
+      foundry.utils.setProperty(data,"prototypeToken.height",1);
+    }
+    const flags = {...(data.flags?.[FLAG] ?? {})};
+    delete flags.npcKey; delete flags.gigPool;
+    data.flags = {...(data.flags ?? {}),[FLAG]:{...flags,gigPerson:personKey(job,n),npcBase:n.base ?? null,personType:type?.label ?? "Fighter",gigTier:tier}};
+    return data;
+  }
+
+  // The base catalog NPC a person is built from: fighters keep their own,
+  // others take their archetype's base for its gear (the executive's pistol,
+  // the trader's gun under the counter) or the civilian.
+  const personBase = (job,n) => { const k = personKind(job,n); return k.fighter ? k.base : (PERSON_TYPES[k.type]?.base ?? "civilian"); };
+
+  async function stockPeople(jobs = cat()?.JOBS ?? [],{rebuild = false} = {}) {
     if (!game.user.isGM) return [];
     const want = new Map();
     for (const job of jobs) {
       for (const n of runSheet(job).npcs) {
         const key = personKey(job,n);
-        if (want.has(key)) continue;
-        want.set(key,{key,job,n,group:personGroup(job),gig:String(job.title).slice(0,60),name:personName(n.name),
-          notes:[`<p><strong>${esc(job.title)}</strong>: ${esc(n.note ?? "")}</p>`]});
+        if (!want.has(key)) want.set(key,{key,job,n,group:personGroup(job),gig:String(job.title).slice(0,60)});
       }
     }
-    const todo = [...want.values()].filter(e => !game.actors.find(a => a.flags?.[FLAG]?.gigPerson === e.key));
+    let todo = [...want.values()];
+    if (rebuild) {
+      const old = game.actors.filter(a => want.has(a.flags?.[FLAG]?.gigPerson)).map(a => a.id);
+      for (let i = 0; i < old.length; i += 50) await Actor.deleteDocuments(old.slice(i,i + 50));
+    } else todo = todo.filter(e => !game.actors.find(a => a.flags?.[FLAG]?.gigPerson === e.key));
     if (!todo.length) return [];
-    const bases = await ensureNpcs(todo.map(e => e.n.base).filter(Boolean));
+    const bases = await ensureNpcs([...new Set(todo.map(e => personBase(e.job,e.n)).concat("civilian"))]);
     const root = await folderFor("Actor",NPC_ROOT);
     const people = await folderFor("Actor",PEOPLE,root);
     const groups = new Map();
@@ -275,18 +517,10 @@
       if (!groups.has(e.group)) groups.set(e.group,await folderFor("Actor",e.group,people));
       const gigKey = e.group + "/" + e.gig;
       if (!groups.has(gigKey)) groups.set(gigKey,await folderFor("Actor",e.gig,groups.get(e.group)));
-      const base = bases.get(e.n.base) ?? bases.get("civilian") ?? null;
-      const data = base ? base.toObject() : {name:e.name,type:"npc",img:"icons/svg/mystery-man.svg"};
-      delete data._id;
-      data.name = e.name;
-      data.folder = groups.get(e.group + "/" + e.gig).id;
-      foundry.utils.setProperty(data,"prototypeToken.name",e.name);
-      foundry.utils.setProperty(data,"prototypeToken.appendNumber",false);
-      const flags = {...(data.flags?.[FLAG] ?? {})};
-      delete flags.npcKey; delete flags.gigPool;
-      data.flags = {...(data.flags ?? {}),[FLAG]:{...flags,gigPerson:e.key,npcBase:e.n.base ?? null}};
-      // Only who they are in the gigs; the base NPC's own backstory wouldn't fit.
-      if (data.system?.details?.biography) data.system.details.biography.value = e.notes.join("");
+      const base = bases.get(personBase(e.job,e.n)) ?? bases.get("civilian") ?? null;
+      const data = personData(e.job,e.n,base?.toObject() ?? null);
+      data.folder = groups.get(gigKey).id;
+      data.img ??= "icons/svg/mystery-man.svg";
       made.push(data);
     }
     const created = [];
@@ -532,7 +766,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     }
   }
 
-  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,stockNpcs,stockPeople,personActor,refreshJournal,personName,NPC_ROOT,KIND_CHECKS,
+  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,stockNpcs,stockPeople,personActor,personType,personKind,personData,refreshJournal,personName,NPC_ROOT,KIND_CHECKS,
     resetPools() { pools = null; }};
   globalThis.FEHA_GIG_KIT = api;
   try {
