@@ -243,7 +243,7 @@
   // role that comes up in several of a fixer's gigs is one NPC.
   const PEOPLE = "People";
   const personName = role => {
-    const s = String(role ?? "").replace(/^(the|his|her|a|an)s+/i,"").trim();
+    const s = String(role ?? "").replace(/^(the|his|her|a|an)\s+/i,"").trim();
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
   const personGroup = job => job.for ? "Personal" : (fixerOf(job)?.handle ?? "Other");
