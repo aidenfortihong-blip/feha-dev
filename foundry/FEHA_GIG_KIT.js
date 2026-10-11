@@ -350,6 +350,8 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
   // gig. Where the GM last left it is remembered on this computer.
   const POS_KEY = "fehaGigSheetPos";
   const SHEET_CSS = `
+.feha-gig-sheet{min-width:0 !important}
+.feha-gig-sheet .journal-header{display:none}
 .feha-gig-sheet .journal-page-content{font-size:13px;line-height:1.4}
 .feha-gig-sheet .journal-entry-page h1{font-size:18px;margin:0 0 4px}
 .feha-gig-sheet .journal-page-header{margin-bottom:2px}
@@ -384,7 +386,8 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     if (app.__fehaGigPlaced) return;
     app.__fehaGigPlaced = true;
     const pos = savedPos() ?? {left:72,top:90,width:380,height:Math.max(360,Math.min(720,window.innerHeight - 200))};
-    try { app.setPosition(pos); } catch {}
+    // The sheet sets its own size and place on first render; move it after.
+    requestAnimationFrame(() => { try { app.setPosition(pos); } catch {} });
     try { if (app.element?.classList.contains("expanded") || app.sidebarState?.expanded) app.toggleSidebar?.(); } catch {}
   }
 
