@@ -52,9 +52,16 @@
       game.scenes.find(s => norm(s.name).startsWith(lower)) ?? null;
   }
 
-  // A beat's "at": a city spot id ("22"), or "scene:<scene name or prefix>".
+  // A beat's "at": a city spot id ("22"), "scene:<scene name or prefix>", or
+  // "<spot>@<scene name>" for a pin whose own battle map doesn't fit the beat
+  // (the stairwell or the roof of a block rather than its usual map).
   function resolveAt(at) {
     if (!at) return {label:null,scene:null,spot:null};
+    const split = String(at).match(/^([^@:]+)@(.+)$/);
+    if (split) {
+      const place = city()?.place?.(split[1]);
+      return {label:place?.label ?? split[1],scene:sceneFor(split[2]),spot:place?.id ?? null};
+    }
     if (String(at).startsWith("scene:")) {
       const name = String(at).slice(6);
       const scene = sceneFor(name);
@@ -89,9 +96,11 @@
     const enemies = job.enemies ?? [];
     const beats = [];
     if (f?.spot) beats.push({at:f.spot,title:"The meet",text:`${f.handle} lays out the job. Pay is ${(job.pay ?? 0).toLocaleString("en-US")} each, half up front if the crew asks nicely. ${job.brief ?? ""}`});
-    beats.push({at:job.spot ?? (job.map ? "scene:" + job.map : null),title:"The job",
+    // The job's own battle map, labelled with its city pin when it has one.
+    const jobAt = job.spot && job.map ? job.spot + "@" + job.map : job.spot ?? (job.map ? "scene:" + job.map : null);
+    beats.push({at:jobAt,title:"The job",
       text:(job.objectives ?? []).join(". ") + ".",checks:KIND_CHECKS[job.kind] ?? [],enemies});
-    if (job.twist) beats.push({at:job.spot ?? (job.map ? "scene:" + job.map : null),title:"The turn",text:job.twist});
+    if (job.twist) beats.push({at:jobAt,title:"The turn",text:job.twist});
     if (f?.spot) beats.push({at:f.spot,title:"Payday",text:`Back to ${f.handle} to get paid.`});
     return {hook:f ? `“${f.voice}” — ${f.handle}` : "",beats,npcs:[],wrap:"Pay out on the board. Partial results: pay less, or keep the cred."};
   }
@@ -227,20 +236,71 @@
     return out;
   }
 
-  // Hidden enemy tokens in a block near the middle of the scene, for the GM
-  // to drag into place.
-  async function placeTokens(scene,list,actors) {
+  // Segment/segment intersection (walls are [x1,y1,x2,y2]).
+  function crosses(ax,ay,bx,by,c) {
+    const [cx,cy,dx,dy] = c;
+    const o = (px,py,qx,qy,rx,ry) => Math.sign((qx - px) * (ry - py) - (qy - py) * (rx - px));
+    return o(ax,ay,bx,by,cx,cy) !== o(ax,ay,bx,by,dx,dy) && o(cx,cy,dx,dy,ax,ay) !== o(cx,cy,dx,dy,bx,by);
+  }
+
+  // Open floor for a group of tokens: flood-fill grid cells from a seed point
+  // without stepping through walls (doors count as passable), nearest cells
+  // first. A seed boxed in by walls (a pillar, a void outside the building)
+  // is skipped for the next closest one.
+  function openCells(scene,seed,need,taken) {
+    const d = scene.dimensions, g = d.size;
+    const cols = Math.floor(d.sceneWidth / g), rows = Math.floor(d.sceneHeight / g);
+    if (cols < 1 || rows < 1) return [];
+    const walls = scene.walls.filter(w => !w.door && (w.move ?? 1) !== 0).map(w => w.c);
+    const centre = (c,r) => [d.sceneX + (c + .5) * g,d.sceneY + (r + .5) * g];
+    const blocked = (a,b) => {
+      const [ax,ay] = centre(...a), [bx,by] = centre(...b);
+      return walls.some(w => crosses(ax,ay,bx,by,w));
+    };
+    const key = (c,r) => c + "," + r;
+    const seedC = Math.max(0,Math.min(cols - 1,Math.floor((seed[0] - d.sceneX) / g)));
+    const seedR = Math.max(0,Math.min(rows - 1,Math.floor((seed[1] - d.sceneY) / g)));
+    const starts = [];
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) starts.push([c,r]);
+    starts.sort((a,b) => Math.hypot(a[0] - seedC,a[1] - seedR) - Math.hypot(b[0] - seedC,b[1] - seedR));
+    const tried = new Set();
+    for (const start of starts.slice(0,400)) {
+      if (tried.has(key(...start)) || taken.has(key(...start))) continue;
+      const seen = new Set([key(...start)]), out = [], queue = [start];
+      while (queue.length && out.length < need) {
+        const cell = queue.shift();
+        tried.add(key(...cell));
+        if (!taken.has(key(...cell))) out.push(cell);
+        for (const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+          const next = [cell[0] + dc,cell[1] + dr];
+          if (next[0] < 0 || next[1] < 0 || next[0] >= cols || next[1] >= rows || seen.has(key(...next))) continue;
+          seen.add(key(...next));
+          if (!blocked(cell,next)) queue.push(next);
+        }
+      }
+      if (out.length >= need) return out.map(([c,r]) => { taken.add(key(c,r)); return [d.sceneX + c * g,d.sceneY + r * g]; });
+    }
+    return [];
+  }
+
+  // Each group on a map gets its own area so two beats' enemies (or the
+  // named NPCs) don't pile onto one spot.
+  const SEEDS = [[.5,.5],[.3,.3],[.7,.7],[.3,.7],[.7,.3],[.5,.25],[.5,.75]];
+
+  // Hidden tokens for one group ([actor, count] pairs) on open floor.
+  async function placeGroup(scene,list,state) {
+    const need = list.reduce((n,[,c]) => n + c,0);
+    if (!need) return 0;
     const d = scene.dimensions;
-    const g = d.size;
-    const cx = d.sceneX + d.sceneWidth / 2, cy = d.sceneY + d.sceneHeight / 2;
+    const [fx,fy] = SEEDS[state.groups++ % SEEDS.length];
+    const cells = openCells(scene,[d.sceneX + d.sceneWidth * fx,d.sceneY + d.sceneHeight * fy],need,state.taken);
     const tokens = [];
     let i = 0;
-    for (const [name,count] of list) {
-      const actor = actors.get(name);
-      if (!actor) continue;
+    for (const [actor,count] of list) {
       for (let k = 0; k < count; k++, i++) {
-        const col = i % 5, row = Math.floor(i / 5);
-        const td = await actor.getTokenDocument({x:Math.round(cx + (col - 2) * g),y:Math.round(cy + row * g),hidden:true,actorLink:false});
+        // Fallback when no open floor was found: a row near the seed.
+        const [x,y] = cells[i] ?? [Math.round(d.sceneX + d.sceneWidth * fx + (i % 5 - 2) * d.size),Math.round(d.sceneY + d.sceneHeight * fy + Math.floor(i / 5) * d.size)];
+        const td = await actor.getTokenDocument({x,y,hidden:true,actorLink:false});
         tokens.push(td.toObject());
       }
     }
@@ -296,6 +356,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
 
     // Named people: a copy of their base NPC, renamed, in the gig's folder.
     const made = {actors:[],scenes:[]};
+    const npcActors = new Map();
     let actorFolder = null;
     if (sheet.npcs.length) {
       actorFolder = await folderFor("Actor",title,actorRoot);
@@ -311,12 +372,20 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
         if (data.system?.details?.biography) data.system.details.biography.value = `<p>${esc(n.note ?? "")}</p>` + (data.system.details.biography.value ?? "");
         const actor = await Actor.create(data);
         made.actors.push(actor.id);
+        npcActors.set(n.name,actor);
         links.actors[n.name] = actor.uuid;
       }
     }
 
-    // A copy of each beat's battle map (once per map), enemies placed hidden.
+    // A copy of each beat's battle map (once per map), with that beat's enemies
+    // and the named people it mentions placed hidden on open floor.
     const copies = new Map();
+    const placed = new Set();
+    const words = name => String(name).split(/s+/).filter(w => w.length > 3 && !/^(the|old|man|mrs?|miss|doctor|sister|brother)$/i.test(w));
+    const mentions = (b,name) => {
+      const text = (b.title + " " + b.text).toLowerCase();
+      return words(name).some(w => text.includes(w.toLowerCase()));
+    };
     for (const b of sheet.beats) {
       if (!b.scene) continue;
       let copy = copies.get(b.scene.id);
@@ -331,12 +400,23 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
         data.tokens = [];
         foundry.utils.setProperty(data,`flags.${FLAG}.gigScene`,job.id);
         copy = await Scene.create(data);
+        copy.__gig = {taken:new Set(),groups:0};
         copies.set(b.scene.id,copy);
         made.scenes.push(copy.id);
       }
       links.scenes[b.n] = copy.uuid;
-      if (b.enemies.length) await placeTokens(copy,b.enemies,catalogActors);
+      const enemies = b.enemies.map(([n,c]) => [catalogActors.get(n),c]).filter(([a]) => a);
+      if (enemies.length) await placeGroup(copy,enemies,copy.__gig);
+      const people = [...npcActors].filter(([name]) => !placed.has(name) && mentions(b,name));
+      if (people.length) {
+        await placeGroup(copy,people.map(([,a]) => [a,1]),copy.__gig);
+        for (const [name] of people) placed.add(name);
+      }
     }
+    // Anyone the beats never name waits on the first map.
+    const first = copies.values().next().value;
+    const rest = [...npcActors].filter(([name]) => !placed.has(name));
+    if (first && rest.length) await placeGroup(first,rest.map(([,a]) => [a,1]),first.__gig);
 
     const journal = await JournalEntry.create({
       name:`GIG · ${title}`,

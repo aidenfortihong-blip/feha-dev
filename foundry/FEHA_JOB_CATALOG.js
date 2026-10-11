@@ -911,10 +911,12 @@
     const enemies = new Map();
     for (const beat of gig.run?.beats ?? []) for (const [name,count] of beat.enemies ?? []) enemies.set(name,(enemies.get(name) ?? 0) + count);
     const firstScene = (gig.run?.beats ?? []).map(b => String(b.at ?? "")).find(a => a.startsWith("scene:"))?.slice(6);
+    // A beat "<spot>@<scene>" runs at that pin on a better-fitting battle map.
+    const spotMap = gig.spot && !sceneSpot ? (gig.run?.beats ?? []).map(b => String(b.at ?? "")).find(a => a.startsWith(gig.spot + "@"))?.slice(String(gig.spot).length + 1) : null;
     return {
       fixer:fixerKey,
       district:place?.district ?? FIXERS.find(f => f.key === fixerKey)?.district ?? "Alabastra",
-      map:place?.map ?? sceneSpot ?? firstScene ?? "",
+      map:spotMap ?? place?.map ?? sceneSpot ?? firstScene ?? "",
       enemies:[...enemies.entries()],
       pay:gig.pay ?? payFor(gig.key,gig.tier),
       book:true,
