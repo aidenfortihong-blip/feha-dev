@@ -257,6 +257,11 @@
       const [ax,ay] = centre(...a), [bx,by] = centre(...b);
       return walls.some(w => crosses(ax,ay,bx,by,w));
     };
+    // A wall running through the middle of a square makes it a bad spot too.
+    const inner = (c,r) => {
+      const [x,y] = centre(c,r), h = g * .35;
+      return walls.some(w => crosses(x - h,y - h,x + h,y + h,w) || crosses(x - h,y + h,x + h,y - h,w));
+    };
     const key = (c,r) => c + "," + r;
     const seedC = Math.max(0,Math.min(cols - 1,Math.floor((seed[0] - d.sceneX) / g)));
     const seedR = Math.max(0,Math.min(rows - 1,Math.floor((seed[1] - d.sceneY) / g)));
@@ -270,7 +275,7 @@
       while (queue.length && out.length < need) {
         const cell = queue.shift();
         tried.add(key(...cell));
-        if (!taken.has(key(...cell))) out.push(cell);
+        if (!taken.has(key(...cell)) && !inner(...cell)) out.push(cell);
         for (const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]) {
           const next = [cell[0] + dc,cell[1] + dr];
           if (next[0] < 0 || next[1] < 0 || next[0] >= cols || next[1] >= rows || seen.has(key(...next))) continue;
