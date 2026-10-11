@@ -9,6 +9,20 @@
 
   const norm = value => String(value ?? "").trim().toLowerCase();
 
+  // Every FEHA sound follows Foundry's "Interface" slider (User Volume
+  // Controls), using Foundry's own slider-to-volume curve.
+  function uiVolume() {
+    try {
+      const input = Number(game.settings.get("core","globalInterfaceVolume"));
+      if (!Number.isFinite(input)) return 0.5;
+      const helper = foundry?.audio?.AudioHelper;
+      const volume = helper?.inputToVolume ? helper.inputToVolume(input) : input ** 1.5;
+      return Math.max(0,Math.min(1,volume));
+    } catch {
+      return 0.5;
+    }
+  }
+
   const PRIVATE_ASSET_KEY = "fehaCP2077PrivateAssetsV1";
 
   function readPrivateAssets() {
@@ -577,7 +591,7 @@
 
     function play(kind = "select", {cooldown = 32, gain = 1} = {}) {
       const event = normalize(kind);
-      if (disposed || !paths[event] || master <= 0) return Promise.resolve(false);
+      if (disposed || !paths[event] || uiVolume() <= 0) return Promise.resolve(false);
 
       const now = performance.now();
       const last = lastPlay.get(event) ?? -Infinity;
@@ -600,7 +614,7 @@
           0,
           Math.min(
             1,
-            master *
+            uiVolume() *
             audio.__fehaLevel *
             Math.max(0,Math.min(1,Number(gain) || 0))
           )
@@ -950,7 +964,7 @@
         for (const audio of active) {
           audio.volume = Math.max(
             0,
-            Math.min(1, master * (audio.__fehaLevel ?? 0.75))
+            Math.min(1, uiVolume() * (audio.__fehaLevel ?? 0.75))
           );
         }
         return master;
@@ -1038,7 +1052,7 @@
 
       try {
         const audio = new Audio(src);
-        audio.volume = .75;
+        audio.volume = .75 * uiVolume();
         void audio.play();
         return true;
       } catch {
@@ -1926,7 +1940,7 @@
         from = Number(introPlayer.getVolume?.()) || 0;
       } catch {}
 
-      const to = Math.max(0,Math.min(100,Number(target) || 0));
+      const to = Math.max(0,Math.min(100,(Number(target) || 0) * uiVolume()));
       const started = performance.now();
 
       const tick = now => {
@@ -2931,7 +2945,7 @@
 
       amp.gain.setValueAtTime(.0001,when);
       amp.gain.exponentialRampToValueAtTime(
-        Math.max(.0002,gain),
+        Math.max(.0002,gain * uiVolume()),
         when + Math.min(.045,duration * .25)
       );
       amp.gain.exponentialRampToValueAtTime(.0001,stop);
@@ -3012,11 +3026,11 @@
 
       amp.gain.setValueAtTime(.0001,when);
       amp.gain.exponentialRampToValueAtTime(
-        Math.max(.0002,gain),
+        Math.max(.0002,gain * uiVolume()),
         when + Math.min(.08,seconds * .20)
       );
       amp.gain.setValueAtTime(
-        Math.max(.0002,gain),
+        Math.max(.0002,gain * uiVolume()),
         when + Math.max(.09,seconds * .55)
       );
       amp.gain.exponentialRampToValueAtTime(.0001,stop);
