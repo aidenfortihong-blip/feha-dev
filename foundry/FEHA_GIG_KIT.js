@@ -280,7 +280,8 @@
       const flags = {...(data.flags?.[FLAG] ?? {})};
       delete flags.npcKey; delete flags.gigPool;
       data.flags = {...(data.flags ?? {}),[FLAG]:{...flags,gigPerson:e.key,npcBase:e.n.base ?? null}};
-      if (data.system?.details?.biography) data.system.details.biography.value = e.notes.join("") + (data.system.details.biography.value ?? "");
+      // Only who they are in the gigs; the base NPC's own backstory wouldn't fit.
+      if (data.system?.details?.biography) data.system.details.biography.value = e.notes.join("");
       made.push(data);
     }
     const created = [];
