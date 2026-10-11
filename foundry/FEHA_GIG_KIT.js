@@ -270,7 +270,7 @@
       fight:"Can't fight. Will stand in the doorway anyway."},
     clergy:{label:"Clergy",ab:[9,9,10,12,15,14],hp:9,ac:10,skills:["rel","ins","per","med"],gear:false,
       who:"Keeps a congregation going in a city that would rather it didn't.",
-      talk:dc => `Talks to anyone (Persuasion DC ${dc - 2}) and reads people well (their Insight beats a lie below DC ${dc + 3}).`,
+      talk:dc => `Talks to anyone (Persuasion DC ${dc - 2}) and is hard to lie to (Deception DC ${dc + 3}).`,
       fight:"Won't fight. Shields others and prays loudly."},
     medic:{label:"Medic",ab:[10,12,11,14,14,11],hp:12,ac:11,skills:["med","ins","prc"],gear:"medical",
       who:"Patches people up for a living. Calm hands, tired eyes.",
@@ -430,7 +430,7 @@
   }
 
   function scenesWith(job,n) {
-    const words = personName(n.name).toLowerCase().split(/\s+/).filter(w => w.length > 3 && !/^(the|with|from)$/.test(w));
+    const words = personName(n.name).toLowerCase().split(/\s+/).filter(w => w.length >= 3 && !/^(the|with|from|and|old|man)$/.test(w));
     const hits = runSheet(job).beats.filter(b => words.some(w => (b.title + " " + b.text).toLowerCase().includes(w)));
     return hits.map(b => `${b.n}. ${b.title}`);
   }
@@ -471,7 +471,7 @@
       `<p><strong>${esc(job.title)}</strong>${fixer ? ` · ${esc(fixer.handle)}` : ""}${job.for ? ` · about ${esc(job.for)}` : ""}</p>`,
       `<p><strong>Role:</strong> ${esc(n.note ?? "")}</p>`,
       `<p><strong>Shows up:</strong> ${scenes.length ? esc(scenes.join(", ")) : "wherever you need them in this gig"}.</p>`,
-      `<p><strong>Who they are:</strong> ${esc(type ? type.who : (def?.bio ?? "A fighter."))}</p>`,
+      `<p><strong>Who they are:</strong> ${esc(type ? type.who : def && def.name.toLowerCase() === name.toLowerCase() ? def.bio : `A fighter. Uses the ${def?.name ?? "street"} stat block and gear.`)}</p>`,
       `<p><strong>Dealing with them:</strong> ${esc(type ? type.talk(dc) : `They're dangerous. Talking them down: Persuasion or Intimidation DC ${dc + 2}; seeing through them: Insight DC ${dc + 1}.`)}</p>`,
       `<p><strong>If it gets violent:</strong> ${esc(type ? type.fight : (def?.tactics ?? "Fights."))}</p>`
     ];
