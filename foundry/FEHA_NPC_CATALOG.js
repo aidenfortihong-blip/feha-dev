@@ -797,7 +797,7 @@
     );
   }
 
-  function actorData(def,folderId,items) {
+  function actorData(def,folderId,items,pool = false) {
     const tier = TIERS[def.tier];
     const hp = def.hp ?? tier.hp;
     const con = Math.floor((def.abilities.con - 10) / 2);
@@ -847,6 +847,7 @@
       flags:{
         [FLAG]:{
           npcKey:def.key,
+          ...(pool ? {gigPool:true} : {}),
           npcCatalogVersion:VERSION,
           npcFaction:def.faction,
           npcTier:def.tier,
@@ -872,9 +873,14 @@
     });
   }
 
-  function existing(def) {
+  // pool: the job board's own set (folder GIG NPCs), kept apart from the
+  // campaign's imported NPCs. Gig copies of a base NPC (which carry its key)
+  // never count as the catalog NPC.
+  function existing(def,pool = false) {
     return list(game.actors).find(actor =>
-      flags(actor).npcKey === def.key
+      flags(actor).npcKey === def.key &&
+      !flags(actor).gigNpc &&
+      !!flags(actor).gigPool === pool
     ) ?? null;
   }
 
@@ -882,13 +888,13 @@
   // existing catalog NPC has its gear replaced from the catalog (anything the
   // GM added to it by hand is lost), which is how a catalog fix reaches NPCs
   // that were already imported.
-  async function importAll({keys=null,rebuild=false}={}) {
+  async function importAll({keys=null,rebuild=false,root:rootName=ROOT_FOLDER,pool=false}={}) {
     if (!game.user?.isGM) {
       throw new Error("Only the GM can import NPCs.");
     }
 
     const wanted = DEFINITIONS.filter(def => !keys || keys.includes(def.key));
-    const root = await ensureFolder(ROOT_FOLDER);
+    const root = await ensureFolder(rootName);
     const folders = new Map();
     const created = [];
     const skipped = [];
@@ -896,7 +902,7 @@
     const missing = {};
 
     for (const def of wanted) {
-      const current = existing(def);
+      const current = existing(def,pool);
 
       if (current && !rebuild) {
         skipped.push(def.name);
@@ -931,7 +937,7 @@
       if (built.missing.length) missing[def.name] = built.missing;
 
       const actor = await Actor.create(
-        actorData(def,folders.get(def.faction).id,built.items),
+        actorData(def,folders.get(def.faction).id,built.items,pool),
         {renderSheet:false}
       );
 

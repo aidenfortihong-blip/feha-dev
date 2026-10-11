@@ -1073,10 +1073,10 @@
 
   function enemyChips(list) {
     return (list ?? []).map(([name,count]) => {
-      const actor = game.actors.getName(name);
+      const actor = game.actors.find(a => a.name === name && a.flags?.[FLAG]?.gigPool) ?? game.actors.getName(name);
       return actor
         ? `<button type="button" data-act="sheet" data-actor="${esc(actor.id)}" title="Open ${esc(name)}">${esc(name)} ×${count}</button>`
-        : `<span class="fj-tag" title="Imported when the gig is prepped">${esc(name)} ×${count}</span>`;
+        : `<span class="fj-tag" title="Restock GIG NPCs on the GM desk">${esc(name)} ×${count}</span>`;
     }).join("");
   }
 
@@ -1310,6 +1310,7 @@
           <button type="button" class="fj-ghost" data-act="togglegm" aria-pressed="${hideGM()}">${hideGM() ? "Show GM notes" : "Hide GM notes"}</button></div>
         <div class="fj-row" style="margin-top:8px"><button type="button" class="fj-switch fj-mini" aria-pressed="${state.autoPrep}" data-act="autoprep" data-on="${state.autoPrep ? "0" : "1"}">Auto-prep gig files on confirm: ${state.autoPrep ? "ON" : "OFF"}</button></div>
         <p class="fj-note">Written gigs done: ${state.used.length} of ${cat()?.JOBS?.length ?? 0}. A finished gig is never offered again. <button type="button" class="fj-ghost fj-mini" data-act="resetused">Allow repeats</button></p>
+        <p class="fj-note">GIG NPCs: ${game.actors.filter(a => a.flags?.[FLAG]?.gigPool).length} of ${globalThis.FEHA_CYBER_CORE?.module?.("npcCatalog")?.definitions?.length ?? "?"} in the Actors tab, ready to drag onto a map. <button type="button" class="fj-ghost fj-mini" data-act="stocknpcs">Restock</button></p>
       </section>
       <section class="fj-box"><h3 class="fj-sh">FIXERS</h3>${fx}</section>
       <section class="fj-box" style="grid-column:1/-1"><h3 class="fj-sh">WRITE A JOB</h3>${writeForm()}</section>
@@ -1540,6 +1541,11 @@
           break;
         }
         case "cleardraft": ui$.draft = null; break;
+        case "stocknpcs": {
+          const done = await kit()?.stockNpcs?.();
+          ui.notifications.info(`GIG NPCs: ${done?.created?.length ?? 0} added.`);
+          break;
+        }
         case "resetused":
           if (!confirmTwice(target,"Reset used jobs?")) return;
           await run("resetUsed");

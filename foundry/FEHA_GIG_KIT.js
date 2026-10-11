@@ -223,14 +223,28 @@
     return found ?? Folder.create({name,type,folder:parent?.id ?? null,sorting:"a"});
   }
 
-  // Import the catalog NPCs a gig needs and return name -> actor.
+  // The board's own NPCs: one of every catalog NPC in the Actors folder
+  // "GIG NPCs", sorted by faction, ready to drag onto a gig map. Kept apart
+  // from the campaign's imported NPCs so gigs never touch those.
+  const NPC_ROOT = "GIG NPCs";
+  const poolActor = d => game.actors.find(a => a.flags?.[FLAG]?.npcKey === d.key && a.flags?.[FLAG]?.gigPool) ?? null;
+
+  // GM: create whichever GIG NPCs are missing (all of them the first time).
+  async function stockNpcs(keys = null) {
+    if (!game.user.isGM || !npcApi()?.import) return null;
+    const todo = npcDefs().filter(d => (!keys || keys.includes(d.key)) && !poolActor(d)).map(d => d.key);
+    if (!todo.length) return {created:[],missing:{}};
+    return npcApi().import({keys:todo,root:NPC_ROOT,pool:true});
+  }
+
+  // The GIG NPCs a gig needs (stocked if missing), as name -> actor.
   async function ensureNpcs(names) {
     const defs = npcDefs();
     const want = [...new Set(names)].map(n => defs.find(d => d.name === n || d.key === n)).filter(Boolean);
-    const have = d => game.actors.find(a => a.flags?.[FLAG]?.npcKey === d.key) ?? null;
+    const have = poolActor;
     const missing = want.filter(d => !have(d)).map(d => d.key);
-    if (missing.length && npcApi()?.import) {
-      try { await npcApi().import({keys:missing}); } catch (err) { console.warn("FEHA GIG KIT // NPC import failed",err); }
+    if (missing.length) {
+      try { await stockNpcs(missing); } catch (err) { console.warn("FEHA GIG KIT // NPC import failed",err); }
     }
     const out = new Map();
     for (const d of want) { const a = have(d); if (a) { out.set(d.name,a); out.set(d.key,a); } }
@@ -433,7 +447,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     }
   }
 
-  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,KIND_CHECKS,
+  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,stockNpcs,NPC_ROOT,KIND_CHECKS,
     resetPools() { pools = null; }};
   globalThis.FEHA_GIG_KIT = api;
   try {
