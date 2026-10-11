@@ -241,16 +241,16 @@
     return result;
   }
 
-  // The people in written gigs (the bartender, the old priest): one NPC each,
-  // built from their base catalog NPC, in GIG NPCs / People / <fixer>. A
-  // role that comes up in several of a fixer's gigs is one NPC.
+  // The people in each gig (the bartender, the old priest): one NPC each,
+  // built from their base catalog NPC, in GIG NPCs / People / <fixer> /
+  // <gig>. Every gig has its own, so two gigs' "kid"s are never mixed up.
   const PEOPLE = "People";
   const personName = role => {
     const s = String(role ?? "").replace(/^(the|his|her|a|an)\s+/i,"").trim();
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
   const personGroup = job => job.for ? "Personal" : (fixerOf(job)?.handle ?? "Other");
-  const personKey = (job,n) => personGroup(job) + ":" + personName(n.name).toLowerCase();
+  const personKey = (job,n) => job.key + ":" + personName(n.name).toLowerCase();
   const personActor = (job,n) => game.actors.find(a => a.flags?.[FLAG]?.gigPerson === personKey(job,n)) ?? null;
 
   async function stockPeople(jobs = cat()?.JOBS ?? []) {
@@ -259,9 +259,9 @@
     for (const job of jobs) {
       for (const n of runSheet(job).npcs) {
         const key = personKey(job,n);
-        const entry = want.get(key) ?? {key,job,n,group:personGroup(job),name:personName(n.name),notes:[]};
-        entry.notes.push(`<p><strong>${esc(job.title)}</strong>: ${esc(n.note ?? "")}</p>`);
-        want.set(key,entry);
+        if (want.has(key)) continue;
+        want.set(key,{key,job,n,group:personGroup(job),gig:String(job.title).slice(0,60),name:personName(n.name),
+          notes:[`<p><strong>${esc(job.title)}</strong>: ${esc(n.note ?? "")}</p>`]});
       }
     }
     const todo = [...want.values()].filter(e => !game.actors.find(a => a.flags?.[FLAG]?.gigPerson === e.key));
@@ -273,11 +273,13 @@
     const made = [];
     for (const e of todo) {
       if (!groups.has(e.group)) groups.set(e.group,await folderFor("Actor",e.group,people));
+      const gigKey = e.group + "/" + e.gig;
+      if (!groups.has(gigKey)) groups.set(gigKey,await folderFor("Actor",e.gig,groups.get(e.group)));
       const base = bases.get(e.n.base) ?? bases.get("civilian") ?? null;
       const data = base ? base.toObject() : {name:e.name,type:"npc",img:"icons/svg/mystery-man.svg"};
       delete data._id;
       data.name = e.name;
-      data.folder = groups.get(e.group).id;
+      data.folder = groups.get(e.group + "/" + e.gig).id;
       foundry.utils.setProperty(data,"prototypeToken.name",e.name);
       foundry.utils.setProperty(data,"prototypeToken.appendNumber",false);
       const flags = {...(data.flags?.[FLAG] ?? {})};

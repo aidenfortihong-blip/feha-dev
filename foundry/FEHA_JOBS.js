@@ -335,7 +335,7 @@
   // unfinished one up to date with the books (roles instead of names, better
   // maps), keeping its pay, cred, crew, status and city pin.
   // Run sheet layout version: built journals older than this are rewritten.
-  const SHEET_V = 2;
+  const SHEET_V = 3;
   const BOOK_FIELDS = ["title","kind","brief","objectives","twist","run","reward","map"];
   function syncBook(state) {
     const changed = [];
