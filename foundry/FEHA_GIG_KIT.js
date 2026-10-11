@@ -654,7 +654,10 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
       ]
     });
 
-    return {sceneFolder:sceneFolder.id,actorFolder:null,journal:journal.id,scenes:made.scenes,actors:[],beatScenes:Object.fromEntries(Object.entries(links.scenes).map(([n,u]) => [n,u.split(".").pop()]))};
+    // A generated gig's people are one-offs: they go when its files do.
+    const oneOff = String(job.key ?? "").startsWith("gen-")
+      ? game.actors.filter(a => String(a.flags?.[FLAG]?.gigPerson ?? "").startsWith(job.key + ":")).map(a => a.id) : [];
+    return {sceneFolder:sceneFolder.id,actorFolder:null,journal:journal.id,scenes:made.scenes,actors:[],people:oneOff,beatScenes:Object.fromEntries(Object.entries(links.scenes).map(([n,u]) => [n,u.split(".").pop()]))};
   }
 
   // ------------------------------------------------- compact gig journal
@@ -762,6 +765,11 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     if (scenes.length) await Scene.deleteDocuments(scenes);
     const actors = (p.actors ?? []).filter(id => game.actors.get(id));
     if (actors.length) await Actor.deleteDocuments(actors);
+    // A generated gig's people, then their gig folder if that leaves it empty.
+    const people = (p.people ?? []).map(id => game.actors.get(id)).filter(Boolean);
+    const peopleFolders = new Set(people.map(a => a.folder).filter(Boolean));
+    if (people.length) await Actor.deleteDocuments(people.map(a => a.id));
+    for (const folder of peopleFolders) if (!folder.contents.length && !folder.children?.length) await folder.delete();
     if (p.journal && game.journal.get(p.journal)) await JournalEntry.deleteDocuments([p.journal]);
     for (const id of [p.sceneFolder,p.actorFolder]) {
       const f = id ? game.folders.get(id) : null;
