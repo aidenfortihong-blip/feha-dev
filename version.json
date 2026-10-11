@@ -1,8 +1,10 @@
 {
-  "version": "0.12.13",
+  "version": "0.12.14",
   "updated": "2026-10-10",
-  "scope": "jobs",
+  "scope": "sound",
   "notes": [
+    "Sound: every FEHA sound (Market, Cyberdeck, Chrome Manager, job board, link-start tones, session intro) follows the Interface slider in User Volume Controls.",
+    "Job board: much quieter; opening and closing it is barely audible.",
     "Jobs overhaul: the board is now a contacts list. Fixers come in four levels (Street, District, City, Elite) and open up as the crew's shared Street Cred grows (30 / 90 / 180), or when the GM opens them early.",
     "351 gigs: 231 new hand-written gigs across the eleven fixers plus personal gigs for each character, on top of the original 120. A gig the crew has taken is never offered again; generated gigs only appear once a fixer's written ones run out.",
     "Every gig has its own reward items and fixer favours. The GM picks who gets each item at payout.",
