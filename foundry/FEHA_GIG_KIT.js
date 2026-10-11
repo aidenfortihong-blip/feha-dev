@@ -406,6 +406,19 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     ["closeJournalEntrySheet",Hooks.on("closeJournalEntrySheet",app => rememberPos(app))]
   ];
 
+  // A map link in a gig journal takes the GM to that map (Foundry's default
+  // for a Scene link is its settings window).
+  if (globalThis.__fehaGigMapClick) document.removeEventListener("click",globalThis.__fehaGigMapClick,true);
+  globalThis.__fehaGigMapClick = async event => {
+    const link = event.target?.closest?.(".feha-gig a[data-uuid^=\"Scene.\"]");
+    if (!link) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const scene = await fromUuid(link.dataset.uuid);
+    if (scene?.documentName === "Scene" && game.user.isGM) scene.view();
+  };
+  document.addEventListener("click",globalThis.__fehaGigMapClick,true);
+
   // GM: remove what prep() made (only those documents).
   async function cleanup(p) {
     if (!p || !game.user.isGM) return;
