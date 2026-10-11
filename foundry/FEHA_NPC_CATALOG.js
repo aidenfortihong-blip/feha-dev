@@ -547,7 +547,7 @@
       abilities:ab(15,13,15,11,12,12),
       weapons:[w("SMG",3),w("Blunt",2)],armor:"Rivet Work Armor Mk.II",
       chrome:["Strong Arms"],
-      grenades:["Grenade Frag Regular Mk.I"],
+      grenades:[["Grenade Frag Regular Mk.I",1]],
       bio:"Runs a Rustwater crew and a tug. Knows every container number by heart.",
       tactics:"Throws a frag into cover, then pushes with the SMG."
     },
@@ -589,7 +589,7 @@
       key:"kennel-dog",name:"Kennel Dog",faction:GANGS,tier:2,
       abilities:ab(14,14,14,10,12,10),
       weapons:[w("Assault Rifle",3),w("Knife",1)],armor:"Bastion Combat Plate Mk.II",
-      grenades:["Grenade Frag Regular Mk.II"],
+      grenades:[["Grenade Frag Regular Mk.II",1]],
       bio:"Ex-Bastion soldier who walked over the Kennel wall and never looked back. Still drills like it's basic.",
       tactics:"Fire and move in pairs, frag on clustered targets. Disciplined; retreats in order."
     },
@@ -598,7 +598,7 @@
       abilities:ab(16,15,16,12,13,13),
       weapons:[w("Assault Rifle",3),w("Shotgun",3)],armor:"Bastion Combat Plate Mk.III",
       chrome:["Tactical Icon Processor","Subdermal Plating","Kiroshi Optics"],
-      grenades:["Grenade Frag Regular Mk.II","Grenade Flash Regular Mk.II"],
+      grenades:[["Grenade Frag Regular Mk.II",1],["Grenade Flash Regular Mk.II",1]],
       bio:"The Kennel boss's sergeant. Trained half the Dogs himself and remembers which ones flinched.",
       tactics:"Flashbang, then the Dogs push while he holds the angle with the rifle."
     },
@@ -614,7 +614,7 @@
       abilities:ab(15,16,15,11,14,13),
       weapons:[w("DMR",3),w("Machete",2)],armor:"Flexweave Mobility Suit Mk.III",
       chrome:["Kiroshi Optics","Kerenzikov"],
-      grenades:["Grenade Smoke Regular Mk.II"],
+      grenades:[["Grenade Smoke Regular Mk.II",1]],
       bio:"Leads the Scorpions since the Council's water contract cut her clan off from the reservoir.",
       tactics:"Snipes from a ridge, drops smoke to cover her raiders, and parleys if she's losing."
     },
