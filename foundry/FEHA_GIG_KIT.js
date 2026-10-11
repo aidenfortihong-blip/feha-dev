@@ -319,7 +319,7 @@
     const beat = b => {
       const sceneLink = links.scenes[b.n] ? `@UUID[${links.scenes[b.n]}]{${esc(b.label ?? "map")}}` : esc(b.label ?? "—");
       const enemies = b.enemies.map(([n,c]) => (links.actors[n] ? `@UUID[${links.actors[n]}]{${esc(n)}}` : esc(n)) + ` ×${c}`).join(", ");
-      return `<h3>${b.n}. ${esc(b.title)}</h3><p><strong>Where:</strong> ${sceneLink}</p><p>${esc(b.text)}</p>
+      return `<h3>${b.n}. ${esc(b.title)}</h3><p><strong>Where:</strong> ${sceneLink}${b.scene && b.scene.name !== b.label ? ` (map: ${esc(b.scene.name)})` : ""}</p><p>${esc(b.text)}</p>
         ${b.checks.length ? `<ul>${b.checks.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
         ${enemies ? `<p><strong>Enemies:</strong> ${enemies} <em>(tokens placed hidden on the map copy)</em></p>` : ""}`;
     };

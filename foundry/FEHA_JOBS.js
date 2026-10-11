@@ -850,6 +850,7 @@
 #${ROOT_ID} .fj-beat .bt{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
 #${ROOT_ID} .fj-beat .bt b{font-size:17px;letter-spacing:.04em;text-transform:uppercase}
 #${ROOT_ID} .fj-beat .bt span{font-family:var(--fj-mono);font-size:12px;color:var(--fj-muted)}
+#${ROOT_ID} .fj-beat .bt span.mp{color:var(--fj-dim)}
 #${ROOT_ID} .fj-beat p{margin:6px 0}
 #${ROOT_ID} .fj-checks{margin:4px 0 6px;padding-left:18px;color:var(--fj-muted);font-size:14px}
 #${ROOT_ID} .fj-checks li{margin:2px 0}
@@ -1088,7 +1089,7 @@
     const beats = sheet.beats.map(b => {
       const copy = job.prep?.beatScenes?.[b.n] ? game.scenes.get(job.prep.beatScenes[b.n]) : null;
       return `<div class="fj-beat"><div class="bn">${String(b.n).padStart(2,"0")}</div><div>
-        <div class="bt"><b>${esc(b.title)}</b>${b.label ? ` · <span>${esc(b.label)}</span>` : ""}
+        <div class="bt"><b>${esc(b.title)}</b>${b.label ? ` · <span>${esc(b.label)}</span>` : ""}${b.scene && b.scene.name !== b.label ? ` <span class="mp">· map: ${esc(b.scene.name)}</span>` : ""}
           ${copy ? `<button type="button" class="fj-mini fj-go" data-act="viewmap" data-scene="${esc(copy.id)}" title="The gig's copy, enemies placed (hidden)">Open gig map</button>` : ""}
           ${b.scene ? `<button type="button" class="fj-mini fj-ghost" data-act="viewmap" data-scene="${esc(b.scene.id)}">Original map</button>` : ""}
           ${b.spot && city()?.worldScene?.() ? `<button type="button" class="fj-mini fj-ghost" data-act="citymap" data-spot="${esc(b.spot)}">City map</button>` : ""}</div>
