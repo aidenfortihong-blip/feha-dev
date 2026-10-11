@@ -1,8 +1,13 @@
 {
-  "version": "0.12.12",
+  "version": "0.12.13",
   "updated": "2026-10-10",
   "scope": "jobs",
   "notes": [
+    "Jobs overhaul: the board is now a contacts list. Fixers come in four levels (Street, District, City, Elite) and open up as the crew's shared Street Cred grows (30 / 90 / 180), or when the GM opens them early.",
+    "351 gigs: 231 new hand-written gigs across the eleven fixers plus personal gigs for each character, on top of the original 120. A gig the crew has taken is never offered again; generated gigs only appear once a fixer's written ones run out.",
+    "Every gig has its own reward items and fixer favours. The GM picks who gets each item at payout.",
+    "GM rundown: each gig shows a step-by-step run sheet (where, checks with DCs, enemies, people, twist, wrap-up). Confirming a gig builds a GIGS folder with map copies (enemies placed hidden), NPCs and a journal with a player handout; one button removes it afterwards.",
+    "Twenty new generic NPCs: district gang members and civilians.",
     "Jobs: a fourth hotbar button opens the fixer job board. Eleven fixers across the city post work (120 hand-written jobs, 12 of them personal to the crew, plus endless generated gigs). Players ask for a job and pick their crew; the GM approves, runs it and pays out. Every crew member gets the credits and Street Cred, and Street Cred unlocks higher tiers.",
     "City of Alabastra: the world map is a city map. Twelve districts with their gangs, 103 named places with pins that open the City Guide journal (each with its battle map), and every job sits at a place on it. Active jobs get a marker on the map; the GM can jump from a job to its spot.",
     "Scenes tab (GM only): every map has a wall tag (WALLED, OPEN, PACK, BORDER, GM EDIT, NO WALLS) and the buttons above the list count and filter them. Click a tag to change it. Drawing walls by hand on an unfinished map marks it GM EDIT.",
