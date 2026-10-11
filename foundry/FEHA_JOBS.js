@@ -858,6 +858,36 @@
 #${ROOT_ID} .fj-reward .fj-tag{white-space:normal;line-height:1.35}
 #${ROOT_ID} .fj-tag.loot{color:var(--fj-text);border-color:var(--fj-t4);font-size:12px;text-transform:none;letter-spacing:.02em}
 #${ROOT_ID} .fj-pay select{min-width:120px}
+#${ROOT_ID} .fj-out{border:1px solid var(--fj-line-soft);background:var(--fj-bg);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+#${ROOT_ID} .fj-out h4{margin:0;border:0;font-family:var(--fj-display);font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fj-text)}
+#${ROOT_ID} .fj-out.is-win{border-left:3px solid var(--fj-yellow)}
+#${ROOT_ID} .fj-out.is-win h4{color:var(--fj-yellow)}
+#${ROOT_ID} .fj-out.is-loss{border-left:3px solid var(--fj-red)}
+#${ROOT_ID} .fj-out.is-loss h4{color:var(--fj-red)}
+#${ROOT_ID} .fj-field-l{font-family:var(--fj-mono);font-size:11px;letter-spacing:.16em;color:var(--fj-dim)}
+#${ROOT_ID} .fj-money{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px}
+#${ROOT_ID} .fj-money label{display:flex;flex-direction:column;gap:4px}
+#${ROOT_ID} .fj-money input{width:120px;font-size:15px}
+#${ROOT_ID} .fj-hint{flex:1 1 220px;font-size:13px;color:var(--fj-dim);align-self:center}
+#${ROOT_ID} .fj-loot{display:flex;flex-direction:column;border:1px solid var(--fj-line-soft)}
+#${ROOT_ID} .fj-loot-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(150px,200px);gap:12px;align-items:center;padding:8px 10px;border-top:1px solid var(--fj-line-soft);background:var(--fj-panel)}
+#${ROOT_ID} .fj-loot-row:first-child{border-top:0}
+#${ROOT_ID} .fj-loot-row .nm{font-size:15px;font-weight:600;color:var(--fj-text);min-width:0;overflow-wrap:anywhere}
+#${ROOT_ID} .fj-loot-row .nm i{font-style:normal;font-family:var(--fj-mono);font-size:12px;color:var(--fj-yellow);margin-left:8px}
+#${ROOT_ID} .fj-loot-row .to{font-family:var(--fj-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fj-dim)}
+#${ROOT_ID} .fj-loot-row select{width:100%}
+#${ROOT_ID} .fj-loot-row.is-missing .nm{color:var(--fj-dim)}
+#${ROOT_ID} .fj-favor{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border:1px solid var(--fj-line);cursor:pointer;user-select:none}
+#${ROOT_ID} .fj-favor:has(input:checked){border-color:var(--fj-cyan);background:var(--fj-cyan-faint)}
+#${ROOT_ID} .fj-favor input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:16px;height:16px;margin:2px 0 0;padding:0;border:1px solid var(--fj-muted);background:transparent;display:grid;place-items:center;cursor:pointer}
+#${ROOT_ID} .fj-favor input::before,#${ROOT_ID} .fj-favor input::after{content:none}
+#${ROOT_ID} .fj-favor input:checked{border-color:var(--fj-cyan);background:radial-gradient(var(--fj-cyan) 0 0) center/8px 8px no-repeat}
+#${ROOT_ID} .fj-favor span{font-size:14px;color:var(--fj-text);line-height:1.4}
+#${ROOT_ID} .fj-favor b{display:block;font-family:var(--fj-mono);font-size:11px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--fj-muted);margin-bottom:2px}
+#${ROOT_ID} .fj-favor:has(input:checked) b{color:var(--fj-cyan)}
+#${ROOT_ID} .fj-out-go{display:flex;justify-content:flex-end}
+#${ROOT_ID} .fj-out-go .fj-go{min-height:38px;padding:8px 22px;font-size:15px}
+@media (max-width:640px){#${ROOT_ID} .fj-loot-row{grid-template-columns:1fr}#${ROOT_ID} .fj-loot-row .to{display:none}}
 
 /* GM desk */
 #${ROOT_ID} .fj-desk{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;align-content:start}
@@ -1100,12 +1130,16 @@
     const r = kit()?.rewardFor?.(job);
     if (!r || (!r.items.length && !r.favor)) return "";
     const crew = (job.crew ?? []).map(id => game.actors.get(id)).filter(Boolean);
-    const rows = r.items.map((i,n) => `<label>${esc((i.qty > 1 ? i.qty + "× " : "") + i.name)}
-      <select data-reward="${n}" data-name="${esc(i.name)}" data-qty="${i.qty}"${i.item ? "" : " disabled"}>
+    const rows = r.items.map((i,n) => `<label class="fj-loot-row${i.item ? "" : " is-missing"}">
+      <span class="nm">${esc(i.name)}${i.qty > 1 ? `<i>×${i.qty}</i>` : ""}</span>
+      <span class="to">${i.item ? "goes to" : "not in the catalog"}</span>
+      <select data-reward="${n}" data-name="${esc(i.name)}" data-qty="${i.qty}" aria-label="Who gets ${esc(i.name)}"${i.item ? "" : " disabled"}>
         ${crew.map((a,k) => `<option value="${esc(a.id)}" ${k === n % Math.max(1,crew.length) ? "selected" : ""}>${esc(a.name)}</option>`).join("")}
-        <option value="">nobody</option></select></label>`).join("");
-    return `<span class="step">REWARD ITEMS</span><div class="fj-row fj-pay">${rows || `<span class="fj-note">No items.</span>`}</div>
-      ${r.favor ? `<label class="fj-note"><input type="checkbox" data-field="favor" checked> Record the favour: ${esc(r.favor)}</label>` : ""}`;
+        <option value="">Nobody</option></select></label>`).join("");
+    return `<div class="fj-field-l">LOOT</div>
+      <div class="fj-loot">${rows || `<span class="fj-note">No items for this gig.</span>`}</div>
+      ${r.favor ? `<label class="fj-favor"><input type="checkbox" data-field="favor" checked>
+        <span><b>Record the favour</b>${esc(r.favor)}</span></label>` : ""}`;
   }
 
   function actionBlock(job,state,me) {
@@ -1140,18 +1174,27 @@
     }
     if (job.status === "active") {
       if (!isGM) return `<div class="fj-act"><span class="fj-note">Crew: ${esc(crewNames(job.crew))}.</span></div>`;
-      return `<div class="fj-act"><span class="step">GM · WHEN IT'S OVER</span>
-        <span class="fj-note">Crew: <b>${esc(crewNames(job.crew))}</b>. Pay is per crew member; change it for a partial or bonus result${job.kind === "Cyberpsycho" ? " (non-lethal pays double)" : ""}.</span>
-        <div class="fj-row fj-pay">
-          <label>PAY EACH <input type="number" min="0" step="50" data-field="pay" value="${job.pay}"></label>
-          <label>CREW CRED <input type="number" min="0" step="1" data-field="cred" value="${job.cred}"></label>
-          ${job.kind === "Cyberpsycho" ? `<button type="button" data-act="double" title="Non-lethal takedown">×2 non-lethal</button>` : ""}
-          <button type="button" class="fj-go" data-act="complete">Pay out</button></div>
-        ${rewardPicker(job)}
-        <div class="fj-row fj-pay">
-          <label>CRED ON FAIL <input type="number" step="1" data-field="failcred" value="0"></label>
-          <button type="button" data-act="fail">Mark failed</button>
-          <button type="button" class="fj-ghost" data-act="reopen">Back on offer</button></div></div>`;
+      return `<div class="fj-act fj-over"><span class="step">GM · WHEN IT'S OVER</span>
+        <span class="fj-note">Crew: <b>${esc(crewNames(job.crew))}</b>.</span>
+        <section class="fj-out is-win">
+          <h4>They pulled it off</h4>
+          <div class="fj-money">
+            <label><span class="fj-field-l">PAY EACH</span><input type="number" min="0" step="50" data-field="pay" value="${job.pay}"></label>
+            <label><span class="fj-field-l">CREW CRED</span><input type="number" min="0" step="1" data-field="cred" value="${job.cred}"></label>
+            ${job.kind === "Cyberpsycho" ? `<button type="button" data-act="double" title="Non-lethal takedown pays double">×2 non-lethal</button>` : ""}
+            <span class="fj-hint">Pay is per crew member. Change it for a partial or bonus result.</span>
+          </div>
+          ${rewardPicker(job)}
+          <div class="fj-out-go"><button type="button" class="fj-go" data-act="complete">Pay out</button></div>
+        </section>
+        <section class="fj-out is-loss">
+          <h4>It went wrong</h4>
+          <div class="fj-money">
+            <label><span class="fj-field-l">CRED ON FAIL</span><input type="number" step="1" data-field="failcred" value="0"></label>
+            <button type="button" data-act="fail">Mark failed</button>
+            <button type="button" class="fj-ghost" data-act="reopen">Back on offer</button>
+          </div>
+        </section></div>`;
     }
     const loot = job.given?.length ? `<span class="fj-note">Loot: ${esc(job.given.join(", "))}</span>` : "";
     if (!isGM) return loot ? `<div class="fj-act">${loot}</div>` : "";
