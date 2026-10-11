@@ -1,8 +1,9 @@
 {
-  "version": "0.12.17",
+  "version": "0.12.18",
   "updated": "2026-10-11",
   "scope": "jobs",
   "notes": [
+    "A generated gig's person NPC is deleted with its gig files, so generated gigs no longer pile up NPCs in GIG NPCs.",
     "Every gig has its people: 505 NPCs in GIG NPCs / People / <fixer> / <gig>, one set per gig, including the 120 older gigs and anyone a gig scene brings in. Generated gigs make one for whoever their story is about.",
     "Gig people have stat blocks that fit them: fighters use the matching combat NPC; everyone else gets an archetype (child, elder, clergy, medic, official, executive, tech, worker, trader, organiser, journalist, AI, animal, civilian) with abilities, HP by gig level, skills, fitting gear and a bio with their part, scenes, DCs and what they do in a fight. All start neutral.",
     "Built gig journals refresh once to link everyone.",
