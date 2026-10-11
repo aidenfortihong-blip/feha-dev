@@ -247,12 +247,26 @@
       brief:cap(fill(pick(kind.briefs),ctx)),
       objectives:kind.objectives.map(o => cap(fill(o,ctx))),
       twist:pick(G.TWISTS),
+      // Whoever the brief is about gets an NPC (GIG NPCs / People).
+      people:[[cap(ctx.who),whoBase(ctx.who),"The person this gig is about."]],
       status:"offered",
       crew:[],
       created:now,
       updated:now
     };
     return job.spot ? job : placeJob(job);
+  }
+
+  // The NPC catalog entry to build a generated gig's person from.
+  function whoBase(who) {
+    const w = String(who).toLowerCase();
+    if (/ripperdoc/.test(w)) return "ripperdoc";
+    if (/navy/.test(w)) return "navy-rating";
+    if (/netrunner/.test(w)) return "street-netrunner";
+    if (/journalist/.test(w)) return "journalist";
+    if (/union|shift leader/.test(w)) return "union-steward";
+    if (/kurohane|corp accountant/.test(w)) return "kurohane-executive";
+    return "civilian";
   }
 
   // City spot categories that suit each kind of gig.

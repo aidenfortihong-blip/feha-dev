@@ -113,7 +113,10 @@
       return {n:i + 1,title:b.title ?? "Beat " + (i + 1),text:b.text ?? "",checks:b.checks ?? [],enemies:b.enemies ?? [],
         at:b.at ?? null,label:where.label,scene:where.scene,spot:where.spot};
     });
-    return {hook:raw.hook ?? "",beats,npcs:(raw.npcs ?? []).map(([name,base,note]) => ({name,base,note})),
+    // People: the gig's own list, the extra people book (FEHA_GIGS_PEOPLE)
+    // and, for generated gigs, whoever the brief is about.
+    const people = [...(raw.npcs ?? []),...(globalThis.FEHA_GIG_PEOPLE?.[job.key] ?? []),...(job.people ?? [])];
+    return {hook:raw.hook ?? "",beats,npcs:people.map(([name,base,note]) => ({name,base,note})),
       wrap:raw.wrap ?? "",twist:job.twist ?? "",written:Boolean(job.run)};
   }
 
@@ -250,10 +253,10 @@
   const personKey = (job,n) => personGroup(job) + ":" + personName(n.name).toLowerCase();
   const personActor = (job,n) => game.actors.find(a => a.flags?.[FLAG]?.gigPerson === personKey(job,n)) ?? null;
 
-  async function stockPeople() {
+  async function stockPeople(jobs = cat()?.JOBS ?? []) {
     if (!game.user.isGM) return [];
     const want = new Map();
-    for (const job of cat()?.JOBS ?? []) {
+    for (const job of jobs) {
       for (const n of runSheet(job).npcs) {
         const key = personKey(job,n);
         const entry = want.get(key) ?? {key,job,n,group:personGroup(job),name:personName(n.name),notes:[]};
@@ -373,7 +376,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     const journalRoot = await folderFor("JournalEntry",ROOT);
 
     const actors = await ensureNpcs(sheet.beats.flatMap(b => b.enemies.map(([n]) => n)));
-    if (sheet.npcs.length) await stockPeople();
+    if (sheet.npcs.length) await stockPeople([job]);
     const links = {scenes:{}};
     const made = {scenes:[]};
 
@@ -499,7 +502,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     if (!journal || !game.user.isGM) return false;
     const sheet = runSheet(job);
     const actors = await ensureNpcs(sheet.beats.flatMap(b => b.enemies.map(([n]) => n)));
-    if (sheet.npcs.length) await stockPeople();
+    if (sheet.npcs.length) await stockPeople([job]);
     const links = {scenes:{}};
     for (const b of sheet.beats) {
       const copy = game.scenes.get(p.beatScenes?.[b.n] ?? "");

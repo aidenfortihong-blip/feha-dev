@@ -67,6 +67,7 @@
     gigsVelvet:"foundry/gigs/FEHA_GIGS_VELVET.js",
     gigsHale:"foundry/gigs/FEHA_GIGS_HALE.js",
     gigsPersonal:"foundry/gigs/FEHA_GIGS_PERSONAL.js",
+    gigsPeople:"foundry/gigs/FEHA_GIGS_PEOPLE.js",
     jobCatalog:"foundry/FEHA_JOB_CATALOG.js",
     gigKit:"foundry/FEHA_GIG_KIT.js",
     jobs:"foundry/FEHA_JOBS.js",
@@ -242,7 +243,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","gigsVesna","gigsBabka","gigsPadre","gigsFerro","gigsClerk","gigsKiyama","gigsDuval","gigsRhea","gigsDialtone","gigsVelvet","gigsHale","gigsPersonal","jobCatalog","gigKit","jobs","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","gigsVesna","gigsBabka","gigsPadre","gigsFerro","gigsClerk","gigsKiyama","gigsDuval","gigsRhea","gigsDialtone","gigsVelvet","gigsHale","gigsPersonal","gigsPeople","jobCatalog","gigKit","jobs","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -377,6 +378,7 @@
     evaluate(source.city,files.city,sha);
     // Gig books push onto a fresh list each load (no duplicates on reload).
     globalThis.FEHA_GIG_BOOKS = [];
+    globalThis.FEHA_GIG_PEOPLE = {};
     evaluate(source.gigsVesna,files.gigsVesna,sha);
     evaluate(source.gigsBabka,files.gigsBabka,sha);
     evaluate(source.gigsPadre,files.gigsPadre,sha);
@@ -389,6 +391,7 @@
     evaluate(source.gigsVelvet,files.gigsVelvet,sha);
     evaluate(source.gigsHale,files.gigsHale,sha);
     evaluate(source.gigsPersonal,files.gigsPersonal,sha);
+    evaluate(source.gigsPeople,files.gigsPeople,sha);
     evaluate(source.jobCatalog,files.jobCatalog,sha);
     evaluate(source.gigKit,files.gigKit,sha);
     evaluate(source.jobs,files.jobs,sha);
