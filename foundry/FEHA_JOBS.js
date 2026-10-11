@@ -918,7 +918,10 @@
     if (style.textContent !== CSS) style.textContent = CSS;
   }
 
-  const sfx = kind => { try { globalThis.FEHA_SOUNDS?.play?.(kind,{cooldown:0}); } catch {} };
+  // The board shares the game sound engine; its clicks sit well under the
+  // Market/Cyberdeck levels and the heavy effects (clang, door, laser) lower still.
+  const SFX_GAIN = {select:.45,subsystem_select:.45,confirm:.45,error:.45,drawer_open:.3,drawer_close:.3,install:.3,remove:.3,scan:.3};
+  const sfx = kind => { try { globalThis.FEHA_SOUNDS?.play?.(kind,{cooldown:0,gain:SFX_GAIN[kind] ?? .4}); } catch {} };
 
   const HIDE_KEY = "feha-jobs-hide-gm";
   const hideGM = () => { try { return localStorage.getItem(HIDE_KEY) === "1"; } catch { return false; } };
