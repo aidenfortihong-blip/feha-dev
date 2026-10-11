@@ -230,11 +230,62 @@
   const poolActor = d => game.actors.find(a => a.flags?.[FLAG]?.npcKey === d.key && a.flags?.[FLAG]?.gigPool) ?? null;
 
   // GM: create whichever GIG NPCs are missing (all of them the first time).
-  async function stockNpcs(keys = null) {
+  async function stockNpcs(keys = null,{people = !keys} = {}) {
     if (!game.user.isGM || !npcApi()?.import) return null;
     const todo = npcDefs().filter(d => (!keys || keys.includes(d.key)) && !poolActor(d)).map(d => d.key);
-    if (!todo.length) return {created:[],missing:{}};
-    return npcApi().import({keys:todo,root:NPC_ROOT,pool:true});
+    const result = todo.length ? await npcApi().import({keys:todo,root:NPC_ROOT,pool:true}) : {created:[],missing:{}};
+    if (people) result.people = await stockPeople();
+    return result;
+  }
+
+  // The people in written gigs (the bartender, the old priest): one NPC each,
+  // built from their base catalog NPC, in GIG NPCs / People / <fixer>. A
+  // role that comes up in several of a fixer's gigs is one NPC.
+  const PEOPLE = "People";
+  const personName = role => {
+    const s = String(role ?? "").replace(/^(the|his|her|a|an)s+/i,"").trim();
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+  const personGroup = job => job.for ? "Personal" : (fixerOf(job)?.handle ?? "Other");
+  const personKey = (job,n) => personGroup(job) + ":" + personName(n.name).toLowerCase();
+  const personActor = (job,n) => game.actors.find(a => a.flags?.[FLAG]?.gigPerson === personKey(job,n)) ?? null;
+
+  async function stockPeople() {
+    if (!game.user.isGM) return [];
+    const want = new Map();
+    for (const job of cat()?.JOBS ?? []) {
+      for (const n of runSheet(job).npcs) {
+        const key = personKey(job,n);
+        const entry = want.get(key) ?? {key,job,n,group:personGroup(job),name:personName(n.name),notes:[]};
+        entry.notes.push(`<p><strong>${esc(job.title)}</strong>: ${esc(n.note ?? "")}</p>`);
+        want.set(key,entry);
+      }
+    }
+    const todo = [...want.values()].filter(e => !game.actors.find(a => a.flags?.[FLAG]?.gigPerson === e.key));
+    if (!todo.length) return [];
+    const bases = await ensureNpcs(todo.map(e => e.n.base).filter(Boolean));
+    const root = await folderFor("Actor",NPC_ROOT);
+    const people = await folderFor("Actor",PEOPLE,root);
+    const groups = new Map();
+    const made = [];
+    for (const e of todo) {
+      if (!groups.has(e.group)) groups.set(e.group,await folderFor("Actor",e.group,people));
+      const base = bases.get(e.n.base) ?? bases.get("civilian") ?? null;
+      const data = base ? base.toObject() : {name:e.name,type:"npc",img:"icons/svg/mystery-man.svg"};
+      delete data._id;
+      data.name = e.name;
+      data.folder = groups.get(e.group).id;
+      foundry.utils.setProperty(data,"prototypeToken.name",e.name);
+      foundry.utils.setProperty(data,"prototypeToken.appendNumber",false);
+      const flags = {...(data.flags?.[FLAG] ?? {})};
+      delete flags.npcKey; delete flags.gigPool;
+      data.flags = {...(data.flags ?? {}),[FLAG]:{...flags,gigPerson:e.key,npcBase:e.n.base ?? null}};
+      if (data.system?.details?.biography) data.system.details.biography.value = e.notes.join("") + (data.system.details.biography.value ?? "");
+      made.push(data);
+    }
+    const created = [];
+    for (let i = 0; i < made.length; i += 25) created.push(...await Actor.create(made.slice(i,i + 25),{renderSheet:false}));
+    return created.map(a => a.name);
   }
 
   // The GIG NPCs a gig needs (stocked if missing), as name -> actor.
@@ -282,7 +333,10 @@ ${foes ? `<p class="gk-small"><b>Opposition</b> ${foes}</p>` : ""}</div>`;
     };
     const foes = opposition(sheet,actors).map(e =>
       `<li>${e.actor ? `@UUID[${e.actor.uuid}]{${esc(e.name)}}` : esc(e.name)} <span class="gk-dim">×${e.count} · scene ${e.where.join(", ")}</span></li>`).join("");
-    const people = sheet.npcs.map(n => `<li><b>${esc(n.name)}</b>${n.note ? ` — ${esc(n.note)}` : ""}</li>`).join("");
+    const people = sheet.npcs.map(n => {
+      const actor = personActor(job,n);
+      return `<li><b>${actor ? `@UUID[${actor.uuid}]{${esc(personName(n.name))}}` : esc(personName(n.name))}</b>${n.note ? ` — ${esc(n.note)}` : ""}</li>`;
+    }).join("");
     return `<div class="feha-gig">
 <p class="gk-meta"><b>${esc(f?.handle ?? "")}</b> · ${esc(risk)} · ${esc(job.kind)} · €$ ${Number(job.pay ?? 0).toLocaleString("en-US")} each · +${job.cred ?? 0} cred</p>
 <p class="gk-tip">Building blocks, not a script. Rename, cut, swap or stretch anything.</p>
@@ -291,7 +345,7 @@ ${sheet.hook ? `<h3>Hook</h3><p><em>${esc(sheet.hook)}</em></p>` : ""}
 ${(job.objectives ?? []).length ? `<ul>${job.objectives.map(o => `<li>${esc(o)}</li>`).join("")}</ul>` : ""}
 <h3>Scenes</h3>${sheet.beats.map(beat).join("")}
 ${foes ? `<h3>Recommended enemies</h3><ul class="gk-list">${foes}</ul><p class="gk-small gk-dim">Drag them in as you need them. Scale the numbers to your table.</p>` : ""}
-${people ? `<h3>People</h3><ul class="gk-list">${people}</ul><p class="gk-small gk-dim">Name them yourself.</p>` : ""}
+${people ? `<h3>People</h3><ul class="gk-list">${people}</ul><p class="gk-small gk-dim">Their NPCs are in GIG NPCs → People. Name them yourself.</p>` : ""}
 ${sheet.twist ? `<h3>Twist (optional)</h3><p>${esc(sheet.twist)}</p>` : ""}
 ${sheet.wrap ? `<h3>Endings</h3><p>${esc(sheet.wrap)}</p>` : ""}
 <h3>Reward</h3><p>€$ ${Number(job.pay ?? 0).toLocaleString("en-US")} each${r.items.length ? " · " + r.items.map(i => (i.qty > 1 ? i.qty + "× " : "") + esc(i.name)).join(", ") : ""}${r.favor ? `<br><span class="gk-dim">Favour: ${esc(r.favor)}</span>` : ""}</p>
@@ -318,6 +372,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     const journalRoot = await folderFor("JournalEntry",ROOT);
 
     const actors = await ensureNpcs(sheet.beats.flatMap(b => b.enemies.map(([n]) => n)));
+    if (sheet.npcs.length) await stockPeople();
     const links = {scenes:{}};
     const made = {scenes:[]};
 
@@ -447,7 +502,7 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
     }
   }
 
-  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,stockNpcs,NPC_ROOT,KIND_CHECKS,
+  const api = {VERSION,runSheet,enemiesOf,rewardFor,rewardText,giveItem,prep,cleanup,resolveAt,stockNpcs,stockPeople,personActor,personName,NPC_ROOT,KIND_CHECKS,
     resetPools() { pools = null; }};
   globalThis.FEHA_GIG_KIT = api;
   try {
