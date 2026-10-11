@@ -334,6 +334,8 @@
   // Written gigs on the board are copies of the gig books. Bring any
   // unfinished one up to date with the books (roles instead of names, better
   // maps), keeping its pay, cred, crew, status and city pin.
+  // Run sheet layout version: built journals older than this are rewritten.
+  const SHEET_V = 2;
   const BOOK_FIELDS = ["title","kind","brief","objectives","twist","run","reward","map"];
   function syncBook(state) {
     const changed = [];
@@ -436,7 +438,7 @@
       await marker(job,true);
       if (state.autoPrep && !job.prep && kit()) {
         try {
-          job.prep = await kit().prep(job);
+          job.prep = {...await kit().prep(job),sheetV:SHEET_V};
           const fresh = read();
           if (fresh.jobs[job.id]) { fresh.jobs[job.id].prep = job.prep; await write(fresh); }
           ui.notifications.info(`FIXER NET // Gig files ready for "${job.title}": journal and maps in the GIGS folders.`);
@@ -631,7 +633,7 @@
       if (!job) throw new Error("Unknown job.");
       if (!kit()) throw new Error("The gig kit isn't loaded.");
       if (job.prep) await kit().cleanup(job.prep);
-      job.prep = await kit().prep(job);
+      job.prep = {...await kit().prep(job),sheetV:SHEET_V};
       const fresh = read();
       if (fresh.jobs[jobId]) { fresh.jobs[jobId].prep = job.prep; await write(fresh); }
       return {ok:true};
@@ -667,13 +669,18 @@
       const migrated = migrate(state);
       const synced = syncBook(state);
       const posted = topUp(state);
-      if (migrated || posted || synced.length) await write(state);
-      // Built gig journals get the updated run sheet (their maps are kept).
-      for (const job of synced) {
-        if (!job.prep?.journal) continue;
-        try { await kit()?.refreshJournal?.(job); } catch (err) { console.warn("FEHA JOBS // journal refresh failed",job.title,err); }
+      // Built gig journals get the updated run sheet (their maps are kept):
+      // gigs whose text just changed, and any journal older than the current
+      // run sheet layout.
+      const stale = Object.values(state.jobs).filter(job => job.prep?.journal && !["done","failed"].includes(job.status) &&
+        (synced.includes(job) || (job.prep.sheetV ?? 1) < SHEET_V));
+      for (const job of stale) {
+        try {
+          if (await kit()?.refreshJournal?.(job)) job.prep.sheetV = SHEET_V;
+        } catch (err) { console.warn("FEHA JOBS // journal refresh failed",job.title,err); }
       }
-      return {ok:true,posted,synced:synced.length};
+      if (migrated || posted || synced.length || stale.length) await write(state);
+      return {ok:true,posted,synced:synced.length,refreshed:stale.length};
     }
   };
 
