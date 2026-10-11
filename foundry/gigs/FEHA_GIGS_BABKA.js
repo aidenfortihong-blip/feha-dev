@@ -18,7 +18,7 @@
       "“Hungry people stand in a line. Somebody takes them out of it. Go and stand in the line too.”",
       [b("X4@Cyberpunk Street Sidewalk","The queue","Two hundred people, three pots of soup, two peacekeepers with a handheld scanner.",["Insight DC 12: they're nervous and off-script","Persuasion DC 13 to get them to leave (a recording helps: advantage)"],[["CivCorp Peacekeeper",2]]),
        b("X4@City Alley — Main Map","The holding van","Four people sit cuffed in a van round the corner, not yet logged.",["Sleight of Hand DC 12 for the van lock","Deception DC 13 to bluff the driver"],[["CivCorp Peacekeeper",1]])],
-      [["Sister Agata","organizer","Runs the soup line. Ladle in one hand, rosary in the other."]],
+      [["The soup-line nun","organizer","Runs the soup line. Ladle in one hand, rosary in the other."]],
       "Get everyone back and the soup line names a dish after the crew. Expose the quota scam and Clerk Seven hears about it.",
       ["Helix Health Booster","Kurohane Black Tea x2"],"The union hall: the crew can eat and sleep there any night, and nobody asks."),
 
@@ -30,17 +30,17 @@
       [b("51@Loading Area — Map 1","The back door","Council Implants' pharmacy loading door, 11pm. The pharmacist is sweating.",["Perception DC 13 to spot the watcher in the car across the street"],[["CivCorp Netrunner",1]]),
        b("scene:Security Checkpoint","Checkpoints","Two CivCorp checkpoints between the plaza and New Niemir.",["Deception DC 12 at each","Stealth DC 13 to go around"],[["CivCorp Peacekeeper",2]]),
        b("41","The stall","The medical stall's volunteer is waiting with a cold box.",[])],
-      [["Pharmacist Ruiz","civilian","Middle-aged, careful, does this because his mother was a refugee."]],
+      [["The pharmacist","civilian","Middle-aged, careful, does this because his mother was a refugee."]],
       "Make the run and Babka keeps the crew on the weekly rota: steady small money and goodwill.",
       ["Helix Oxy Booster x2","Corvus Paraline"]),
 
     g("eviction","Eviction Morning","Protection","H10",
-      "Bailiffs are coming to evict the Petrov family from Zarya Block at 6am. The block has organised a human chain. Babka wants professionals in the chain too.",
+      "Bailiffs are coming to evict a refugee family from Zarya Block at 6am. The block has organised a human chain. Babka wants professionals in the chain too.",
       ["Join the chain at the door","Keep it peaceful","Make the bailiffs leave without the family"],
       "The eviction paperwork is forged: the landlord wants the flat for his nephew. A proper look at the papers ends it.",
       "“Six in the morning, one door, sixty neighbours. You stand at the front.”",
       [b("H10@Apartment — Map 1","The door","The hallway is packed. Bailiffs arrive with private security and a battering ram.",["Investigation DC 12 on the eviction order: the court stamp is a sticker","Persuasion DC 13 to read it out loud to the bailiffs"],[["Private Security Guard",3],["Bouncer",1]])],
-      [["Mama Petrova","civilian","Four kids, two jobs, a husband in CivCorp detention."]],
+      [["The mother","civilian","Four kids, two jobs, a husband in CivCorp detention."]],
       "Win it and Zarya Block puts the crew's names on the building's 'friends' wall.",
       ["Rivet Work Armor Mk.I","Helix Stamina Booster"],"Zarya Block: a spare flat the crew can use as a safe house."),
 
@@ -50,7 +50,7 @@
       "One corporate kid is recording everything for a school project. The recording would get the school shut down.",
       "“Rich children want to learn from poor teachers. Good. Make sure their bodyguards behave.”",
       [b("H11@Basement — Map 2","The classroom","Twelve refugee kids, four corp kids, two bodyguards in the doorway with their hands on their guns.",["Insight DC 12 to spot the recording kid","Persuasion DC 13 to get the bodyguards to wait outside"],[["Kurohane Security",2]])],
-      [["Teacher Halina","organizer","Former university lecturer. Teaches maths with a chalk stick and spite."],["Ren Akagi","civilian","Twelve-year-old corp kid. Nice, nosy, recording for a school project."]],
+      [["The teacher","organizer","Former university lecturer. Teaches maths with a chalk stick and spite."],["The corp kid","civilian","Twelve-year-old corp kid. Nice, nosy, recording for a school project."]],
       "Get the recording deleted (or edited) and the school survives. The corp kid may even become an ally later.",
       ["Kurohane Quiet Energy x2","Visual Cortex Support"]),
 
@@ -61,7 +61,7 @@
       "“Somebody is eating our winter. Find out who before the snow.”",
       [b("H10@Basement — Map 2","The cellar","Shelves of jars, a broken lock, footprints in spilled brine heading to the sewer hatch.",["Investigation DC 11","Stealth DC 12 to wait unseen"]),
        b("scene:Sewer Section","The tunnel","The tracks lead through the sewer to Volna Block. Rats and one Chromehead squatter.",["Survival DC 12 to follow the tracks"],[["Chromehead",1]])],
-      [["Old Zinovy","civilian","Volna Block's unofficial mayor. Proud, hungry, ashamed."]],
+      [["The block's old 'mayor'","civilian","Volna Block's unofficial mayor. Proud, hungry, ashamed."]],
       "Bring the two blocks together and the food store gets twice as big. Babka sends the crew a jar of her best pickles.",
       ["Helix Health Booster","Bastion Recovery Drink x2"],"Babka: a jar of pickles that heals (once, like a Helix Health Booster, but better taste)."),
 
@@ -72,7 +72,7 @@
       "“Four thousand credits of grandmothers' savings. Carry it like it's alive.”",
       [b("scene:Night Street","The walk","Downtown at night with a bag of cash. Glasshouse kids smell it.",["Stealth DC 12 to avoid attention"],[["Glasshouse Kid",2]]),
        b("X6@Lobby and Office","CivCorp Plaza","A counter, a queue, a clerk who smiles too much.",["Insight DC 12 to see the clerk wants a bribe","Persuasion DC 14 to shame her into processing it straight"])],
-      [["Clerk Dorota","civilian","CivCorp counter clerk. Underpaid, cynical, not cruel."]],
+      [["The counter clerk","civilian","CivCorp counter clerk. Underpaid, cynical, not cruel."]],
       "All three home: the organisers owe the crew. Two of three: Babka is still grateful but quieter.",
       ["Ghostweave Suit Mk.I","Helix Stamina Booster"],"The three organisers: one of them gets the crew into any union meeting in the city."),
 
@@ -82,7 +82,7 @@
       "The ex isn't coming to fight. He's coming to give the bride back her grandmother's ring, and he's terrified.",
       "“A wedding is sacred. A wedding with a fight is a story. Tonight I want only the first.”",
       [b("22","The party","Accordions, vodka, two hundred guests, and a young man in a Wolves patch at the door with a small box.",["Insight DC 12 to see he's nervous, not angry","Persuasion DC 11 to escort him in quietly"],[["Niemir Wolf",2]])],
-      [["Katya","civilian","The bride. Laughs loudly, cries easily, has a mean left hook."],["Lev","street-thug","The ex. Wolves patch, flowers in his pocket."]],
+      [["The bride","civilian","The bride. Laughs loudly, cries easily, has a mean left hook."],["The ex","street-thug","The ex. Wolves patch, flowers in his pocket."]],
       "If the ring gets back without a scene, the families both owe the crew. Somebody also catches the bouquet (GM's choice).",
       ["Kurohane Night Cola x2","Helix Health Booster"],"The wedding families: free hospitality at any Sloviti household in New Niemir."),
 
@@ -92,7 +92,7 @@
       "One name on the list is Ponyboy's mother. (If Ponyboy isn't in the crew, it's a crew member's neighbour.)",
       "“They decide who stops getting medicine. In a spreadsheet. Bring me the spreadsheet.”",
       [b("81@Medical Ward","Records office","Third floor, after visiting hours. A guard post, a terminal and a sleeping nurse.",["Stealth DC 13 past the guard post","Tech DC 13 to copy the list (each failure: one guard comes to look)"],[["Private Security Guard",2]])],
-      [["Nurse Halina","civilian","The same nurse who leaked the formula recall. Points out the terminal."]],
+      [["The nurse","civilian","The same nurse who leaked the formula recall. Points out the terminal."]],
       "With the list, Babka's network moves sixty patients to free clinics before the pause hits.",
       ["Biomonitor","Helix Oxy Booster"]),
 
@@ -103,8 +103,8 @@
       "“A man with a badge plays with children. We will watch him play.”",
       [b("scene:Night Street","The patrol","Four stops in three hours, each one rougher.",["Stealth DC 12 to keep filming unseen (failure: he spots the camera)","Insight DC 13: he looks ashamed after each stop"],[["CivCorp Peacekeeper",2]]),
        b("25","The handover","The journalist waits in the Picket Line's back room.",[])],
-      [["Officer Bryn Talley","civilian","The peacekeeper. Twenty-four, scared of his sergeant."],["Lada Voronova","journalist","Pirate TV journalist."]],
-      "Footage goes out: the stops end. Flip Talley and Clerk Seven pays the crew a bonus (€$ 400) for the sergeant.",
+      [["The young peacekeeper","civilian","The peacekeeper. Twenty-four, scared of his sergeant."],["The journalist","journalist","Pirate TV journalist."]],
+      "Footage goes out: the stops end. Flip the young peacekeeper and Clerk Seven pays the crew a bonus (€$ 400) for the sergeant.",
       ["Grenade Recon Regular Mk.I x2","Kurohane Black Tea"]),
 
     g("sick-water","Sick Water","Investigation","H11",
@@ -124,7 +124,7 @@
       "The gang leader is a Glasshouse kid slumming it. He does it because nobody at home ever told him no.",
       "“A blind man and his dog. That's all. Go walk with them.”",
       [b("41","The evening walk","Slow steps, a friendly dog, and four kids leaning on a wall with a bottle.",["Intimidation DC 12 to scare them off","Persuasion DC 14 to actually reach the leader"],[["Glasshouse Kid",3],["Street Thug",1]])],
-      [["Mr. Ostrowski","civilian","Blind since the war. Has walked this route for thirty years."],["Biscuit","civilian","The dog. Very good."]],
+      [["The old man","civilian","Blind since the war. Has walked this route for thirty years."],["The dog","civilian","The dog. Very good."]],
       "If the leader is reached, not just beaten, he comes back next week to apologise. Babka is impressed.",
       ["Knife Kurtz","Helix Stamina Booster"]),
 
@@ -135,7 +135,7 @@
       "“Sixty-eight years old, arrested for not understanding. Bring her home and bring me the officer's name.”",
       [b("X6@Lobby and Office","CivCorp Plaza","Records desk, a queue, a computer that 'can't find her'.",["Investigation DC 12 on the intake log","Persuasion DC 13 with the desk sergeant"]),
        b("scene:Police Cells","Holding cells","She's in cell six, frightened, holding a rosary.",["Persuasion DC 12 with the arresting officer to correct the record"],[["CivCorp Peacekeeper",1]])],
-      [["Babcia Halinka","civilian","Speaks only Sloviti. Has a lot to say once someone listens."]],
+      [["The grandmother","civilian","Speaks only Sloviti. Has a lot to say once someone listens."]],
       "Free her and Babka cooks for the crew. Name the officer and Clerk Seven owes the crew one.",
       ["Kurohane Black Tea x2","Proximity Reducer"]),
 
@@ -145,7 +145,7 @@
       "A CivCorp drone patrols every 40 minutes. Its operator is a bored netrunner who can be bribed with a mention in the mural.",
       "“They painted over our history. Paint it back. Bigger.”",
       [b("X6@City Hall — Map 1","The plaza","Night, scaffolding, six artists, buckets of paint and a long wall.",["Stealth DC 12 each drone pass (three passes)","Tech DC 13 to loop the drone feed"],[["CivCorp Netrunner",1],["CivCorp Peacekeeper",2]])],
-      [["Yarik","organizer","Lead artist. Paints with a brush in each hand."]],
+      [["The lead artist","organizer","Lead artist. Paints with a brush in each hand."]],
       "If the mural is finished, it stays up for a month before CivCorp dares touch it. Every Sloviti in the city sees it.",
       ["Grenade Smoke Regular Mk.I x2","Flexweave Mobility Suit Mk.I"]),
 
@@ -156,7 +156,7 @@
       "“They want to choose their own steward. In this city, that's a crime. Guard the crime.”",
       [b("X4","The vote","A shoebox, three hundred voters, two union heavies writing down names.",["Sleight of Hand DC 12 to swap their notebooks for blank ones","Insight DC 13 to spot the sympathetic one"],[["Street Thug",2],["Bouncer",1]]),
        b("X4","The raid","At 2am, the approved union's goon squad comes for the box.",["Perception DC 12 to get a warning"],[["Street Thug",3]])],
-      [["Steward-elect Milan","union-steward","Will win by a landslide. Has no idea how dangerous that is."]],
+      [["The steward-elect","union-steward","Will win by a landslide. Has no idea how dangerous that is."]],
       "Keep the count safe and the farms have their first elected steward in twenty years. Babka cries, briefly.",
       ["Rivet Work Armor Mk.I","Helix Health Booster"],"The protein-farm union: a crew member can always get a day's pay at the farms, no questions."),
 
@@ -167,8 +167,8 @@
       "“An ambulance that drives to a prison. Stop it. Gently. There's a hurt man inside.”",
       [b("scene:Central Highway","The chase","The ambulance has a head start and a CivCorp escort bike.",["Driving or Athletics DC 13 to catch it","Persuasion DC 11 over the radio to the driver"],[["CivCorp Peacekeeper",2]]),
        b("59","Bogdan's Clinic","Bogdan works fast; the striker has a bullet in his shoulder.",["Medicine DC 12 to help Bogdan"])],
-      [["Danylo","civilian","The striker. Shot at the picket, refuses to stop talking about the strike."]],
-      "Save Danylo and the strike holds another week. The union owes the crew.",
+      [["The striker","civilian","The striker. Shot at the picket, refuses to stop talking about the strike."]],
+      "Save the striker and the strike holds another week. The union owes the crew.",
       ["Helix Health Booster x2","Grenade Flash Regular Mk.I x2"]),
 
     g("seed-bank","Seed Bank","Theft","65",
@@ -178,7 +178,7 @@
       "“Seeds. Tomatoes, beans, cucumbers. Helix owns the right to plant them. We'll borrow the right.”",
       [b("65","The farm fence","Miles of protein vats, a fence, drone patrols.",["Stealth DC 13 through the fence","Survival DC 11 to avoid the vat runoff"],[["Private Security Guard",2]]),
        b("65@Greenhouse R&D Lab","The vault","A cold room with labelled drawers and a nervous keeper doing his own stealing.",["Insight DC 12 to notice he's stealing too","Persuasion DC 12 to make a deal"])],
-      [["Keeper Aldo","civilian","Helix seed-vault technician with a side business."]],
+      [["The vault keeper","civilian","Helix seed-vault technician with a side business."]],
       "Seeds in hand: every rooftop garden in New Niemir plants this spring. Babka sends the crew the first tomatoes.",
       ["Rapid Muscle Nourisher","Helix Stamina Booster x2"]),
 
@@ -189,7 +189,7 @@
       "“A child in the tunnels. Two days. Go now.”",
       [b("scene:Abandoned Subway Station","The station","Dark platforms, flooded tracks, voices echoing.",["Survival or Perception DC 12 to find small footprints","Athletics DC 11 across the flooded track"],[["Chromehead",1]]),
        b("scene:Abandoned Subway Station","The camp","A camp of veterans around a fire, the boy asleep under a Navy blanket.",["Persuasion DC 12 to promise the camp stays secret"])],
-      [["Sasha Kurylenko","civilian","The boy. Nine, unbothered, thinks it was an adventure."],["Sergeant Mold","civilian","Ex-Navy, leads the tunnel camp. Gruff, kind."]],
+      [["The boy","civilian","The boy. Nine, unbothered, thinks it was an adventure."],["The old sergeant","civilian","Ex-Navy, leads the tunnel camp. Gruff, kind."]],
       "Keep the camp secret and the veterans become the crew's eyes underground.",
       ["Grenade Recon Regular Mk.I x2","Helix Oxy Booster"],"The tunnel veterans: a guide through the Undercity once."),
 
@@ -200,7 +200,7 @@
       "“No rent, no water, says the developer. Water is not a negotiation.”",
       [b("H11@Basement Utilities Room","The water main","Basement valve room, four men with wrenches and a crowbar.",["Persuasion DC 12 to talk money","Or fight"],[["Rustwater Boy",3]]),
        b("H11","The developer's call","He phones to check the job is done. Someone has to answer.",["Deception DC 13 to get him to say it on record"])],
-      [["Mr. Wessel","civilian","The developer. Only ever a voice on a phone."]],
+      [["The developer","civilian","The developer. Only ever a voice on a phone."]],
       "The recording ends the cut-offs. The strike holds.",
       ["Iron Pipe","Bastion Electrolyte x2"]),
 
@@ -211,7 +211,7 @@
       "“Three wanted people, one choir, one checkpoint. Do you sing?”",
       [b("22","Rehearsal","Mila's back room. The three organisers cannot sing.",["Performance DC 12 to teach them enough"]),
        b("scene:Security Checkpoint","The checkpoint","The sergeant asks for a hymn.",["Performance DC 13 (or the organisers' rehearsal result)","Deception DC 14 if the song goes wrong"],[["CivCorp Peacekeeper",3]])],
-      [["Choirmaster Inna","organizer","Stern, ninety, perfect pitch."]],
+      [["The choirmaster","organizer","Stern, ninety, perfect pitch."]],
       "All three through: Babka's network gets three people out of the district. The sergeant hums the hymn for a week.",
       ["Helix Health Booster","Kurohane Black Tea x2"]),
 
@@ -232,18 +232,18 @@
       "“Twenty people in a small boat. You take them off the boat. You don't let anyone else take them.”",
       [b("39","Pier 9","Fog, a small boat, twenty frightened people, a customs launch on the water.",["Stealth DC 13 to unload unseen","Persuasion DC 12 to keep the refugees calm"],[["CivCorp Peacekeeper",2]]),
        b("39@Market Street","Recruiters","Carp-Line's men in the market offering jobs and guns.",["Persuasion DC 13 to send them away without a fight"],[["Rustwater Boy",2]])],
-      [["Mariya","civilian","Speaks for the refugees. Former schoolteacher. Has a list of everyone."]],
+      [["The refugees' spokeswoman","civilian","Speaks for the refugees. Former schoolteacher. Has a list of everyone."]],
       "Everyone safe: Babka owes the crew a big one. Lose some to the recruiters and Babka is angry at Carp-Line, not the crew.",
       ["Ghostweave Suit Mk.I","Helix Oxy Booster"],"Babka: one big favour, any time."),
 
     g("church-bell","The Bell","Recovery","scene:Gothic City Chapel",
-      "The Sloviti chapel's bronze bell was stolen for scrap. Without it, there's no funeral bell, and old Father Teodor's own funeral is coming soon.",
+      "The Sloviti chapel's bronze bell was stolen for scrap. Without it, there's no funeral bell, and old the old priest's own funeral is coming soon.",
       ["Find the scrapyard that bought it","Get the bell back","Hang it before Sunday"],
       "The scrap dealer is a Sparker who melts metal for chrome parts. The bell is still whole: he couldn't bring himself to melt a church bell.",
-      "“A church without a bell is a quiet church. Father Teodor is dying. He wants to hear it once more.”",
+      "“A church without a bell is a quiet church. The old priest is dying. He wants to hear it once more.”",
       [b("44","Dam Market","The scrap dealers point at a Sparker workshop by the dam.",["Streetwise DC 12"]),
        b("44@The Mechanic","The workshop","The bell sits on a pallet. Two Sparkers guard it.",["Persuasion DC 13 (the bell clearly bothers them)","Athletics DC 15 to move the bell"],[["Sparker",2]])],
-      [["Father Teodor","civilian","Ninety-four. Wants to hear his bell once more."]],
+      [["The old priest","civilian","Ninety-four. Wants to hear his bell once more."]],
       "Hang the bell and the whole district comes out to hear it ring.",
       ["Kurohane Black Tea x2","Helix Health Booster"],"The chapel: sanctuary for a crew member for one night, even from CivCorp."),
 
@@ -253,8 +253,8 @@
       "The driver hates throwing it out. He'd leave the doors open if he knew who was coming.",
       "“Good bread, thrown out because it's cheaper than selling it. Go and catch some bread.”",
       [b("scene:Food Truck Alley","The alley","The truck parks by the dumpster. Two security guards watch the dumping.",["Persuasion DC 11 with the driver","Stealth DC 12 past the guards"],[["Private Security Guard",2]])],
-      [["Driver Ollie","civilian","Hates waste. Has a daughter at the evening school."]],
-      "Make friends with Ollie and the soup line gets bread every night.",
+      [["The driver","civilian","Hates waste. Has a daughter at the evening school."]],
+      "Make friends with the driver and the soup line gets bread every night.",
       ["Helix Stamina Booster x2","Kurohane Night Cola"])
   ]});
 })();

@@ -18,7 +18,7 @@
       "Coldwater draws a line in the sand with her knife: “Water goes in, less comes out. Find the leak.”",
       [b("69@Pump Control","Outflow station","Pumps, valves, a station manager who won't talk.",["Tech DC 13 on the meters","Persuasion DC 13 on the manager"]),
        b("scene:Dusty Road","The pipeline","A buried pipe heading for the protein flats, a Helix patrol.",["Survival DC 12 to track it"],[["Private Security Guard",3],["Helix Medtech",1]])],
-      [["Manager Torvik","civilian","Station manager. Paid to look away."]],
+      [["The station manager","civilian","Station manager. Paid to look away."]],
       "Proof of the siphon gets the clans a fair ration. Coldwater makes the crew honorary clan.",
       ["Flexweave Mobility Suit Mk.II","Helix Oxy Booster x2"],"The Wanderer Clan: water, food and a bed at any clan camp."),
 
@@ -29,7 +29,7 @@
       "“Trucks don't vanish. Somebody makes them vanish. Ride along and watch.”",
       [b("scene:Wasteland Road","The highway","Dark road, a sudden pulse, every light dies.",["Tech DC 13 to restart a truck","Perception DC 13 to spot the EMP rig"],[["Private Security Guard",3],["Bastion Trooper",1]]),
        b("scene:Car Scrap Yard","The salvage yard","The stolen trucks, lined up, being stripped.",["Stealth DC 13"],[["Private Security Guard",2]])],
-      [["Driver Nika","civilian","Clan driver. Drives with a shotgun on her lap."]],
+      [["The clan driver","civilian","Clan driver. Drives with a shotgun on her lap."]],
       "Stop the salvage crew and the clan gets its trucks back. Coldwater remembers.",
       ["Arcspike","Grenade EMP Regular Mk.II x2"]),
 
@@ -39,7 +39,7 @@
       "A third party wants the talks to fail: a corp land agent who profits from clan war.",
       "“The Scorpions want peace. Maybe. Stand between us and see who blinks.”",
       [b("scene:Ambush Canyon","The canyon","Two delegations, rifles on the rocks above.",["Persuasion DC 14 for the deal","Perception DC 14 to spot the sniper on the ridge"],[["Scorpion Raider",3],["Street Gunner",1]])],
-      [["Chief Saba","scorpion-chief","Scorpions' leader. Tired of burying her people."]],
+      [["The Scorpion chief","scorpion-chief","Scorpions' leader. Tired of burying her people."]],
       "A deal: the Barrens get quieter. The land agent loses a fortune.",
       ["Pozhar","Bastion Trauma Booster"],"The Scorpions: safe passage across the Barrens."),
 
@@ -49,7 +49,7 @@
       "The bounty hunters' warrant is real, but for a man who died last year. Someone reused it to clear the family off land the corp wants.",
       "“Wrong name, wrong man, real guns. Go fix it.”",
       [b("09","The motel","Cars in the lot, hunters on the roof, a family in room 6.",["Insight DC 13 on the warrant","Persuasion DC 14 with the hunters"],[["Street Gunner",3],["Chromehead",1]])],
-      [["Amar Vell","civilian","The father. Not the man on the warrant."]],
+      [["The father","civilian","The father. Not the man on the warrant."]],
       "Prove the mistake and the hunters leave. Coldwater sends the crew a clan blanket, which in the Barrens is a passport.",
       ["Flexweave Mobility Suit Mk.II","Helix Health Booster x2"]),
 
@@ -60,7 +60,7 @@
       "“Race day. Engines, dust, money. Somebody's cutting brake lines.”",
       [b("scene:Auto Shop Garage Base - Series Part 1","The garage","Night, tools, a shadow at the car.",["Perception DC 13","Tech DC 12 to fix a cut line"],[["Scorpion Raider",2]]),
        b("scene:Nomad Racetrack","The race","Engines roar; the crew rides shotgun.",["Driving DC 14 to win"])],
-      [["Mechanic Juna","civilian","The clan's mechanic. Furious."]],
+      [["The clan mechanic","civilian","The clan's mechanic. Furious."]],
       "Win the race and the clan throws a party that lasts three days.",
       ["Kenshin","Bastion Electrolyte x2"]),
 
@@ -71,7 +71,7 @@
       "“A plane fell. Planes carry secrets. Go and pick some up.”",
       [b("scene:The Crash Site","The wreck","Burning fuselage, scattered cargo, scav crews already circling.",["Survival DC 12","Medicine DC 13 for the survivor"],[["Scorpion Raider",3]]),
        b("scene:Desert Highway Checkpoint","The recovery team","CivCorp trucks on the road back.",["Stealth DC 13"],[["CivCorp Rifleman",2]])],
-      [["Courier Elan","civilian","The survivor. Has the documents."]],
+      [["The survivor","civilian","The survivor. Has the documents."]],
       "The black box and the documents go to Coldwater. She shares what she learns.",
       ["Fire-Control Harness Mk.II","Helix Oxy Booster"]),
 
@@ -82,7 +82,7 @@
       "“Somebody poisoned a well where children drink. Find them.”",
       [b("07","The camp","Sick kids, a contaminated well, tyre tracks.",["Medicine DC 12","Survival DC 12 to follow the tracks"]),
        b("scene:Off Grid","The survey camp","Corp tents, drums of chemicals, guards.",["Stealth DC 13 for proof"],[["Private Security Guard",3],["Bastion Trooper",1]])],
-      [["Surveyor Linde","civilian","Did what she was told. Hates it."]],
+      [["The surveyor","civilian","Did what she was told. Hates it."]],
       "Proof stops the buyout. The camp digs a new well with the crew's help.",
       ["Biomonitor","Helix Health Booster x2"]),
 
@@ -92,7 +92,7 @@
       "The land deed is clan land under an old treaty. The developer's lawyers know it.",
       "“Bulldozers at dawn. Trailers full of family. Stand in the way.”",
       [b("08","The gate","Trailers, families, bulldozers rolling up.",["Persuasion DC 13 with the drivers","Investigation DC 13 on the deed"],[["Private Security Guard",3],["Bouncer",1]])],
-      [["Granny Ash","civilian","Has lived here sixty years."]],
+      [["The oldest resident","civilian","Has lived here sixty years."]],
       "The treaty holds. The park stays.",
       ["Rivet Work Armor Mk.II","Kurohane Black Tea x2"]),
 
@@ -102,7 +102,7 @@
       "The impound officer is selling seized medicine to a Helix reseller.",
       "“Medicine for a clinic, held hostage by a man with a stamp. Get it.”",
       [b("75@Hardhat Lockup","Impound","Cages, crates, scanners, guards.",["Stealth DC 13","Deception DC 13 with fake papers"],[["CivCorp Peacekeeper",3],["CivCorp Rifleman",1]])],
-      [["Officer Grieve","civilian","Impound officer. Side business."]],
+      [["The impound officer","civilian","Impound officer. Side business."]],
       "The clinic gets its medicine.",
       ["Helix Health Booster x2","Biomonitor"]),
 
@@ -123,7 +123,7 @@
       "He's a Jade Arc test pilot for a new rifle, and the scouts are his 'targets of opportunity'.",
       "“Three scouts dead, one shot each. Somebody has a good rifle and a bad heart.”",
       [b("scene:Snipers Vantage","The ridge","Exposed rock, glints of a scope.",["Stealth DC 14 to approach","Perception DC 14 to locate him"],[["Scorpion Chief",1],["Scorpion Raider",2]])],
-      [["Tester Vane","civilian","The sniper. Thinks it's a game."]],
+      [["The sniper","civilian","The sniper. Thinks it's a game."]],
       "Stop him and take the rifle: Coldwater lets the crew keep it.",
       ["Triskelion","Bastion Trauma Booster"]),
 
@@ -133,7 +133,7 @@
       "The rig workers are clan members hired by the corp. They'd rather work for the clan.",
       "“They drill our land and pay our cousins to do it. Make the drill stop.”",
       [b("scene:Cyberpunk Badlands - San Echo Oil Pumps","The rig","Pumps, a control shed, guards.",["Tech DC 13","Persuasion DC 13 with the workers"],[["Bastion Trooper",2],["Private Security Guard",2]])],
-      [["Foreman Tal","union-steward","Clan member, corp foreman."]],
+      [["The foreman","union-steward","Clan member, corp foreman."]],
       "The rig stops. The workers join the clan's own drilling co-op.",
       ["Grenade EMP Regular Mk.II x2","Rivet Work Armor Mk.II"]),
 
@@ -143,7 +143,7 @@
       "The range sergeant is a goat farmer's son and will delay the exercise by ten minutes if asked.",
       "“Goats. On a firing range. I know. Go.”",
       [b("scene:Barrens","The range","Craters, targets, fifty goats, a countdown siren.",["Animal Handling DC 12","Persuasion DC 12 over the radio"],[["Bastion Trooper",1]])],
-      [["Sergeant Hask","civilian","Range sergeant. Grew up with goats."]],
+      [["The range sergeant","civilian","Range sergeant. Grew up with goats."]],
       "Goats safe. The clan tells this story for years.",
       ["Helix Stamina Booster x2","Kurohane Black Tea"]),
 
@@ -153,7 +153,7 @@
       "One of the jammer trucks is a stolen clan truck; its driver is a clan prisoner.",
       "“One radio mast. Every clan's voice. Hold it till dawn.”",
       [b("scene:Wastelander Base","The mast","A tower, a hut, radio operators, trucks on the horizon.",["Tech DC 13 to counter-jam"],[["Private Security Guard",3],["Bastion Trooper",1]])],
-      [["Operator Zinn","civilian","Clan radio operator."]],
+      [["The radio operator","civilian","Clan radio operator."]],
       "The mast holds. The spring messages go out. The prisoner comes home.",
       ["Grenade EMP Regular Mk.II x2","Interface Security Suit Mk.II"]),
 
@@ -164,7 +164,7 @@
       "“A whole town gone overnight. People don't evaporate.”",
       [b("scene:Wastelands Gas Station","The town","Half-eaten meals, open doors, CivCorp boot prints.",["Investigation DC 12","Survival DC 13 to follow the trucks"]),
        b("65","The work camp","Fences, workers, CivCorp guards.",["Stealth DC 14"],[["CivCorp Peacekeeper",3],["CivCorp Warden",1]])],
-      [["Camp worker Dua","civilian","Former town mechanic."]],
+      [["The town mechanic","civilian","Former town mechanic."]],
       "Proof of the camp goes to Coldwater and Babka. A rescue gig follows.",
       ["Helix Health Booster x2","Flexweave Mobility Suit Mk.II"]),
 
@@ -174,7 +174,7 @@
       "The cache is guarded by an old automated turret system still running on war-era code.",
       "“A cave full of old war toys. Get there first.”",
       [b("scene:Arcadia Cave","The cave","Dark tunnels, old turrets, ammunition crates.",["Tech DC 14 to shut down turrets","Perception DC 13 for traps"],[["Scorpion Raider",3]])],
-      [["Scout Rae","civilian","Found the cave. Wants a cut."]],
+      [["The scout","civilian","Found the cave. Wants a cut."]],
       "The clans get the chrome; the crew picks first.",
       ["Reinforced Muscles","Grenade Frag Regular Mk.II x2"]),
 
@@ -184,7 +184,7 @@
       "It's run by off-duty CivCorp officers on their own time.",
       "“A toll booth in the middle of nowhere. The Council never mentioned it.”",
       [b("scene:Desert Highway Checkpoint","The checkpoint","Barriers, a booth, four officers in mismatched uniforms.",["Investigation DC 12 on the papers","Intimidation DC 13"],[["CivCorp Peacekeeper",3],["CivCorp Rifleman",1]])],
-      [["Sergeant Dorn","civilian","Runs the fake checkpoint."]],
+      [["The fake sergeant","civilian","Runs the fake checkpoint."]],
       "Fees returned. Clerk Seven pays for the officers' names.",
       ["Kenshin","Bastion Electrolyte x2"]),
 
@@ -195,7 +195,7 @@
       "“A wedding, a dowry, a long road. Protect all three. Or at least the bride.”",
       [b("scene:Dusty Road","The road","Painted trucks, music, dust on the horizon.",["Perception DC 13"],[["Scorpion Raider",3],["Scorpion Chief",1]]),
        b("07","The wedding","The bride is missing.",["Insight DC 13"])],
-      [["Bride Ama","civilian","Eighteen, in love with the wrong clan."]],
+      [["The bride","civilian","Eighteen, in love with the wrong clan."]],
       "However it ends, Coldwater laughs about it later. Usually.",
       ["Pozhar","Helix Stamina Booster x2"]),
 
@@ -205,7 +205,7 @@
       "The drone operators are bored teenagers on a work program who'd happily 'lose' a few drones.",
       "“Drones watching children steal food. Ground them.”",
       [b("65@Sci-fi Hangar","The hangar","Rows of drones, charging racks, an operator booth.",["Tech DC 13","Persuasion DC 12 with the operators"],[["Private Security Guard",2],["Helix Medtech",1]])],
-      [["Operator Tib","civilian","Sixteen. Hates his job."]],
+      [["The young operator","civilian","Sixteen. Hates his job."]],
       "The drones stay grounded for a month. The kids eat.",
       ["Grenade EMP Regular Mk.II x2","Kurohane Night Cola"])
   ]});

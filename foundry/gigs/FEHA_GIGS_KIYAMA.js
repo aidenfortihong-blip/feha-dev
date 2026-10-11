@@ -18,7 +18,7 @@
       "Kiyama pours two cups, slides one across: “Tradition is a weapon too. Learn to hold it.”",
       [b("scene:Japanese Garden","The ceremony","Lanterns, a koi pond, two families kneeling across a low table.",["Performance DC 13 to serve tea correctly (failure: an insult)","Perception DC 14 to spot the poison vial"],[["Kurohane Agent",1]]),
        b("scene:Japanese Garden","If it breaks","Blades out across the garden.",[],[["Yakuza Kobun",3],["Yakuza Enforcer",1]])],
-      [["Oyabun Tsurugi","civilian","The family's head. Old, silent, decides everything."],["Madame Hebi","civilian","Rival family's head. Smiles with all her teeth."]],
+      [["The oyabun","civilian","The family's head. Old, silent, decides everything."],["The rival boss","civilian","Rival family's head. Smiles with all her teeth."]],
       "Peace holds: the family owes the crew face. The Kurohane plant, exposed, buys the crew a dangerous enemy.",
       ["Katana","Kurohane Black Tea x2"],"The Tsurugi-gumi: the crew can ask Kiyama for one 'door opened' in the Orient Quarter."),
 
@@ -28,8 +28,8 @@
       "The rigging was done by a Corvus engineer who also rigged the family's machines a year ago. Kiyama doesn't know.",
       "“They cheat at pachinko. That's our business. Prove it.”",
       [b("scene:Pachinko Parlor","The parlour","Noise, lights, steel balls, Hebi-kai floor managers.",["Tech DC 13 to open a machine","Sleight of Hand DC 12 to swap a board"],[["Yakuza Kobun",3],["Yakuza Enforcer",1]])],
-      [["Engineer Sakai","civilian","Corvus contractor. Rigs machines for anyone."]],
-      "Proof out: the parlour empties. Expose Sakai's work on both families and Kiyama looks very hard at his own parlour.",
+      [["The rigger","civilian","Corvus contractor. Rigs machines for anyone."]],
+      "Proof out: the parlour empties. Expose the rigger's work on both families and Kiyama looks very hard at his own parlour.",
       ["Kukri","Grenade Smoke Regular Mk.II x2"]),
 
     g("debt-of-honor","Debt of Honour","Collection","68",
@@ -39,7 +39,7 @@
       "“He owes us. Money we can lose. Face we cannot.”",
       [b("68","Lantern Row","Neon, hostesses, a club with a new doorman in Hebi-kai colours.",["Insight DC 13 on the doorman's tattoo","Intimidation DC 13 to get in"],[["Yakuza Kobun",2],["Bouncer",1]]),
        b("scene:VIP Room","The back office","The owner, sweating, with a Hebi-kai enforcer at his shoulder.",["Persuasion DC 14"],[["Yakuza Enforcer",1]])],
-      [["Mr. Ono","shopkeeper","Club owner. Trapped between two families."]],
+      [["The club owner","shopkeeper","Club owner. Trapped between two families."]],
       "Get the debt back from the Hebi-kai and the owner becomes the family's man again.",
       ["Kenshin","Kurohane Quiet Energy x2"]),
 
@@ -50,7 +50,7 @@
       "“A corporation is taking my soldiers with pensions and dental. I cannot offer dental. Make him leave.”",
       [b("83@Coffee Shop","Corvus Campus café","The recruiter holds 'information sessions' in a café near the campus.",["Persuasion DC 14","Intimidation DC 15 (risky: Kurohane notices)"],[["Kurohane Security",2]]),
        b("H8","Sakura Heights","His apartment, his family photos. The oyabun is in them.",["Investigation DC 12"])],
-      [["Ren Tsurugi","civilian","The recruiter. Clever, guilty, homesick."]],
+      [["The recruiter","civilian","The recruiter. Clever, guilty, homesick."]],
       "Reunite nephew and uncle and the family owes the crew enormously. Threaten him and Kurohane remembers.",
       ["Ghostweave Suit Mk.II","Kurohane Black Tea"],"The oyabun: one personal favour from the head of the family."),
 
@@ -61,7 +61,7 @@
       "“A fish. A very old, very important fish. The oyabun hasn't slept.”",
       [b("scene:Japanese Garden","The pond","Footprints, a dropped bucket, a teenager's school badge.",["Investigation DC 12"]),
        b("H8@Pink Room","The kid's hideout","A bathtub, a fish, a nervous teen.",["Persuasion DC 11"],[["Street Thug",2]])],
-      [["Kaito","civilian","Sixteen. Wanted to impress the wrong people."]],
+      [["The teenager","civilian","Sixteen. Wanted to impress the wrong people."]],
       "Fish home alive: the oyabun gives the crew a calligraphy scroll, which is worth more in the Quarter than money.",
       ["Tanto","Kurohane Black Tea x2"],"The oyabun's scroll: any Yakuza in the city hesitates before attacking the crew."),
 
@@ -72,7 +72,7 @@
       "“Fugu kills those who eat it carelessly. My men were not careless.”",
       [b("scene:Sushi Pad","The bar","A chef cleaning his knives, a waitress who won't look up.",["Insight DC 13 on the waitress","Medicine DC 12 on the leftover sauce"]),
        b("scene:Orient Streets","The handler","The waitress meets her handler in the street market.",["Stealth DC 13"],[["Kurohane Agent",1],["Kurohane Security",2]])],
-      [["Chef Mori","shopkeeper","Proud. Has served fugu for thirty years without a death."],["Waitress Aki","civilian","Paid to do it. Terrified."]],
+      [["The chef","shopkeeper","Proud. Has served fugu for thirty years without a death."],["The waitress","civilian","Paid to do it. Terrified."]],
       "Proof of Kurohane's hand: Kiyama's position in the family rises, and so does the crew's.",
       ["Neurotoxin Knife","Helix Health Booster"]),
 
@@ -83,7 +83,7 @@
       "“My table, my market, my fire. Find the man with the matches.”",
       [b("35","The market","Lanterns, steam, crowds, and someone with a lighter in a backpack.",["Perception DC 13 to spot the arsonist","Athletics DC 12 to catch him"],[["Street Thug",2],["Glasshouse Kid",1]]),
        b("H8@Office — Encounter","The developer's office","On the 30th floor of Sakura Heights.",["Intimidation DC 13"],[["Private Security Guard",2]])],
-      [["Developer Kasai","civilian","Wants the land. Has Kurohane backers."]],
+      [["The developer","civilian","Wants the land. Has Kurohane backers."]],
       "Fires stop. The market raises a toast to the crew. Kurohane notes the delay.",
       ["Kiroshi Optics","Grenade Smoke Regular Mk.II x2"]),
 
@@ -93,8 +93,8 @@
       "The executive is drunk and harmless. His bodyguard is not.",
       "“Her mother saved my life once. Repay the debt for me.”",
       [b("68@Dollhouse Interior — Map 1","The club","A private room, a drunk executive, a Kage bodyguard.",["Deception DC 13 to get in as staff","Stealth DC 14"],[["Kurohane Agent",1],["Bouncer",2]])],
-      [["Yuki","civilian","The hostess. Twenty-two, wants to study medicine."]],
-      "Yuki gets out. Kiyama pays her medical school fees, quietly, and owes the crew.",
+      [["The hostess","civilian","The hostess. Twenty-two, wants to study medicine."]],
+      "The hostess gets out. Kiyama pays her medical school fees, quietly, and owes the crew.",
       ["Kurohane Quiet Energy x2","Living Dermal Suit Mk.II"]),
 
     g("cyberdeck-ring","Counterfeit Decks","Sabotage","45",
@@ -104,7 +104,7 @@
       "“Fake guns that shoot real bullets, sold under my nose. Find the factory.”",
       [b("45","The showroom","The dealer shows the crew a fake. The serial points to a workshop.",["Investigation DC 12"]),
        b("scene:Small Warehouse","The workshop","Engineers, lathes, crates of fakes, hired guns.",["Persuasion DC 14 to recruit them instead"],[["Street Gunner",3],["Chromehead",1]])],
-      [["Engineer Hana","civilian","Lead forger. Brilliant, bitter."]],
+      [["The lead forger","civilian","Lead forger. Brilliant, bitter."]],
       "Recruit the forgers for the family and Kiyama is very pleased. Burn the workshop and the dealer is pleased.",
       ["Arcspike","Grenade EMP Regular Mk.II x2"]),
 
@@ -115,8 +115,8 @@
       "“Photos of my friend in the steam with a policeman. Find the camera. Ask nothing.”",
       [b("scene:Yakuza Bathhouse","The bathhouse","Steam, tiles, a camera in a vent.",["Perception DC 13","Tech DC 12 to trace the feed"]),
        b("scene:Netrunner Cafe","The blackmailer","A runner selling the files from a café booth.",["Intimidation DC 13"],[["Street Netrunner",1],["Street Gunner",2]])],
-      [["Lieutenant Goro","civilian","Family lieutenant. In love. Frightened."]],
-      "Every copy destroyed: Goro owes the crew his life.",
+      [["The lieutenant","civilian","Family lieutenant. In love. Frightened."]],
+      "Every copy destroyed: The lieutenant owes the crew his life.",
       ["Self Ice","Kurohane Night Cola x2"]),
 
     g("karaoke-duel","Karaoke Duel","Collection","21",
@@ -125,7 +125,7 @@
       "The Hebi-kai brought a ringer: a professional singer with a vocal implant.",
       "“A street corner, decided by song. I am not joking. Please learn a ballad.”",
       [b("21","The Red Crane","Two families, one stage, a scoreboard.",["Performance DC 14 (three rounds, best of three)","Tech DC 13 to jam the ringer's implant"],[["Yakuza Kobun",3]])],
-      [["Ringer Miyu","civilian","Pro singer, embarrassed to be cheating."]],
+      [["The ringer","civilian","Pro singer, embarrassed to be cheating."]],
       "Win the corner: Kiyama tells this story at every family dinner.",
       ["Kurohane Night Cola x2","Kiroshi Optics"]),
 
@@ -135,9 +135,9 @@
       "The final commission is a sword for Kurohane's own CEO. The smith accepted it to save his forge.",
       "“The last man who folds steel by hand. Without him, our blades come from factories.”",
       [b("scene:Mechanic Shop — Map 1","The forge","Heat, hammer, an old man and his apprentice.",["Perception DC 13 for the night visitors"],[["Kurohane Security",3],["Kurohane Agent",1]])],
-      [["Master Hideaki","civilian","Swordsmith, eighty. Will not stop working."]],
+      [["The swordsmith","civilian","Swordsmith, eighty. Will not stop working."]],
       "The sword is finished. The smith gives the crew a blade of his own.",
-      ["Katana Go G","Kurohane Black Tea"],"Master Hideaki: sharpens or repairs any blade for the crew."),
+      ["Katana Go G","Kurohane Black Tea"],"The swordsmith: sharpens or repairs any blade for the crew."),
 
     g("ronin","The Ronin","Bounty","scene:Orient Streets",
       "A disgraced family Blade has turned freelance and is robbing the family's own businesses. Kiyama wants him brought to the oyabun alive.",
@@ -146,7 +146,7 @@
       "“He was our best blade. Now he cuts us. Bring him to the oyabun, alive.”",
       [b("scene:Orient Streets","The hunt","Two robbed shops, one witness, a trail of blood.",["Streetwise DC 13"]),
        b("scene:Rooftop","The duel","He waits on a rooftop. Alone. He wants a duel.",["Persuasion DC 15 to talk him down"],[["Yakuza Blade",1]])],
-      [["Shin","yakuza-blade","The ronin. Calm, sad, faster than anyone."]],
+      [["The ronin","yakuza-blade","The ronin. Calm, sad, faster than anyone."]],
       "Bring him alive and the oyabun hears his story. The family may settle the old debt.",
       ["Katana","Bastion Trauma Booster"]),
 
@@ -157,8 +157,8 @@
       "“Ten thousand people. One festival. Not one stolen wallet.”",
       [b("35","The festival","Lanterns, crowds, a dozen kids with light fingers.",["Perception DC 13 to spot the ring","Persuasion DC 12 with the kids"],[["Street Thug",2],["Yakuza Kobun",1]]),
        b("scene:Rooftop","The fireworks","The fireworks crew finds a tampered launcher.",["Tech DC 13"])],
-      [["Little Mako","civilian","Eleven, best pickpocket in the city."]],
-      "A perfect festival: the family's face shines. Mako may become the family's newest runner.",
+      [["The little pickpocket","civilian","Eleven, best pickpocket in the city."]],
+      "A perfect festival: the family's face shines. The little pickpocket may become the family's newest runner.",
       ["Kurohane Night Cola x2","Grenade Flash Regular Mk.II x2"]),
 
     g("debt-collector-2","Collector's Problem","Collection","H8",
@@ -167,7 +167,7 @@
       "The tenant is a retired Kurohane Kage, chrome and all. The collector is tied up in his kitchen, unharmed.",
       "“My collector knocked on a door and did not come back. Knock on it for me.”",
       [b("H8","Floor 41","A quiet flat, wind chimes, a polite old man with very fast hands.",["Persuasion DC 15","Insight DC 13 to see he only wants to be left alone"],[["Kurohane Kage",1]])],
-      [["Mr. Akagi","civilian","Retired Kurohane Kage. Wants tea and silence."]],
+      [["The old man","civilian","Retired Kurohane Kage. Wants tea and silence."]],
       "Talk him down and he becomes a friend: an ex-Kage is a dangerous friend to have. Fight him and the crew learns why Kurohane sent him.",
       ["Mantis Blades","Helix Health Booster x2"]),
 
@@ -178,7 +178,7 @@
       "“My niece marries a man who writes code. My family wears guns to weddings. Make it work.”",
       [b("scene:Konpeki Plaza Bar","The reception","Champagne, two families on opposite sides of the room.",["Persuasion DC 13 for the toasts"]),
        b("scene:Konpeki Plaza Bar","The ex","He arrives with friends at the toast.",["Persuasion DC 14"],[["Yakuza Kobun",3]])],
-      [["Mika","civilian","The bride. Happy, worried."],["Takeshi","civilian","The groom. Has never seen a gun before tonight."]],
+      [["The bride","civilian","The bride. Happy, worried."],["The groom","civilian","The groom. Has never seen a gun before tonight."]],
       "A peaceful wedding: both families like the crew. That's rarer than it sounds.",
       ["Ghostweave Suit Mk.II","Kurohane Black Tea x2"]),
 
@@ -188,8 +188,8 @@
       "The arcade's manager is one of the kids' older brothers.",
       "“Drugs in a children's arcade. Even we have rules.”",
       [b("scene:Video Games Arcade","The arcade","Flashing screens, kids, a back room with a stash.",["Persuasion DC 12 with the kids","Stealth DC 13 to the back room"],[["Yakuza Kobun",2],["Street Gunner",2]])],
-      [["Manager Jun","civilian","Nineteen. In over his head."]],
-      "Closed: the kids go back to school, mostly. Jun can be offered a way out.",
+      [["The manager","civilian","Nineteen. In over his head."]],
+      "Closed: the kids go back to school, mostly. The manager can be offered a way out.",
       ["Grenade Incendiary Regular Mk.II x2","Kurohane Quiet Energy"]),
 
     g("ink-and-oath","Ink and Oath","Rescue","55",
@@ -199,7 +199,7 @@
       "“They took my man from the needle. Bring him back with his skin on.”",
       [b("55@Tattoo Shop","Thumbs' Clinic","Overturned chair, blood, a smashed needle.",["Investigation DC 12"]),
        b("scene:Massage Spa - Red Dragon - Part 2","The spa","Hebi-kai den, a man on a table, a knife.",["Insight DC 13 to see he isn't scared"],[["Yakuza Kobun",2],["Yakuza Enforcer",1]])],
-      [["Daisuke","civilian","The 'kidnapped' man. Wants out."]],
+      [["The 'kidnapped' man","civilian","The 'kidnapped' man. Wants out."]],
       "Let him leave quietly and the crew has a friend who knows the family's secrets. Bring him back and Kiyama is grateful.",
       ["Tomahawk","Helix Health Booster"]),
 
@@ -210,7 +210,7 @@
       "“Forty years, the same opening. This week, something new. Old men don't change.”",
       [b("scene:Kingpin's Meeting Room","The game","Two old men, a board, silence.",["Insight DC 14","Tech DC 13 to detect the signal"]),
        b("83@Parking Garage","The source","A Corvus netrunner in a car outside.",["Stealth DC 13"],[["Corvus Netrunner",1],["Kurohane Security",2]])],
-      [["Mr. Fujita","civilian","The oyabun's oldest friend. Blackmailed."]],
+      [["The oyabun's old friend","civilian","The oyabun's oldest friend. Blackmailed."]],
       "Save the friend and the family's secrets. The oyabun loses the game anyway, happily.",
       ["Detector Rush","Corvus Memory Booster"])
   ]});

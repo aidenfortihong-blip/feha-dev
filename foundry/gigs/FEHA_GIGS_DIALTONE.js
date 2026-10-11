@@ -18,7 +18,7 @@
       "The jukebox at Sympathy changes song. A woman's voice comes through it: “Elevators, darling. Nobody guards the boring things.”",
       [b("80","The lobby","Marble, scanners, a reception desk with two security officers.",["Deception DC 15 as maintenance contractors","Stealth DC 15 through the loading dock"],[["Kurohane Security",3],["Kurohane Elite Guard",1]]),
        b("scene:Cyberpunk Server Room","The control room","Humming racks, a netrunner jacked in, a door that shouldn't be open.",["Tech DC 15 for the tap","Insight DC 14 to read the other netrunner"],[["Kurohane Netrunner",1]])],
-      [["Haruki","civilian","Kurohane netrunner with a secret tap of his own."]],
+      [["The Kurohane netrunner","civilian","Kurohane netrunner with a secret tap of his own."]],
       "Tap installed: Dial Tone owns the tower's elevators. The crew gets a free 'lift' out of Kurohane Tower once.",
       ["Kiroshi Optics","Corvus Black Memory Booster"],"Dial Tone: one emergency exit from any Kurohane building (the elevators cooperate)."),
 
@@ -29,8 +29,8 @@
       "“His heart rate's at 140. If it stops, three Councillors have a very bad morning. I'd prefer he lives.”",
       [b("scene:The Nexus - Hacker Farm","The farm","Rows of jacked-in runners, guards, the runner strapped to a chair.",["Medicine DC 14 to steady his heart","Tech DC 15 to pause the switch"],[["Corvus Netrunner",2],["Kurohane Security",3]]),
        b("scene:The Net — Firewall Base","Inside the switch","The switch lives in the net: hold its firewall while the runner wakes.",["Tech or Netrunning DC 15 three times"],[["Kurohane Netrunner",1]])],
-      [["Mox","civilian","The runner. Talks fast, even half-dead."]],
-      "Mox lives: Dial Tone owes the crew. If the switch fires, the city burns for a week and three Councillors resign.",
+      [["The runner","civilian","The runner. Talks fast, even half-dead."]],
+      "The runner lives: Dial Tone owes the crew. If the switch fires, the city burns for a week and three Councillors resign.",
       ["Corvus Netdriver","Corvus Black Memory Booster x2"]),
 
     g("pirate-broadcast","Prime Time 2","Data Heist","scene:TV Network Broadcast Studio",
@@ -40,7 +40,7 @@
       "“Ninety seconds of truth in prime time. I'll pay for every one of them.”",
       [b("scene:TV Network Broadcast Studio","The studio","Lights, cameras, guards at the control room door.",["Deception DC 15 as a film crew","Tech DC 16 to seize master control"],[["Kurohane Security",3],["Kurohane Counterintel Officer",1]]),
        b("scene:TV Network Broadcast Studio","Ninety seconds","The Vigil is called; the clock runs.",["Hold the room for 9 rounds"],[["Marble Vigil Operative",2]])],
-      [["Anchor Mira Holst","civilian","News anchor. Her brother died in the raid."]],
+      [["The news anchor","civilian","News anchor. Her brother died in the raid."]],
       "The footage airs. The city erupts. Dial Tone's cut makes the crew rich and the Vigil furious.",
       ["Interface Security Suit Mk.III","Grenade EMP Sticky Mk.III x2"]),
 
@@ -51,7 +51,7 @@
       "“They're selling memories. One of them is my sister's. I'm not usually emotional. Tonight I am.”",
       [b("49","Rewind Records","The back room sells braindance chips. The owner knows a name.",["Persuasion DC 14","Intimidation DC 15"]),
        b("scene:Research Facility","The memory clinic","Labs, sleeping patients, a researcher with a briefcase.",["Stealth DC 15","Tech DC 15 to wipe the master"],[["Helix Medtech",2],["Kurohane Security",3]])],
-      [["Dr. Selwyn","civilian","Head of research. Funds his work any way he can."]],
+      [["The head of research","civilian","Head of research. Funds his work any way he can."]],
       "All copies destroyed: Dial Tone owes the crew personally. That's a rare thing.",
       ["Neuro Matrix","Corvus Black Memory Booster x2"],"Dial Tone (personal): one impossible piece of information, free."),
 
@@ -61,17 +61,17 @@
       "The 'secret facility' is a Council bunker for the day the city burns. It has room for 400 people. The city has two million.",
       "“Ten minutes with a satellite. I'll show you what the Council keeps in the hills.”",
       [b("scene:Sci-Fi Satellite Tower","The tower","Wind, cables, a guarded uplink room.",["Athletics DC 14 up the tower","Tech DC 16 for the uplink"],[["Kurohane Trooper",3],["Kurohane Sniper",1]])],
-      [["Tech Ono","civilian","Uplink tech. Very scared."]],
+      [["The uplink tech","civilian","Uplink tech. Very scared."]],
       "The photos are worth a fortune to the Admiral, Babka, and the press. Dial Tone sells to all three.",
       ["Kiroshi Optics Combined","Grenade EMP Regular Mk.III x2"]),
 
     g("net-duel","Duel in the Net","Bounty","scene:The Net — Arena",
-      "A Kurohane black-ICE netrunner called 'Graveglass' has been flatlining freelance runners for sport. Dial Tone wants him beaten in his own arena.",
-      ["Jack into the Net arena","Beat Graveglass","Get his access keys"],
-      "Graveglass is a fifteen-year-old prodigy Kurohane keeps in a pod. He doesn't know people die when he wins.",
+      "A Kurohane black-ICE netrunner has been flatlining freelance runners for sport. Dial Tone wants him beaten in his own arena.",
+      ["Jack into the Net arena","Beat the champion","Get his access keys"],
+      "The champion is a fifteen-year-old prodigy Kurohane keeps in a pod. He doesn't know people die when he wins.",
       "“He kills runners in the arena. He thinks it's a game. Teach him otherwise.”",
       [b("scene:The Net — Arena","The arena","A neon colosseum of ICE, a crowd of avatars, a glass champion.",["Netrunning DC 16 three times","Persuasion DC 15 to tell him the truth"],[["Kurohane Netrunner",2],["Corvus Netrunner",1]])],
-      [["Graveglass (Kenji)","civilian","Fifteen. Lives in a Kurohane pod."]],
+      [["The champion","civilian","Fifteen. Lives in a Kurohane pod."]],
       "Beat him: his keys are worth a fortune. Tell him the truth: he may escape his pod one day and remember the crew.",
       ["Corvus Netdriver","Ram Upgrade"]),
 
@@ -82,7 +82,7 @@
       "“A glass vault in a glass apartment. Everyone can see in. Nobody can get in. Prove them wrong.”",
       [b("H1@Penthouse","The party","Glasshouse kids, music, a drunk security detail.",["Deception DC 14 to blend in","Persuasion DC 14 with the daughter"],[["Glasshouse Prince",1],["Kurohane Security",3]]),
        b("H1","The vault","Pressure plates, a retina scanner, the daughter's help.",["Tech DC 16","Sleight of Hand DC 15"],[["Kurohane Elite Guard",1]])],
-      [["Lena Abend","glasshouse-kid","The daughter. Wants her mother's secrets."]],
+      [["The daughter","glasshouse-kid","The daughter. Wants her mother's secrets."]],
       "Keys in hand: Dial Tone owns the ward's network for a month.",
       ["Chao","Grenade Smoke Regular Mk.III x2"]),
 
@@ -103,7 +103,7 @@
       "Zach's old file is in there with a note: 'Lottery student. Limit advancement.'",
       "“A school that decides who rises by postcode. I'd like the postcode code.”",
       [b("X5","The academy","Hallways, trophy cases, students, an AI security system.",["Deception DC 14 as visiting parents","Tech DC 16 for the server"],[["Kurohane Security",3],["Kurohane Netrunner",1]])],
-      [["Professor Nagata","civilian","Teacher. Hates the algorithm."]],
+      [["The teacher","civilian","Teacher. Hates the algorithm."]],
       "The algorithm leaks. A hundred poor students get reconsidered. Zach finds out what they wrote about him.",
       ["Memory Boost","Corvus Memory Booster x2"]),
 
@@ -124,7 +124,7 @@
       "The algorithm's designer added the union rule herself, at the Council's request, and has regretted it since.",
       "“A machine that punishes people for standing together. Teach it a new habit.”",
       [b("scene:Cyberpunk Bank Lobby","The bank","Marble lobby, a vault, a back office with a terminal.",["Deception DC 14","Tech DC 16"],[["Private Security Guard",3],["Kurohane Elite Guard",1]])],
-      [["Analyst Prue","civilian","Designed the algorithm. Wants to undo it."]],
+      [["The analyst","civilian","Designed the algorithm. Wants to undo it."]],
       "Loans start flowing to New Niemir. The bank never figures out why.",
       ["Synaptic Accelerator","Corvus Memory Booster"]),
 
@@ -135,8 +135,8 @@
       "“A girl with a secret in her skull and six hours to live. Get her to my buyer.”",
       [b("scene:The Terminus - Corp Monorail Station","The station","Crowds, cameras, two Corvus agents scanning faces.",["Stealth DC 14"],[["Kurohane Agent",2]]),
        b("scene:Night Street","The run","Across the city in the rain, a hunter-killer team closing.",["Athletics DC 14","Medicine DC 14 to keep her conscious"],[["Corvus Netrunner",1],["Kurohane Trooper",3]])],
-      [["Courier Vee","civilian","Data courier. Head full of secrets."]],
-      "Delivered: the data comes out, Vee lives. Dial Tone's buyer pays triple.",
+      [["The courier","civilian","Data courier. Head full of secrets."]],
+      "Delivered: the data comes out, the courier lives. Dial Tone's buyer pays triple.",
       ["Kerenzikov Boost System","Helix Health Booster x2"]),
 
     g("vote-rig","Ward Election","Sabotage","H9",
@@ -145,7 +145,7 @@
       "The honest result elects a union steward. The Council will annul it, but the crowd will know.",
       "“An honest count. Just once. I'm curious.”",
       [b("H9@Foyer","The counting room","Ballot machines, observers, CivCorp officers.",["Deception DC 15","Tech DC 15"],[["CivCorp Peacekeeper",3],["CivCorp Warden",1]])],
-      [["Steward Lio","union-steward","The candidate. Doesn't know he's about to win."]],
+      [["The candidate","union-steward","The candidate. Doesn't know he's about to win."]],
       "The honest count wins. The annulment causes riots. Babka sends the crew a cake.",
       ["Interface Security Suit Mk.III","Grenade Smoke Regular Mk.III x2"]),
 
@@ -155,7 +155,7 @@
       "The owner tipped off the raid himself to get out of a debt to Kurohane.",
       "“Black ICE in a record shop. Get it before the corps do.”",
       [b("43","The record shop","Vinyl, posters, a hidden door, sirens getting closer.",["Perception DC 14 for the hidden door","Athletics DC 14 to carry the crate"],[["Kurohane Trooper",3],["Kurohane Agent",1]])],
-      [["Owner Rook","shopkeeper","Ex-runner. In debt to Kurohane."]],
+      [["The shop owner","shopkeeper","Ex-runner. In debt to Kurohane."]],
       "The chips go to Dial Tone. The owner owes the crew.",
       ["Corvus Netdriver","Grenade EMP Regular Mk.III"]),
 
@@ -165,7 +165,7 @@
       "The archive's guardian AI is the uploaded mind of a Vargas-era archivist who wants the truth out.",
       "“Old paper in a digital tomb. It proves who owns the desert.”",
       [b("scene:The Net — Archive","The archive","Endless shelves of light, a librarian avatar.",["Netrunning DC 15","Persuasion DC 14 with the librarian"],[["Marble Vigil Netrunner",2]])],
-      [["Archivist Ida","civilian","Uploaded mind. Wants the truth told."]],
+      [["The archivist","civilian","Uploaded mind. Wants the truth told."]],
       "The records go to Coldwater: the clans win their land case.",
       ["Neuro Matrix","Corvus Black Memory Booster"],"Coldwater: the clans owe the crew for the land records."),
 
@@ -175,7 +175,7 @@
       "One drone is armed. It wasn't supposed to be.",
       "“A thousand drones over New Niemir. I'd rather they went home.”",
       [b("82@Corporate Lobby Battle Map","Bastion Tower","Security gates, soldiers, a drone command centre.",["Deception DC 15","Tech DC 16"],[["Bastion Trooper",3],["Bastion Sergeant",1]])],
-      [["Operator Fenn","civilian","Drone operator. Afraid of the armed drone."]],
+      [["The drone operator","civilian","Drone operator. Afraid of the armed drone."]],
       "The swarm lands in Bastion's lot. The city laughs for a week.",
       ["Tactical Icon Processor","Grenade EMP Homing Mk.III x2"]),
 
@@ -186,7 +186,7 @@
       "“A boy lost in a dream. Go in and bring him home, even if home is worse.”",
       [b("H11@Basement Dwelling","The squat","A boy jacked in, thin, a deck humming.",["Medicine DC 13 to keep him alive"]),
        b("scene:VR Expanded","The dream","A perfect city, a mother's voice, guardians that don't want him to leave.",["Persuasion DC 16 to convince him"],[["Corvus Netrunner",1],["Drowned Runner",2]])],
-      [["Yuri","civilian","Sixteen. Lost."]],
+      [["The boy","civilian","Sixteen. Lost."]],
       "Bring him back and Dial Tone hires him. He's brilliant.",
       ["Ram Upgrade","Corvus Black Memory Booster x2"]),
 
@@ -196,7 +196,7 @@
       "One of the cloned phones belongs to Clerk Seven.",
       "“They've cloned every phone in New Niemir. Let's tell everyone at once.”",
       [b("X6@Cyberpunk Server Room","Signals room","Banks of servers, an operator, a Vigil netrunner.",["Tech DC 16 (three failures: trace)"],[["CivCorp Netrunner",2],["Marble Vigil Netrunner",1]])],
-      [["Operator Grieg","civilian","Signals operator. Bored."]],
+      [["The signals operator","civilian","Signals operator. Bored."]],
       "Ten thousand phones warned. New Niemir goes dark to CivCorp for a month.",
       ["Memory Boost","Corvus Memory Booster x2"])
   ]});

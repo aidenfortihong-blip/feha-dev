@@ -22,7 +22,7 @@
       "Vesna slides a bottle cap across the bar: “Somebody stole a song. Find it.”",
       [b("25","The bar with no music","The regulars blame everyone. The bartender saw a kid in a white designer jacket hanging round the jukebox.",["Insight DC 11 to see the bartender is covering for his cousin, not the thief","Investigation DC 12 on the jukebox: pried open with a corp-issue multitool"]),
        b("17","Voltage","The kid is showing off the chip at the club, trying to sell it as 'vintage rebel music'.",["Persuasion DC 13 to buy it back for €$ 100","Sleight of Hand DC 12 to lift it"],[["Glasshouse Kid",2],["Bouncer",1]])],
-      [["Dana Kowalczyk","organizer","Bartender at the Picket Line. Sloviti, sixty, knows every union song by heart."]],
+      [["The bartender","organizer","Bartender at the Picket Line. Sloviti, sixty, knows every union song by heart."]],
       "If the chip comes back before Friday, the whole bar sings for the crew. Mila's and the Picket Line both stand them a round any time.",
       ["Helix Health Booster","Kurohane Night Cola x2"],"The Picket Line: the crew drinks free, and the bartender will hide one of them from CivCorp once."),
 
@@ -33,8 +33,8 @@
       "“Birds, krasotka. Real birds. Don't laugh, they've never once been hacked.”",
       [b("H10@Apartment Complex","The stairs","The lifts are dead. Forty floors of stairwell, with Niemir Wolves guarding the 20th-floor landing as a toll gate.",["Athletics DC 12 to make the climb without dropping the crate (on failure, lose two birds)","Persuasion DC 11 to pass the Wolves (they know Vesna)"],[["Niemir Wolf",2]]),
        b("H10@The Old Rooftop","The rooftop coop","Feathers everywhere, poisoned grain in the feeders. Footprints in the dust lead down to the 39th floor.",["Survival or Medicine DC 11 to identify the poison: rat bait sold at the bazaar","Investigation DC 12 to follow the trail"])],
-      [["Old Man Sobek","civilian","Lives alone on floor 39 with a wall of tin-foil and a radio scanner. Afraid, not evil."]],
-      "Talk Sobek down and he becomes the coop's keeper. Hurt him and the block stops talking to the crew for a while.",
+      [["The old man on 39","civilian","Lives alone on floor 39 with a wall of tin-foil and a radio scanner. Afraid, not evil."]],
+      "Talk the old man on 39 down and he becomes the coop's keeper. Hurt him and the block stops talking to the crew for a while.",
       ["Kurohane Black Tea x2","Grenade Recon Regular Mk.I x2"],"Zarya Block's pigeon post: the crew can send one untraceable message anywhere in New Niemir."),
 
     g("noodle-war","Noodle War","Protection","41",
@@ -44,7 +44,7 @@
       "“Two old men, two cleavers, one pot of broth between them. Make peace before dinner or I lose my favourite soup.”",
       [b("41","Dinner rush","Steam, shouting and two old cooks circling each other with cleavers while the queue films it.",["Persuasion DC 12 to get them talking (advantage if the crew eats from both stalls first)","Insight DC 13: both say the same 'inspector' warned them about the other"]),
        b("41","The inspector","The 'inspector' arrives to collect. He brought friends when he heard there was trouble.",["Intimidation DC 13 makes him drop the act; he'll pay back what he took"],[["CivCorp Peacekeeper",2],["Street Thug",1]])],
-      [["Gosha Vedenko","shopkeeper","Makes the best pork broth in the bazaar. Proud, loud, softer than he looks."],["Mei Tran","shopkeeper","Runs the rival stall. Sharp, funny, owes the inspector two months' bribes."]],
+      [["The broth cook","shopkeeper","Makes the best pork broth in the bazaar. Proud, loud, softer than he looks."],["The rival cook","shopkeeper","Runs the rival stall. Sharp, funny, owes the inspector two months' bribes."]],
       "End the feud and both cooks feed the crew free for life. Expose the inspector and the whole bazaar remembers the crew's names.",
       ["Kurohane Quiet Energy x2","Butcher's Knife"],"Niemir Bazaar: free meals for the crew, and the stallholders warn them when CivCorp sweeps the market."),
 
@@ -55,7 +55,7 @@
       "“A room nobody sleeps in. Every city has one. This one, I'd like to know whose it is.”",
       [b("06","Room 14","Dust on everything except the bathroom vent. Behind it: a go-bag, fake IDs, and a list of names in Sloviti.",["Investigation DC 12 to find the vent cache","Sloviti speakers read the list at once; others need Tech DC 13 to translate"]),
        b("06","The new tenant","A man in a cheap suit arrives with a room key and asks a lot of questions.",["Insight DC 13 to spot the CivCorp earpiece","Deception DC 12 to send him to the wrong room"],[["CivCorp Peacekeeper",1],["Private Security Guard",1]])],
-      [["Mr. Halloran","civilian","The motel's new owner. Bought it cheap, wants a quiet life and a full ledger."]],
+      [["The motel owner","civilian","The motel's new owner. Bought it cheap, wants a quiet life and a full ledger."]],
       "Tell the owner the truth and he evicts the safe room. Lie for the network and Babka owes the crew.",
       ["Unity","Helix Health Booster"],"Babka's network keeps a safe room open for the crew too."),
 
@@ -66,7 +66,7 @@
       "“It's a plastic cat full of a dead man. Bring him home. I'll pay you from the tip jar.”",
       [b("35","Night market","Three fences, three stories. One has a receipt with a Yakuza stamp.",["Streetwise DC 12 to find the right fence","Investigation DC 11 to spot the stamp"]),
        b("H8","Sakura Heights","The kobun's apartment, full of his grandmother's knick-knacks. He's home with two friends.",["Persuasion DC 13 to explain (advantage if the crew brings a photo of the husband)"],[["Yakuza Kobun",3]])],
-      [["Baba Ludmila","civilian","Eighty-one, sells pickled everything, has outlived two husbands and one government."]],
+      [["The old stallholder","civilian","Eighty-one, sells pickled everything, has outlived two husbands and one government."]],
       "Get the cat back without blood and Kiyama's people mention the crew politely to their boss.",
       ["Syndicate Interface Tattoo","Helix Stamina Booster x2"]),
 
@@ -77,7 +77,7 @@
       "“A boy wakes up with a gang on his arm. The ink says one thing, his mother says another. I believe the mother.”",
       [b("56","Insta-Chrome","The artist swears it was a mistake. His appointment book says he's 'made mistakes' eleven times this month.",["Investigation DC 12 on the book","Intimidation DC 12 gets the truth"]),
        b("29","Totenhaus","The Rustwater Boys already have the kid at their bar, gearing him up for a cargo job.",["Persuasion DC 14 to walk him out","Or a fight"],[["Rustwater Boy",3]])],
-      [["Pavel Rusu","civilian","Nineteen, terrified, desperately pretending not to be."],["Ink","street-thug","The tattoo artist. Smiles too much."]],
+      [["The kid","civilian","Nineteen, terrified, desperately pretending not to be."],["The tattoo artist","street-thug","The tattoo artist. Smiles too much."]],
       "Save the kid and his mother cooks for the crew every Sunday. Expose the artist and Insta-Chrome quietly fires him.",
       ["Tanto","Helix Oxy Booster"]),
 
@@ -88,7 +88,7 @@
       "“It's cold in Volna. Somebody's making it colder. Find out who before somebody freezes.”",
       [b("H11@Basement Utilities Room","The generator room","A long, cold night in a basement full of pipes. Around 3am, a cable starts to hum.",["Perception DC 12 every two hours (on failure the thief gets away with one night's Cinder)","Tech DC 11 to trace the tap to the 7th floor"]),
        b("H11@Hitman","Floor 7","A small flat, a sick boy on a medical bed, and a mother holding a wrench.",["Medicine DC 12 to keep the pump running on a legal line","Persuasion DC 11 to get her to talk"])],
-      [["Anya Ilic","civilian","A tired mother who would steal the sun for her son."]],
+      [["The mother","civilian","A tired mother who would steal the sun for her son."]],
       "Turn her in and the block gets its Cinder back. Find another way and Vesna knocks the fee down to what the crew charges themselves.",
       ["Biomonitor","Helix Health Booster x2"],"Volna Block: the residents hide the crew from CivCorp patrols, no questions asked."),
 
@@ -99,9 +99,9 @@
       "“A child cried in my bar. Do you know how rare that is? Go get his dog.”",
       [b("37","Kennel Market","Getting over the wall: a smuggler's ladder, a bribe, or the old sewer grate.",["Stealth DC 13 to slip in","Persuasion DC 12 to talk past the gate guards"],[["Kennel Dog",1]]),
        b("20","Iron Hearts Club","The robo-dog is the Dogs' mascot, wearing a tiny Bastion helmet.",["Animal Handling or Tech DC 11 to call it","Persuasion DC 14 to trade for it"],[["Kennel Dog",2]])],
-      [["Little Kostya","civilian","Seven years old. Built the dog from scrap with his dad."]],
-      "Bring the dog home and Kostya's dad, a mechanic, fixes the crew's gear for free once.",
-      ["Nano Tech Plates","Kurohane Night Cola x2"],"Kostya's dad: one free repair or mod install on any weapon."),
+      [["The boy","civilian","Seven years old. Built the dog from scrap with his dad."]],
+      "Bring the dog home and the boy's dad, a mechanic, fixes the crew's gear for free once.",
+      ["Nano Tech Plates","Kurohane Night Cola x2"],"The boy's dad: one free repair or mod install on any weapon."),
 
     g("bad-batch","Bad Batch","Investigation","59",
       "Three people came into Bogdan's Clinic this week with the same seizures. All of them bought cheap RAM upgrades from the same street vendor.",
@@ -121,7 +121,7 @@
       "“Tomatoes. Real ones. Somebody wants to set them on fire. Stop them.”",
       [b("H10@Rooftop Apartment Garden","Harvest night","Lanterns, families picking tomatoes, and a gang climbing the fire escape with a petrol can.",["Perception DC 12 to spot the climbers early","Athletics DC 12 to kick the ladder away"],[["Street Thug",3],["Street Gunner",1]]),
        b("41","Market run","Getting the crates through the streets to the bazaar before dawn.",["Stealth DC 11 to avoid the curfew patrol"],[["CivCorp Peacekeeper",2]])],
-      [["Olga Zhuk","organizer","Runs the garden committee. Grows chilli peppers that could strip paint."]],
+      [["The garden boss","organizer","Runs the garden committee. Grows chilli peppers that could strip paint."]],
       "Save the harvest and Zarya Block sends the crew a crate of preserves every month.",
       ["Rapid Muscle Nourisher","Helix Stamina Booster x2"]),
 
@@ -141,7 +141,7 @@
       "The jam wasn't the gun: the outlet sells refurbished stock as new. The manager is skimming the difference.",
       "“The gun jammed when it mattered. The shop says tough luck. I say the shop learns about luck.”",
       [b("33","Vektor Outlet","Bright lights, armed staff, and a manager who smiles with his mouth only.",["Investigation DC 13 on the stock: refurb serials","Intimidation DC 13 with the serials in hand"],[["Private Security Guard",2]])],
-      [["Manager Teller","shopkeeper","Neat tie, neater ledgers. Very afraid of his Vektor regional boss."]],
+      [["The manager","shopkeeper","Neat tie, neater ledgers. Very afraid of his Vektor regional boss."]],
       "Get the refund and the family names their new baby after one of the crew (the GM picks who).",
       ["Grit","Grenade Flash Regular Mk.I x2"]),
 
@@ -152,7 +152,7 @@
       "“Wolves guarding a bridge like trolls. Go see what's under the bridge.”",
       [b("scene:Footbridge","The bridge","Midnight, fog off the canal, twenty tired workers and five Wolves with a collection tin.",["Persuasion DC 13 to get the alpha talking","Intimidation DC 15 (they're local; this sours things)"],[["Niemir Wolf",3],["Niemir Wolves Alpha",1]]),
        b("50","Kowal Clinic","If the crew learns about the sister: Kowal will do the surgery for less if the crew vouches for the Wolves.",["Persuasion DC 11"])],
-      [["Rada","civilian","The alpha's sister. Fourteen, sharp, embarrassed by the whole thing."]],
+      [["The alpha's sister","civilian","The alpha's sister. Fourteen, sharp, embarrassed by the whole thing."]],
       "Solve it without a fight and the Wolves owe the crew. Fight them and the bridge stays dangerous.",
       ["Knife Military","Helix Health Booster"],"The Niemir Wolves: back-up for one street fight in New Niemir."),
 
@@ -163,7 +163,7 @@
       "“They fired twenty people for having the wrong accent. Make their party a funeral.”",
       [b("48","Grand reopening","Balloons, a DJ, a Glasshouse influencer streaming the event.",["Tech DC 12 to hijack the store speakers","Sleight of Hand DC 13 to swap the influencer's stream to the workers' statement"],[["Private Security Guard",2]]),
        b("48","The office","The pay is in the manager's safe. The manager is in the office, drinking.",["Persuasion DC 11 (he wants to help)","Sleight of Hand DC 14 for the safe"])],
-      [["Manager Ilya Brant","shopkeeper","Ashamed. Will open the safe if asked kindly."]],
+      [["The manager","shopkeeper","Ashamed. Will open the safe if asked kindly."]],
       "Get the pay out and the workers' union card gets the crew into any Sloviti wedding in the district, which is to say every party.",
       ["Flexweave Mobility Suit Mk.I","Kurohane Quiet Energy"]),
 
@@ -174,7 +174,7 @@
       "“Someone screams in the lifts at night. I'd like them to scream somewhere else.”",
       [b("H10@Apartment Complex","The lifts","Every lift speaker on the network screams on schedule. The signal comes from inside the building.",["Tech DC 12 to trace the signal to floor 23","Stealth DC 11 to catch him in the act"]),
        b("H10","Floor 23","A boy, a deck held together with tape, and a grandmother who thinks he's doing homework.",["Persuasion DC 10 to make him stop (he wants to be taken seriously)"])],
-      [["Timur","civilian","Ten, bored, terrifyingly good at netrunning."],["Grandma Zoya","civilian","Thinks the deck is a calculator."]],
+      [["The boy","civilian","Ten, bored, terrifyingly good at netrunning."],["His grandmother","civilian","Thinks the deck is a calculator."]],
       "Point the kid toward a mentor and Sasha gets a netrunning sparring partner. Report him to Dial Tone and the crew gets a finder's fee (€$ 500) and a guilty conscience.",
       ["Detector Rush","Corvus Memory Booster x2"]),
 
@@ -185,7 +185,7 @@
       "“Twelve letters. Twelve families who think their people are dead. Go.”",
       [b("X4","Union hall","The letters, a list of addresses, and a warning: CivCorp is sweeping the district tonight.",["Investigation DC 13 to notice one envelope is too heavy"]),
        b("scene:Slum Streets","The rounds","Twelve doors, twelve families, crying, questions, food offered.",["Stealth DC 12 between drops to avoid the sweep (three failures and a patrol finds them)"],[["CivCorp Peacekeeper",2]])],
-      [["Mrs. Petrenko","civilian","Her son was arrested for 'possession'. This is the first she's heard from him in a year."]],
+      [["The mother","civilian","Her son was arrested for 'possession'. This is the first she's heard from him in a year."]],
       "Find the tracker before the last drop and Babka's network owes the crew. Miss it and CivCorp raids the union hall a week later.",
       ["Helix Health Booster","Ghostweave Suit Mk.I"],"Babka: one family hides a crew member for a night, no questions."),
 
@@ -196,7 +196,7 @@
       "“Candles, songs, a wooden saint and two hundred grandmothers. Make sure they all go home.”",
       [b("41","The bazaar","Candles and accordions. A CivCorp line at the end of the street.",["Insight DC 13 to spot the provocateur","Persuasion DC 13 to get the line to let them pass"],[["CivCorp Peacekeeper",3],["CivCorp Riot Enforcer",1]]),
        b("scene:Gothic City Chapel","The chapel","The icon goes home. Somebody has to be the last one inside.",[])],
-      [["Father Teodor","civilian","Carries the icon. Ninety, half blind, will not stop walking for anyone."]],
+      [["The old priest","civilian","Carries the icon. Ninety, half blind, will not stop walking for anyone."]],
       "Get the parade home and the whole district knows the crew walked with them.",
       ["Kurohane Black Tea x2","Living Dermal Suit Mk.I"],"The Sloviti community: a safe house anywhere in New Niemir, once."),
 
@@ -206,7 +206,7 @@
       "He's not a hustler: he's a laid-off plant worker trying to pay for his chrome before the repo company switches it off.",
       "“Cheating at arm wrestling. In Mila's. In front of Babka. Go get the money before she does.”",
       [b("44@Cyber Diner","Dam Market","The Sparker is hustling again at a market bar.",["Athletics DC 15 to beat him honestly","Sleight of Hand DC 13 to cheat back","Insight DC 12 to see the repo countdown on his arm"],[["Sparker",1]])],
-      [["Big Taras","civilian","The Sparker. Huge, polite when sober, broke."]],
+      [["The big Sparker","civilian","The Sparker. Huge, polite when sober, broke."]],
       "Help him with the repo and he becomes a friend in Cinderline. Take the money and he becomes an enemy.",
       ["Iron Pipe","Bastion Electrolyte x2"]),
 
@@ -217,9 +217,9 @@
       "“Babies, poison, a company that doesn't care. I don't need to say more, yes?”",
       [b("81@Medical Ward","Helix Medical Center","The batch numbers are in a records room on the third floor.",["Deception DC 13 to pass as a supplier","Tech DC 12 for the terminal"],[["Private Security Guard",2]]),
        b("X2","The 365 and two other shops","Pulling stock without starting a panic.",["Persuasion DC 11 with each shopkeeper"])],
-      [["Nurse Halina","civilian","Helix nurse who leaked the story to Vesna. Terrified of losing her job."]],
-      "Do it quietly and Nurse Halina becomes the crew's contact inside Helix Medical.",
-      ["Helix Oxy Booster","Helix Health Booster x2"],"Nurse Halina: one free night of hospital care for a crew member, off the books."),
+      [["The nurse","civilian","Helix nurse who leaked the story to Vesna. Terrified of losing her job."]],
+      "Do it quietly and the nurse becomes the crew's contact inside Helix Medical.",
+      ["Helix Oxy Booster","Helix Health Booster x2"],"The nurse: one free night of hospital care for a crew member, off the books."),
 
     g("karaoke","Karaoke Night","Bounty","21",
       "A Yakuza kobun lost a karaoke bet to Vesna and owes her a bottle of 40-year-old whisky. He's dodging. Remind him, at the Red Crane, where he's singing tonight.",
@@ -227,7 +227,7 @@
       "He drank the whisky. He's terrified of both Vesna and his boss finding out.",
       "“A bet is a bet. He sang badly and lost fairly. Go remind him.”",
       [b("21","The Red Crane","Neon, karaoke, the kobun singing a love ballad badly.",["Performance DC 13 to win the bet back in a sing-off","Persuasion DC 12 to make him confess"],[["Yakuza Kobun",2]])],
-      [["Kenta","street-thug","The kobun. Sings with his whole heart and no talent."]],
+      [["The kobun","street-thug","The kobun. Sings with his whole heart and no talent."]],
       "If the crew wins a sing-off, the Red Crane gives them a booth for life and the kobun owes them.",
       ["Kurohane Night Cola x2","Kurohane Black Tea"]),
 
@@ -238,7 +238,7 @@
       "“Cartoons and the truth, every Sunday. CivCorp hates both.”",
       [b("H11@Rooftop","The roof studio","Cables, a satellite dish, three broadcasters and a hundred-kilo transmitter.",["Athletics DC 13 to carry the transmitter down","Tech DC 12 to pack without breaking it"]),
        b("scene:Slum Alley","The move","Through the alleys between the two blocks with a raid team coming.",["Stealth DC 12 to avoid the raid team"],[["CivCorp Peacekeeper",2],["CivCorp Netrunner",1]])],
-      [["Lada Voronova","journalist","Runs the station. Talks into a camera even while running."]],
+      [["The journalist","journalist","Runs the station. Talks into a camera even while running."]],
       "Move the station and it broadcasts the crew's good deeds, which raises their cred faster in New Niemir (+5 extra cred).",
       ["Grenade Smoke Regular Mk.I x2","Interface Security Suit Mk.I"]),
 
@@ -249,7 +249,7 @@
       "“Forty years of savings in a mattress. Now it's in a landfill. Go dig.”",
       [b("H11","The landlord","He threw it out and doesn't care. The truck route is on his trash schedule.",["Intimidation DC 11 or Investigation DC 12"]),
        b("71","The Heap","Mountains of garbage, scav crews, and a mattress-shaped hole in a trash mound.",["Survival DC 12 to navigate the Heap","Perception DC 13 to find the scav camp"],[["Street Thug",2],["Scorpion Raider",1]])],
-      [["Grandpa Ivo","civilian","Seventy-eight, embarrassed, kept the money because banks are Council-owned."],["Nina","civilian","Thirteen. Runs the scav kids. Not giving the money back easily."]],
+      [["The grandfather","civilian","Seventy-eight, embarrassed, kept the money because banks are Council-owned."],["The scav girl","civilian","Thirteen. Runs the scav kids. Not giving the money back easily."]],
       "Split the money fairly and both the old man and the orphans are cared for. Vesna pays double if the crew finds a way that hurts nobody.",
       ["Crowbar","Helix Stamina Booster x2"]),
 
@@ -260,8 +260,8 @@
       "“He's a good boy who hits hard. Make sure the only thing hitting him tonight is the other boxer.”",
       [b("scene:Boxing Club — Main Map","Locker room","The trainer is jumpy. The water bottle smells wrong.",["Medicine DC 12 to notice the sedative","Insight DC 13 on the trainer"]),
        b("scene:Boxing Club — Ring Map 1","The fight","Crowd, lights, and two bookie heavies near the ring with a stun baton.",["Perception DC 12 to spot the baton"],[["Street Thug",2],["Bouncer",1]])],
-      [["Marko 'the Bell' Savic","civilian","Twenty-two, 90 kilos, gentle outside the ring."]],
-      "If Marko wins, Vesna bet on him: the crew splits her winnings (€$ 300 each on top).",
+      [["The boxer","civilian","Twenty-two, 90 kilos, gentle outside the ring."]],
+      "If the boxer wins, Vesna bet on him: the crew splits her winnings (€$ 300 each on top).",
       ["Baseball Bat","Bastion Recovery Drink x2"])
   ]});
 })();

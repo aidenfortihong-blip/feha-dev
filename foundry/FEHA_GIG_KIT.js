@@ -10,12 +10,13 @@
 //                   catalogs and sometimes a favour. Written gigs name theirs
 //                   (job.reward); others get items matched to level and kind.
 //   prep(job)       GM: builds the gig's kit in the world: a Scene folder with
-//                   a copy of each beat's battle map (enemies placed, hidden),
-//                   the NPC actors it needs, and a journal with the run sheet
-//                   and a player handout. cleanup(prep) removes it again.
+//                   a clean copy of each beat's battle map and a compact
+//                   journal (run sheet with recommended enemies, plus a player
+//                   handout). cleanup(prep) removes it again.
 //   giveReward(...) GM: hands reward items to crew members.
 //
-// Nothing here runs on load; it is called by the board.
+// On load it only hooks gig journals so they open compact; the rest is
+// called by the board.
 
 (() => {
   const VERSION = "1.0.0";
@@ -236,104 +237,52 @@
     return out;
   }
 
-  // Segment/segment intersection (walls are [x1,y1,x2,y2]).
-  function crosses(ax,ay,bx,by,c) {
-    const [cx,cy,dx,dy] = c;
-    const o = (px,py,qx,qy,rx,ry) => Math.sign((qx - px) * (ry - py) - (qy - py) * (rx - px));
-    return o(ax,ay,bx,by,cx,cy) !== o(ax,ay,bx,by,dx,dy) && o(cx,cy,dx,dy,ax,ay) !== o(cx,cy,dx,dy,bx,by);
-  }
-
-  // Open floor for a group of tokens: flood-fill grid cells from a seed point
-  // without stepping through walls (doors count as passable), nearest cells
-  // first. A seed boxed in by walls (a pillar, a void outside the building)
-  // is skipped for the next closest one.
-  function openCells(scene,seed,need,taken) {
-    const d = scene.dimensions, g = d.size;
-    const cols = Math.floor(d.sceneWidth / g), rows = Math.floor(d.sceneHeight / g);
-    if (cols < 1 || rows < 1) return [];
-    const walls = scene.walls.filter(w => !w.door && (w.move ?? 1) !== 0).map(w => w.c);
-    const centre = (c,r) => [d.sceneX + (c + .5) * g,d.sceneY + (r + .5) * g];
-    const blocked = (a,b) => {
-      const [ax,ay] = centre(...a), [bx,by] = centre(...b);
-      return walls.some(w => crosses(ax,ay,bx,by,w));
-    };
-    // A wall running through the middle of a square makes it a bad spot too.
-    const inner = (c,r) => {
-      const [x,y] = centre(c,r), h = g * .35;
-      return walls.some(w => crosses(x - h,y - h,x + h,y + h,w) || crosses(x - h,y + h,x + h,y - h,w));
-    };
-    const key = (c,r) => c + "," + r;
-    const seedC = Math.max(0,Math.min(cols - 1,Math.floor((seed[0] - d.sceneX) / g)));
-    const seedR = Math.max(0,Math.min(rows - 1,Math.floor((seed[1] - d.sceneY) / g)));
-    const starts = [];
-    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) starts.push([c,r]);
-    starts.sort((a,b) => Math.hypot(a[0] - seedC,a[1] - seedR) - Math.hypot(b[0] - seedC,b[1] - seedR));
-    const tried = new Set();
-    for (const start of starts.slice(0,400)) {
-      if (tried.has(key(...start)) || taken.has(key(...start))) continue;
-      const seen = new Set([key(...start)]), out = [], queue = [start];
-      while (queue.length && out.length < need) {
-        const cell = queue.shift();
-        tried.add(key(...cell));
-        if (!taken.has(key(...cell)) && !inner(...cell)) out.push(cell);
-        for (const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]) {
-          const next = [cell[0] + dc,cell[1] + dr];
-          if (next[0] < 0 || next[1] < 0 || next[0] >= cols || next[1] >= rows || seen.has(key(...next))) continue;
-          seen.add(key(...next));
-          if (!blocked(cell,next)) queue.push(next);
-        }
-      }
-      if (out.length >= need) return out.map(([c,r]) => { taken.add(key(c,r)); return [d.sceneX + c * g,d.sceneY + r * g]; });
+  // Enemy suggestions for the whole gig: name -> {actor, count, where}.
+  function opposition(sheet,actors) {
+    const out = new Map();
+    for (const b of sheet.beats) for (const [name,count] of b.enemies) {
+      const e = out.get(name) ?? {name,actor:actors.get(name) ?? null,count:0,where:[]};
+      e.count += count;
+      e.where.push(b.n);
+      out.set(name,e);
     }
-    return [];
+    return [...out.values()];
   }
 
-  // Each group on a map gets its own area so two beats' enemies (or the
-  // named NPCs) don't pile onto one spot.
-  const SEEDS = [[.5,.5],[.3,.3],[.7,.7],[.3,.7],[.7,.3],[.5,.25],[.5,.75]];
-
-  // Hidden tokens for one group ([actor, count] pairs) on open floor.
-  async function placeGroup(scene,list,state) {
-    const need = list.reduce((n,[,c]) => n + c,0);
-    if (!need) return 0;
-    const d = scene.dimensions;
-    const [fx,fy] = SEEDS[state.groups++ % SEEDS.length];
-    const cells = openCells(scene,[d.sceneX + d.sceneWidth * fx,d.sceneY + d.sceneHeight * fy],need,state.taken);
-    const tokens = [];
-    let i = 0;
-    for (const [actor,count] of list) {
-      for (let k = 0; k < count; k++, i++) {
-        // Fallback when no open floor was found: a row near the seed.
-        const [x,y] = cells[i] ?? [Math.round(d.sceneX + d.sceneWidth * fx + (i % 5 - 2) * d.size),Math.round(d.sceneY + d.sceneHeight * fy + Math.floor(i / 5) * d.size)];
-        const td = await actor.getTokenDocument({x,y,hidden:true,actorLink:false});
-        tokens.push(td.toObject());
-      }
-    }
-    if (tokens.length) await scene.createEmbeddedDocuments("Token",tokens);
-    return tokens.length;
-  }
-
-  function sheetHtml(job,sheet,links) {
+  // The run sheet as building blocks: short, scannable, nothing the GM
+  // has to follow word for word.
+  function sheetHtml(job,sheet,links,actors) {
     const f = fixerOf(job);
     const r = rewardFor(job);
+    const risk = cat()?.TIERS?.[job.tier]?.label ?? "";
     const beat = b => {
-      const sceneLink = links.scenes[b.n] ? `@UUID[${links.scenes[b.n]}]{${esc(b.label ?? "map")}}` : esc(b.label ?? "—");
-      const enemies = b.enemies.map(([n,c]) => (links.actors[n] ? `@UUID[${links.actors[n]}]{${esc(n)}}` : esc(n)) + ` ×${c}`).join(", ");
-      return `<h3>${b.n}. ${esc(b.title)}</h3><p><strong>Where:</strong> ${sceneLink}${b.scene && b.scene.name !== b.label ? ` (map: ${esc(b.scene.name)})` : ""}</p><p>${esc(b.text)}</p>
-        ${b.checks.length ? `<ul>${b.checks.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
-        ${enemies ? `<p><strong>Enemies:</strong> ${enemies} <em>(tokens placed hidden on the map copy)</em></p>` : ""}`;
+      const mapName = b.scene?.name ?? b.label ?? "—";
+      const map = links.scenes[b.n] ? `@UUID[${links.scenes[b.n]}]{${esc(mapName)}}` : esc(mapName);
+      const place = b.label && b.label !== mapName ? ` <span class="gk-dim">· ${esc(b.label)}</span>` : "";
+      const foes = b.enemies.map(([n,c]) => `${esc(n)}${c > 1 ? " ×" + c : ""}`).join(", ");
+      return `<div class="gk-beat"><p class="gk-bh"><b>${b.n}</b> ${esc(b.title)}</p>
+<p class="gk-map">Map: ${map}${place}</p>
+<p>${esc(b.text)}</p>
+${b.checks.length ? `<p class="gk-small"><b>Checks</b> ${b.checks.map(esc).join(" · ")}</p>` : ""}
+${foes ? `<p class="gk-small"><b>Opposition</b> ${foes}</p>` : ""}</div>`;
     };
-    const npcs = sheet.npcs.map(n => `<li><strong>${links.actors[n.name] ? `@UUID[${links.actors[n.name]}]{${esc(n.name)}}` : esc(n.name)}</strong> — ${esc(n.note ?? "")}</li>`).join("");
-    return `<p><strong>${esc(f?.handle ?? "")}</strong> · ${esc(cat()?.TIERS?.[job.tier]?.label ?? "")} · ${esc(job.kind)} · pay ${Number(job.pay ?? 0).toLocaleString("en-US")} each · +${job.cred ?? 0} crew cred</p>
-${sheet.hook ? `<blockquote>${esc(sheet.hook)}</blockquote>` : ""}
-<h2>The job</h2><p>${esc(job.brief)}</p>
-${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}</li>`).join("")}</ol>` : ""}
-<h2>How to run it</h2>${sheet.beats.map(beat).join("")}
-${npcs ? `<h2>People</h2><ul>${npcs}</ul>` : ""}
-<h2>The twist (GM only)</h2><p>${esc(sheet.twist || "None.")}</p>
-${sheet.wrap ? `<h2>Wrapping up</h2><p>${esc(sheet.wrap)}</p>` : ""}
-<h2>Reward</h2><p>${Number(job.pay ?? 0).toLocaleString("en-US")} credits each${r.items.length ? " · " + r.items.map(i => (i.qty > 1 ? i.qty + "× " : "") + esc(i.name)).join(", ") : ""}${r.favor ? " · " + esc(r.favor) : ""}</p>
-<p><em>Pay out from the Jobs board (GM desk → the job → Pay out). Reward items go to the crew from there.</em></p>`;
+    const foes = opposition(sheet,actors).map(e =>
+      `<li>${e.actor ? `@UUID[${e.actor.uuid}]{${esc(e.name)}}` : esc(e.name)} <span class="gk-dim">×${e.count} · scene ${e.where.join(", ")}</span></li>`).join("");
+    const people = sheet.npcs.map(n => `<li><b>${esc(n.name)}</b>${n.note ? ` — ${esc(n.note)}` : ""}</li>`).join("");
+    return `<div class="feha-gig">
+<p class="gk-meta"><b>${esc(f?.handle ?? "")}</b> · ${esc(risk)} · ${esc(job.kind)} · €$ ${Number(job.pay ?? 0).toLocaleString("en-US")} each · +${job.cred ?? 0} cred</p>
+<p class="gk-tip">Building blocks, not a script. Rename, cut, swap or stretch anything.</p>
+${sheet.hook ? `<h3>Hook</h3><p><em>${esc(sheet.hook)}</em></p>` : ""}
+<h3>The job</h3><p>${esc(job.brief)}</p>
+${(job.objectives ?? []).length ? `<ul>${job.objectives.map(o => `<li>${esc(o)}</li>`).join("")}</ul>` : ""}
+<h3>Scenes</h3>${sheet.beats.map(beat).join("")}
+${foes ? `<h3>Recommended enemies</h3><ul class="gk-list">${foes}</ul><p class="gk-small gk-dim">Drag them in as you need them. Scale the numbers to your table.</p>` : ""}
+${people ? `<h3>People</h3><ul class="gk-list">${people}</ul><p class="gk-small gk-dim">Name them yourself.</p>` : ""}
+${sheet.twist ? `<h3>Twist (optional)</h3><p>${esc(sheet.twist)}</p>` : ""}
+${sheet.wrap ? `<h3>Endings</h3><p>${esc(sheet.wrap)}</p>` : ""}
+<h3>Reward</h3><p>€$ ${Number(job.pay ?? 0).toLocaleString("en-US")} each${r.items.length ? " · " + r.items.map(i => (i.qty > 1 ? i.qty + "× " : "") + esc(i.name)).join(", ") : ""}${r.favor ? `<br><span class="gk-dim">Favour: ${esc(r.favor)}</span>` : ""}</p>
+<p class="gk-small gk-dim">Pay out from the Jobs board: GM desk → the job → Pay out.</p>
+</div>`;
   }
 
   function handoutHtml(job) {
@@ -343,54 +292,24 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
 <p><strong>Pay:</strong> ${Number(job.pay ?? 0).toLocaleString("en-US")} credits each.</p>`;
   }
 
-  // GM: build the gig's kit. Returns ids to store on the job for cleanup.
+  // GM: build the gig's kit: a clean copy of each beat's battle map and a
+  // compact journal. Enemies are only recommended (catalog NPCs linked in
+  // the journal, imported if missing); nothing is placed on the maps.
   async function prep(job) {
     if (!game.user.isGM) throw new Error("GM only.");
     const sheet = runSheet(job);
     const title = String(job.title).slice(0,48);
     const sceneRoot = await folderFor("Scene",ROOT);
     const sceneFolder = await folderFor("Scene",title,sceneRoot);
-    const actorRoot = await folderFor("Actor",ROOT);
     const journalRoot = await folderFor("JournalEntry",ROOT);
 
-    const enemyNames = sheet.beats.flatMap(b => b.enemies.map(([n]) => n));
-    const npcBases = sheet.npcs.map(n => n.base).filter(Boolean);
-    const catalogActors = await ensureNpcs([...enemyNames,...npcBases]);
-    const links = {scenes:{},actors:{}};
-    for (const [name,actor] of catalogActors) links.actors[name] = actor.uuid;
+    const actors = await ensureNpcs(sheet.beats.flatMap(b => b.enemies.map(([n]) => n)));
+    const links = {scenes:{}};
+    const made = {scenes:[]};
 
-    // Named people: a copy of their base NPC, renamed, in the gig's folder.
-    const made = {actors:[],scenes:[]};
-    const npcActors = new Map();
-    let actorFolder = null;
-    if (sheet.npcs.length) {
-      actorFolder = await folderFor("Actor",title,actorRoot);
-      for (const n of sheet.npcs) {
-        // catalogActors is keyed by both catalog key and name.
-        const base = catalogActors.get(n.base) ?? null;
-        const data = base ? base.toObject() : {name:n.name,type:"npc"};
-        delete data._id;
-        data.name = n.name;
-        data.folder = actorFolder.id;
-        foundry.utils.setProperty(data,"prototypeToken.name",n.name);
-        foundry.utils.setProperty(data,`flags.${FLAG}.gigNpc`,job.id);
-        if (data.system?.details?.biography) data.system.details.biography.value = `<p>${esc(n.note ?? "")}</p>` + (data.system.details.biography.value ?? "");
-        const actor = await Actor.create(data);
-        made.actors.push(actor.id);
-        npcActors.set(n.name,actor);
-        links.actors[n.name] = actor.uuid;
-      }
-    }
-
-    // A copy of each beat's battle map (once per map), with that beat's enemies
-    // and the named people it mentions placed hidden on open floor.
+    // A copy of each beat's map (once per map) so the GM can drop tokens and
+    // draw on it without touching the original.
     const copies = new Map();
-    const placed = new Set();
-    const words = name => String(name).split(/s+/).filter(w => w.length > 3 && !/^(the|old|man|mrs?|miss|doctor|sister|brother)$/i.test(w));
-    const mentions = (b,name) => {
-      const text = (b.title + " " + b.text).toLowerCase();
-      return words(name).some(w => text.includes(w.toLowerCase()));
-    };
     for (const b of sheet.beats) {
       if (!b.scene) continue;
       let copy = copies.get(b.scene.id);
@@ -405,23 +324,11 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
         data.tokens = [];
         foundry.utils.setProperty(data,`flags.${FLAG}.gigScene`,job.id);
         copy = await Scene.create(data);
-        copy.__gig = {taken:new Set(),groups:0};
         copies.set(b.scene.id,copy);
         made.scenes.push(copy.id);
       }
       links.scenes[b.n] = copy.uuid;
-      const enemies = b.enemies.map(([n,c]) => [catalogActors.get(n),c]).filter(([a]) => a);
-      if (enemies.length) await placeGroup(copy,enemies,copy.__gig);
-      const people = [...npcActors].filter(([name]) => !placed.has(name) && mentions(b,name));
-      if (people.length) {
-        await placeGroup(copy,people.map(([,a]) => [a,1]),copy.__gig);
-        for (const [name] of people) placed.add(name);
-      }
     }
-    // Anyone the beats never name waits on the first map.
-    const first = copies.values().next().value;
-    const rest = [...npcActors].filter(([name]) => !placed.has(name));
-    if (first && rest.length) await placeGroup(first,rest.map(([,a]) => [a,1]),first.__gig);
 
     const journal = await JournalEntry.create({
       name:`GIG · ${title}`,
@@ -429,13 +336,72 @@ ${(job.objectives ?? []).length ? `<ol>${job.objectives.map(o => `<li>${esc(o)}<
       ownership:{default:0},
       flags:{[FLAG]:{gigJournal:job.id}},
       pages:[
-        {name:"Run sheet (GM)",type:"text",text:{content:sheetHtml(job,sheet,links)},sort:0},
+        {name:"Run sheet (GM)",type:"text",text:{content:sheetHtml(job,sheet,links,actors)},sort:0},
         {name:"Handout (show players)",type:"text",text:{content:handoutHtml(job)},sort:100}
       ]
     });
 
-    return {sceneFolder:sceneFolder.id,actorFolder:actorFolder?.id ?? null,journal:journal.id,scenes:made.scenes,actors:made.actors,beatScenes:Object.fromEntries(Object.entries(links.scenes).map(([n,u]) => [n,u.split(".").pop()]))};
+    return {sceneFolder:sceneFolder.id,actorFolder:null,journal:journal.id,scenes:made.scenes,actors:[],beatScenes:Object.fromEntries(Object.entries(links.scenes).map(([n,u]) => [n,u.split(".").pop()]))};
   }
+
+  // ------------------------------------------------- compact gig journal
+  // A gig journal opens as a narrow window docked on the left, page list
+  // folded away, so it can stay open beside the map while the GM runs the
+  // gig. Where the GM last left it is remembered on this computer.
+  const POS_KEY = "fehaGigSheetPos";
+  const SHEET_CSS = `
+.feha-gig-sheet .journal-page-content{font-size:13px;line-height:1.4}
+.feha-gig-sheet .journal-entry-page h1{font-size:18px;margin:0 0 4px}
+.feha-gig-sheet .journal-page-header{margin-bottom:2px}
+.feha-gig h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin:12px 0 4px;padding-bottom:2px;border-bottom:1px solid currentColor;opacity:.85}
+.feha-gig p{margin:0 0 5px}
+.feha-gig ul{margin:0 0 6px;padding-left:18px}
+.feha-gig li{margin:0 0 2px}
+.feha-gig .gk-meta{font-size:12px;opacity:.85}
+.feha-gig .gk-tip{font-size:12px;font-style:italic;opacity:.7}
+.feha-gig .gk-beat{margin:0 0 10px;padding-left:8px;border-left:2px solid currentColor}
+.feha-gig .gk-bh{margin:0 0 2px;font-weight:600}
+.feha-gig .gk-bh b{display:inline-block;min-width:16px;opacity:.7}
+.feha-gig .gk-map{font-size:12px;margin:0 0 3px}
+.feha-gig .gk-small{font-size:12px}
+.feha-gig .gk-dim{opacity:.65}
+.feha-gig .gk-list{list-style:none;padding-left:0}`;
+
+  function savedPos() {
+    try { return JSON.parse(localStorage.getItem(POS_KEY) || "null"); } catch { return null; }
+  }
+
+  function compactSheet(app) {
+    const doc = app.document;
+    if (!doc?.flags?.[FLAG]?.gigJournal || !game.user.isGM) return;
+    app.element?.classList.add("feha-gig-sheet");
+    if (!document.getElementById("feha-gig-sheet-css")) {
+      const style = document.createElement("style");
+      style.id = "feha-gig-sheet-css";
+      style.textContent = SHEET_CSS;
+      document.head.append(style);
+    }
+    if (app.__fehaGigPlaced) return;
+    app.__fehaGigPlaced = true;
+    const pos = savedPos() ?? {left:72,top:90,width:380,height:Math.max(360,Math.min(720,window.innerHeight - 200))};
+    try { app.setPosition(pos); } catch {}
+    try { if (app.element?.classList.contains("expanded") || app.sidebarState?.expanded) app.toggleSidebar?.(); } catch {}
+  }
+
+  function rememberPos(app) {
+    if (!app.document?.flags?.[FLAG]?.gigJournal) return;
+    const {left,top,width,height} = app.position ?? {};
+    if ([left,top,width,height].every(Number.isFinite)) {
+      try { localStorage.setItem(POS_KEY,JSON.stringify({left,top,width,height})); } catch {}
+    }
+  }
+
+  const prior = globalThis.__fehaGigSheetHooks;
+  if (prior) for (const [name,id] of prior) Hooks.off(name,id);
+  globalThis.__fehaGigSheetHooks = [
+    ["renderJournalEntrySheet",Hooks.on("renderJournalEntrySheet",app => compactSheet(app))],
+    ["closeJournalEntrySheet",Hooks.on("closeJournalEntrySheet",app => rememberPos(app))]
+  ];
 
   // GM: remove what prep() made (only those documents).
   async function cleanup(p) {

@@ -18,7 +18,7 @@
       "“One container, one crane, one very nervous man in a cab. And me, telling you about the Admiral's speech last night...”",
       [b("64","The terminal","Floodlights, stacked containers, a crane swinging overhead.",["Stealth DC 13 across the stacks","Perception DC 14 to spot the watcher on the gantry"],[["Kurohane Security",3]]),
        b("scene:Shipping Yard","The gate","A checkpoint with a scanner and a bored guard.",["Deception DC 13 with the cargo papers"],[["Private Security Guard",2]])],
-      [["Operator Lennart","civilian","Crane operator. Sweats through his overalls."]],
+      [["The crane operator","civilian","Crane operator. Sweats through his overalls."]],
       "Shake the tail and the route stays open. Lead Kurohane to Duval's warehouse and Duval is not pleased.",
       ["Breachhound","Grenade Smoke Regular Mk.II x2"],"Carp-Line: one container smuggled anywhere in the city."),
 
@@ -40,7 +40,7 @@
       "“A ship with no crew. Either a miracle or a crime. Usually a crime. Go and see.”",
       [b("scene:MTC Curwen (Ship) — Full Upper","The deck","Empty bridge, a bloodstain, the radio still on.",["Investigation DC 12"]),
        b("scene:MTC Curwen (Ship) — Full Lower","The hold","Containers, a locked hatch, voices.",["Persuasion DC 13 to bring the mutineers out"],[["Navy Rating",3],["Rustwater Boy",1]])],
-      [["Bosun Ilka","civilian","Leads the mutineers. Wants asylum."]],
+      [["The bosun","civilian","Leads the mutineers. Wants asylum."]],
       "Get the mutineers ashore safely and the salvage is Duval's. He pays a bonus.",
       ["Fire-Control Harness Mk.II","Grenade Flash Regular Mk.II x2"]),
 
@@ -51,7 +51,7 @@
       "“Sailors who aren't paid are sailors who listen to the wrong people. I'd like them to listen to me.”",
       [b("70@Security Checkpoint","The gate","Marines at the gate, a long pier, a ferry.",["Deception DC 13"],[["Navy Marine",2]]),
        b("70@Squadron 9 Hangar","The mess","Hundreds of sailors, cheering, an officer at the door.",["Stealth DC 13 to leave","Persuasion DC 14 with the officer"],[["Navy Marine",2],["Navy Rating",2]])],
-      [["Lieutenant Crane","civilian","Council-loyal officer. Ambitious."]],
+      [["The lieutenant","civilian","Council-loyal officer. Ambitious."]],
       "The sailors are paid and Duval's name is toasted all over the fleet.",
       ["Fire-Control Harness Mk.II","Bastion Electrolyte x2"]),
 
@@ -61,8 +61,8 @@
       "The plant manager is selling the night shift to both gangs, collecting twice.",
       "“Fish don't care who's in charge. The workers do. Go and make it boring again.”",
       [b("scene:Seafood Packing Facility","The floor","Ice, conveyor belts, two gangs eyeing each other.",["Persuasion DC 14 for a truce","Investigation DC 12 on the manager's books"],[["Yakuza Kobun",2],["Rustwater Boy",2],["Rustwater Captain",1]])],
-      [["Manager Pell","civilian","Selling the same shift twice."]],
-      "Expose Pell and both gangs drop the plant. Duval takes it over, of course.",
+      [["The plant manager","civilian","Selling the same shift twice."]],
+      "Expose the plant manager and both gangs drop the plant. Duval takes it over, of course.",
       ["Knife Military","Machete"]),
 
     g("customs-officer","Bent Customs","Bounty","39",
@@ -72,7 +72,7 @@
       "“A thief in a uniform. I can respect a thief. Not a thief who steals my cargo.”",
       [b("39","Pier 9 Market","He sells seized goods to a dealer at dawn.",["Stealth DC 13 to record it"],[["CivCorp Peacekeeper",2],["Rustwater Boy",1]]),
        b("X6@Lobby and Office","CivCorp Plaza","The recording reaches his supervisor.",["Persuasion DC 12"])],
-      [["Officer Brask","civilian","Customs officer. Desperate father."]],
+      [["The customs officer","civilian","Customs officer. Desperate father."]],
       "He's reassigned. If the crew finds another way to pay for the son's leg, Duval grumbles but approves.",
       ["Unity","Bastion Trauma Booster"]),
 
@@ -82,7 +82,7 @@
       "The lighthouse keeper is still living there, illegally, and would help.",
       "“A lighthouse that sees everything. Not on my harbour.”",
       [b("scene:Ocean Wall","The lighthouse","Wind, spray, a technician crew installing cameras.",["Tech DC 13 to sabotage","Stealth DC 13"],[["Kurohane Security",3]])],
-      [["Keeper Odile","civilian","Eighty. Has kept the light forty years."]],
+      [["The lighthouse keeper","civilian","Eighty. Has kept the light forty years."]],
       "The rig fails 'in the storm'. Duval's boats run dark another season.",
       ["Grenade EMP Regular Mk.II x2","Ghostweave Suit Mk.II"]),
 
@@ -92,7 +92,7 @@
       "The 'people' are Kurohane academy recruits being moved in secret to avoid a Council rule on child labour.",
       "“If they're moving people in boxes, I'd like the list of boxes.”",
       [b("64@Office — Encounter","The office","A glass office over the stacks, a terminal, a guard.",["Tech DC 14","Stealth DC 13"],[["Kurohane Security",2],["Kurohane Trooper",1]])],
-      [["Clerk Mina","civilian","Terminal clerk. Knows too much."]],
+      [["The terminal clerk","civilian","Terminal clerk. Knows too much."]],
       "The manifest is dynamite: Duval uses it against Kurohane, and the crew gets a cut.",
       ["Memory Boost","Corvus Memory Booster x2"]),
 
@@ -102,9 +102,9 @@
       "The card game was rigged; the dealer is the Rustwater captain's cousin.",
       "“A good captain, a bad night, a rigged game. Get the tug.”",
       [b("29","Totenhaus","Smoke, cards, a captain asleep under a table.",["Insight DC 13 on the dealer","Sleight of Hand DC 13 to win back"],[["Rustwater Boy",3],["Rustwater Captain",1]])],
-      [["Captain Bors","civilian","Snores like an engine."]],
-      "The tug returns. Bors owes Duval, and Duval owes the crew a ride anywhere by water.",
-      ["Grenade Frag Regular Mk.II x2","Bastion Recovery Drink"],"Captain Bors: a boat ride anywhere along the coast."),
+      [["The captain","civilian","Snores like an engine."]],
+      "The tug returns. The captain owes Duval, and Duval owes the crew a ride anywhere by water.",
+      ["Grenade Frag Regular Mk.II x2","Bastion Recovery Drink"],"The captain: a boat ride anywhere along the coast."),
 
     g("fuel-dump","Diesel Dream","Theft","scene:Harbour Warehouses",
       "A Bastion fuel depot on the harbour is overflowing. Duval wants a tanker truck of diesel for the fishing fleet.",
@@ -112,8 +112,8 @@
       "The depot sergeant sells fuel on the side and will be furious that someone's cutting in.",
       "“Bastion has more diesel than tanks. The fishermen have more boats than diesel. Fix the balance.”",
       [b("scene:Harbour Warehouses","The depot","Fuel tanks, a tanker truck, guards on rounds.",["Stealth DC 13","Tech DC 12 to start the pump"],[["Bastion Trooper",2],["Private Security Guard",2]])],
-      [["Sergeant Vey","civilian","Depot sergeant. Side business."]],
-      "The fleet sails. Make a deal with Vey and the diesel flows every month.",
+      [["The depot sergeant","civilian","Depot sergeant. Side business."]],
+      "The fleet sails. Make a deal with the depot sergeant and the diesel flows every month.",
       ["Breachhound","Grenade Incendiary Regular Mk.II"]),
 
     g("sunken-safe","Sunken Safe","Recovery","scene:Canal",
@@ -122,7 +122,7 @@
       "The safe contains bribe receipts from Kurohane. Duval wants them more than the money.",
       "“A safe in the canal, a Council member who didn't report it. Interesting.”",
       [b("scene:Canal","The canal","Black water, a submerged cart, a safe on the bottom.",["Athletics DC 13 to dive","Tech DC 14 to crack it"],[["Rustwater Boy",2]])],
-      [["Diver Pavo","civilian","Duval's diver. Never sober above water."]],
+      [["The diver","civilian","Duval's diver. Never sober above water."]],
       "The receipts are leverage. Duval shares the money.",
       ["Grit","Helix Oxy Booster x2"]),
 
@@ -133,7 +133,7 @@
       "“Paper. Ten thousand sheets of it. The most dangerous cargo I've ever carried.”",
       [b("scene:Dock","The landing","A small boat, boxes of paper, a patrol light.",["Stealth DC 12"],[["CivCorp Peacekeeper",2]]),
        b("H12","Pristan Block","Leaflets under every door before the morning shift.",["Athletics DC 12 to cover the block in time"])],
-      [["Printer Ola","union-steward","Runs the boat press. Ink to the elbows."]],
+      [["The printer","union-steward","Runs the boat press. Ink to the elbows."]],
       "The leaflets go out. The dock strike starts on Monday.",
       ["Kurohane Black Tea x2","Grenade Smoke Regular Mk.II"]),
 
@@ -144,7 +144,7 @@
       "“A marine who refused to murder. Get him out before the brave men with badges find him.”",
       [b("scene:Chase Alley","The hunt","Alleys, sirens, an injured man in a doorway.",["Medicine DC 12","Stealth DC 13"],[["Navy Marine",2]]),
        b("scene:The Marina","The marina","A boat, an MP checkpoint, a brother.",["Persuasion DC 14 with the brother"],[["Navy Marine",2],["Navy Rating",1]])],
-      [["Private Cass Veld","civilian","The deserter."],["Corporal Ivo Veld","civilian","His brother. Torn."]],
+      [["The deserter","civilian","The deserter."],["His brother","civilian","His brother. Torn."]],
       "Both brothers walk away from this alive: Duval calls it the best day of his month.",
       ["Fire-Control Harness Mk.II","Bastion Trauma Booster"]),
 
@@ -155,7 +155,7 @@
       "“Real rum. Not the synthetic poison they sell in the towers. Bring it home.”",
       [b("scene:Wanderer (Ship)","The patrol ship","A searchlight sweeps the water. A boarding party.",["Stealth DC 13","Persuasion DC 14 with the captain"],[["Kurohane Security",3]]),
        b("39","Pier 9","Unloading barrels in the fog.",[])],
-      [["Captain Hask","civilian","Patrol captain. Thirsty."]],
+      [["The patrol captain","civilian","Patrol captain. Thirsty."]],
       "The rum lands. Duval opens a bottle for the crew.",
       ["Kurohane Night Cola x2","Bastion Recovery Drink"]),
 
@@ -166,7 +166,7 @@
       "“An old man who sells used coats. Someone wants him dead. That means he knows something.”",
       [b("36","The shop","Racks of coats, an old man, a back room.",["Perception DC 13"],[["Kurohane Agent",1],["Street Gunner",2]]),
        b("36","The back room","A Navy sea chest, an old order, a decision.",["Investigation DC 12"])],
-      [["Captain Holm","civilian","Retired. Sells coats. Has a secret."]],
+      [["The old captain","civilian","Retired. Sells coats. Has a secret."]],
       "The order goes to Duval. That's a big story for the Admiral.",
       ["Kenshin","Ghostweave Suit Mk.II"]),
 
@@ -177,7 +177,7 @@
       "“A box that barks. Open it.”",
       [b("scene:Container Warehouse","The warehouse","Rows of containers, one barking.",["Tech DC 12 for the lock"],[["Rustwater Boy",2]]),
        b("37","The buyer","The Kennel market buyer arrives for pickup.",["Intimidation DC 14"],[["Kennel Dog",2]])],
-      [["Sergeant Brin","kennel-houndmaster","Runs the fighting ring."]],
+      [["The ring boss","kennel-houndmaster","Runs the fighting ring."]],
       "Dogs freed: Padre's strays get new friends. The Kennel isn't happy.",
       ["Grenade Flash Regular Mk.II x2","Kurohane Black Tea"]),
 
@@ -187,7 +187,7 @@
       "The harbour master is planning to sell the schedule to the Yakuza too.",
       "“A calendar of where the patrols aren't. Most valuable calendar in the city.”",
       [b("64@Office — Encounter 3","Harbour master's office","An office over the water, a safe, a sleepy guard.",["Stealth DC 13","Sleight of Hand DC 13"],[["Kurohane Security",2]])],
-      [["Harbour Master Ito","civilian","Double-dealing."]],
+      [["The harbour master","civilian","Double-dealing."]],
       "The schedule makes Duval's month. He pays a bonus.",
       ["Tanto","Corvus Memory Booster"]),
 
@@ -197,7 +197,7 @@
       "The rifles are for arming dockworkers if the strike turns violent. Duval doesn't say this.",
       "“Old rifles, a museum piece. I'm a historian at heart.”",
       [b("scene:Small Warehouse","The warehouse","Shelves, scrap bins, a crate stamped VARGAS.",["Stealth DC 13","Athletics DC 13 to carry it"],[["CivCorp Peacekeeper",2],["CivCorp Rifleman",1]])],
-      [["Warehouse clerk Pim","civilian","Owes Duval for his mother's surgery."]],
+      [["The warehouse clerk","civilian","Owes Duval for his mother's surgery."]],
       "The rifles disappear. Whatever happens on the docks next, Duval was ready.",
       ["Breachhound","Grenade Frag Regular Mk.II x2"])
   ]});

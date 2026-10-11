@@ -1090,7 +1090,7 @@
       const copy = job.prep?.beatScenes?.[b.n] ? game.scenes.get(job.prep.beatScenes[b.n]) : null;
       return `<div class="fj-beat"><div class="bn">${String(b.n).padStart(2,"0")}</div><div>
         <div class="bt"><b>${esc(b.title)}</b>${b.label ? ` · <span>${esc(b.label)}</span>` : ""}${b.scene && b.scene.name !== b.label ? ` <span class="mp">· map: ${esc(b.scene.name)}</span>` : ""}
-          ${copy ? `<button type="button" class="fj-mini fj-go" data-act="viewmap" data-scene="${esc(copy.id)}" title="The gig's copy, enemies placed (hidden)">Open gig map</button>` : ""}
+          ${copy ? `<button type="button" class="fj-mini fj-go" data-act="viewmap" data-scene="${esc(copy.id)}" title="The gig's own copy of this map">Open gig map</button>` : ""}
           ${b.scene ? `<button type="button" class="fj-mini fj-ghost" data-act="viewmap" data-scene="${esc(b.scene.id)}">Original map</button>` : ""}
           ${b.spot && city()?.worldScene?.() ? `<button type="button" class="fj-mini fj-ghost" data-act="citymap" data-spot="${esc(b.spot)}">City map</button>` : ""}</div>
         <p>${esc(b.text)}</p>
@@ -1102,16 +1102,16 @@
       <h3 class="fj-sh">GM · HOW TO RUN IT${sheet.written ? "" : " (QUICK SHEET)"}</h3>
       ${sheet.hook ? `<p class="fj-hook">${esc(sheet.hook)}</p>` : ""}
       ${beats}
-      ${sheet.npcs.length ? `<h3 class="fj-sh">PEOPLE</h3><ul class="fj-checks">${sheet.npcs.map(n => `<li><b>${esc(n.name)}</b> — ${esc(n.note ?? "")}</li>`).join("")}</ul>` : ""}
-      <h3 class="fj-sh">THE TWIST</h3><p>${esc(sheet.twist || "None.")}</p>
+      ${sheet.npcs.length ? `<h3 class="fj-sh">PEOPLE (NAME THEM YOURSELF)</h3><ul class="fj-checks">${sheet.npcs.map(n => `<li><b>${esc(n.name)}</b> — ${esc(n.note ?? "")}</li>`).join("")}</ul>` : ""}
+      <h3 class="fj-sh">TWIST (OPTIONAL)</h3><p>${esc(sheet.twist || "None.")}</p>
       ${sheet.wrap ? `<h3 class="fj-sh">WRAPPING UP</h3><p>${esc(sheet.wrap)}</p>` : ""}
       <h3 class="fj-sh">GIG FILES</h3>
       <div class="fj-row">${prepped
-        ? `<span class="fj-note">Ready: journal, ${(job.prep.scenes ?? []).length} map cop${(job.prep.scenes ?? []).length === 1 ? "y" : "ies"} with enemies placed hidden${(job.prep.actors ?? []).length ? `, ${job.prep.actors.length} named NPC${job.prep.actors.length === 1 ? "" : "s"}` : ""}.</span>
+        ? `<span class="fj-note">Ready: a compact gig journal and ${(job.prep.scenes ?? []).length} map cop${(job.prep.scenes ?? []).length === 1 ? "y" : "ies"}.</span>
            <button type="button" class="fj-mini fj-go" data-act="openjournal" data-journal="${esc(job.prep.journal)}">Open gig journal</button>
            <button type="button" class="fj-mini" data-act="prep">Rebuild</button>
            <button type="button" class="fj-mini fj-ghost" data-act="cleanup">Delete gig files</button>`
-        : `<span class="fj-note">One click builds a GIGS folder: a copy of each map with the enemies placed (hidden), the NPCs, and a journal with this run sheet and a player handout.${read().autoPrep ? " Confirming a job does this automatically." : ""}</span>
+        : `<span class="fj-note">One click builds a GIGS folder: a clean copy of each map, and a compact journal (run sheet with recommended enemies, plus a player handout) that docks beside the map.${read().autoPrep ? " Confirming a job does this automatically." : ""}</span>
            <button type="button" class="fj-mini fj-go" data-act="prep">Prep gig files</button>`}</div>
     </section>`;
   }
@@ -1200,7 +1200,7 @@
     const loot = job.given?.length ? `<span class="fj-note">Loot: ${esc(job.given.join(", "))}</span>` : "";
     if (!isGM) return loot ? `<div class="fj-act">${loot}</div>` : "";
     return `<div class="fj-act">${loot}<div class="fj-row">
-      ${job.prep ? `<button type="button" class="fj-go" data-act="cleanup" title="Deletes the map copies, NPCs and journal this gig made">Delete gig files</button>` : ""}
+      ${job.prep ? `<button type="button" class="fj-go" data-act="cleanup" title="Deletes the map copies and journal this gig made">Delete gig files</button>` : ""}
       <button type="button" data-act="reopen">Offer it again</button>
       <button type="button" class="fj-ghost" data-act="remove">Delete record</button></div></div>`;
   }
@@ -1458,7 +1458,7 @@
           sfx("install");
           break;
         case "cleanup":
-          if (!confirmTwice(target,"Delete the gig's maps, NPCs and journal?")) return;
+          if (!confirmTwice(target,"Delete the gig's maps and journal?")) return;
           await run("cleanup",{jobId});
           sfx("remove");
           break;

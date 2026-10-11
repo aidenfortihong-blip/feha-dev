@@ -18,7 +18,7 @@
       "Hale turns her glass a quarter turn. “One old man. One vote. The fate of a corporation. Please don't wake the dogs.”",
       [b("63","The estate","Gardens, guard drones, a pavilion with a sleeping man and a nurse.",["Stealth DC 16","Medicine DC 15 to counter the sedative"],[["Kurohane Elite Guard",3],["Kurohane Kage",1]]),
        b("scene:Corporate Rooftop Landing Pad","The flight","A helicopter on the pad, a pilot who wants a bribe.",["Persuasion DC 15"],[["Kurohane Sniper",1],["Kurohane Trooper",2]])],
-      [["Director Haruo Kurohane","civilian","Eighty-four. Furious at his family. Sharp when awake."]],
+      [["The old director","civilian","Eighty-four. Furious at his family. Sharp when awake."]],
       "The vote happens. Whoever wins, the crew is now known in Kurohane's boardroom. That's a mixed blessing.",
       ["Kerenzikov","Ghostweave Suit Mk.IV"],"Ms. Hale: one corporate door opened, any corp."),
 
@@ -29,7 +29,7 @@
       "“A ledger of the Council's sins. My client would like to read it before the Council does something stupid.”",
       [b("73","The casino floor","High-rollers, Council members, discreet security.",["Deception DC 16 as a high roller","Sleight of Hand DC 15 for a keycard"],[["Kurohane Elite Guard",2],["Private Security Guard",3]]),
        b("73","The counting room","A vault behind the cashier, a Kage guard.",["Tech DC 17"],[["Kurohane Kage",1]])],
-      [["Croupier Dmitri","civilian","Sells information. Loves gambling more than money."]],
+      [["The croupier","civilian","Sells information. Loves gambling more than money."]],
       "Hale gets her copy. The crew can make their own copy too. That's a dangerous thing to own.",
       ["Kolac","Bastion Trauma Booster x2"]),
 
@@ -40,7 +40,7 @@
       "“A sleeping prince in a freezer. Wake him gently. He's worth a war.”",
       [b("scene:Cryo Chamber","The facility","Frost, pods, an automated security system.",["Medicine DC 16","Tech DC 16 for the pod"],[["Bastion Heavy",1],["Bastion Trooper",3]]),
        b("scene:Corp Landing Deck","The exfil","A VTOL waiting, Bastion closing in.",["Athletics DC 15"],[["Bastion Sergeant",1],["Bastion Marksman",2]])],
-      [["Aldric Voss","civilian","The heir. Twenty years out of time."]],
+      [["The heir","civilian","The heir. Twenty years out of time."]],
       "Delivered: Bastion's succession fight begins. Hale pays a bonus for the testimony.",
       ["Saratoga","Bastion Combat Plate Mk.IV"]),
 
@@ -51,7 +51,7 @@
       "“Twelve corporations deciding the city's future in a room. Let's give them an audience.”",
       [b("85","The Spire","Marble halls, Vigil guards, scanners.",["Deception DC 17","Stealth DC 17"],[["Marble Vigil Operative",3],["Marble Vigil Captain",1]]),
        b("scene:National Assembly","The chamber","Twelve seats, a vote, a broadcast relay.",["Tech DC 17 to hold the relay"],[["Marble Vigil Netrunner",2],["Marble Vigil Suppressor",1]])],
-      [["Speaker Abend","civilian","Runs the session."]],
+      [["The speaker","civilian","Runs the session."]],
       "Broadcast or blackmail: the crew decides what happens to the recording. Either changes the city.",
       ["Sandevistan C4","Interface Security Suit Mk.V"],"Ms. Hale: her client owes the crew a seat at a table that matters."),
 
@@ -61,7 +61,7 @@
       "Hale's client wants to patent it themselves and sell it at twice the price.",
       "“A cure, locked away for profit. My client would like it unlocked. For profit.”",
       [b("scene:Xenoform Research Lab","The lab","Sealed labs, specimens, a research AI.",["Tech DC 16","Stealth DC 16"],[["Kurohane Elite Guard",3],["Helix Medtech",2]])],
-      [["Dr. Amina Quell","civilian","Created the cure. Wants it free."]],
+      [["The scientist","civilian","Created the cure. Wants it free."]],
       "Give it to Hale and the crew is rich. Leak it free and the crew is beloved, and hunted by two corps.",
       ["Second Heart","Helix Health Booster x2"]),
 
@@ -71,7 +71,7 @@
       "The prototype's test target is a clan camp. The crew can stop the test by stealing it before it fires.",
       "“A rifle that fires at the speed of light. Not quite, but close. Bring it.”",
       [b("74","The proving grounds","Test ranges, bunkers, Bastion contractors.",["Stealth DC 16","Tech DC 16"],[["Bastion Heavy",1],["Bastion Trooper",3],["Bastion Marksman",1]])],
-      [["Engineer Kael","civilian","Designed it. Hates where it's aimed."]],
+      [["The engineer","civilian","Designed it. Hates where it's aimed."]],
       "Prototype secured. The clan camp never knows how close it came.",
       ["Rasetsu Prototype","Bastion Trauma Booster"]),
 
@@ -81,7 +81,7 @@
       "The handlers ordered the deaths of the Oni's family to 'remove distractions'. He knows.",
       "“A weapon with a grudge. My client would like it decommissioned. Ideally without losing a floor.”",
       [b("scene:Corporate Penthouse Office","The penthouse","The last handler, cowering, and an Oni coming up the stairs.",["Persuasion DC 18 to stop him","Tech DC 17 for the kill-switch"],[["Kurohane Oni",1],["Kurohane Elite Guard",2]])],
-      [["Handler Morrow","civilian","The last handler. Deserves it."]],
+      [["The handler","civilian","The last handler. Deserves it."]],
       "However it ends, the city loses a monster, one way or the other.",
       ["Mantis Blades Apex","Bastion Trauma Booster x2"]),
 
@@ -91,7 +91,7 @@
       "One file is Hale's: she was Vigil once.",
       "“The names of the people who make people disappear. My client wants a list.”",
       [b("X6@Server Room - Array Technika","The vault","A server vault, ICE, Vigil guards.",["Tech DC 17 (three failures: lockdown)"],[["Marble Vigil Operative",3],["Marble Vigil Netrunner",1],["Marble Vigil Captain",1]])],
-      [["Archivist Reed","civilian","Vigil archivist. Quietly anti-Vigil."]],
+      [["The archivist","civilian","Vigil archivist. Quietly anti-Vigil."]],
       "The list changes the balance of the city. The crew sees Hale's file.",
       ["Kiroshi Optics Hunter","Interface Security Suit Mk.IV"]),
 
@@ -101,7 +101,7 @@
       "The executive wants to be robbed: he's leaking his own company's secrets.",
       "“A garden in the sky, champagne, and a man with a very valuable head.”",
       [b("scene:Sky Mansion Gardens","The gala","Gardens, an orchestra, executives, guards in tuxedos.",["Deception DC 16","Sleight of Hand DC 16"],[["Kurohane Elite Guard",3],["Kurohane Counterintel Officer",1]])],
-      [["Executive Vale","civilian","Leaking on purpose."]],
+      [["The executive","civilian","Leaking on purpose."]],
       "The copy is clean. Hale's client gets a Corvus secret.",
       ["Ghostweave Suit Mk.IV","Corvus Black Memory Booster x2"]),
 
@@ -122,7 +122,7 @@
       "“A strike is bad for business. My client would like it to stop. I don't ask how you feel about it.”",
       [b("H7","The strike office","Block 7 basement, organisers, Ferro's people.",["Stealth DC 15"],[["Sparker",2],["Kennel Dog",2]]),
        b("84@Exec Office — Map 2","ForgeLine executive floor","For a double-cross.",["Stealth DC 16"],[["Bastion Trooper",3],["Bastion Sergeant",1]])],
-      [["Executive Rask","civilian","ForgeLine's labour chief."]],
+      [["The labour chief","civilian","ForgeLine's labour chief."]],
       "Do it straight and Ferro becomes an enemy. Do it backwards and Hale's client loses, and Hale knows who did it.",
       ["Nullstorm","Rivet Work Armor Mk.IV"]),
 
@@ -143,8 +143,8 @@
       "The Scorpions got there first and want to sell it to the highest bidder.",
       "“A star fell with every secret in the city. Pick it up.”",
       [b("scene:The Crash Site","The crater","Smoke, debris, Scorpions, a Kurohane VTOL landing.",["Athletics DC 15"],[["Scorpion Chief",1],["Kurohane Trooper",3],["Kurohane Sniper",1]])],
-      [["Chief Saba","scorpion-chief","Wants a fair price."]],
-      "Deal with Saba and the crew gets the core and an ally. Hale's client pays a fortune.",
+      [["The Scorpion chief","scorpion-chief","Wants a fair price."]],
+      "Deal with the Scorpion chief and the crew gets the core and an ally. Hale's client pays a fortune.",
       ["Pale Kestrel","Fire-Control Harness Mk.IV"]),
 
     g(4,"navy-mutiny","Mutiny","Protection","70",
@@ -164,7 +164,7 @@
       "The spy is a scholarship student blackmailed into it, the same kind of lottery kid Zach was.",
       "“Someone sells children's data. My client is horrified, mostly about the lawsuits.”",
       [b("X5","The academy","Labs, dorms, a student acting oddly.",["Insight DC 15","Tech DC 16 to trace the transfer"],[["Kurohane Security",3],["Corvus Netrunner",1]])],
-      [["Student Rin","civilian","Blackmailed lottery student."]],
+      [["The student","civilian","Blackmailed lottery student."]],
       "Hand over the student or the blackmailer: the crew decides who pays.",
       ["Memory Boost","Ghostweave Suit Mk.IV"]),
 
@@ -174,7 +174,7 @@
       "She's carrying Kurohane's self-destruct codes for its own security systems.",
       "“A CEO on the top floor, an army on every other. The only way is down.”",
       [b("scene:Executive Office","The top floor","Glass, wind, a woman with a case, soldiers on the stairs.",["Athletics DC 18 for the drop","Tech DC 17 to jam the turrets"],[["Kurohane Oni",1],["Kurohane Elite Guard",3]])],
-      [["CEO Asami Kurohane","civilian","Defecting. Brilliant. Ruthless."]],
+      [["The CEO","civilian","Defecting. Brilliant. Ruthless."]],
       "Get her out and the city's largest corporation changes hands. The crew is untouchable for a while, or the most hunted people in Alabastra.",
       ["Sandevistan Apogee","Ghostweave Suit Mk.V"]),
 
@@ -184,7 +184,7 @@
       "The charter proves the Council's founding was illegal under its own law.",
       "“A painting, a frame, and inside the frame a document that could unmake the Council.”",
       [b("scene:Eden Art Gallery","The gallery","Velvet ropes, collectors, laser grids.",["Stealth DC 16","Sleight of Hand DC 16"],[["Kurohane Elite Guard",3],["Kurohane Agent",1]])],
-      [["Curator Faye","civilian","Knows what's in the frame."]],
+      [["The curator","civilian","Knows what's in the frame."]],
       "The charter is a weapon. Hale's client wants to keep it hidden; others would publish it.",
       ["Hexburst","Grenade Smoke Regular Mk.IV x2"])
   ]});

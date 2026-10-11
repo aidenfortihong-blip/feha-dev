@@ -18,8 +18,8 @@
       "“A man confessed and then vanished. In my trade, that means he's either very guilty or very frightened.”",
       [b("67","The soup kitchen","The confession is written on a napkin. It names a floor and a time.",["Investigation DC 11 on the napkin: hotel laundry ink"]),
        b("03","The burned floor","Charred corridors, unsafe floors, a thin man hiding in a linen closet.",["Athletics DC 12 over the broken floor","Persuasion DC 12 to coax him out"],[["Street Thug",2]])],
-      [["Bruno Salas","civilian","The witness. Squatter, ex-hotel porter, terrified."]],
-      "Bring Bruno in and the Padre gets the arson on record. The squatters move back into the hotel.",
+      [["The witness","civilian","The witness. Squatter, ex-hotel porter, terrified."]],
+      "Bring the witness in and the Padre gets the arson on record. The squatters move back into the hotel.",
       ["Helix Health Booster","Kurohane Black Tea x2"]),
 
     g("beach-kids","Beach Kids","Protection","28",
@@ -28,7 +28,7 @@
       "The bar owner tipped off the Rustwater Boys in exchange for cheap smuggled liquor.",
       "“Children selling glass to tourists. Men taking their coins. Go and be bigger than the men.”",
       [b("28","The Lantern","Tourists, cheap cocktails, five kids with trays of sea glass, three men waiting outside.",["Insight DC 12 on the bar owner"],[["Rustwater Boy",3]])],
-      [["Pip","civilian","Twelve. Leader of the beach kids. Fierce."],["Rory Vance","shopkeeper","Owner of the Lantern. Cheap, not cruel."]],
+      [["The kids' leader","civilian","Twelve. Leader of the beach kids. Fierce."],["The bar owner","shopkeeper","Owner of the Lantern. Cheap, not cruel."]],
       "Win it and the kids give the crew a lucky piece of sea glass each.",
       ["Grenade Flash Regular Mk.I x2","Helix Stamina Booster"],"The beach kids: lookouts anywhere on the Costa Morta coast."),
 
@@ -50,8 +50,8 @@
       "“A boy brought me a bottle with a soldier's cry for help inside. I'm too old to swim.”",
       [b("scene:Tropic Beach","The beach","The boy hid the bottle under a pier. Scavengers are already looking.",["Perception DC 11"],[["Scorpion Raider",2]]),
        b("scene:Cove","The wreck","A half-sunk boat, a man with a pistol and a fever.",["Persuasion DC 12 not to get shot","Medicine DC 12 to treat him"])],
-      [["Gunner Yarrow","civilian","Navy deserter. Ran when ordered to fire on a refugee boat."]],
-      "Save Yarrow and Carp-Line will want to meet the crew (he hates the officer who gave that order).",
+      [["The deserter","civilian","Navy deserter. Ran when ordered to fire on a refugee boat."]],
+      "Save the deserter and Carp-Line will want to meet the crew (he hates the officer who gave that order).",
       ["Helix Health Booster x2","Grenade Smoke Regular Mk.I"]),
 
     g("lights-out","Candles","Delivery","67",
@@ -60,7 +60,7 @@
       "A gang leader on the top floor wants all the lanterns to sell. He'll take half if he can't have all.",
       "“Light. A simple thing. Somebody always wants to sell it.”",
       [b("67","The mall","Dark escalators, families in shop units, a gang on the food court balcony.",["Persuasion DC 12 to keep the queue orderly","Intimidation DC 13 to face down the gang"],[["Street Thug",3],["Street Gunner",1]])],
-      [["Mother Ines","organizer","Runs the mall's ground-floor families."]],
+      [["The mother of the mall","organizer","Runs the mall's ground-floor families."]],
       "All lanterns delivered: the mall glows at night for the first time in years.",
       ["Kurohane Night Cola x2","Charge System"]),
 
@@ -71,8 +71,8 @@
       "“Forty mothers writing to forty sons. Make sure they arrive.”",
       [b("77","Visitors' hall","Bars, queues, guards who look bored and greedy.",["Insight DC 13 to pick the right guard","Persuasion DC 12 to make the deal"],[["CivCorp Peacekeeper",1]]),
        b("28","The Drowned contact","The guard meets a Drowned runner at the Lantern to sell what he hears.",["Stealth DC 12 to tail him"],[["Drowned Runner",1]])],
-      [["Guard Polk","civilian","Takes bribes. Feels bad about it, mostly."]],
-      "Letters in, replies out. Expose Polk's side deal and the Padre trusts the crew with harder work.",
+      [["The guard","civilian","Takes bribes. Feels bad about it, mostly."]],
+      "Letters in, replies out. Expose the guard's side deal and the Padre trusts the crew with harder work.",
       ["Helix Health Booster","Kurohane Black Tea"]),
 
     g("seawall","The Seawall","Sabotage","scene:Ocean Wall",
@@ -81,7 +81,7 @@
       "The maintenance foreman agrees with the Padre and left the control room unlocked on purpose.",
       "“The sea doesn't care who's rich. The wall does. Make the wall care less.”",
       [b("scene:Ocean Wall","The wall","Wind, spray, a control hut with a light on.",["Tech DC 12 to jam the gate","Athletics DC 12 on the wet walkway"],[["Private Security Guard",2]])],
-      [["Foreman Duarte","union-steward","Left the door unlocked. Will deny it forever."]],
+      [["The foreman","union-steward","Left the door unlocked. Will deny it forever."]],
       "The squatter side stops flooding. The Padre says a prayer for the crew, which is the most he can afford.",
       ["Rivet Work Armor Mk.I","Bastion Electrolyte"]),
 
@@ -92,7 +92,7 @@
       "“Old men, old boats, fish that belong to nobody. Go fishing.”",
       [b("scene:Dock","Dawn","A small boat, nets, a grumpy old fisherman, and a fast Kurohane patrol boat on the horizon.",["Survival DC 11 to fish","Deception DC 12 or Persuasion DC 12 with the patrol"],[["Kurohane Security",2]]),
        b("42","Stacks Market","Selling the catch before it spoils.",[])],
-      [["Old Tomás","civilian","Has fished this coast for fifty years. Says almost nothing."]],
+      [["The old fisherman","civilian","Has fished this coast for fifty years. Says almost nothing."]],
       "Land the catch and the fishermen keep the crew in fresh fish (and gossip from the water).",
       ["Helix Stamina Booster x2","Knife Kurtz"]),
 
@@ -103,8 +103,8 @@
       "“A clinic that keeps getting robbed stops being a clinic. Keep it a clinic.”",
       [b("52","The clinic","Two a.m., rain, three hooded figures with crowbars.",["Perception DC 12","Persuasion DC 13 to stop them without a fight"],[["Street Thug",3]]),
        b("17","The buyer","The pills end up at Voltage, sold by a Glasshouse kid.",["Investigation DC 12"],[["Glasshouse Kid",2]])],
-      [["Dr. Fiona Leal","ripperdoc","The coast's doctor. Works for donations."]],
-      "Stop the buyer and the robberies stop. Dr. Leal treats the crew free from now on.",
+      [["The doctor","ripperdoc","The coast's doctor. Works for donations."]],
+      "Stop the buyer and the robberies stop. The doctor treats the crew free from now on.",
       ["Helix Health Booster x2","Biomonitor"],"Costa Clinic: free healing for the crew between sessions."),
 
     g("lost-saint","The Lost Saint","Recovery","42",
@@ -114,7 +114,7 @@
       "“A saint was sold for twenty credits. He's worth more than that to us. To the dealer, he's worth more than everything.”",
       [b("42","Stacks Market","The stallholder who sold it is crying. The buyer's name is on a receipt.",["Investigation DC 11"]),
        b("scene:The Marina","The ferry","The dealer, his assistant, a crate.",["Persuasion DC 14","Sleight of Hand DC 13 to swap it for a fake"],[["Private Security Guard",2]])],
-      [["Mr. Ashcombe","civilian","Art dealer. Smooth, greedy, scared of a scene."]],
+      [["The art dealer","civilian","Art dealer. Smooth, greedy, scared of a scene."]],
       "The saint comes home. The congregation throws the crew a party.",
       ["Tanto","Kurohane Black Tea x2"]),
 
@@ -124,7 +124,7 @@
       "A Drowned runner is already out there in a dinghy: the kids are hers.",
       "“Two children and the sea. No time for prayers. Go.”",
       [b("scene:Tropic Beach","The rocks","Slippery rocks, high surf, two kids clinging on.",["Athletics DC 13 to reach them","Medicine DC 12 afterwards for the toxins"])],
-      [["Marisol","civilian","Drowned runner. Their mother. Will owe the crew forever."]],
+      [["The mother","civilian","Drowned runner. Their mother. Will owe the crew forever."]],
       "Save them and the Drowned treat the crew as friends from now on.",
       ["Helix Oxy Booster x2","Helix Health Booster"],"The Drowned: a free netrunning favour once."),
 
@@ -134,8 +134,8 @@
       "The 'tourist' is a Corvus engineer testing a chess implant in the wild. He'd pay double to keep it quiet.",
       "“He cheated an old man at chess with a computer in his head. That's a sin even in the Bible's small print.”",
       [b("28","The Lantern","The engineer is at the bar, smug.",["Tech DC 13 to detect the implant","Persuasion DC 12 to make him pay"],[["Private Security Guard",1]])],
-      [["Old Abel","civilian","Chess hustler. Seventy. Rent is due Friday."]],
-      "Money back: Abel pays rent. Take the engineer's hush money too and the Padre frowns but doesn't refuse it.",
+      [["The old hustler","civilian","Chess hustler. Seventy. Rent is due Friday."]],
+      "Money back: The old hustler pays rent. Take the engineer's hush money too and the Padre frowns but doesn't refuse it.",
       ["Detector Rush","Kurohane Quiet Energy"]),
 
     g("graveyard","Night Digging","Investigation","scene:Cyberpunk Church",
@@ -145,7 +145,7 @@
       "“Somebody is disturbing my dead. Find out who, and then disturb them.”",
       [b("66@City Park","The cemetery","Fog, lanterns, two shovels and a cart.",["Stealth DC 12 to wait unseen"],[["Street Thug",2],["Street Gunner",1]]),
        b("61","Seawind Ripper","The buyer of the dead men's chrome.",["Intimidation DC 13 to make him stop buying"])],
-      [["Gravedigger Moss","civilian","The cemetery's old keeper. Sleeps through everything."]],
+      [["The gravedigger","civilian","The cemetery's old keeper. Sleeps through everything."]],
       "Stop the trade and the families rebury their dead in peace.",
       ["Grenade Flash Regular Mk.I x2","Helix Health Booster"]),
 
@@ -156,7 +156,7 @@
       "“Children, dogs and a man with a cull order. Somebody is going to get bitten.”",
       [b("67","The mall","Twenty kids with sticks, fifty dogs, a CivCorp van outside.",["Persuasion DC 12 with the kids","Animal Handling DC 12 to move the dogs"],[["CivCorp Peacekeeper",2]]),
        b("37","The Kennel","The houndmaster could take them.",["Persuasion DC 12"])],
-      [["Luz","civilian","Twelve. The dogs' self-appointed queen."]],
+      [["The dog queen","civilian","Twelve. The dogs' self-appointed queen."]],
       "Dogs safe, kids safe. The Kennel houndmaster now owes the crew a favour.",
       ["Kurohane Night Cola x2","Helix Stamina Booster"],"The Kennel Houndmaster: one free way through the Kennel wall."),
 
@@ -166,7 +166,7 @@
       "The yacht's steward is a coast kid the Padre baptised. He'll let the crew in, but will be fired if caught.",
       "“One fish. He has three hundred. The clinic has none. God will understand.”",
       [b("scene:The Superyacht","The yacht","A party on deck, an aquarium below, a nervous steward.",["Stealth DC 13","Sleight of Hand DC 12 to net a fish"],[["Private Security Guard",2]])],
-      [["Steward Leo","civilian","Coast kid, works on the yacht, owes the Padre."]],
+      [["The steward","civilian","Coast kid, works on the yacht, owes the Padre."]],
       "The fish pays for a month of the clinic's medicine.",
       ["Helix Health Booster x2","Grenade Smoke Regular Mk.I"]),
 
@@ -177,7 +177,7 @@
       "“Bad fish, sick children, quiet fishermen. Somebody paid for that quiet.”",
       [b("42","Stacks Market","Stallholders, sick customers, a fisherman who won't meet anyone's eyes.",["Insight DC 12","Persuasion DC 13 to get the story"]),
        b("scene:Oceanic Platform","The dumping boat","Night, a Helix barge pumping waste. Getting proof means getting close.",["Stealth DC 13 for photos"],[["Helix Medtech",1],["Private Security Guard",2]])],
-      [["Fisherman Paco","civilian","Took the money. Feels sick about it."]],
+      [["The fisherman","civilian","Took the money. Feels sick about it."]],
       "Proof goes to the indie journalist; the dumping moves further out to sea. The coast eats again.",
       ["Biomonitor","Helix Oxy Booster x2"]),
 
@@ -188,7 +188,7 @@
       "“A cross for bullets. That's this coast in one sentence. Get it back before the funeral.”",
       [b("32","Vektor Outlet","The manager points at a receipt.",["Persuasion DC 12"]),
        b("15","El Lobo Cojo","The jefe holds court at the bar. He'll give it back for a favour, or a story.",["Persuasion DC 13","Performance DC 13 to tell a good story about the dead man"],[["Viejo Soldado",2]])],
-      [["Widow Carmen","civilian","Seventy, determined, angry at herself."]],
+      [["The widow","civilian","Seventy, determined, angry at herself."]],
       "The cross makes the funeral. The jefe remembers the crew kindly.",
       ["Knife Military","Helix Health Booster"],"Los Viejos: a friendly word in the Old Capital once."),
 
@@ -199,7 +199,7 @@
       "“Electricity, by boat, at night. Very biblical.”",
       [b("scene:Dock","The landing","A small boat, a heavy crate, a harbour patrol light sweeping the water.",["Stealth DC 12","Athletics DC 13 to move the generator"],[["CivCorp Peacekeeper",2]]),
        b("67","The mall","The squatters cheer. A Bastion trooper is asking questions outside.",["Deception DC 13"],[["Bastion Trooper",1]])],
-      [["Captain Vasco","civilian","The boatman. Asks no questions, answers none."]],
+      [["The boatman","civilian","The boatman. Asks no questions, answers none."]],
       "The mall has power. Bastion may come back one day.",
       ["Charge System","Kurohane Night Cola x2"]),
 
@@ -210,7 +210,7 @@
       "“A man selling miracles. I've been in this business fifty years. I've never sold one.”",
       [b("67","The sermon","A crowd in the food court, a man with a microphone, collection buckets.",["Insight DC 12","Perception DC 13 to spot the earpiece"]),
        b("scene:Back Alley","The handover","After the sermon he meets a CivCorp officer in an alley.",["Stealth DC 13 to record it"],[["CivCorp Peacekeeper",2]])],
-      [["Brother Cass","civilian","The preacher. Charming, rotten."]],
+      [["The preacher","civilian","The preacher. Charming, rotten."]],
       "Expose him and the squatters get their money back (mostly). The Padre gets his congregation back.",
       ["Helix Health Booster","Grenade Recon Regular Mk.I"]),
 
@@ -221,8 +221,8 @@
       "“A family needs to leave. A man needs them to stay. Walk them to the boat.”",
       [b("scene:Chase Alley","The walk","Alleys to the marina, a young man following.",["Perception DC 12"],[["Street Gunner",2]]),
        b("scene:The Marina","The ferry","The horn blows in ten minutes.",["Persuasion DC 13 with the collector"])],
-      [["The Orlov family","civilian","Mother, father, three kids, two suitcases."],["Teo","street-thug","The debt collector. Nineteen."]],
-      "The family leaves. If Teo is helped too, he gives up the debt trade.",
+      [["The family","civilian","Mother, father, three kids, two suitcases."],["The debt collector","street-thug","The debt collector. Nineteen."]],
+      "The family leaves. If the debt collector is helped too, he gives up the debt trade.",
       ["Kurohane Black Tea x2","Helix Stamina Booster"])
   ]});
 })();

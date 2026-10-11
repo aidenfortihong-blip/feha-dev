@@ -29,7 +29,7 @@
       "“Bastion is digging. I'd like them to stop digging, and to remember we let them live.”",
       [b("37","Kennel Market","A market stall hides the tunnel mouth.",["Investigation DC 14"]),
        b("scene:Underground Base","The tunnel","Shoring timbers, lights, engineers, Bastion guards.",["Persuasion DC 15 with the engineers","Tech DC 15 to set the collapse"],[["Bastion Trooper",3],["Bastion Sergeant",1]])],
-      [["Engineer Mol","civilian","Bastion engineer. Grew up in the Kennel."]],
+      [["The engineer","civilian","Bastion engineer. Grew up in the Kennel."]],
       "Tunnel down, engineers alive: the Kennel boss gains three new engineers if the crew lets them stay.",
       ["Grenade Cutting Regular Mk.III x2","Rivet Work Armor Mk.III"]),
 
@@ -39,7 +39,7 @@
       "It's true. The houndmaster sold patrol routes to Bastion to pay for his daughter's escape from the Kennel.",
       "“A matter of honour. The Kennel still has some. You'll be fighting for it.”",
       [b("20","Iron Hearts Club","A ring of Dogs, a cage, the accuser's champions.",["Insight DC 14 on the houndmaster"],[["Kennel Dog",2],["Sparker Burnout",1]])],
-      [["Houndmaster Brin","kennel-houndmaster","Accused. Guilty. Loves his daughter."]],
+      [["The accused houndmaster","kennel-houndmaster","Accused. Guilty. Loves his daughter."]],
       "Win and the houndmaster lives. Reveal the truth and the crew decides his fate.",
       ["Kanabo","Bastion Trauma Booster x2"]),
 
@@ -49,7 +49,7 @@
       "The clinic's doctor is the Kennel boss's estranged wife. Mr. Velvet wants her safe more than anything.",
       "“The clinic is neutral ground. Bastion forgot. Remind them.”",
       [b("62","The clinic","Patients, a doctor, Bastion trucks outside.",["Medicine DC 13 to move the critical patients","Athletics DC 14 to barricade"],[["Bastion Trooper",4],["Bastion Grenadier",1]])],
-      [["Dr. Saffi","ripperdoc","Runs the clinic. The boss's estranged wife."]],
+      [["The doctor","ripperdoc","Runs the clinic. The boss's estranged wife."]],
       "Hold the clinic and the Kennel boss himself sends thanks. That has never happened before.",
       ["Helix Health Booster x2","Living Dermal Suit Mk.III"]),
 
@@ -59,7 +59,7 @@
       "The pearl is fake. The Council member sold the real one years ago to pay gambling debts.",
       "“A pearl for a lady. My employer is a romantic. Please indulge him.”",
       [b("scene:The Superyacht","The yacht","A party, guards, a vault in the master suite.",["Deception DC 15","Sleight of Hand DC 15"],[["Kurohane Security",3],["Kurohane Elite Guard",1]])],
-      [["Councillor Varn","civilian","Owns the yacht. Lies about everything."]],
+      [["The councillor","civilian","Owns the yacht. Lies about everything."]],
       "Deliver the fake and Mr. Velvet discovers it later. Find the real one and he's speechless.",
       ["Chao","Grenade Smoke Regular Mk.III x2"]),
 
@@ -70,8 +70,8 @@
       "“A man who knows too much sits in a cell. My employer prefers him outside it.”",
       [b("77","The prison","Old resort hotel turned prison, guards, cell block C.",["Stealth DC 15","Deception DC 15 as transfer officers"],[["CivCorp Warden",1],["CivCorp Rifleman",3]]),
        b("77@Sewer System","The tunnels","Flooded resort tunnels to the beach.",["Athletics DC 14"],[["CivCorp Peacekeeper",2]])],
-      [["Lieutenant Skarr","kennel-dog","The prisoner. Broken, ashamed."]],
-      "Free him and Mr. Velvet pays. Tell him what Skarr said and the Kennel decides the rest.",
+      [["The lieutenant","kennel-dog","The prisoner. Broken, ashamed."]],
+      "Free him and Mr. Velvet pays. Tell him what the lieutenant said and the Kennel decides the rest.",
       ["Grenade Flashbang Homing Mk.III x2","Ghostweave Suit Mk.III"]),
 
     g("arms-deal","Handshake","Protection","scene:Warehouse Deal",
@@ -80,7 +80,7 @@
       "The Rustwater crew plans to steal the money and sell the guns to Bastion.",
       "“Money for guns, guns for money. Simple. Please make it remain simple.”",
       [b("scene:Warehouse Deal","The warehouse","Crates, two crews, too many guns.",["Insight DC 15","Tech DC 13 to inspect the guns"],[["Rustwater Captain",1],["Rustwater Boy",3],["Bastion Trooper",2]])],
-      [["Captain Hoss","rustwater-captain","Rustwater captain. Greedy."]],
+      [["The Rustwater captain","rustwater-captain","Rustwater captain. Greedy."]],
       "Stop the double-cross and the Kennel gets the guns cheap. Mr. Velvet pays a bonus.",
       ["Kyubi","Grenade Frag Regular Mk.III x2"]),
 
@@ -91,7 +91,7 @@
       "“A colonel who's had a change of heart. My employer loves a change of heart. Verify it.”",
       [b("82@Office — Map 1","Bastion Tower","Guards, an office, a nervous colonel.",["Deception DC 15","Insight DC 16 on the colonel"],[["Bastion Trooper",3],["Bastion Marksman",1]]),
        b("37@Hounds Gate — Map 1","The wall","Over the wall at night.",["Athletics DC 14"],[["Bastion Trooper",2]])],
-      [["Colonel Dray","civilian","The 'defector'."]],
+      [["The colonel","civilian","The 'defector'."]],
       "Spot the plant and Mr. Velvet owes the crew his employer's life.",
       ["Tactical Icon Processor","Bastion Trauma Booster"]),
 
@@ -101,7 +101,7 @@
       "The poisoner is the dog's handler, who hates the boss.",
       "“My employer's dog. My employer's pride. Guard both.”",
       [b("37@Carnival Boss Fight","The show ring","Dogs, crowds, judges, a handler with a syringe.",["Perception DC 14","Animal Handling DC 13"],[["Kennel Dog",2],["Street Gunner",2]])],
-      [["Handler Lin","civilian","Hates the boss. Loves the dog."]],
+      [["The handler","civilian","Hates the boss. Loves the dog."]],
       "The champion wins. The handler can be saved too, if the crew is clever.",
       ["Knife Military","Kurohane Night Cola x2"]),
 
@@ -111,7 +111,7 @@
       "The blockade sergeant would let it through for a cut of the medicine.",
       "“A blockade starves children first. Get the truck through.”",
       [b("scene:Security Checkpoint","The blockade","CivCorp barriers, searchlights, guards.",["Deception DC 15","Persuasion DC 14 with the sergeant"],[["CivCorp Rifleman",3],["CivCorp Warden",1]])],
-      [["Sergeant Tal","civilian","Blockade sergeant. Will deal."]],
+      [["The blockade sergeant","civilian","Blockade sergeant. Will deal."]],
       "The truck gets through. The Kennel's children eat.",
       ["Helix Health Booster x2","Flexweave Mobility Suit Mk.III"]),
 
@@ -122,7 +122,7 @@
       "“A man who sells my employer's loyalty. Expose him. Please don't enjoy it.”",
       [b("scene:Cyberpunk Warehouse","His warehouse","Ledgers, a safe, guards.",["Stealth DC 15","Sleight of Hand DC 14"],[["Kennel Dog",3]]),
        b("scene:Kingpin's Meeting Room","The council","Lieutenants around a table.",["Persuasion DC 15"],[["Kennel Houndmaster",1],["Kennel Dog",2]])],
-      [["Mr. Satin","civilian","Velvet's old partner."]],
+      [["The rival broker","civilian","Velvet's old partner."]],
       "Exposed: the Kennel stays loyal. Mr. Velvet is quiet for a day.",
       ["Kappa","Bastion Trauma Booster"]),
 
@@ -132,8 +132,8 @@
       "He was a Kennel Dog once. The boss gave the order that broke him.",
       "“One of ours, lost to the chrome. Bring him back, if there's anything left.”",
       [b("scene:Cyber Psycho Den","The den","Wreckage, blood, a hulk of chrome screaming.",["Medicine DC 15 to shut him down"],[["Sparker Burnout",1],["Sparker",2]])],
-      [["Old Joss","sparker-burnout","The psycho."]],
-      "Non-lethal: Mr. Velvet pays double and Joss gets a quiet room.",
+      [["The burnout","sparker-burnout","The psycho."]],
+      "Non-lethal: Mr. Velvet pays double and the burnout gets a quiet room.",
       ["Pain Reductor","Bastion Trauma Booster"]),
 
     g("airship","High Altitude","Theft","scene:Sky Cargo",
@@ -142,7 +142,7 @@
       "The pallet is mislabelled: it's full of Bastion's pay records.",
       "“A pallet falling from the sky. Physics is a wonderful accomplice.”",
       [b("scene:Sky Cargo","The airship","Wind, cargo bay, Bastion crew.",["Athletics DC 15","Stealth DC 15"],[["Bastion Trooper",3],["Bastion Sergeant",1]])],
-      [["Loadmaster Pell","civilian","Bored. Bribeable."]],
+      [["The loadmaster","civilian","Bored. Bribeable."]],
       "The pallet lands. The pay records reveal Bastion's whole Kennel spy network.",
       ["Frag Grenade Homing Mk.III x2","Fire-Control Harness Mk.III"]),
 
@@ -152,7 +152,7 @@
       "She's a triple agent. Her real loyalty is to Dial Tone.",
       "“A songbird with three owners. Keep her singing.”",
       [b("78","The stage","Spotlights, a packed room, a shooter in the balcony.",["Perception DC 15"],[["Bastion Marksman",1],["Kurohane Agent",2]])],
-      [["Celine","civilian","The singer."]],
+      [["The singer","civilian","The singer."]],
       "She survives. Three fixers owe the crew without knowing it.",
       ["Ghostweave Suit Mk.III","Kurohane Quiet Energy x2"]),
 
@@ -163,7 +163,7 @@
       "“A man who fixed a fight in the Kennel. He should have read the rules.”",
       [b("scene:Fight Club — Main Map","The pit","Cage, crowd, a promoter hiding.",["Investigation DC 14"],[["Kennel Dog",2],["Chromehead",2]]),
        b("scene:Fight Club — Backrooms Map 1","The lockers","The fighter guards his father.",["Persuasion DC 15"],[["Sparker Burnout",1]])],
-      [["Promoter Diz","civilian","Scared. Loves his son."]],
+      [["The promoter","civilian","Scared. Loves his son."]],
       "The money returns. The fighter keeps his father, if the crew allows it.",
       ["Tomahawk","Bastion Trauma Booster"]),
 
@@ -173,7 +173,7 @@
       "Opening the Kennel valve lowers pressure for New Niemir. Babka will notice.",
       "“Water is life. My employer intends to live.”",
       [b("scene:Water Purification","The plant","Pipes, tanks, guards.",["Tech DC 15","Stealth DC 15"],[["CivCorp Rifleman",3],["Private Security Guard",2]])],
-      [["Engineer Ola","union-steward","Plant engineer. Sympathetic."]],
+      [["The plant engineer","union-steward","Plant engineer. Sympathetic."]],
       "The Kennel drinks. Balancing it for New Niemir earns Babka's thanks too.",
       ["Rivet Work Armor Mk.III","Helix Oxy Booster x2"]),
 
@@ -184,7 +184,7 @@
       "“Letters. Unsigned. I'd like to know who hates me this much. Discreetly.”",
       [b("78","The Black Pearl","The letters in a drawer, perfume on the paper.",["Investigation DC 14"]),
        b("scene:Small Hotel","The daughter","A small hotel room, a young woman writing.",["Persuasion DC 15"],[["Kennel Dog",1]])],
-      [["Elodie","civilian","Velvet's daughter. Angry."]],
+      [["The daughter","civilian","Velvet's daughter. Angry."]],
       "How the crew handles it changes Mr. Velvet. He pays either way, and never forgets.",
       ["Neurotoxin Knife","Kurohane Black Tea x2"],"Mr. Velvet: owes the crew personally."),
 
@@ -194,7 +194,7 @@
       "The Scorpions need the rifles to defend against a corp land grab.",
       "“Rifles in a bunker, raiders on the road. Race.”",
       [b("scene:Ammo Bunker","The bunker","Concrete, crates, Scorpions breaching the door.",["Athletics DC 14"],[["Scorpion Raider",3],["Scorpion Chief",1]])],
-      [["Chief Saba","scorpion-chief","Desperate."]],
+      [["The Scorpion chief","scorpion-chief","Desperate."]],
       "Share the rifles and both sides owe the crew. Take them all and the Barrens remembers.",
       ["Kyubi","Grenade Frag Regular Mk.III x2"])
   ]});

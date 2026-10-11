@@ -17,7 +17,7 @@
       "The engineer who built the clocks hates them too and left a backdoor password taped under the keyboard.",
       "“They time how long a man pisses. Make the clock forget how to count.”",
       [b("84","The floor","Noise, sparks, a row of time clocks by the lockers, a supervisor's office above.",["Stealth DC 12 past the supervisor","Tech DC 13 to reprogram (DC 8 with the taped password)"],[["Private Security Guard",2]])],
-      [["Engineer Ola","civilian","Built the clocks. Left the password on purpose."]],
+      [["The engineer","civilian","Built the clocks. Left the password on purpose."]],
       "Full pay for a week before ForgeLine notices. The floor buys the crew drinks for a month.",
       ["Boosted Tendons","Bastion Recovery Drink x2"]),
 
@@ -28,7 +28,7 @@
       "“The press took two fingers. The company wants the rest of his hand in paperwork.”",
       [b("58","Otávio's Clinic","Dr. Otávio hands over the report and his opinion.",[]),
        b("84@Office — Encounter 2","Claims office","A clerk, a form, a smile.",["Investigation DC 12 on the waiver: it signs away all future claims","Persuasion DC 13 to pay without the waiver"],[["Private Security Guard",1]])],
-      [["Dr. Otávio","ripperdoc","Plant doctor. Writes every injury down twice."],["Jonas Pereira","civilian","The press operator. Embarrassed, broke."]],
+      [["Dr. Otávio","ripperdoc","Plant doctor. Writes every injury down twice."],["The press operator","civilian","The press operator. Embarrassed, broke."]],
       "Get the money without the waiver and Ferro calls the crew 'family'.",
       ["Nano Tech Plates","Helix Health Booster"],"Otávio's Clinic: patches up the crew between sessions."),
 
@@ -39,7 +39,7 @@
       "“Scrap dealers and scrap people. Get them to share the scrap.”",
       [b("44","The market","Traders behind barricades, nervous, armed with spanners.",["Persuasion DC 11 to calm the traders"]),
        b("84@Industrial Yard","The Sparkers' yard","Welding torches, loud music, a dozen Sparkers watching.",["Insight DC 13 to see who really leads","Persuasion DC 14 with the real leader"],[["Sparker",1],["Street Thug",2]])],
-      [["Old Bertha","shopkeeper","Spokeswoman for the traders. Carries a wrench everywhere."]],
+      [["The traders' spokeswoman","shopkeeper","Spokeswoman for the traders. Carries a wrench everywhere."]],
       "A truce holds for a month. Ferro's market stays open.",
       ["Iron Pipe","Bastion Electrolyte x2"]),
 
@@ -50,7 +50,7 @@
       "“Babies in a freezing block, a company that waits. Go and turn the heat on.”",
       [b("H6@Basement Utilities Room","Boiler room","A cracked pipe, a frozen valve, the repair crew's tools.",["Tech DC 12 to help repair","Athletics DC 12 to hold the valve"]),
        b("H6@Foyer","The lobby","Two private guards turn up to 'secure company property'.",["Persuasion DC 12"],[["Private Security Guard",2]])],
-      [["Repairman Kuba","union-steward","Volunteer fixer, ex-plant engineer."]],
+      [["The repairman","union-steward","Volunteer fixer, ex-plant engineer."]],
       "Heating back on. The block owes Ferro, and Ferro owes the crew.",
       ["Rivet Work Armor Mk.I","Helix Stamina Booster"]),
 
@@ -60,7 +60,7 @@
       "The supervisor isn't pocketing the money: he's paying it to the Sparkers to leave the plant alone.",
       "“Two books, two truths. Bring me the one with the real hours.”",
       [b("84","The supervisor's office","Glass box over the factory floor, a safe, a sleeping guard.",["Stealth DC 13","Sleight of Hand DC 12 for the safe"],[["Private Security Guard",1]])],
-      [["Supervisor Groft","civilian","Sweaty, frightened, in over his head."]],
+      [["The supervisor","civilian","Sweaty, frightened, in over his head."]],
       "The steward gets the book and the workers get their overtime. The Sparkers come looking for their missing money.",
       ["Joint Lock","Kurohane Night Cola x2"]),
 
@@ -70,7 +70,7 @@
       "The Sparker isn't drunk: someone sabotaged the forklift's brakes. The target was the safety inspector.",
       "“Fumes, fire, two men trapped. Go now, ask questions after.”",
       [b("84@Hardhat Lockup","The chemical store","Green smoke, a crashed forklift, two coughing workers.",["Constitution DC 12 each round in the fumes (failure: poisoned)","Athletics DC 12 to lift the rubble"],[["Sparker",1]])],
-      [["Inspector Mendes","civilian","Safety inspector. The intended victim."]],
+      [["The safety inspector","civilian","Safety inspector. The intended victim."]],
       "Save them and the inspector owes the crew. Find the sabotage and Ferro has his next job.",
       ["Helix Oxy Booster x2","Bastion Trauma Booster"]),
 
@@ -80,7 +80,7 @@
       "The 'scrap' tank still has a live round in the barrel.",
       "“A dead tank, a pile of money, three crews racing. Win.”",
       [b("71","The Heap","Mountains of garbage, a rusted tank, rival scav crews arriving.",["Tech DC 13 to strip the engine","Perception DC 12 to spot the live round"],[["Scorpion Raider",2],["Street Thug",2]])],
-      [["Mira Kask","civilian","Leads Ferro's scav crew. Fast hands, faster mouth."]],
+      [["The scav boss","civilian","Leads Ferro's scav crew. Fast hands, faster mouth."]],
       "Win and the crew splits the buyer's €$ 2,000 with Ferro's workers.",
       ["Crowbar","Grenade Frag Regular Mk.I x2"]),
 
@@ -91,7 +91,7 @@
       "“A film about the last time the city stopped. Two hundred people want to see it tonight.”",
       [b("15","El Lobo Cojo","The drive changes hands at the bar.",["Insight DC 13 on the seller"]),
        b("H7","The screening","Folding chairs, a projector, and a CivCorp van pulling up outside at 8:40.",["Stealth DC 12 to get everyone out the back","Persuasion DC 13 to stall the officers"],[["CivCorp Peacekeeper",3]])],
-      [["Projectionist Ana","union-steward","Runs the screenings. Calm under pressure."]],
+      [["The projectionist","union-steward","Runs the screenings. Calm under pressure."]],
       "If the screening finishes, Cinderline remembers.",
       ["Kurohane Black Tea x2","Grenade Smoke Regular Mk.I"]),
 
@@ -102,7 +102,7 @@
       "“The company says the workers steal. I say the company counts badly.”",
       [b("76@Automated Warehouse","The storage","Cold vaults, inventory terminals, a loading bay.",["Tech DC 13 on the logs","Investigation DC 12 at the loading bay"]),
        b("76@Loading Area — Map 1","The pickup","A truck arrives at 3am, a manager hands over crates.",["Stealth DC 13 to film it"],[["Kennel Dog",1],["Private Security Guard",1]])],
-      [["Manager Holt","civilian","Middle manager. Gambling debts."]],
+      [["The manager","civilian","Middle manager. Gambling debts."]],
       "Proof clears the workers. Their pay is restored, and the crew gets a cut of the 'recovered' Cinder.",
       ["Charge System","Helix Stamina Booster x2"]),
 
@@ -113,7 +113,7 @@
       "“Men standing in the cold for their rights need coffee. Rights are cold work.”",
       [b("44","Dam Market","Thermoses, sandwiches, gas heaters loaded onto a cart.",[]),
        b("84@Storehouse — Main Map","The gate","Guards, floodlights, a picket line of fifty.",["Persuasion DC 12 with the guard's brother","Stealth DC 12 to the side gate"],[["Private Security Guard",2]])],
-      [["Guard Teo","civilian","Gate guard. His brother is on the picket."]],
+      [["The gate guard","civilian","Gate guard. His brother is on the picket."]],
       "The picket holds through the night. Ferro tells everyone who brought the coffee.",
       ["Helix Stamina Booster x2","Kurohane Night Cola"]),
 
@@ -124,7 +124,7 @@
       "“They took a man's arm. While he was using it. Go and get it back.”",
       [b("44","Dam Market","Word on the street points to a repo van parked behind the market.",["Streetwise DC 12"]),
        b("scene:Industrial Yard","The repo yard","A van, a cage of repossessed limbs, three repo men.",["Intimidation DC 13","Or a fight"],[["Street Thug",2],["Sparker",1]])],
-      [["Gil 'Lefty' Ramos","civilian","The worker. Missing his right arm. Trying to joke about it."]],
+      [["The worker","civilian","The worker. Missing his right arm. Trying to joke about it."]],
       "Arm back on: Lefty can work again. Ferro remembers.",
       ["Power Grip","Helix Health Booster"]),
 
@@ -134,7 +134,7 @@
       "A photographer from the indie press is on the tour, posing as a ForgeLine intern.",
       "“They chain the fire doors so men don't steal. Let the bosses find the chains themselves.”",
       [b("84","The tour","Suits in hard hats, a guided route, a fire alarm panel by the stairs.",["Stealth DC 13 to reach the panel","Deception DC 12 to steer the tour to the chained exit"],[["Private Security Guard",2]])],
-      [["Photographer Lin","journalist","Indie press, undercover as an intern."]],
+      [["The photographer","journalist","Indie press, undercover as an intern."]],
       "The photos run. The chains come off. Ferro buys the crew dinner at the Dam Market.",
       ["Grenade Smoke Regular Mk.I x2","Ghostweave Suit Mk.I"]),
 
@@ -145,7 +145,7 @@
       "“A betting pool on accidents. Grim, yes, but it's their money. Find the man.”",
       [b("H7@Hitman","Block 7","Neighbours point to the bookie's flat; it's empty.",["Investigation DC 11"]),
        b("58","Otávio's Clinic","The bookie is in the waiting room, holding his daughter's hand.",["Persuasion DC 12"])],
-      [["Bookie Luiz","civilian","Small-time, desperate, loves his kid."]],
+      [["The bookie","civilian","Small-time, desperate, loves his kid."]],
       "If the crew finds another way to pay for the treatment, Block 7 forgives the bookie and owes the crew.",
       ["Helix Health Booster x2","Biomonitor"]),
 
@@ -155,7 +155,7 @@
       "Management knows; the repair is scheduled after the Council inspection so the numbers look good.",
       "“A crack in a dam over twenty thousand people. Management says it's cosmetic.”",
       [b("scene:Maintenance Tunnels","Inspection tunnels","Dripping concrete, a locked hatch, a guard's patrol route.",["Stealth DC 13","Athletics DC 12 down the maintenance ladder"],[["Private Security Guard",2]])],
-      [["Engineer Sato","union-steward","Spotted the crack. Afraid of losing his job."]],
+      [["The engineer","union-steward","Spotted the crack. Afraid of losing his job."]],
       "Photos force the repair early. Cinderline doesn't flood.",
       ["Rivet Work Armor Mk.I","Helix Oxy Booster"]),
 
@@ -166,7 +166,7 @@
       "“Lunch for a hungry man. With a little extra flavour.”",
       [b("84@Storehouse — Main Map","The gate","A scanner, a bored guard, a queue of workers.",["Deception DC 12","Sleight of Hand DC 13 to pass it around the scanner"],[["Private Security Guard",1]]),
        b("84@Public Toilets","The locker room","Shift change; the camera has to come back out.",["Stealth DC 11"])],
-      [["Worker Dina","union-steward","The inside contact. Brave and tired."]],
+      [["The inside contact","union-steward","The inside contact. Brave and tired."]],
       "The footage reaches the union. Ferro's next move gets bigger.",
       ["Kurohane Night Cola x2","Grenade Recon Regular Mk.I"]),
 
@@ -176,9 +176,9 @@
       "The Bastion guard who catches the kid is a former Block 6 resident and wants to help, quietly.",
       "“A boy on a train going into a soldiers' yard. Go and bring him back.”",
       [b("scene:Train Repair Yard","The yard","Rail cars, floodlights, guard towers, a kid hiding under a wagon.",["Stealth DC 13","Athletics DC 12 between cars"],[["Bastion Trooper",1],["Private Security Guard",2]])],
-      [["Rui","civilian","Eleven. Thought it would be fun."],["Trooper Vaz","civilian","Bastion guard, grew up in Block 6."]],
-      "Bring Rui home and Block 6 owes the crew. Trooper Vaz becomes a contact inside Bastion's yard.",
-      ["Helix Stamina Booster x2","Grenade Flash Regular Mk.I"],"Trooper Vaz: one warning about Bastion movements."),
+      [["The kid","civilian","Eleven. Thought it would be fun."],["The Bastion guard","civilian","Bastion guard, grew up in Block 6."]],
+      "Bring the kid home and Block 6 owes the crew. The Bastion guard becomes a contact inside Bastion's yard.",
+      ["Helix Stamina Booster x2","Grenade Flash Regular Mk.I"],"The Bastion guard: one warning about Bastion movements."),
 
     g("hammer-time","The Hammer","Bounty","84",
       "A foreman known as 'the Hammer' hits workers. The union can't touch him. Ferro wants him embarrassed in front of the whole shift so he loses his job.",
@@ -187,7 +187,7 @@
       "“He hits men because nobody hits back. I don't want him hit. I want him finished.”",
       [b("84","The floor","The Hammer patrols with a steel ruler.",["Stealth DC 12 to film him","Insight DC 12 to provoke him safely"],[["Private Security Guard",1],["Bouncer",1]]),
        b("82@Exec Office — Map 1","The board","The footage has to reach a board member at Bastion Tower.",["Deception DC 13 to get in"])],
-      [["Foreman Kowal","civilian","The Hammer. Bully, coward."]],
+      [["The foreman","civilian","The Hammer. Bully, coward."]],
       "Board sees it: he's fired. The floor cheers the crew every time they walk past.",
       ["Baseball Bat","Bastion Electrolyte"]),
 
@@ -197,7 +197,7 @@
       "The plant runs a secret Bastion weapons order at night, without union labour, using a few Sparkers paid in chrome.",
       "“Machines that run by themselves. I don't believe in ghosts. I believe in contracts.”",
       [b("H7@Hideout - Factory Basement","Night shift","Empty floor, humming machines, a hidden assembly line in the back.",["Stealth DC 13","Investigation DC 12 on the crates: Bastion stamps"],[["Sparker",1],["Private Security Guard",2]])],
-      [["Night guard Elsa","civilian","Sees everything. Says nothing unless asked kindly."]],
+      [["The night guard","civilian","Sees everything. Says nothing unless asked kindly."]],
       "Proof of the ghost line is leverage. Ferro takes it to the union.",
       ["Grenade Frag Regular Mk.I x2","Nano Tech Plates"]),
 
@@ -207,7 +207,7 @@
       "The scabs are teenagers from the Kennel who didn't know it was a strike.",
       "“They serve rotten meat to men who build the city's weapons. The cooks said no. Stand with the cooks.”",
       [b("84@Industrial Kitchen","The canteen","Locked doors, cooks inside, scabs and guards outside.",["Persuasion DC 12 to turn the scabs","Intimidation DC 13 for the guards"],[["Private Security Guard",2],["Street Thug",2]])],
-      [["Head Cook Maria","union-steward","Has cooked for the plant twenty years."]],
+      [["The head cook","union-steward","Has cooked for the plant twenty years."]],
       "Management negotiates. The canteen serves real food for the first time in a year.",
       ["Helix Stamina Booster x2","Kurohane Black Tea"]),
 
@@ -218,7 +218,7 @@
       "“The ground opened and swallowed families. Go down after them.”",
       [b("scene:Sewer Canal Slums","The sinkhole","Collapsed street, a hole, screams below.",["Athletics DC 12 to climb down"]),
        b("scene:Sewer System","The tunnels","Rising water, three families, a group of Sparkers with lamps.",["Persuasion DC 12 to get the Sparkers to help","Survival DC 13 to find the way out"],[["Sparker",1]])],
-      [["Dino","civilian","A father carrying two kids. Won't leave without his wife."]],
+      [["The father","civilian","A father carrying two kids. Won't leave without his wife."]],
       "Everyone out: the slums treat the crew as heroes. The Sparkers too, oddly.",
       ["Helix Health Booster x2","Grenade Flash Regular Mk.I x2"])
   ]});

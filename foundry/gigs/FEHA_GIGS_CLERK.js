@@ -18,7 +18,7 @@
       "A file slides under the booth partition. “Twenty minutes, then it's the Vigil's mess. Non-lethal is worth double.”",
       [b("scene:Subway Station","The platform","The tram screeches in, lights flickering, passengers screaming inside.",["Persuasion DC 15 buys one round of hesitation","Tech DC 13 to cut the tram's power"],[["Chromehead",1],["Street Thug",2]]),
        b("scene:Cyber Train - Passenger Car","The carriage","Tight aisles, broken glass, a woman who moves faster than the lights can follow.",["Medicine or Tech DC 14 on her once downed to shut the Sandevistan off"],[["Chromehead",1]])],
-      [["Driver Ilse Brandt","street-thug","The psycho. A tram driver for twenty years. Somewhere in there, still is."]],
+      [["The tram driver","street-thug","The psycho. A tram driver for twenty years. Somewhere in there, still is."]],
       "Non-lethal: Clerk Seven pays double and the patch report reaches the indie press. Lethal: standard fee, and the Vigil takes the body and the evidence.",
       ["Sandevistan C2","Bastion Trauma Booster"]),
 
@@ -29,7 +29,7 @@
       "“Officially he's dangerous. Unofficially he's a line in a spreadsheet. Find the hand that typed him.”",
       [b("34","Batista's Market","The fake manhunt's 'informant fees' are paid to a market stall.",["Investigation DC 13 on the stall's books","Intimidation DC 12 on the stallholder"]),
        b("02@Small Hotel","Batista's Rooms","The officers split the money in room 9 every Friday.",["Stealth DC 13 to record it"],[["CivCorp Peacekeeper",2],["CivCorp Rifleman",1]])],
-      [["Officer Nadia Kowalska","civilian","The one who wants out. Will meet once, in public."]],
+      [["The officer who wants out","civilian","The one who wants out. Will meet once, in public."]],
       "Proof sold up the chain: Clerk Seven gets leverage, the crew gets paid, and three crooked officers get transferred somewhere cold.",
       ["Kenshin","Grenade Recon Regular Mk.II x2"]),
 
@@ -40,7 +40,7 @@
       "“Six bargains. Two explosions. Four ticking. Go.”",
       [b("60","Springside Doc","Waist-deep water, a ripperdoc packing to run.",["Intimidation DC 12 for the list"]),
        b("H2@Apartment Complex","Seawall Stack","Two patients live in the same block. One is shaking.",["Medicine DC 13 to calm a patient","Tech DC 14 to switch off the implant"],[["Chromehead",2],["Viejo Soldado",2]])],
-      [["Doc Flores","ripperdoc","Greedy, drowning in debt, not a monster."]],
+      [["The ripperdoc","ripperdoc","Greedy, drowning in debt, not a monster."]],
       "Every patient saved: Clerk Seven pays a bonus (€$ 500 each). The ripperdoc can be handed over or let go.",
       ["Kiroshi Optics Piercing","Helix Health Booster x2"]),
 
@@ -51,7 +51,7 @@
       "“Three witnesses fell down stairs. Make sure she uses the lift.”",
       [b("scene:Night Street","The drive","Rain, a van, a motorbike following too closely.",["Perception DC 13 to spot the tail"],[["Street Gunner",3]]),
        b("85@Corpo Court","The tribunal","Marble halls, security scanners, a 'journalist' with a hollow camera.",["Insight DC 14 on the journalist"],[["Kurohane Agent",1],["Private Security Guard",2]])],
-      [["Dr. Imke Vos","civilian","Former Kurohane lab chemist. Calm, precise, terrified."]],
+      [["The chemist","civilian","Former Kurohane lab chemist. Calm, precise, terrified."]],
       "She testifies: the case continues. Whoever the crew exposes owes them a grudge.",
       ["Ghostweave Suit Mk.II","Bastion Trauma Booster"]),
 
@@ -62,7 +62,7 @@
       "“Eight children, arrested to make a graph look nice. Make the graph ugly.”",
       [b("X6@Police Station","Processing wing","Holding pens, a records terminal, a desk sergeant.",["Stealth DC 13","Tech DC 13 to wipe intake (each failure: alarm step)"],[["CivCorp Peacekeeper",3],["CivCorp Warden",1]]),
        b("scene:Back Alley","The getaway","A side door, an alley, a van with its engine running.",["Insight DC 14 to notice the 'kid' who isn't scared"])],
-      [["Sergeant Hobbs","civilian","Desk sergeant. Tired of filling quotas."]],
+      [["The desk sergeant","civilian","Desk sergeant. Tired of filling quotas."]],
       "Eight kids home, records wiped: the Old Capital remembers. If the cadet was noticed and let go quietly, the Vigil never knows.",
       ["Interface Security Suit Mk.II","Helix Health Booster"]),
 
@@ -73,7 +73,7 @@
       "“Cooks and blades usually mix fine. Not tonight.”",
       [b("16","The kitchen","Steam, a locked door, staff hiding in the cold room, a chef sobbing and shaking.",["Persuasion DC 14 to calm him (advantage if the crew mentions his kids)","Tech DC 13 to override the blades"],[["Chromehead",1]]),
        b("16","The racketeers","Los Viejos men arrive to see why the restaurant hasn't paid.",["Intimidation DC 13"],[["Viejo Soldado",3]])],
-      [["Chef Ramón","street-thug","The cook. Gentle, desperate, chromed."]],
+      [["The chef","street-thug","The cook. Gentle, desperate, chromed."]],
       "Non-lethal and the racketeers handled: El Gallo Flaco feeds the crew for life.",
       ["Mantis Blades","Helix Health Booster"],"El Gallo Flaco: a safe back room in the Old Capital."),
 
@@ -83,8 +83,8 @@
       "The locker's custodian already stole half the 'drugs' for himself. The bag is light and he's nervous.",
       "“Evidence goes missing all the time. I'd like this piece to go missing towards the right people.”",
       [b("X6@Police Station","The locker","Basement, cage, keycard, a custodian with a guilty conscience.",["Sleight of Hand DC 13 for the keycard","Insight DC 12 on the custodian"],[["CivCorp Warden",1],["CivCorp Peacekeeper",2]])],
-      [["Attorney Rhee","civilian","Defence lawyer for twenty arrested residents."]],
-      "The bag reaches Attorney Rhee and twenty people walk free.",
+      [["The defence lawyer","civilian","Defence lawyer for twenty arrested residents."]],
+      "The bag reaches the defence lawyer and twenty people walk free.",
       ["Quasar","Grenade Smoke Regular Mk.II x2"]),
 
     g("bridge-psycho","The Bridge","Cyberpsycho","scene:The Skybridge",
@@ -93,8 +93,8 @@
       "He's shooting surveillance drones because they're CivCorp ones, and he was right: they've been watching his family.",
       "“He's shooting drones. Honestly I sympathise. But the bridge is coming down if he keeps it up.”",
       [b("scene:The Skybridge","The bridge","Wind, a shaking glass bridge, a man with smoking arm cannons.",["Athletics DC 13 on the cracked glass","Persuasion DC 14 to make him listen"],[["Chromehead",1],["Kennel Dog",1]])],
-      [["Sergeant Pike","street-thug","Bastion veteran. Lost the war, then his job, then his patience."]],
-      "Non-lethal: Clerk Seven pays double, and Pike's family is moved somewhere drones don't watch.",
+      [["The veteran","street-thug","Bastion veteran. Lost the war, then his job, then his patience."]],
+      "Non-lethal: Clerk Seven pays double, and the veteran's family is moved somewhere drones don't watch.",
       ["Projectile Launcher","Bastion Trauma Booster"]),
 
     g("bail-jumper","Bail Jumper","Bounty","23",
@@ -104,8 +104,8 @@
       "“A man missed his hearing. Someone wants him found first. Not who you'd think.”",
       [b("23","Steelrain","Metal music, chromeheads, a man who sees the crew and runs.",["Athletics DC 13 chase","Intimidation DC 12 once caught"],[["Chromehead",1],["Street Gunner",2]]),
        b("scene:Rooftop","Rooftop chase","Over the Old Capital roofs.",["Athletics DC 12 each jump"])],
-      [["Kit Valen","street-thug","The bail jumper. Angry at everyone, mostly his father."]],
-      "Delivered to his father, Kit leaves the city. Or the crew lets him go and Clerk Seven grumbles.",
+      [["The bail jumper","street-thug","The bail jumper. Angry at everyone, mostly his father."]],
+      "Delivered to his father, the bail jumper leaves the city. Or the crew lets him go and Clerk Seven grumbles.",
       ["Kiroshi Optics","Helix Health Booster"]),
 
     g("hostage-bank","Withdrawal","Cyberpsycho","scene:Cyberpunk Bank Lobby",
@@ -114,7 +114,7 @@
       "The 'psycho' is faking it: a debtor with a Berserk implant, staging a robbery to steal his own debt records.",
       "“A psycho in a bank. Or a man who's run out of options. Check before you shoot.”",
       [b("scene:Cyberpunk Bank Lobby","The lobby","Hostages on the floor, a man with chrome arms at the vault.",["Insight DC 14 to see he's faking","Persuasion DC 13 to negotiate"],[["Chromehead",1],["Private Security Guard",2]])],
-      [["Mr. Olsen","street-thug","The 'psycho'. A debtor with a plan and a bad implant."]],
+      [["The debtor","street-thug","The 'psycho'. A debtor with a plan and a bad implant."]],
       "Let him take his records quietly and he becomes a grateful contact. Turn him in and Clerk Seven pays standard.",
       ["Berserk C2","Grenade Flash Regular Mk.II x2"]),
 
@@ -125,7 +125,7 @@
       "“Fines are a tax on being poor. This one is a tax on being poor and stupid enough to drive through it.”",
       [b("scene:Police Checkpoint","The checkpoint","A queue of cars, officers pocketing cash.",["Stealth DC 12 to film"]),
        b("H3@Office — Main Map","Old Senate Block","The cash goes to a campaign office.",["Investigation DC 13"],[["CivCorp Peacekeeper",2],["Private Security Guard",2]])],
-      [["Ward Clerk Pahl","civilian","Smiles on every campaign poster."]],
+      [["The ward clerk","civilian","Smiles on every campaign poster."]],
       "Proof goes to Clerk Seven. The checkpoint shuts within a week.",
       ["Kenshin","Grenade Recon Regular Mk.II x2"]),
 
@@ -136,7 +136,7 @@
       "“Four dead officers, no witnesses, one name. She isn't crazy. She's thorough.”",
       [b("H3","The stairwells","Blood on the walls, a flicker of camo, a radio crackling.",["Perception DC 15 to see the camo","Tech DC 13 to rig a sensor"],[["Chromehead",1]]),
        b("H3@Hitman","The last officer","The final name hides in his flat, armed and terrified.",["Persuasion DC 15 to stop her"],[["CivCorp Peacekeeper",2]])],
-      [["Marta Ruiz","street-thug","The killer. A grieving mother with stolen camo."],["Officer Tyne","civilian","The last name on her list."]],
+      [["The grieving mother","street-thug","The killer. A grieving mother with stolen camo."],["The last officer","civilian","The last name on her list."]],
       "Whatever the crew decides, Clerk Seven pays. The Old Capital will talk about it for a long time.",
       ["Optical Camo","Helix Health Booster x2"]),
 
@@ -146,7 +146,7 @@
       "The jefe has already read it: it lists informants in the barrio. He wants a trade.",
       "“Personnel files. Who works for CivCorp, where they live. Imagine that in the wrong hands. Now imagine it in mine.”",
       [b("15","El Lobo Cojo","The jefe holds court. He has the bag at his feet.",["Persuasion DC 14 to trade","Insight DC 13 to know what he wants"],[["Viejo Soldado",3],["Los Viejos Jefe",1]])],
-      [["Don Aurelio","viejo-jefe","Los Viejos jefe. Old, polite, ruthless."]],
+      [["The Viejos jefe","viejo-jefe","Los Viejos jefe. Old, polite, ruthless."]],
       "Trade the informants list for the rest and Los Viejos owes the crew. Fight for it and the barrio becomes hostile.",
       ["Liberty","Bastion Trauma Booster"],"Los Viejos: safe passage through the Old Capital."),
 
@@ -167,7 +167,7 @@
       "He's a Glasshouse prince racing his father's car. He can't be arrested; he can be humiliated.",
       "“He's run over six speed cameras. Next it'll be a person. Bring him in or bring him down.”",
       [b("scene:Street Race","The race","Neon streets, roaring engines, a crowd.",["Driving DC 14 to beat him","Athletics DC 13 to jump on the car"],[["Glasshouse Prince",1],["Glasshouse Kid",2]])],
-      [["Prince Dorian","glasshouse-prince","Arrogant, fast, terrified of his father."]],
+      [["The Glasshouse prince","glasshouse-prince","Arrogant, fast, terrified of his father."]],
       "Humiliate him on camera and he stops racing. Clerk Seven pays for the footage.",
       ["Kurohane Night Cola x2","Flexweave Mobility Suit Mk.II"]),
 
@@ -177,7 +177,7 @@
       "The list includes Clerk Seven's own mother.",
       "“Six hundred families behind on Cinder tax. One of them is personal. Don't ask which.”",
       [b("H3@Office — Encounter 2","The office","Filing cabinets, a server closet, a night guard with a sandwich.",["Stealth DC 13","Tech DC 13 for the server"],[["Private Security Guard",2]])],
-      [["Night guard Benny","civilian","Watches football. Will look away for a better sandwich."]],
+      [["The night guard","civilian","Watches football. Will look away for a better sandwich."]],
       "The list vanishes. Clerk Seven doesn't say thank you, but the next job pays more.",
       ["Grenade Smoke Regular Mk.II x2","Ghostweave Suit Mk.II"]),
 
@@ -187,7 +187,7 @@
       "She's carrying a recording of the order on her optics. The Vigil wants it more than her.",
       "“A soldier who said no. They hate that more than anything. Get her out.”",
       [b("scene:The Checkpoint","The holding post","A Vigil checkpoint with a cell in the back.",["Deception DC 14 to bluff the guards","Stealth DC 14"],[["Marble Vigil Operative",1],["CivCorp Peacekeeper",3]])],
-      [["Cadet Ines Duarte","civilian","Twenty. Brave. Has the recording."]],
+      [["The cadet","civilian","Twenty. Brave. Has the recording."]],
       "Free her and the recording goes public. The Vigil quietly hates the crew.",
       ["Kiroshi Optics","Bastion Trauma Booster"]),
 
@@ -198,7 +198,7 @@
       "“A man without his arm and without his mind. Give him one of them back.”",
       [b("34","Batista's Market","Overturned stalls, a screaming man, terrified stallholders.",["Medicine DC 13 to calm withdrawal"],[["Chromehead",1]]),
        b("15","The Viejos soldier","Wearing the arm at El Lobo Cojo, showing it off.",["Persuasion DC 13"],[["Viejo Soldado",2]])],
-      [["Arturo","street-thug","The man. A welder. Pawned his arm for rent."]],
+      [["The welder","street-thug","The man. A welder. Pawned his arm for rent."]],
       "Arm returned, man calmed: Clerk Seven pays double and the market owes the crew.",
       ["Reinforced Muscles","Helix Health Booster"]),
 
@@ -208,7 +208,7 @@
       "Half the 'informants' are fake names invented by officers to pocket the payments.",
       "“A list of snitches. Half are real, half are fiction. Both are worth money.”",
       [b("X6@Cyberpunk Server Room","Registry","A secure terminal room.",["Tech DC 14 (three failures: lockdown)"],[["CivCorp Netrunner",1],["CivCorp Peacekeeper",2]])],
-      [["Netrunner Kai","civilian","CivCorp netrunner. Lazy, bribable."]],
+      [["The CivCorp netrunner","civilian","CivCorp netrunner. Lazy, bribable."]],
       "Give it to Los Viejos and some informants die. Give it to Babka and they get warned. Clerk Seven pays either way.",
       ["Corvus Memory Booster x2","Memory Boost"]),
 
@@ -218,7 +218,7 @@
       "The Council member is late to a vote on CivCorp's budget. Twenty minutes is enough to miss it.",
       "“Twenty minutes. That's all. A traffic jam is a kind of democracy.”",
       [b("scene:Central Highway","The highway","Escort bikes, an armoured car, traffic lights.",["Tech DC 13 to hijack the lights","Deception DC 13 to stage an accident"],[["Private Security Guard",2],["Kurohane Security",2]])],
-      [["Councillor Abend","civilian","The target. Never on time anyway."]],
+      [["The councillor","civilian","The target. Never on time anyway."]],
       "The vote passes without him. CivCorp's budget is cut by a little. Clerk Seven is delighted.",
       ["Grenade Smoke Regular Mk.II x2","Kurohane Quiet Energy x2"])
   ]});
