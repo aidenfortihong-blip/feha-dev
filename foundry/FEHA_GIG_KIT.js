@@ -363,6 +363,8 @@
     "street-fixer":["per","ins","dec","itm"],"kurohane-agent":["dec","ins","ste","prc"],"kurohane-officer":["dec","ins","inv","itm"],
     "yakuza-kobun":["itm","ath","prc"],"yakuza-enforcer":["itm","ath","ins"],"yakuza-blade":["acr","ste","prc"],"yakuza-wakagashira":["itm","ins","dec","per"]
   };
+  // Rank-and-file units: their people share one look (officers don't).
+  const TROOP_RE = /^(civcorp-|bastion-(?!commander)|vigil-(?!captain)|navy-|private-guard$|kurohane-(trooper|guard|elite|sniper|oni|kage|agent|netrunner)$)/;
   const isFighter = key => {
     const def = npcDefs().find(d => d.key === key);
     return Boolean(def && def.hostile !== false);
@@ -423,6 +425,8 @@
     const fix = PERSON_FIXES[job.key + ":" + role];
     if (fix?.base) return {fighter:true,base:fix.base};
     if (typeof fix === "string") return {type:fix};
+    // Kennel people are listed under the dog; only actual dogs use its block.
+    if (n.base === "kennel-dog" && !/\b(dogs?|hounds?|mutt)\b/.test(role)) return {fighter:true,base:"kennel-houndmaster"};
     if (isFighter(n.base)) return {fighter:true,base:n.base};
     const hit = ROLE_FIGHTERS.find(([re]) => re.test(role));
     if (hit && !/^(kid|boy|girl)/.test(role)) return {fighter:true,base:hit[1]};
@@ -488,6 +492,12 @@
     const flags = {...(data.flags?.[FLAG] ?? {})};
     delete flags.npcKey; delete flags.gigPool;
     data.flags = {...(data.flags ?? {}),[FLAG]:{...flags,gigPerson:personKey(job,n),npcBase:n.base ?? null,personType:type?.label ?? "Fighter",gigTier:tier}};
+    // Troopers wear their unit's look; anyone else is their own person, so
+    // they don't inherit the base NPC's portrait.
+    if (!(kind.fighter && TROOP_RE.test(kind.base))) {
+      data.img = "icons/svg/mystery-man.svg";
+      foundry.utils.setProperty(data,"prototypeToken.texture.src","icons/svg/mystery-man.svg");
+    }
     return data;
   }
 
@@ -506,8 +516,11 @@
       }
     }
     let todo = [...want.values()];
+    // A rebuild keeps each person's portrait and token art.
+    const looks = new Map();
     if (rebuild) {
       const old = game.actors.filter(a => want.has(a.flags?.[FLAG]?.gigPerson)).map(a => a.id);
+      for (const id of old) { const a = game.actors.get(id); if (!/mystery-man/.test(a.img)) looks.set(a.flags[FLAG].gigPerson,{img:a.img,tok:a.prototypeToken.texture.src}); }
       for (let i = 0; i < old.length; i += 50) await Actor.deleteDocuments(old.slice(i,i + 50));
     } else todo = todo.filter(e => !game.actors.find(a => a.flags?.[FLAG]?.gigPerson === e.key));
     if (!todo.length) return [];
@@ -524,6 +537,8 @@
       const data = personData(e.job,e.n,base?.toObject() ?? null);
       data.folder = groups.get(gigKey).id;
       data.img ??= "icons/svg/mystery-man.svg";
+      const look = looks.get(e.key);
+      if (look) { data.img = look.img; foundry.utils.setProperty(data,"prototypeToken.texture.src",look.tok); }
       made.push(data);
     }
     const created = [];
