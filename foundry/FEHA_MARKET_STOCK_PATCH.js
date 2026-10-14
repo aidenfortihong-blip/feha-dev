@@ -958,6 +958,18 @@
     document.getElementById(MARKET_STYLE_ID)?.remove?.();
   }
 
+  // The Market overlay sits above Foundry's windows, so an item sheet opened
+  // from DETAILS rendered underneath it. Lift it over the Market instead.
+  let sheetRaiseHookId = null;
+  const raiseOverMarket = app => {
+    const market = document.getElementById("adk-market-15");
+    const el = app?.element instanceof HTMLElement ? app.element : app?.element?.[0];
+    if (!market || !el) return;
+    // !important so Foundry's bring-to-front on click can't drop it back under.
+    const z = (Number(getComputedStyle(market).zIndex) || 0) + 1;
+    el.style.setProperty("z-index",String(z),"important");
+  };
+
   const api = {
     version:VERSION,
     stockSchemaVersion:STOCK_SCHEMA_VERSION,
@@ -977,6 +989,9 @@
 
       if (purchaseHookId == null) {
         purchaseHookId = Hooks.on("createItem",onMarketPurchase);
+      }
+      if (sheetRaiseHookId == null) {
+        sheetRaiseHookId = Hooks.on("renderItemSheet5e",raiseOverMarket);
       }
 
       if (game.user?.isGM) {
@@ -1007,6 +1022,10 @@
       if (purchaseHookId != null) {
         try { Hooks.off("createItem",purchaseHookId); } catch {}
         purchaseHookId = null;
+      }
+      if (sheetRaiseHookId != null) {
+        try { Hooks.off("renderItemSheet5e",sheetRaiseHookId); } catch {}
+        sheetRaiseHookId = null;
       }
       if (game?.adk?.marketStockPatch === api) {
         delete game.adk.marketStockPatch;

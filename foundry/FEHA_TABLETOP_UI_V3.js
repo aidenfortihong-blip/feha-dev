@@ -1195,7 +1195,7 @@
               </div>
             ` : ""}
             <div class="cd2-library-list">
-              ${m.library.length ? m.library.map(item => hackCard(item,false)).join("") : (m.overflow.length ? "" : '<div class="cd2-empty-message">ALL OWNED QUICKHACKS ARE LOADED</div>')}
+              ${m.library.length ? m.library.map(item => hackCard(item,false)).join("") : (m.overflow.length ? "" : '<div class="cd2-empty-message">'+(m.loaded.length ? "ALL OWNED QUICKHACKS ARE LOADED" : "NO QUICKHACKS OWNED // BUY THEM IN THE MARKET")+'</div>')}
             </div>
           </section>
         </div>
