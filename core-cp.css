@@ -528,6 +528,11 @@ html body .application.dnd5e2.sheet .items-section .item {
 
 /* ---- Notifications --------------------------------------------------------- */
 
+/* Above the Market / Chrome / Cyberdeck overlays, so their warnings show. */
+html body #notifications {
+  z-index: 2000000 !important;
+}
+
 html body #notifications .notification {
   background: var(--fco-panel) !important;
   border: 1px solid var(--fco-line) !important;

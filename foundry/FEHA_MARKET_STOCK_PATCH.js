@@ -958,16 +958,19 @@
     document.getElementById(MARKET_STYLE_ID)?.remove?.();
   }
 
-  // The Market overlay sits above Foundry's windows, so an item sheet opened
-  // from DETAILS rendered underneath it. Lift it over the Market instead.
+  // The Market / Chrome / Cyberdeck overlays sit above Foundry's windows, so
+  // an item sheet opened from one (Market DETAILS) rendered underneath it.
+  // Lift it over whichever overlay is open.
   let sheetRaiseHookId = null;
+  const OVERLAYS = "#adk-market-15,[id^='adk-chrome-manager'],#feha-cyberdeck-v2";
   const raiseOverMarket = app => {
-    const market = document.getElementById("adk-market-15");
     const el = app?.element instanceof HTMLElement ? app.element : app?.element?.[0];
-    if (!market || !el) return;
+    const top = Math.max(0,...[...document.querySelectorAll(OVERLAYS)]
+      .filter(node => node.offsetWidth > 0 && getComputedStyle(node).visibility !== "hidden")
+      .map(node => Number(getComputedStyle(node).zIndex) || 0));
+    if (!el || !top) return;
     // !important so Foundry's bring-to-front on click can't drop it back under.
-    const z = (Number(getComputedStyle(market).zIndex) || 0) + 1;
-    el.style.setProperty("z-index",String(z),"important");
+    el.style.setProperty("z-index",String(top + 1),"important");
   };
 
   const api = {
