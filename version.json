@@ -1,8 +1,12 @@
 {
-  "version": "0.12.19",
+  "version": "0.12.20",
   "updated": "2026-10-14",
-  "scope": "jobs",
+  "scope": "ui",
   "notes": [
+    "Market DETAILS opens the item sheet on top of the Market (and any item sheet opened over the Chrome Manager or Cyberdeck stays on top).",
+    "Foundry warnings and messages show above the Market, Chrome Manager and Cyberdeck instead of hiding behind them.",
+    "The Cyberdeck's empty software library says NO QUICKHACKS OWNED // BUY THEM IN THE MARKET when you own none.",
+    "Show on city map puts the spot above the GAME PAUSED banner while the game is paused.",
     "Rebuilding gig people keeps their portraits and token art.",
     "New gig people only take their base NPC's look if they're rank-and-file troops, so nobody copies another NPC's face.",
     "Kennel gang members (lieutenant, gate captain, buyer, lookout) use the Kennel Houndmaster stat block instead of the dog's.",
