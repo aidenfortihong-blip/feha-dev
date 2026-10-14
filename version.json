@@ -1,8 +1,11 @@
 {
-  "version": "0.12.18",
-  "updated": "2026-10-11",
+  "version": "0.12.19",
+  "updated": "2026-10-14",
   "scope": "jobs",
   "notes": [
+    "Rebuilding gig people keeps their portraits and token art.",
+    "New gig people only take their base NPC's look if they're rank-and-file troops, so nobody copies another NPC's face.",
+    "Kennel gang members (lieutenant, gate captain, buyer, lookout) use the Kennel Houndmaster stat block instead of the dog's.",
     "A generated gig's person NPC is deleted with its gig files, so generated gigs no longer pile up NPCs in GIG NPCs.",
     "Every gig has its people: 505 NPCs in GIG NPCs / People / <fixer> / <gig>, one set per gig, including the 120 older gigs and anyone a gig scene brings in. Generated gigs make one for whoever their story is about.",
     "Gig people have stat blocks that fit them: fighters use the matching combat NPC; everyone else gets an archetype (child, elder, clergy, medic, official, executive, tech, worker, trader, organiser, journalist, AI, animal, civilian) with abilities, HP by gig level, skills, fitting gear and a bio with their part, scenes, DCs and what they do in a fight. All start neutral.",
