@@ -250,7 +250,10 @@
     }
     const {sceneX:ox,sceneY:oy} = canvas.dimensions;
     const point = {x:p[1] + ox,y:p[2] + oy};
-    await canvas.animatePan({...point,scale:0.9,duration:400});
+    // While paused, the pause banner covers the middle of the screen: put the
+    // spot above it.
+    const shift = game.paused ? (window.innerHeight * 0.22) / 0.9 : 0;
+    await canvas.animatePan({x:point.x,y:point.y + shift,scale:0.9,duration:400});
     try { canvas.ping(point,{color:"#f3e600"}); } catch {}
     return true;
   }
