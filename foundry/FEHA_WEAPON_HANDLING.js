@@ -313,6 +313,8 @@
     "Sniper Rifle":10, "Heavy Blade":10, "Heavy Axe":10, "LMG":15
   };
   const LOAD_FLAG = "weaponLoad";
+  // Load-bearing chrome that also carries the weight (on top of the STR set).
+  const LOAD_NEGATORS = new Set(["Titanium Infused Bones","ForgeLine Sigma"]);
 
   function loadClass(item) {
     if (item?.type !== "weapon" || item.system?.equipped !== true) return 0;
@@ -328,7 +330,11 @@
       return ft > best.ft ? {ft, item} : best;
     }, {ft:0, item:null});
     if (!heaviest.ft) return {ft:0, item:null, negatedBy:[]};
-    const negatedBy = [...new Set([...negatingCyberware(actor), ...grants(actor, "negateWeaponWeight")])].map(i => i.name);
+    const loadChrome = items.filter(item => {
+      const f = item?.flags?.[FLAG] ?? {};
+      return (f.installed === true || f.isInstalled === true) && LOAD_NEGATORS.has(baseName(item.name));
+    });
+    const negatedBy = [...new Set([...negatingCyberware(actor), ...loadChrome, ...grants(actor, "negateWeaponWeight")])].map(i => i.name);
     return {...heaviest, negatedBy};
   }
 
@@ -351,7 +357,7 @@
       system:{changes:[{key:"system.attributes.movement.walk", value:String(-ft), type:"add", priority:null}]},
       disabled:false,
       duration:{value:null, units:"seconds", expiry:null, expired:false},
-      description:"Carrying " + String(load.item?.name ?? "a heavy weapon") + ": -" + ft + " ft walking Speed. Strong Arms, Power Grip, Reinforced Muscles or a Gun Stabilizer removes this.",
+      description:"Carrying " + String(load.item?.name ?? "a heavy weapon") + ": -" + ft + " ft walking Speed. Strong Arms, Power Grip, Reinforced Muscles, Gun Stabilizer, Titanium Infused Bones or ForgeLine Sigma removes this.",
       origin:null,
       transfer:false,
       statuses:[],
