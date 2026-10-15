@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_MELEE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.4.0";
+  const VERSION = "1.5.0";
   const REWRITE = "melee-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const MELEE_FOLDERS = new Set(["melee","-melee"]);
@@ -14,9 +14,9 @@
     "Chainsword Legendary":{
       key:"redline-teeth",
       name:"REDLINE // TEETH IN THE WOUND",
-      text:"Once per turn, when Chainsword Legendary hits a target it already hit earlier in the same turn, REDLINE triggers: add 2d10 slashing damage and treat worn armor's weapon-damage reduction as 0 for that hit. This is deliberately built to become monstrous when extra Actions let the wielder keep the teeth in one target.",
+      text:"Once per turn, when Chainsword Legendary hits a target it already hit earlier in the same turn, REDLINE triggers: add 2d10+4 slashing damage and treat worn armor's weapon-damage reduction as 0 for that hit. This is deliberately built to become monstrous when extra Actions let the wielder keep the teeth in one target.",
       automation:"manual",
-      bonusDamage:"2d10",
+      bonusDamage:"2d10+4",
       sameTargetSameTurn:true,
       ignoresWornArmorReduction:true,
       oncePerTurn:true
@@ -24,9 +24,9 @@
     "Errata":{
       key:"thermal-runaway",
       name:"THERMAL RUNAWAY",
-      text:"Errata compounds heat during the wielder's turn. The first successful hit is normal. Each consecutive successful hit against the same target adds +2d8 fire damage for every previous Errata hit that turn: hit 2 adds +2d8, hit 3 adds +4d8, hit 4 adds +6d8, continuing without a cap. From the third hit onward, worn armor's weapon-damage reduction is treated as 0 for that hit. The chain resets at end of turn or when a different target is chosen.",
+      text:"Errata compounds heat during the wielder's turn. The first successful hit is normal. Each consecutive successful hit against the same target adds +3d8+3 fire damage for every previous Errata hit that turn: hit 2 adds +3d8+3, hit 3 adds +6d8+6, hit 4 adds +9d8+9, continuing without a cap. From the third hit onward, worn armor's weapon-damage reduction is treated as 0 for that hit. The chain resets at end of turn or when a different target is chosen.",
       automation:"manual",
-      bonusPerPreviousHit:"2d8 fire",
+      bonusPerPreviousHit:"3d8+3 fire",
       uncapped:true,
       ignoresWornArmorReductionFromHit:3,
       resets:"end-turn-or-target-change"
@@ -43,39 +43,39 @@
   });
 
   const ROWS = Object.freeze([
-    ["Baseball Bat","Blunt","2d6+1","bludgeoning",10,5,null,null],
-    ["Baton Beta","Baton","1d8+4","bludgeoning",null,5,null,null],
-    ["Baton Murphy","Baton","2d8+2","bludgeoning",10,5,null,null],
-    ["Baton Tinker Bell","Baton","1d8+4","bludgeoning",null,5,null,null],
-    ["Butcher's Knife","Knife","3d6","slashing",null,5,null,null],
-    ["Cane Fingers","Knife","3d6+2","piercing",null,5,null,null],
-    ["Chainsword Legendary","Heavy Blade","7d10+1","slashing",14,5,null,null],
-    ["Chef's Knife","Knife","2d6+1","slashing",null,5,null,null],
-    ["Crowbar","Blunt","1d8+4","bludgeoning",10,5,null,null],
+    ["Baseball Bat","Blunt","3d6+2","bludgeoning",10,5,null,null],
+    ["Baton Beta","Baton","2d8+3","bludgeoning",null,5,null,null],
+    ["Baton Murphy","Baton","3d8+3","bludgeoning",10,5,null,null],
+    ["Baton Tinker Bell","Baton","2d8+3","bludgeoning",null,5,null,null],
+    ["Butcher's Knife","Knife","4d6+2","slashing",null,5,null,null],
+    ["Cane Fingers","Knife","5d6+1","piercing",null,5,null,null],
+    ["Chainsword Legendary","Heavy Blade","10d10+4","slashing",14,5,null,null],
+    ["Chef's Knife","Knife","3d6+2","slashing",null,5,null,null],
+    ["Crowbar","Blunt","2d8+3","bludgeoning",10,5,null,null],
     ["Dildo Stout","Blunt","1d100","bludgeoning",null,5,null,null],
-    ["Errata","Katana","9d8+3","slashing",11,5,null,null],
-    ["Fanged Axe Military","Axe","3d10+3","slashing",13,5,null,null],
-    ["Hammer","Blunt","1d10+4","bludgeoning",12,5,null,null],
-    ["Iron Pipe","Blunt","1d8+4","bludgeoning",10,5,null,null],
-    ["Kanabo","Heavy Blunt","3d12+4","bludgeoning",15,5,null,null],
-    ["Katana","Katana","4d8+1","slashing",10,5,null,null],
-    ["Katana Go G","Katana","4d8+1","slashing",10,5,null,null],
-    ["Katana Takemura","Katana","4d8+7","slashing",11,5,null,null],
-    ["Knife Kurtz","Knife","4d6+1","piercing",null,5,null,null],
-    ["Knife Military","Knife","4d6+1","piercing",null,5,null,null],
-    ["Knife Stinger","Knife","4d6+1","piercing",null,5,null,null],
-    ["Kukri","Knife","3d8+3","slashing",10,5,null,null],
-    ["Kukri Voodoo","Knife","3d8+3","slashing",10,5,null,null],
-    ["Machete","Machete","3d8+3","slashing",10,5,null,null],
-    ["Machete Maelstrom","Machete","4d8+1","slashing",12,5,null,null],
-    ["Machete Valentinos","Machete","3d8+4","slashing",10,5,null,null],
-    ["Neurotoxin Knife","Knife","3d6+2","piercing",null,5,null,null],
-    ["Punk Knife Pimp","Knife","4d6+1","piercing",null,5,null,null],
-    ["Sword Witcher","Sword","3d10+3","slashing",12,5,null,null],
-    ["Tanto","Knife","4d6+1","piercing",null,5,null,null],
-    ["Tire Iron","Blunt","1d8+4","bludgeoning",10,5,null,null],
-    ["Tomahawk","Axe","4d8+1","slashing",10,5,20,60],
-    ["VB Axe","Heavy Axe","4d10+4","slashing",14,5,null,null]
+    ["Errata","Katana","14d8+2","slashing",11,5,null,null],
+    ["Fanged Axe Military","Axe","5d10+2","slashing",13,5,null,null],
+    ["Hammer","Blunt","2d10+4","bludgeoning",12,5,null,null],
+    ["Iron Pipe","Blunt","2d8+3","bludgeoning",10,5,null,null],
+    ["Kanabo","Heavy Blunt","5d12+3","bludgeoning",15,5,null,null],
+    ["Katana","Katana","6d8+1","slashing",10,5,null,null],
+    ["Katana Go G","Katana","6d8+1","slashing",10,5,null,null],
+    ["Katana Takemura","Katana","6d8+10","slashing",11,5,null,null],
+    ["Knife Kurtz","Knife","6d6+1","piercing",null,5,null,null],
+    ["Knife Military","Knife","6d6+1","piercing",null,5,null,null],
+    ["Knife Stinger","Knife","6d6+1","piercing",null,5,null,null],
+    ["Kukri","Knife","5d8+2","slashing",10,5,null,null],
+    ["Kukri Voodoo","Knife","5d8+2","slashing",10,5,null,null],
+    ["Machete","Machete","5d8+2","slashing",10,5,null,null],
+    ["Machete Maelstrom","Machete","6d8+1","slashing",12,5,null,null],
+    ["Machete Valentinos","Machete","5d8+4","slashing",10,5,null,null],
+    ["Neurotoxin Knife","Knife","5d6+1","piercing",null,5,null,null],
+    ["Punk Knife Pimp","Knife","6d6+1","piercing",null,5,null,null],
+    ["Sword Witcher","Sword","5d10+2","slashing",12,5,null,null],
+    ["Tanto","Knife","6d6+1","piercing",null,5,null,null],
+    ["Tire Iron","Blunt","2d8+3","bludgeoning",10,5,null,null],
+    ["Tomahawk","Axe","6d8+1","slashing",10,5,20,60],
+    ["VB Axe","Heavy Axe","7d10+1","slashing",14,5,null,null]
   ]);
 
   const norm = value => String(value ?? "")

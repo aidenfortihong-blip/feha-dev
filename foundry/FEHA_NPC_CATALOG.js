@@ -21,7 +21,7 @@
   const TOKEN_IMG = "icons/svg/mystery-man.svg";
   const BUTTON_CLASS = "feha-npc-import";
 
-  // Combat tiers, set against this world's numbers (a hit is 12-36 damage,
+  // Combat tiers, set against this world's numbers (a hit is 18-55 damage,
   // player characters have 22-30 HP at level 2-3).
   //   0 bystander   1 street-level   2 trained   3 elite   4 boss   5 legend
   const TIERS = {

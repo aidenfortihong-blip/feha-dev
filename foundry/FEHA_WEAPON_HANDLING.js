@@ -21,7 +21,7 @@
 // The 10 ft movement limits themselves are table rules surfaced on the sheet.
 
 (() => {
-  const VERSION = "1.5.0";
+  const VERSION = "1.6.0";
   const FLAG = "fleshEnshrouded";
 
   const BONUS_RELOAD = new Set(["Pistol","Heavy Pistol","SMG","Shotgun Pistol"]);
@@ -255,26 +255,94 @@
   let hookId = null;
   let combatHookIds = [];
   let coverHookId = null;
+  let coverRenderHookId = null;
 
-  // Cover softens what gets through: a creature in Half Cover takes 25% less
-  // damage from guns and melee, in Three-Quarters Cover 50% less (cover's AC
-  // is raised to +3 / +6 in init). Grenades, launchers and quickhacks ignore
-  // it: they flush people out of cover. Applied before armor soak.
-  const COVER_DAMAGE = [["coverThreeQuarters",0.5],["coverHalf",0.75]];
+  // Cover is not automated: whoever rolls damage picks the target's cover in
+  // the damage roll window (None / Half -25% / Three-Quarters -50%). The
+  // choice rides on the rolls into the chat card, and Apply Damage cuts by it
+  // before armor soak.
+  const COVER_CUT = {half:0.75, threeQuarters:0.5};
+  const COVER_LABEL = {half:"HALF COVER (-25%)", threeQuarters:"THREE-QUARTERS COVER (-50%)"};
+
+  function rollCover(options={}) {
+    const rolls = options?.originatingMessage?.rolls ?? [];
+    for (const roll of rolls) {
+      const cover = roll?.options?.fehaCover;
+      if (COVER_CUT[cover]) return cover;
+    }
+    return null;
+  }
+
   function onPreCalculateDamage(actor,damages,options={}) {
     try {
       if (options?.only === "healing") return;
-      const hit = COVER_DAMAGE.find(([status]) => actor?.statuses?.has?.(status));
-      if (!hit) return;
-      const source = globalThis.FEHA_ARMOR_RUNTIME?.originItem?.(options) ?? null;
-      if (source?.type !== "weapon") return;
+      const cover = rollCover(options);
+      if (!cover) return;
       for (const d of damages ?? []) {
         if (!d || d.type in (CONFIG.DND5E.healingTypes ?? {})) continue;
-        if (Number(d.value) > 0) d.value = Math.floor(Number(d.value) * hit[1]);
+        if (Number(d.value) > 0) d.value = Math.floor(Number(d.value) * COVER_CUT[cover]);
       }
     } catch (error) {
       console.warn("FEHA WEAPON HANDLING // cover damage failed", error);
     }
+  }
+
+  // The cover picker in dnd5e's damage roll window.
+  function onRenderDamageDialog(app, element) {
+    try {
+      const root = element instanceof HTMLElement ? element : app.element;
+      const form = root?.querySelector?.("form") ?? (root?.tagName === "FORM" ? root : root);
+      if (!form || form.querySelector("[data-feha-cover]")) return;
+      const current = app._fehaCover ?? "";
+      const wrap = document.createElement("div");
+      wrap.className = "form-group";
+      wrap.dataset.fehaCover = "1";
+      wrap.innerHTML =
+        '<label>Target cover</label>' +
+        '<div class="form-fields"><select data-feha-cover-select>' +
+        '<option value="">None</option>' +
+        '<option value="half">Half cover (-25% damage)</option>' +
+        '<option value="threeQuarters">Three-quarters cover (-50% damage)</option>' +
+        '</select></div>';
+      const select = wrap.querySelector("select");
+      select.value = current;
+      select.addEventListener("change", event => {
+        event.stopPropagation();
+        app._fehaCover = select.value;
+      });
+      const anchor = form.querySelector("footer, .form-footer, [data-application-part='buttons']");
+      if (anchor?.parentElement) anchor.parentElement.insertBefore(wrap, anchor);
+      else form.append(wrap);
+    } catch (error) {
+      console.warn("FEHA WEAPON HANDLING // cover picker failed", error);
+    }
+  }
+
+  let coverPatch = null;
+  function patchDamageDialog() {
+    const D = globalThis.dnd5e?.applications?.dice?.DamageRollConfigurationDialog;
+    if (!D || coverPatch) return;
+    const original = D.prototype._finalizeRolls;
+    D.prototype._finalizeRolls = function(...args) {
+      const rolls = original.apply(this, args);
+      const cover = this._fehaCover;
+      if (COVER_CUT[cover]) {
+        for (const roll of rolls ?? []) {
+          roll.options ??= {};
+          roll.options.fehaCover = cover;
+        }
+        const data = this.message?.data;
+        if (data) data.flavor = String(data.flavor ?? "") + " // TARGET IN " + COVER_LABEL[cover];
+      }
+      return rolls;
+    };
+    coverPatch = {D, original};
+  }
+
+  function unpatchDamageDialog() {
+    if (!coverPatch) return;
+    coverPatch.D.prototype._finalizeRolls = coverPatch.original;
+    coverPatch = null;
   }
 
   function onPreRollAttack(config) {
@@ -398,6 +466,8 @@
     destroy();
     hookId = Hooks.on("dnd5e.preRollAttackV2", onPreRollAttack);
     coverHookId = Hooks.on("dnd5e.preCalculateDamage", onPreCalculateDamage);
+    coverRenderHookId = Hooks.on("renderDamageRollConfigurationDialog", onRenderDamageDialog);
+    patchDamageDialog();
     raiseCoverAc();
     installWeaponLoad();
 
@@ -425,6 +495,11 @@
     for (const [event, id] of loadHookIds.splice(0)) {
       try { Hooks.off(event, id); } catch {}
     }
+    if (coverRenderHookId != null) {
+      try { Hooks.off("renderDamageRollConfigurationDialog", coverRenderHookId); } catch {}
+      coverRenderHookId = null;
+    }
+    unpatchDamageDialog();
     if (coverHookId != null) {
       try { Hooks.off("dnd5e.preCalculateDamage", coverHookId); } catch {}
       coverHookId = null;

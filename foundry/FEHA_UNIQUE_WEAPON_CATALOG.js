@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_UNIQUE_WEAPON_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.4.0";
+  const VERSION = "1.5.0";
   const REWRITE = "unique-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "FIREARMS";
@@ -16,7 +16,7 @@
       key:"ghost-key",
       name:"Ghost Key",
       weaponClass:"DMR",
-      damage:"4d10+9",
+      damage:"6d10+13",
       damageType:"piercing",
       range:120,
       longRange:300,
@@ -38,7 +38,7 @@
       key:"igla-sovereign",
       name:"Igla Sovereign",
       weaponClass:"Shotgun",
-      damage:"36d2",
+      damage:"54d2",
       damageType:"piercing",
       range:15,
       longRange:30,
@@ -61,7 +61,7 @@
       key:"motor-lock",
       name:"Motor Lock",
       weaponClass:"DMR",
-      damage:"6d10+7",
+      damage:"9d10+11",
       damageType:"piercing",
       range:150,
       longRange:500,
@@ -84,7 +84,7 @@
       key:"optic-zero",
       name:"Optic Zero",
       weaponClass:"Pistol",
-      damage:"6d6",
+      damage:"9d6",
       damageType:"piercing",
       range:40,
       longRange:100,
@@ -123,7 +123,7 @@
       key:"silverhand-3516",
       name:"Silverhand 3516",
       weaponClass:"Heavy Pistol",
-      damage:"1d30+39",
+      damage:"1d30+66",
       damageType:"piercing",
       range:60,
       longRange:180,
@@ -425,6 +425,11 @@
     }
     if (String(range.units ?? "") !== "ft") {
       update["system.range.units"] = "ft";
+    }
+    // Guns have no main-hand / off-hand choice: drop dnd5e's Light property.
+    if (!d.typeValue.endsWith("M")) {
+      const props = [...(item.system?.properties ?? [])];
+      if (props.includes("lgt")) update["system.properties"] = props.filter(p => p !== "lgt");
     }
     if (String(item.system?.type?.value ?? "") !== d.typeValue) {
       update["system.type.value"] = d.typeValue;

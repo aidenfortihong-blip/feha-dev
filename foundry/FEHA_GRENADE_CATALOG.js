@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_GRENADE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "2.7.0";
+  const VERSION = "2.8.0";
   const REWRITE = "2.6-mk-lines";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "04 — GRENADES";
@@ -42,10 +42,10 @@
     4:"veryRare",
     5:"legendary"
   };
-  const BLAST = {1:"3d6+2",2:"4d6+3",3:"6d6",4:"7d6+1",5:"8d6+1"};
-  const EMP_BLAST = {1:"3d6+2",2:"4d6+1",3:"4d6+3",4:"6d6",5:"7d6+1"};
-  const TICK = {1:"1d6",2:"1d6+1",3:"1d6+1",4:"1d6+3",5:"2d6+1"};
-  const FLASH = {1:"1d6+1",2:"1d6+1",3:"1d6+3",4:"2d6+1",5:"3d6"};
+  const BLAST = {1:"5d6+1",2:"7d6+1",3:"9d6",4:"10d6+3",5:"12d6+2"};
+  const EMP_BLAST = {1:"5d6+1",2:"6d6+1",3:"7d6+1",4:"9d6",5:"10d6+3"};
+  const TICK = {1:"1d6",2:"1d6+3",3:"1d6+3",4:"2d6+2",5:"3d6+2"};
+  const FLASH = {1:"1d6+3",2:"1d6+3",3:"2d6+2",4:"3d6+2",5:"4d6+2"};
   const STOCK_WEIGHT = 0.2;
 
   const price = (mk,delivery,utility=false) =>
@@ -283,8 +283,8 @@
     company:"ForgeLine Industries",
     name:"Grenade Ozobs Nose",
     mk:3, price:1750, availability:"Restricted", delivery:"regular",
-    effectText:"Throw to a point within 60 ft. Creatures in a 15-ft radius make a Dexterity save, taking 9d6 explosive damage on a failure or half on a success. A failed save also knocks the creature Prone and blasts it up to 10 ft directly away from the detonation if movement is unobstructed.",
-    schema:{save:"dex",damage:"9d6",damageType:"explosive",radiusFt:15,rangeFt:60,halfOnSuccess:true,proneOnFail:true,knockbackFt:10}
+    effectText:"Throw to a point within 60 ft. Creatures in a 15-ft radius make a Dexterity save, taking 13d6+2 explosive damage on a failure or half on a success. A failed save also knocks the creature Prone and blasts it up to 10 ft directly away from the detonation if movement is unobstructed.",
+    schema:{save:"dex",damage:"13d6+2",damageType:"explosive",radiusFt:15,rangeFt:60,halfOnSuccess:true,proneOnFail:true,knockbackFt:10}
   });
 
   const quality = {
