@@ -523,13 +523,14 @@
     }
 
     // The Cyberpunk 2077 UI sounds on the table's Forge storage, used by every
-    // client unless a browser has its own pack set up.
+    // client unless a browser has its own pack set up. Only seven of the files
+    // there have audio (the others are empty), so they cover every event.
     const FORGE_AUDIO = "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/FEHA/cp2077/audio";
     const FORGE_PACK = Object.fromEntries(Object.entries({
-      hover:"hover",select:"select",subsystem_select:"subsystem",actor_switch:"actor",
-      drawer_open:"draweropen",drawer_close:"drawerclose",cyberware_select:"cyberselect",
+      hover:"hover",select:"select",subsystem_select:"select",actor_switch:"select",
+      drawer_open:"select",drawer_close:"hover",cyberware_select:"select",
       scan:"scan",install:"install",remove:"remove",error:"error",confirm:"confirm",
-      cache_open:"cacheopen",cache_close:"cacheclose",compatibility_ok:"compatok",compatibility_fail:"compatfail"
+      cache_open:"select",cache_close:"hover",compatibility_ok:"confirm",compatibility_fail:"error"
     }).map(([key,file]) => [key,`${FORGE_AUDIO}/${file}.wav`]));
 
     const localPack = readLocalPack() ?? readPrivateAssets()?.audio ?? FORGE_PACK;
