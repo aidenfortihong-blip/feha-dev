@@ -103,15 +103,6 @@
     const p = profile(defOrItem);
     if (!p) return [];
     const lines = [];
-    if (p.reload === "bonus") lines.push("RELOAD // Bonus Action.");
-    if (p.reload === "action") lines.push("RELOAD // Action.");
-    if (p.reload === "full") {
-      lines.push(
-        "RELOAD // Full turn: your Action, you cannot move, and you make a DC " +
-        p.reloadCheck.dc + " " + p.reloadCheck.label +
-        " check (some feats or cyberware remove the check). On a failure the reload does not complete; try again next turn."
-      );
-    }
     if (p.brace) lines.push("BRACE // Attacks have disadvantage if you moved more than 10 ft this turn (applied automatically in combat).");
     if (p.scoped) lines.push("SCOPED // Disadvantage against targets within 30 ft.");
     if (p.closeRange) lines.push("CLOSE-RANGE SNIPER // No scope penalty.");

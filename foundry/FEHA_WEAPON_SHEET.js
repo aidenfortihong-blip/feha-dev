@@ -1,7 +1,7 @@
 // FEHA // CANONICAL WEAPON SHEET
 // Player-facing tactical firearm interface for canonical FEHA guns.
 // Raw dnd5e activities stay hidden; the headless Weapon Tracker backend owns
-// attack execution, damage, shot counting, and reload state.
+// attack execution and damage. Guns have no ammo or reloading.
 
 (() => {
   const core = globalThis.FEHA_CYBER_CORE;
@@ -386,67 +386,13 @@
       `;
     }
 
-    const status =
-      state.empty ? "RELOAD REQUIRED" :
-      state.reload > 0 ? "RELOADING" :
-      "WEAPON READY";
-
-    const statusClass =
-      state.empty ? "is-empty" :
-      state.reload > 0 ? "is-reloading" :
-      "is-ready";
-
-    const progressMax = Math.max(1,Number(state.reloadMax) || 1);
-    const progressPct = Math.max(
-      0,
-      Math.min(100,(Number(state.reload) || 0)/progressMax*100)
-    );
-
     const handlingApi = globalThis.FEHA_WEAPON_HANDLING;
-    const handlingProfile = handlingApi?.profile?.(ctx.item) ?? null;
     const strInfo = handlingApi?.strPenalty?.(ctx.actor,ctx.item) ?? null;
     const strWarning = strInfo?.under
       ? (strInfo.negated
           ? `<div class="feha-ws-handling-warning is-ok">STR ${esc(strInfo.str)} &lt; ${esc(strInfo.req)} // NEGATED BY ${esc(strInfo.by.join(", ").toUpperCase())}</div>`
           : `<div class="feha-ws-handling-warning">STR ${esc(strInfo.str)} &lt; ${esc(strInfo.req)} // DISADVANTAGE + MAX 10 FT MOVE</div>`)
       : "";
-
-    const reloadControls = handlingProfile && handlingProfile.reload !== "none"
-      ? `
-          <div class="feha-ws-reload-cluster">
-            <button type="button" class="feha-ws-reload-one" data-feha-ws-action="reload">
-              <span>RELOAD</span>
-              <strong>${esc(handlingProfile.reloadLabel)}${handlingProfile.reloadCheck ? " // "+esc(handlingProfile.reloadCheck.label)+" DC "+esc(handlingProfile.reloadCheck.dc) : ""}</strong>
-            </button>
-          </div>
-        `
-      : state.reloadMax > 0
-      ? `
-          <div class="feha-ws-reload-cluster">
-            <div class="feha-ws-reload-buttons">
-              <button type="button" data-feha-ws-action="reload-action">
-                <span>ACTION</span>
-                <strong>+2</strong>
-              </button>
-              <button type="button" data-feha-ws-action="reload-bonus">
-                <span>BONUS</span>
-                <strong>+1</strong>
-              </button>
-            </div>
-            <div class="feha-ws-reload-meter">
-              <div>
-                <span>RELOAD</span>
-                <strong>${esc(state.reload)} / ${esc(state.reloadMax)} PTS</strong>
-              </div>
-              <i><b style="width:${progressPct}%"></b></i>
-            </div>
-          </div>
-        `
-      : `
-          <button type="button" class="feha-ws-full-reset" data-feha-ws-action="reset">
-            RESET / RECHARGE
-          </button>
-        `;
 
     return `
       <section class="feha-ws-combat" data-combat-item-id="${esc(ctx.item.id)}">
@@ -455,21 +401,12 @@
             <small>LIVE FIRE CONTROL</small>
             <strong>${esc(ctx.actor.name)} // ${ctx.equipped ? "EQUIPPED" : "OWNED"}</strong>
           </div>
-          <span class="${statusClass}">${esc(status)}</span>
         </div>
 
         ${strWarning}
         <div class="feha-ws-console">
           <div class="feha-ws-readiness">
-            <div class="feha-ws-readiness-count">
-              <small>ATTACKS READY</small>
-              <strong>${esc(state.remaining)}<em>/${esc(state.capacity)}</em></strong>
-            </div>
-
-            <div class="feha-ws-segments">${segmentBar(state.remaining,state.capacity)}</div>
-
             <div class="feha-ws-readiness-meta">
-              <span>FIRED <b>${esc(state.used)}</b></span>
               <span>DAMAGE <b>${esc(def?.damage ?? "—")}</b></span>
               <span>RANGE <b>${esc(rangeLabel(def))}</b></span>
             </div>
@@ -497,12 +434,6 @@
               </button>
             </div>
 
-            ${reloadControls}
-
-            <div class="feha-ws-corrections">
-              <button type="button" data-feha-ws-action="undo">UNDO SHOT</button>
-              <button type="button" data-feha-ws-action="reset">RESET TRACKER</button>
-            </div>
           </div>
         </div>
       </section>
@@ -1185,7 +1116,6 @@
                 <strong>${esc(manufacturer)}</strong>
                 <span>${esc(technology)}</span>
                 <span>${esc(weaponClass)}</span>
-                <span>${esc(capacityLabel(def))} // ${esc(physicalCapacity(def))}</span>
               </div>
             </aside>
 
@@ -1206,18 +1136,6 @@
                 <div class="feha-ws-stat">
                   <small>RANGE</small>
                   <strong>${esc(rangeLabel(def))}</strong>
-                </div>
-                <div class="feha-ws-stat">
-                  <small>ATTACKS / RELOAD</small>
-                  <strong>${esc(def?.functionalAttacks ?? "—")}</strong>
-                </div>
-                <div class="feha-ws-stat">
-                  <small>RELOAD</small>
-                  <strong>${esc(globalThis.FEHA_WEAPON_HANDLING?.profile?.(def ?? item)?.reloadLabel ?? def?.reloadPoints ?? def?.reloadActions ?? "—")}</strong>
-                </div>
-                <div class="feha-ws-stat">
-                  <small>${esc(capacityLabel(def))}</small>
-                  <strong>${esc(physicalCapacity(def))}</strong>
                 </div>
                 <div class="feha-ws-stat">
                   <small>TO HIT</small>
@@ -1276,13 +1194,6 @@
 
       try {
         if (action === "attack") {
-          if (tracker.state?.(item)?.empty) {
-            ui.notifications?.warn?.(
-              "FEHA Weapon Tracker // "+String(item.name)+
-              " is tracked empty. Reload or reset before firing again."
-            );
-          }
-
           const result = await tracker.useAttack?.(item,event);
 
           if (result?.ok === false && result?.reason !== "attack-cancelled") {
