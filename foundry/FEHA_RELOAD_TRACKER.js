@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "3.0.0";
+  const VERSION = "3.0.1";
   const FLAG = "fleshEnshrouded";
   const LEGACY_HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
@@ -583,6 +583,16 @@
     void ensureNative(item).catch(() => {});
   }
 
+  // Firing or reloading a gun needs no confirmation window: spending the
+  // charge is the whole point (dnd5e otherwise asks on every shot).
+  function onPreUseActivity(activity,usageConfig,dialogConfig) {
+    const item = activityItem(activity);
+    if (!isTrackable(item)) return;
+    const reloadOne = activity?.flags?.[FLAG]?.[RELOAD_FLAG] === true;
+    if (!reloadOne && activity?.id !== primaryAttack(item)?.id) return;
+    if (dialogConfig) dialogConfig.configure = false;
+  }
+
   // Using the Reload activity refills the weapon (full-turn weapons roll
   // their reload check first).
   function onPostUseActivity(activity) {
@@ -685,6 +695,11 @@
     hooks.push([
       "dnd5e.postRollAttack",
       Hooks.on("dnd5e.postRollAttack",onPostRollAttack)
+    ]);
+
+    hooks.push([
+      "dnd5e.preUseActivity",
+      Hooks.on("dnd5e.preUseActivity",onPreUseActivity)
     ]);
 
     hooks.push([
