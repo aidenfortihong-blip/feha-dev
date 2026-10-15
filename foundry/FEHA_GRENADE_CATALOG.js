@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_GRENADE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "2.8.0";
+  const VERSION = "2.9.0";
   const REWRITE = "2.6-mk-lines";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "04 — GRENADES";
@@ -26,7 +26,8 @@
   // items still carrying that name map to that Mk and are renamed on migration.
   const ROMAN = ["0","I","II","III","IV","V"];
   const MKS = [1,2,3,4,5];
-  const MK_PRICE = {1:300,2:600,3:1000,4:1600,5:2500};
+  // Halved 0.12.32 so grenades get thrown, not hoarded.
+  const MK_PRICE = {1:150,2:300,3:500,4:800,5:1250};
   const DELIVERY_MULT = {regular:1,sticky:1.3,homing:1.6};
   const MK_AVAILABILITY = {
     1:"Common",
@@ -46,7 +47,7 @@
   const EMP_BLAST = {1:"5d6+1",2:"6d6+1",3:"7d6+1",4:"9d6",5:"10d6+3"};
   const TICK = {1:"1d6",2:"1d6+3",3:"1d6+3",4:"2d6+2",5:"3d6+2"};
   const FLASH = {1:"1d6+3",2:"1d6+3",3:"2d6+2",4:"3d6+2",5:"4d6+2"};
-  const STOCK_WEIGHT = 0.2;
+  const STOCK_WEIGHT = 0.5;
 
   const price = (mk,delivery,utility=false) =>
     Math.round(
@@ -282,7 +283,7 @@
     line:"ozobs-nose",
     company:"ForgeLine Industries",
     name:"Grenade Ozobs Nose",
-    mk:3, price:1750, availability:"Restricted", delivery:"regular",
+    mk:3, price:875, availability:"Restricted", delivery:"regular",
     effectText:"Throw to a point within 60 ft. Creatures in a 15-ft radius make a Dexterity save, taking 13d6+2 explosive damage on a failure or half on a success. A failed save also knocks the creature Prone and blasts it up to 10 ft directly away from the detonation if movement is unobstructed.",
     schema:{save:"dex",damage:"13d6+2",damageType:"explosive",radiusFt:15,rangeFt:60,halfOnSuccess:true,proneOnFail:true,knockbackFt:10}
   });

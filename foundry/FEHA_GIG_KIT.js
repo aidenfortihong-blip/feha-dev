@@ -19,7 +19,7 @@
 // called by the board.
 
 (() => {
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const ROOT = "GIGS";
   const CATS = ["01 — WEAPONS","02 — CYBERWARE","03 — ARMOR","04 — GRENADES","05 — QUICKHACKS","06 — CONSUMABLES","FIREARMS"];
@@ -189,9 +189,22 @@
   }
 
   // [{name, qty, item}] plus the favour.
+  // About half of all gigs also hand over two grenades at the gig's level,
+  // so the crew keeps throwing them instead of saving them. Stable per gig.
+  function bonusGrenade(job,items) {
+    if (items.some(entry => /grenade/i.test(String(entry)))) return null;
+    const rnd = seeded("nades:" + (job.key ?? job.id));
+    if (rnd() >= 0.5) return null;
+    const P = rewardPools()["04 — GRENADES"] ?? {};
+    const tier = Math.max(1,Math.min(5,job.tier ?? 1));
+    const pool = (P[tier] ?? P[tier - 1] ?? P[1] ?? []).filter(name => !/ozob/i.test(name));
+    return pool.length ? pool[Math.floor(rnd() * pool.length)] + " x2" : null;
+  }
+
   function rewardFor(job) {
     const raw = job.reward ?? autoReward(job);
-    const items = (raw.items ?? []).map(entry => {
+    const extra = bonusGrenade(job,raw.items ?? []);
+    const items = [...(raw.items ?? []),...(extra ? [extra] : [])].map(entry => {
       const m = String(entry).match(/^(.*?)(?:\s+x(\d+))?$/);
       const name = m[1].trim();
       return {name,qty:Number(m[2] ?? 1),item:game.items.getName(name) ?? null};

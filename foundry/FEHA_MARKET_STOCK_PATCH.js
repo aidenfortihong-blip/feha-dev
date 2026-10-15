@@ -6,8 +6,8 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_MARKET_STOCK_PATCH requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.1.2";
-  const STOCK_SCHEMA_VERSION = "2.0.0";
+  const VERSION = "2.2.0";
+  const STOCK_SCHEMA_VERSION = "2.1.0";
   const FLAG = "fleshEnshrouded";
   const PACKAGE = "flesh-enshrouded-heart-ablaze";
   const VERSION_KEY = "marketStockPatchVersionV1";
@@ -30,12 +30,12 @@
   // (Before 0.11.89 this file patched the source of a world Market macro. That
   // macro no longer exists, so none of these rules were being applied.)
   const VENDOR_STOCK_RULES = Object.freeze({
-    street:{min:14,max:18,guarantee:{Weapons:3,Armor_Outer:2,Consumables:2}},
-    arms:{min:16,max:20,guarantee:{Weapons:7,Armor_Outer:3,Grenades:3}},
+    street:{min:14,max:18,guarantee:{Weapons:3,Armor_Outer:2,Consumables:2,Grenades:3}},
+    arms:{min:16,max:20,guarantee:{Weapons:7,Armor_Outer:3,Grenades:5}},
     chrome:{min:12,max:16,guarantee:{Cyberware:8}},
     net:{min:14,max:18,guarantee:{Quickhacks:6,Cyberware:4}},
-    black:{min:16,max:20,guarantee:{Weapons:4,Quickhacks:3,Cyberware:3,Grenades:2}},
-    corporate:{min:14,max:18,guarantee:{Weapons:3,Armor_Outer:2,Cyberware:2}}
+    black:{min:16,max:20,guarantee:{Weapons:4,Quickhacks:3,Cyberware:3,Grenades:4}},
+    corporate:{min:14,max:18,guarantee:{Weapons:3,Armor_Outer:2,Cyberware:2,Grenades:2}}
   });
 
   // Mirrors SHOP_TYPES in the module; used until the Market has been opened
