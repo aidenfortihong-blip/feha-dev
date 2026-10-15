@@ -1,8 +1,11 @@
 {
-  "version": "0.12.21",
+  "version": "0.12.22",
   "updated": "2026-10-14",
-  "scope": "sound",
+  "scope": "weapons",
   "notes": [
+    "Weapon cards show the damage they roll: melee and unique weapon cards that kept old numbers after the balance pass (e.g. Baseball Bat 3d6 -> 7d6) are rewritten, on world items and NPC copies.",
+    "A weapon card is now rewritten whenever its damage stops matching its dice.",
+    "Melee and unique weapons are no longer re-saved on every load.",
     "Every player hears the Cyberpunk 2077 UI sounds from the table's Forge storage (job board, Market, Cyberdeck, Chrome Manager) instead of the basic fallback set. Volume still follows the Interface slider.",
     "Market DETAILS opens the item sheet on top of the Market (and any item sheet opened over the Chrome Manager or Cyberdeck stays on top).",
     "Foundry warnings and messages show above the Market, Chrome Manager and Cyberdeck instead of hiding behind them.",
