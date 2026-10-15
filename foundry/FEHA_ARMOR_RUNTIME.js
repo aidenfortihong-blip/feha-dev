@@ -511,6 +511,7 @@
     bastionFirearmDr,
     bastionBulletProfile,
     adjustDamage,
+    originItem,
 
     async init() {
       installHooks();

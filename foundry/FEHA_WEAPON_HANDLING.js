@@ -21,7 +21,7 @@
 // The 10 ft movement limits themselves are table rules surfaced on the sheet.
 
 (() => {
-  const VERSION = "1.4.0";
+  const VERSION = "1.5.0";
   const FLAG = "fleshEnshrouded";
 
   const BONUS_RELOAD = new Set(["Pistol","Heavy Pistol","SMG","Shotgun Pistol"]);
@@ -257,14 +257,17 @@
   let coverHookId = null;
 
   // Cover softens what gets through: a creature in Half Cover takes 25% less
-  // damage, in Three-Quarters Cover 50% less (on top of dnd5e's +2 / +5 AC).
-  // Applied before armor soak. Healing is untouched.
+  // damage from guns and melee, in Three-Quarters Cover 50% less (cover's AC
+  // is raised to +3 / +6 in init). Grenades, launchers and quickhacks ignore
+  // it: they flush people out of cover. Applied before armor soak.
   const COVER_DAMAGE = [["coverThreeQuarters",0.5],["coverHalf",0.75]];
   function onPreCalculateDamage(actor,damages,options={}) {
     try {
       if (options?.only === "healing") return;
       const hit = COVER_DAMAGE.find(([status]) => actor?.statuses?.has?.(status));
       if (!hit) return;
+      const source = globalThis.FEHA_ARMOR_RUNTIME?.originItem?.(options) ?? null;
+      if (source?.type !== "weapon") return;
       for (const d of damages ?? []) {
         if (!d || d.type in (CONFIG.DND5E.healingTypes ?? {})) continue;
         if (Number(d.value) > 0) d.value = Math.floor(Number(d.value) * hit[1]);
@@ -293,10 +296,88 @@
     }
   }
 
+  // Cover AC: Half +3, Three-Quarters +6 (dnd5e: +2 / +5).
+  const COVER_AC = {coverHalf:3, coverThreeQuarters:6};
+  function raiseCoverAc() {
+    for (const status of CONFIG.statusEffects ?? []) {
+      if (COVER_AC[status?.id]) status.coverBonus = COVER_AC[status.id];
+    }
+  }
+
+  // Weapon load: carrying a heavy weapon slows you down. Only the heaviest
+  // equipped weapon counts. The same chrome that removes the STR penalty
+  // (Strong Arms, Power Grip, Reinforced Muscles, Gun Stabilizer, or any
+  // item flagged handling.negateWeaponWeight) removes it.
+  const WEAPON_LOAD = {
+    "Assault Rifle":5, "Shotgun":5, "DMR":5, "Heavy Blunt":10,
+    "Sniper Rifle":10, "Heavy Blade":10, "Heavy Axe":10, "LMG":15
+  };
+  const LOAD_FLAG = "weaponLoad";
+
+  function loadClass(item) {
+    if (item?.type !== "weapon" || item.system?.equipped !== true) return 0;
+    const f = item.flags?.[FLAG] ?? {};
+    const cls = definition(item)?.weaponClass ?? f.weaponClass ?? f.meleeClass ?? "";
+    return WEAPON_LOAD[cls] ?? 0;
+  }
+
+  function weaponLoad(actor) {
+    const items = [...(actor?.items ?? [])];
+    const heaviest = items.reduce((best, item) => {
+      const ft = loadClass(item);
+      return ft > best.ft ? {ft, item} : best;
+    }, {ft:0, item:null});
+    if (!heaviest.ft) return {ft:0, item:null, negatedBy:[]};
+    const negatedBy = [...new Set([...negatingCyberware(actor), ...grants(actor, "negateWeaponWeight")])].map(i => i.name);
+    return {...heaviest, negatedBy};
+  }
+
+  // The active GM keeps one "Weapon Load" effect on the actor in step.
+  async function syncWeaponLoad(actor) {
+    if (!actor || game.users?.activeGM?.isSelf !== true) return false;
+    const current = [...(actor.effects ?? [])].filter(e => e.flags?.[FLAG]?.[LOAD_FLAG] === true);
+    const load = weaponLoad(actor);
+    const ft = load.negatedBy.length ? 0 : load.ft;
+    if (!ft) {
+      if (current.length) await actor.deleteEmbeddedDocuments("ActiveEffect", current.map(e => e.id));
+      return current.length > 0;
+    }
+    if (current.length === 1 && Number(current[0].flags?.[FLAG]?.ft) === ft) return false;
+    if (current.length) await actor.deleteEmbeddedDocuments("ActiveEffect", current.map(e => e.id));
+    await actor.createEmbeddedDocuments("ActiveEffect", [{
+      name:"WEAPON LOAD // -" + ft + " FT",
+      img:load.item?.img ?? null,
+      type:"base",
+      system:{changes:[{key:"system.attributes.movement.walk", value:String(-ft), type:"add", priority:null}]},
+      disabled:false,
+      duration:{value:null, units:"seconds", expiry:null, expired:false},
+      description:"Carrying " + String(load.item?.name ?? "a heavy weapon") + ": -" + ft + " ft walking Speed. Strong Arms, Power Grip, Reinforced Muscles or a Gun Stabilizer removes this.",
+      origin:null,
+      transfer:false,
+      statuses:[],
+      flags:{[FLAG]:{[LOAD_FLAG]:true, ft}}
+    }]);
+    return true;
+  }
+
+  let loadHookIds = [];
+  function installWeaponLoad() {
+    const onItem = item => {
+      const actor = item?.parent?.documentName === "Actor" ? item.parent : null;
+      if (actor) queueMicrotask(() => void syncWeaponLoad(actor).catch(() => {}));
+    };
+    loadHookIds = ["createItem","updateItem","deleteItem"].map(event => [event, Hooks.on(event, onItem)]);
+    if (game.users?.activeGM?.isSelf === true) {
+      for (const actor of game.actors ?? []) void syncWeaponLoad(actor).catch(() => {});
+    }
+  }
+
   function init() {
     destroy();
     hookId = Hooks.on("dnd5e.preRollAttackV2", onPreRollAttack);
     coverHookId = Hooks.on("dnd5e.preCalculateDamage", onPreCalculateDamage);
+    raiseCoverAc();
+    installWeaponLoad();
 
     const onTurn = (combat, changed) => {
       if (changed && !("turn" in changed) && !("round" in changed)) return;
@@ -319,6 +400,9 @@
       try { Hooks.off("dnd5e.preRollAttackV2", hookId); } catch {}
       hookId = null;
     }
+    for (const [event, id] of loadHookIds.splice(0)) {
+      try { Hooks.off(event, id); } catch {}
+    }
     if (coverHookId != null) {
       try { Hooks.off("dnd5e.preCalculateDamage", coverHookId); } catch {}
       coverHookId = null;
@@ -333,6 +417,9 @@
     version:VERSION,
     BONUS_RELOAD,
     FULL_RELOAD,
+    WEAPON_LOAD,
+    weaponLoad,
+    syncWeaponLoad,
     CLOSE_RANGE_SNIPERS,
     STR_NEGATORS,
     profile,
