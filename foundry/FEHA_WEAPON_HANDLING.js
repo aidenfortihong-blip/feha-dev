@@ -21,7 +21,7 @@
 // The 10 ft movement limits themselves are table rules surfaced on the sheet.
 
 (() => {
-  const VERSION = "1.3.0";
+  const VERSION = "1.4.0";
   const FLAG = "fleshEnshrouded";
 
   const BONUS_RELOAD = new Set(["Pistol","Heavy Pistol","SMG","Shotgun Pistol"]);
@@ -254,6 +254,25 @@
 
   let hookId = null;
   let combatHookIds = [];
+  let coverHookId = null;
+
+  // Cover softens what gets through: a creature in Half Cover takes 25% less
+  // damage, in Three-Quarters Cover 50% less (on top of dnd5e's +2 / +5 AC).
+  // Applied before armor soak. Healing is untouched.
+  const COVER_DAMAGE = [["coverThreeQuarters",0.5],["coverHalf",0.75]];
+  function onPreCalculateDamage(actor,damages,options={}) {
+    try {
+      if (options?.only === "healing") return;
+      const hit = COVER_DAMAGE.find(([status]) => actor?.statuses?.has?.(status));
+      if (!hit) return;
+      for (const d of damages ?? []) {
+        if (!d || d.type in (CONFIG.DND5E.healingTypes ?? {})) continue;
+        if (Number(d.value) > 0) d.value = Math.floor(Number(d.value) * hit[1]);
+      }
+    } catch (error) {
+      console.warn("FEHA WEAPON HANDLING // cover damage failed", error);
+    }
+  }
 
   function onPreRollAttack(config) {
     try {
@@ -277,6 +296,7 @@
   function init() {
     destroy();
     hookId = Hooks.on("dnd5e.preRollAttackV2", onPreRollAttack);
+    coverHookId = Hooks.on("dnd5e.preCalculateDamage", onPreCalculateDamage);
 
     const onTurn = (combat, changed) => {
       if (changed && !("turn" in changed) && !("round" in changed)) return;
@@ -298,6 +318,10 @@
     if (hookId != null) {
       try { Hooks.off("dnd5e.preRollAttackV2", hookId); } catch {}
       hookId = null;
+    }
+    if (coverHookId != null) {
+      try { Hooks.off("dnd5e.preCalculateDamage", coverHookId); } catch {}
+      coverHookId = null;
     }
     for (const [event, id] of combatHookIds.splice(0)) {
       try { Hooks.off(event, id); } catch {}

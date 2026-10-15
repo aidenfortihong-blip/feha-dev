@@ -4,7 +4,7 @@
 (() => {
   try { globalThis.FEHA_ARMOR_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.5.0";
+  const VERSION = "1.6.0";
   const REWRITE = "1.4-simplified-passives";
   const FLAG = "fleshEnshrouded";
   const ROOT_NAME = "03 — ARMOR";
@@ -290,6 +290,16 @@
     return "None";
   }
 
+  // Armor soak: worn armor takes this much off every bludgeoning, piercing
+  // or slashing hit (dnd5e damage modification), by weight class and Mk.
+  const SOAK = {
+    light:{1:1,2:1,3:2,4:2,5:3},
+    medium:{1:2,2:2,3:3,4:4,5:5},
+    heavy:{1:3,2:4,3:5,4:6,5:7}
+  };
+  const PHYSICAL = ["bludgeoning","piercing","slashing"];
+  const soakOf = def => SOAK[def.armorType]?.[def.mk] ?? 0;
+
   function rewriteDescription(def) {
     return (
       '<section data-feha-ui="item-card-v1" data-feha-armor-card="'+REWRITE+'" '+
@@ -307,6 +317,7 @@
         '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:10px 0;border-top:1px solid #1f3239;border-bottom:1px solid #1f3239">'+
           '<div><small style="color:#8ca2ac">TYPE</small><br><strong style="color:#fff">'+esc(String(def.armorType).toUpperCase())+'</strong></div>'+
           '<div><small style="color:#8ca2ac">ARMOR CLASS</small><br><strong style="color:#fff">'+def.ac+'</strong></div>'+
+          '<div><small style="color:#8ca2ac">SOAK</small><br><strong style="color:#fff">-'+soakOf(def)+' per physical hit</strong></div>'+
           '<div><small style="color:#8ca2ac">DEX CONTRIBUTION</small><br><strong style="color:#fff">'+esc(dexText(def))+'</strong></div>'+
           '<div><small style="color:#8ca2ac">WEIGHT</small><br><strong style="color:#fff">'+def.weight+' lb</strong></div>'+
           '<div><small style="color:#8ca2ac">MARKET</small><br><strong style="color:#f0c85a">CR '+Number(def.price).toLocaleString()+'</strong></div>'+
@@ -347,10 +358,15 @@
       });
     }
 
+    const soak = soakOf(def);
+    for (const type of PHYSICAL) {
+      if (soak) changes.push({key:"system.traits.dm.amount."+type,value:"-"+soak,type:"add",priority:null});
+    }
+
     if (!changes.length) return null;
 
     return {
-      name:def.signature.name,
+      name:def.signature.name+(soak ? " // Soak "+soak : ""),
       img:null,
       type:"base",
       system:{changes},
@@ -361,7 +377,7 @@
         expiry:null,
         expired:false
       },
-      description:def.signature.text,
+      description:(soak ? "Armor soak: bludgeoning, piercing and slashing hits deal "+soak+" less damage. " : "")+def.signature.text,
       origin:null,
       tint:"#ffffff",
       transfer:true,
