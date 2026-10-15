@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.6.1";
+  const VERSION = "2.7.0";
   const FLAG = "fleshEnshrouded";
   const LEGACY_HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
@@ -471,6 +471,17 @@
     });
   }
 
+  // An empty weapon can't fire, however the attack was started (the FEHA
+  // sheet already refuses; this covers dnd5e sheets, NPC sheets and macros).
+  function onPreRollAttack(config={}) {
+    const item = activityItem(config?.subject ?? null);
+    if (!isTrackable(item) || !state(item).empty) return;
+    ui.notifications?.warn?.(
+      "FEHA // "+String(item.name)+" is empty. Reload (or reset the tracker) before firing again."
+    );
+    return false;
+  }
+
   async function cleanupLegacyState() {
     if (!game.user?.isGM) return {actors:0};
 
@@ -562,6 +573,11 @@
     hooks.push([
       "dnd5e.postRollAttack",
       Hooks.on("dnd5e.postRollAttack",onPostRollAttack)
+    ]);
+
+    hooks.push([
+      "dnd5e.preRollAttackV2",
+      Hooks.on("dnd5e.preRollAttackV2",onPreRollAttack)
     ]);
 
     hooks.push([
