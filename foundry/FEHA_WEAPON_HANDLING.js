@@ -338,9 +338,20 @@
     return {...heaviest, negatedBy};
   }
 
-  // The active GM keeps one "Weapon Load" effect on the actor in step.
-  async function syncWeaponLoad(actor) {
-    if (!actor || game.users?.activeGM?.isSelf !== true) return false;
+  // The active GM keeps one "Weapon Load" effect on the actor in step. Syncs
+  // for one actor run one after another: several item events in a row (equip
+  // swaps, installs) used to delete the same effect twice.
+  const loadQueue = new Map();
+  function syncWeaponLoad(actor) {
+    if (!actor || game.users?.activeGM?.isSelf !== true) return Promise.resolve(false);
+    const run = (loadQueue.get(actor.id) ?? Promise.resolve())
+      .catch(() => {})
+      .then(() => syncWeaponLoadNow(actor));
+    loadQueue.set(actor.id, run);
+    return run;
+  }
+
+  async function syncWeaponLoadNow(actor) {
     const current = [...(actor.effects ?? [])].filter(e => e.flags?.[FLAG]?.[LOAD_FLAG] === true);
     const load = weaponLoad(actor);
     const ft = load.negatedBy.length ? 0 : load.ft;
