@@ -262,7 +262,9 @@
     const desc = String(item.system?.description?.value ?? "");
     if (
       String(flags.meleeRewriteVersion ?? "") !== REWRITE ||
-      !desc.includes('data-feha-melee-card="'+REWRITE+'"')
+      !desc.includes('data-feha-melee-card="'+REWRITE+'"') ||
+      // A balance change to the damage must reach the card too.
+      !desc.includes('<strong style="color:#fff">'+esc(def.damage)+'</strong>')
     ) {
       update["system.description.value"] = rewriteDescription(def);
     }

@@ -387,7 +387,9 @@
     const desc = String(item.system?.description?.value ?? "");
     if (
       String(flags.uniqueWeaponRewriteVersion ?? "") !== REWRITE ||
-      !desc.includes('data-feha-unique-weapon-card="'+REWRITE+'"')
+      !desc.includes('data-feha-unique-weapon-card="'+REWRITE+'"') ||
+      // A balance change to the damage must reach the card too.
+      !desc.includes('<strong style="color:#fff">'+esc(d.damage)+'</strong>')
     ) {
       update["system.description.value"] = rewriteDescription(d);
     }
