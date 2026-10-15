@@ -302,6 +302,11 @@
     for (const status of CONFIG.statusEffects ?? []) {
       if (COVER_AC[status?.id]) status.coverBonus = COVER_AC[status.id];
     }
+    // dnd5e reads the bonus from its own status list.
+    for (const [id,ac] of Object.entries(COVER_AC)) {
+      const entry = CONFIG.DND5E?.statusEffects?.[id];
+      if (entry) entry.coverBonus = ac;
+    }
   }
 
   // Weapon load: carrying a heavy weapon slows you down. Only the heaviest
