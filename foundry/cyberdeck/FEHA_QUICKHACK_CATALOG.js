@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_CATALOG requires FEHA_CYBER_CORE.");
 
-  const VERSION = "4.5.2";
+  const VERSION = "4.6.0";
   const FLAG = "fleshEnshrouded";
   const REWRITE = "4.4-unified";
 
@@ -25,8 +25,8 @@
       aliases:["Synapse Burn","Brain Melt Program"],
       mk:4,
       ramCost:5,
-      effectText:"As a bonus action, choose one creature you can hack. The target must make an Intelligence saving throw. On a failed save, it takes 10d6 psychic damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
-      meta:{save:"int",damage:"10d6",damageType:"psychic",halfOnSuccess:true,removeReactionsOnFail:true}
+      effectText:"As a bonus action, choose one creature you can hack. The target must make an Intelligence saving throw. On a failed save, it takes 6d6 psychic damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
+      meta:{save:"int",damage:"6d6",damageType:"psychic",halfOnSuccess:true,removeReactionsOnFail:true}
     },
     {
       key:"ghost-key",
@@ -61,8 +61,8 @@
       aliases:["Toxic Bloom","Contagion Program"],
       mk:4,
       ramCost:6,
-      effectText:"As a bonus action, choose a point you can target. A burst of toxic gas fills a 10-foot-radius sphere centered on that point. Each creature in the area takes 8d6 poison damage, after which the gas immediately disperses.",
-      meta:{damage:"8d6",damageType:"poison",radiusFt:10,placeable:true,instantaneous:true,noSave:true}
+      effectText:"As a bonus action, choose a point you can target. A burst of toxic gas fills a 10-foot-radius sphere centered on that point. Each creature in the area takes 4d6+3 poison damage, after which the gas immediately disperses.",
+      meta:{damage:"4d6+3",damageType:"poison",radiusFt:10,placeable:true,instantaneous:true,noSave:true}
     },
     {
       key:"chrome-lock",
@@ -79,8 +79,8 @@
       aliases:["Arc Overload","EMP Overload Program"],
       mk:5,
       ramCost:8,
-      effectText:"As a bonus action, choose one cybernetic or electronic target you can hack. The target must make a Constitution saving throw. On a failed save, it takes 10d10 lightning damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
-      meta:{save:"con",damage:"10d10",damageType:"lightning",halfOnSuccess:true,cyberneticOnly:true,removeReactionsOnFail:true}
+      effectText:"As a bonus action, choose one cybernetic or electronic target you can hack. The target must make a Constitution saving throw. On a failed save, it takes 6d10 lightning damage and cannot take reactions until the end of its next turn. On a successful save, it takes half as much damage and suffers no additional effect.",
+      meta:{save:"con",damage:"6d10",damageType:"lightning",halfOnSuccess:true,cyberneticOnly:true,removeReactionsOnFail:true}
     },
     {
       key:"rollback",
@@ -133,8 +133,8 @@
       aliases:["Combustion","Combustion Program","Overheat Program"],
       mk:5,
       ramCost:7,
-      effectText:"As a bonus action, choose one creature you can hack. The target takes 10d6 fire damage. If this damage reduces the target to 0 hit points, it erupts; every other creature within 10 feet of it takes 5d6 fire damage.",
-      meta:{damage:"10d6",damageType:"fire",deathBurst:"5d6",deathBurstType:"fire",deathBurstRadiusFt:10,noSave:true}
+      effectText:"As a bonus action, choose one creature you can hack. The target takes 6d6 fire damage. If this damage reduces the target to 0 hit points, it erupts; every other creature within 10 feet of it takes 3d6 fire damage.",
+      meta:{damage:"6d6",damageType:"fire",deathBurst:"3d6",deathBurstType:"fire",deathBurstRadiusFt:10,noSave:true}
     },
     {
       key:"network-sweep",
