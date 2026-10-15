@@ -1,8 +1,11 @@
 {
-  "version": "0.12.30",
+  "version": "0.12.31",
   "updated": "2026-10-14",
   "scope": "combat",
   "notes": [
+    "Cover is an attack penalty: the attack roll window has a Target cover choice (Half -3 to hit, Three-quarters -6). Token cover conditions add no AC. The damage roll window defaults to the same cover for the damage cut.",
+    "Weapon chat cards are short: name, Attack / Damage buttons and tags, without the whole weapon description.",
+    "Attack and damage roll windows open on top of the sheet that opened them.",
     "Damage at about 90% of the original (was 60%) for guns, melee, unique weapons, grenades, quickhacks and cyberware: pistols ~19, rifles ~40, snipers ~75 per hit.",
     "Cover is chosen when rolling damage: the damage roll window has a Target cover choice (None / Half -25% / Three-Quarters -50%), shown on the chat card and applied by Apply Damage. Token cover conditions only add AC (+3 / +6) now.",
     "Guns no longer offer a One-Handed / Offhand choice when attacking.",
