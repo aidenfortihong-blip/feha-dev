@@ -410,18 +410,20 @@
       update["system.damage.base.custom.formula"] = d.damage;
     }
 
-    if (Number(item.system?.range?.value ?? 0) !== Number(d.range)) {
+    // Stored values: dnd5e blanks a melee weapon's derived range.value.
+    const range = item._source?.system?.range ?? item.system?.range ?? {};
+    if (Number(range.value ?? 0) !== Number(d.range)) {
       update["system.range.value"] = Number(d.range);
     }
-    if (!same(item.system?.range?.long ?? null,d.longRange ?? null)) {
+    if (Number(range.long ?? 0) !== Number(d.longRange ?? 0)) {
       update["system.range.long"] = d.longRange ?? null;
     }
     if (d.typeValue.endsWith("M")) {
-      if (Number(item.system?.range?.reach ?? 0) !== Number(d.range)) {
+      if (Number(range.reach ?? 0) !== Number(d.range)) {
         update["system.range.reach"] = Number(d.range);
       }
     }
-    if (String(item.system?.range?.units ?? "") !== "ft") {
+    if (String(range.units ?? "") !== "ft") {
       update["system.range.units"] = "ft";
     }
     if (String(item.system?.type?.value ?? "") !== d.typeValue) {
