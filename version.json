@@ -1,8 +1,11 @@
 {
-  "version": "0.12.25",
+  "version": "0.12.26",
   "updated": "2026-10-14",
   "scope": "weapons",
   "notes": [
+    "Damage pass: every gun and melee weapon hits for about 60% of before (pistols ~20, rifles ~27, shotguns ~31, LMGs ~40, snipers ~50 per hit; knives ~14, katanas ~27). Dice type and the order between weapons are kept. Chainsword REDLINE +2d10, Errata +2d8 per earlier hit.",
+    "The last reload rules are gone: Helix Self-Charging Cell, Kyokokukamusari Flashbang Magazine, and Metel's reload line.",
+    "Gun cards are rewritten whenever their damage changes.",
     "Guns have no ammo or reloading: charges, the Reload action, the shot counter and its buttons, empty-gun blocking, the reload check, Helix auto-recharge and the magazine / reload lines on gun cards and sheets are gone. Guns just attack.",
     "Guns use charges: a gun's magazine is its item charges, every attack spends one (from any sheet or macro), and an empty gun can't attack.",
     "Every gun has a Reload action: bonus action for pistols and SMGs, action for rifles and shotguns, full turn with the DEX check for LMGs and snipers. The FEHA weapon sheet's buttons use the same charges.",
