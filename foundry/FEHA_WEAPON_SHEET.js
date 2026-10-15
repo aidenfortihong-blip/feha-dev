@@ -1279,8 +1279,9 @@
           if (tracker.state?.(item)?.empty) {
             ui.notifications?.warn?.(
               "FEHA Weapon Tracker // "+String(item.name)+
-              " is tracked empty. Reload or reset before firing again."
+              " is empty. Reload before firing again."
             );
+            return;
           }
 
           const result = await tracker.useAttack?.(item,event);
