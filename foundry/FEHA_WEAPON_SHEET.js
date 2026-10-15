@@ -1602,6 +1602,23 @@
       })
     ]);
 
+    // Shots are the weapon's own charges now (system.uses.spent).
+    hooks.push([
+      "updateItem",
+      Hooks.on("updateItem",(item,changed) => {
+        if (changed?.system?.uses === undefined) return;
+
+        for (const app of foundry.applications.instances.values()) {
+          if (!observedApps.has(app)) continue;
+
+          const shown = resolveItem(app);
+          if (resolveCombatItem(shown,definition(shown))?.id !== item.id) continue;
+
+          try { refresh(app); } catch {}
+        }
+      })
+    ]);
+
     hooks.push([
       "closeApplication",
       Hooks.on("closeApplication",app => {

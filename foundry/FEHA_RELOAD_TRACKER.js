@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_WEAPON_TRACKER requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.7.0";
+  const VERSION = "3.0.0";
   const FLAG = "fleshEnshrouded";
   const LEGACY_HUD_ID = "feha-weapon-tracker-hud";
   const hooks = [];
@@ -60,6 +60,11 @@
     );
   }
 
+  // Has this weapon been given native charges (uses.max = its capacity)?
+  function native(item) {
+    return Number(item?.system?.uses?.max ?? 0) > 0;
+  }
+
   function statePath(item,key) {
     return "flags."+FLAG+".weaponTracker."+String(item.id)+"."+key;
   }
@@ -71,9 +76,12 @@
     const raw =
       actor?.flags?.[FLAG]?.weaponTracker?.[String(item.id)] ?? {};
 
+    // Shots are the item's own charges (system.uses) once it has them;
+    // older copies still read the actor flag.
+    const spent = native(item) ? item.system.uses.spent : raw.used;
     const used = Math.max(
       0,
-      Math.min(max,Math.floor(Number(raw.used ?? 0) || 0))
+      Math.min(max,Math.floor(Number(spent ?? 0) || 0))
     );
 
     const reload = Math.max(
@@ -129,8 +137,12 @@
       Math.min(reloadMax,Math.floor(Number(reload ?? 0) || 0))
     );
 
+    if (native(item) && Number(item.system.uses.spent ?? 0) !== nextUsed) {
+      await item.update({"system.uses.spent":nextUsed});
+    }
+
     const update = {
-      [statePath(item,"used")]:nextUsed,
+      ...(native(item) ? {} : {[statePath(item,"used")]:nextUsed}),
       [statePath(item,"reload")]:nextReload,
       [statePath(item,"updatedAt")]:Date.now()
     };
@@ -462,6 +474,14 @@
 
     rememberAttackContext(item,rolls);
 
+    // Native charges were already spent by dnd5e when the attack was used;
+    // only note that the weapon fired this turn (Helix Self-Charging Cell).
+    if (native(item)) {
+      const shotTurn = turnStamp(combatFor(actor));
+      void actor.update({[statePath(item,"shotTurn")]:shotTurn}).catch(() => {});
+      return;
+    }
+
     void recordShot(item).catch(error => {
       console.warn(
         "FEHA WEAPON TRACKER // shot tracking failed",
@@ -471,15 +491,107 @@
     });
   }
 
-  // An empty weapon can't fire, however the attack was started (the FEHA
-  // sheet already refuses; this covers dnd5e sheets, NPC sheets and macros).
-  function onPreRollAttack(config={}) {
-    const item = activityItem(config?.subject ?? null);
-    if (!isTrackable(item) || !state(item).empty) return;
-    ui.notifications?.warn?.(
-      "FEHA // "+String(item.name)+" is empty. Reload (or reset the tracker) before firing again."
-    );
-    return false;
+  // Native charges: a firearm's magazine is its item uses (max = capacity),
+  // its Attack spends one, and a Reload activity refills it. dnd5e itself
+  // then refuses to attack with an empty weapon, from any sheet or macro.
+  const RELOAD_FLAG = "reloadActivity";
+
+  function reloadActivity(item) {
+    return activitiesOf(item).find(a => a?.flags?.[FLAG]?.[RELOAD_FLAG] === true) ?? null;
+  }
+
+  function activitiesOf(item) {
+    const c = item?.system?.activities;
+    if (!c) return [];
+    if (typeof c.values === "function") return [...c.values()];
+    return Object.values(c);
+  }
+
+  function reloadActivation(item) {
+    const mode = globalThis.FEHA_WEAPON_HANDLING?.profile?.(item)?.reload ?? "action";
+    if (mode === "bonus") return {type:"bonus",value:1,condition:""};
+    if (mode === "full") return {type:"special",value:null,condition:"Takes your whole turn (DEX check)"};
+    return {type:"action",value:1,condition:""};
+  }
+
+  async function ensureNative(item) {
+    if (!isTrackable(item)) return false;
+    const max = capacity(item);
+    const attack = primaryAttack(item);
+    if (!max || !attack) return false;
+
+    const update = {};
+    const uses = item._source?.system?.uses ?? {};
+    if (String(uses.max ?? "") !== String(max)) {
+      update["system.uses.max"] = String(max);
+      // First conversion: carry over shots already fired on the old tracker.
+      const old = actorFor(item)?.flags?.[FLAG]?.weaponTracker?.[String(item.id)]?.used;
+      update["system.uses.spent"] = Math.max(0,Math.min(max,Number(old ?? uses.spent ?? 0) || 0));
+    }
+
+    const targets = attack._source?.consumption?.targets ?? [];
+    const spendsOne = targets.length === 1 &&
+      targets[0].type === "itemUses" && !targets[0].target && String(targets[0].value) === "1";
+    if (!spendsOne) {
+      update["system.activities."+attack.id+".consumption.targets"] =
+        [{type:"itemUses",target:"",value:"1",scaling:{mode:"",formula:""}}];
+      update["system.activities."+attack.id+".consumption.spellSlot"] = false;
+    }
+
+    if (Object.keys(update).length) await item.update(update);
+
+    const activation = reloadActivation(item);
+    const existing = reloadActivity(item);
+    if (!existing) {
+      await item.createActivity("utility",{
+        name:"Reload",
+        img:"icons/svg/regen.svg",
+        sort:100001,
+        activation,
+        flags:{[FLAG]:{[RELOAD_FLAG]:true}}
+      },{renderSheet:false});
+    } else if (
+      existing._source?.activation?.type !== activation.type ||
+      String(existing._source?.activation?.condition ?? "") !== activation.condition
+    ) {
+      await item.update({["system.activities."+existing.id+".activation"]:activation});
+    }
+    return Object.keys(update).length > 0 || !existing;
+  }
+
+  async function migrateAll() {
+    if (game.users?.activeGM?.isSelf !== true) return {skipped:true};
+    let world = 0, owned = 0;
+    for (const item of game.items) {
+      try { if (await ensureNative(item)) world++; } catch (error) {
+        console.warn("FEHA WEAPON TRACKER // native charges failed",item?.name,error);
+      }
+    }
+    for (const actor of game.actors) {
+      for (const item of actor.items) {
+        try { if (await ensureNative(item)) owned++; } catch (error) {
+          console.warn("FEHA WEAPON TRACKER // native charges failed",actor?.name,item?.name,error);
+        }
+      }
+    }
+    return {world,owned};
+  }
+
+  // A weapon picked up later (Market, loot) gets its charges and Reload too.
+  function onCreateItem(item,options,userId) {
+    if (userId !== game.user?.id || !item?.parent) return;
+    void ensureNative(item).catch(() => {});
+  }
+
+  // Using the Reload activity refills the weapon (full-turn weapons roll
+  // their reload check first).
+  function onPostUseActivity(activity) {
+    if (activity?.flags?.[FLAG]?.[RELOAD_FLAG] !== true) return;
+    const item = activityItem(activity);
+    if (!item) return;
+    void reload(item).catch(error => {
+      console.warn("FEHA WEAPON TRACKER // reload failed",item?.name,error);
+    });
   }
 
   async function cleanupLegacyState() {
@@ -576,8 +688,13 @@
     ]);
 
     hooks.push([
-      "dnd5e.preRollAttackV2",
-      Hooks.on("dnd5e.preRollAttackV2",onPreRollAttack)
+      "dnd5e.postUseActivity",
+      Hooks.on("dnd5e.postUseActivity",onPostUseActivity)
+    ]);
+
+    hooks.push([
+      "createItem",
+      Hooks.on("createItem",onCreateItem)
     ]);
 
     hooks.push([
@@ -602,6 +719,9 @@
     addReload,
     reload,
     reset:resetWeapon,
+    ensureNative,
+    migrateAll,
+    reloadActivity,
     equippedFirearms,
     open,
 
@@ -609,6 +729,12 @@
       purgeLegacyPanels();
       await cleanupLegacyState();
       installHooks();
+      try {
+        const native = await migrateAll();
+        if (native.world || native.owned) console.log("FEHA WEAPON TRACKER // native charges",native);
+      } catch (error) {
+        console.warn("FEHA WEAPON TRACKER // native charge migration failed",error);
+      }
 
       game.adk ??= {};
       game.adk.weaponTracker = api;
