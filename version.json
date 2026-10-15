@@ -1,8 +1,11 @@
 {
-  "version": "0.12.23",
+  "version": "0.12.24",
   "updated": "2026-10-14",
   "scope": "weapons",
   "notes": [
+    "Guns use charges: a gun's magazine is its item charges, every attack spends one (from any sheet or macro), and an empty gun can't attack.",
+    "Every gun has a Reload action: bonus action for pistols and SMGs, action for rifles and shotguns, full turn with the DEX check for LMGs and snipers. The FEHA weapon sheet's buttons use the same charges.",
+    "Shots already fired carry over. Melee weapons and bows don't use charges; Helix guns still self-charge.",
     "Improvised melee hits less hard and costs less than real weapons: bat 4d6, chef's knife 4d6, butcher's knife 5d6, crowbar / iron pipe / tire iron 3d8, hammer 3d10, batons 3d8 (Murphy 4d8). Military knives, machetes, katanas and guns are unchanged.",
     "Weapon cards show the damage they roll: melee and unique weapon cards that kept old numbers after the balance pass (e.g. Baseball Bat 3d6 -> 7d6) are rewritten, on world items and NPC copies.",
     "A weapon card is now rewritten whenever its damage stops matching its dice.",
