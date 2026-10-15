@@ -15,7 +15,7 @@
     throw new Error("FEHA_NPC_CATALOG requires FEHA_CYBER_CORE.");
   }
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const ROOT_FOLDER = "FEHA NPCS";
   const TOKEN_IMG = "icons/svg/mystery-man.svg";
@@ -674,6 +674,106 @@
     return value;
   }
 
+  // ---- Field kit -----------------------------------------------------------
+  // Every combatant carries grenades and a corp-brand consumable or two that
+  // fit their faction, tier and role. Types with their own written grenades
+  // or consumables keep those; the kit only fills what a type leaves empty.
+  const MK = ["","I","II","III","IV","V"];
+  const GRENADE_BY_FACTION = {
+    [STREET]:"Grenade Frag Regular",
+    [YAKUZA]:"Grenade Cutting Regular",
+    [CIVCORP]:"Grenade Flash Regular",
+    [VIGIL]:"Frag Grenade Homing",
+    [CORP]:"Grenade Flash Regular",
+    [KUROHANE]:"Grenade Flashbang Homing",
+    [BASTION]:"Frag Grenade Sticky",
+    [NAVY]:"Grenade Frag Regular",
+    [GANGS]:"Grenade Frag Regular"
+  };
+  const GRENADE_BY_KEY = {
+    "street-fixer":"Grenade Smoke Regular",
+    "yakuza-wakagashira":"Grenade Smoke Regular",
+    "civcorp-rifleman":"Grenade Frag Regular",
+    "civcorp-warden":"Grenade Frag Regular",
+    "vigil-breacher":"Grenade Incendiary Sticky",
+    "vigil-suppressor":"Grenade Incendiary Homing",
+    "vigil-lancer":"Grenade EMP Sticky",
+    "kurohane-agent":"Grenade Smoke Regular",
+    "kurohane-kage":"Grenade Smoke Regular",
+    "kurohane-oni":"Frag Grenade Homing",
+    "adam-smasher":"Frag Grenade Homing",
+    "bastion-grenadier":"Frag Grenade Homing",
+    "bastion-heavy":"Grenade Incendiary Regular",
+    "helix-medtech":"Grenade Biohazard Regular",
+    "bouncer":"Grenade Flash Regular",
+    "rustwater-boy":"Grenade Incendiary Regular",
+    "rustwater-captain":"Grenade Incendiary Sticky",
+    "sparker":"Grenade EMP Regular",
+    "sparker-burnout":"Grenade EMP Sticky",
+    "drowned-runner":"Grenade Biohazard Regular",
+    "drowned-oracle":"Grenade Biohazard Homing",
+    "scorpion-raider":"Grenade Incendiary Regular",
+    "scorpion-chief":"Grenade Incendiary Homing",
+    "glasshouse-kid":"Grenade Flash Regular",
+    "glasshouse-prince":"Grenade Flashbang Homing"
+  };
+  // No grenades: bystanders, the executive behind the guards, dogs.
+  const NO_GRENADES = new Set(["civilian","shopkeeper","journalist","organizer","ripperdoc","union-steward","kurohane-executive","kennel-dog"]);
+  const NO_KIT = new Set(["kennel-dog"]);
+
+  function role(def) {
+    const k = def.key;
+    if (/netrunner|oracle/.test(k) || (def.quickhacks ?? []).length) return "netrunner";
+    if (/sniper|marksman/.test(k)) return "marksman";
+    if (/heavy|suppressor|grenadier/.test(k)) return "heavy";
+    return "fighter";
+  }
+
+  function grenadeKit(def) {
+    if (NO_GRENADES.has(def.key) || !def.tier) return [];
+    const r = role(def);
+    const mk = MK[Math.max(1,Math.min(5,def.tier))];
+    const qty = def.tier >= 4 ? 3 : def.tier >= 2 ? 2 : 1;
+    const main =
+      GRENADE_BY_KEY[def.key] ??
+      (r === "netrunner" ? (def.tier >= 3 ? "Grenade EMP Homing" : "Grenade EMP Regular") :
+       r === "marksman" ? "Grenade Recon Sticky" :
+       GRENADE_BY_FACTION[def.faction] ?? "Grenade Frag Regular");
+    const kit = [[main+" Mk."+mk,def.key === "bastion-grenadier" ? qty+2 : qty]];
+    // Officers and elites also carry smoke to cover a pull-back.
+    if (def.tier >= 3 && !/Smoke/.test(main)) kit.push(["Grenade Smoke Regular Mk."+mk,1]);
+    return kit;
+  }
+
+  function consumableKit(def) {
+    if (NO_KIT.has(def.key)) return [];
+    const r = role(def);
+    const kit = [];
+    if (!def.tier) {
+      kit.push(def.faction === CIVILIAN && /journalist|organizer/.test(def.key) ? "Kurohane Black Tea" : "Kurohane Night Cola");
+      if (def.key === "ripperdoc") kit.push("Helix Health Booster");
+      return kit;
+    }
+    kit.push(def.tier >= 3 ? "Helix Health Booster" : def.tier === 2 ? "Bastion Recovery Drink" : "Bastion Electrolyte");
+    if (def.tier >= 4) kit.push("Bastion Trauma Booster");
+    if (r === "netrunner") kit.push(def.tier >= 3 ? "Corvus Black Memory Booster" : "Corvus Memory Booster");
+    if (r === "marksman") kit.push("Vektor Clearview");
+    if (r === "heavy") kit.push(def.tier >= 3 ? "ForgeLine Heavy Load Booster" : "ForgeLine Load Booster");
+    if (r === "fighter" && def.faction === KUROHANE) kit.push("Kurohane Quiet Energy");
+    if (r === "fighter" && def.faction === VIGIL) kit.push("Vektor Mix");
+    if (r === "fighter" && def.faction === GANGS) kit.push("Vektor Dual");
+    if (def.key === "helix-medtech") kit.push("Helix Health Booster");
+    return kit;
+  }
+
+  function withKit(def) {
+    return {
+      ...def,
+      grenades:def.grenades?.length ? def.grenades : grenadeKit(def),
+      consumables:def.consumables?.length ? def.consumables : consumableKit(def)
+    };
+  }
+
   // Names repeat across catalogs (there is an "Optic Zero" quickhack and an
   // "Optic Zero" gun), so a lookup always names the catalog it wants.
   function worldItem(name,category) {
@@ -718,6 +818,7 @@
   // Everything an NPC carries, as item data ready to embed. Missing world
   // items are reported, never guessed.
   function buildItems(def) {
+    def = withKit(def);
     const items = [];
     const missing = [];
 
@@ -1017,9 +1118,31 @@
     actions.appendChild(button);
   }
 
+  // Give an existing actor its type's field kit: grenades and consumables it
+  // does not already carry (matched by name). Nothing is removed. Works for
+  // catalog imports (npcKey) and gig people built on a type (npcBase); pass
+  // baseKey for hand-made actors.
+  async function equipActor(actor,baseKey=null) {
+    const f = flags(actor);
+    const key = baseKey ?? f.npcKey ?? f.npcBase ?? null;
+    const def = DEFINITIONS.find(entry => entry.key === key);
+    if (!actor || !def) return {added:0,missing:[],skipped:true};
+    const kit = withKit(def);
+    const {items,missing} = buildItems({key:def.key,grenades:kit.grenades,consumables:kit.consumables});
+    const have = new Set(list(actor.items).map(item => item.name));
+    const fresh = items.filter(item => !have.has(item.name));
+    if (fresh.length) await actor.createEmbeddedDocuments("Item",fresh);
+    return {added:fresh.length,missing,skipped:false};
+  }
+
   const api = {
     version:VERSION,
     definitions:DEFINITIONS,
+    kitFor:key => {
+      const def = DEFINITIONS.find(entry => entry.key === key);
+      return def ? {grenades:withKit(def).grenades,consumables:withKit(def).consumables} : null;
+    },
+    equipActor,
     tiers:TIERS,
     import:importAll,
     openImportDialog,
