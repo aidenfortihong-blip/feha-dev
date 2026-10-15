@@ -92,7 +92,9 @@
     if (Array.isArray(collection.contents)) return collection.contents;
     try { return [...collection]; } catch { return []; }
   };
+  // Key order doesn't matter (stored flags come back in their own order).
   const same = (a,b) => {
+    if (a && b && typeof a === "object" && typeof b === "object") return foundry.utils.objectsEqual(a,b);
     try { return JSON.stringify(a ?? null) === JSON.stringify(b ?? null); }
     catch { return a === b; }
   };
