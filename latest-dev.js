@@ -522,7 +522,17 @@
       }
     }
 
-    const localPack = readLocalPack() ?? readPrivateAssets()?.audio ?? null;
+    // The Cyberpunk 2077 UI sounds on the table's Forge storage, used by every
+    // client unless a browser has its own pack set up.
+    const FORGE_AUDIO = "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/FEHA/cp2077/audio";
+    const FORGE_PACK = Object.fromEntries(Object.entries({
+      hover:"hover",select:"select",subsystem_select:"subsystem",actor_switch:"actor",
+      drawer_open:"draweropen",drawer_close:"drawerclose",cyberware_select:"cyberselect",
+      scan:"scan",install:"install",remove:"remove",error:"error",confirm:"confirm",
+      cache_open:"cacheopen",cache_close:"cacheclose",compatibility_ok:"compatok",compatibility_fail:"compatfail"
+    }).map(([key,file]) => [key,`${FORGE_AUDIO}/${file}.wav`]));
+
+    const localPack = readLocalPack() ?? readPrivateAssets()?.audio ?? FORGE_PACK;
     const paths = {
       ...FALLBACK_MAP,
       ...(localPack ?? {})
