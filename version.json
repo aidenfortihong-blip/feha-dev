@@ -1,8 +1,11 @@
 {
-  "version": "0.12.31",
+  "version": "0.12.32",
   "updated": "2026-10-14",
-  "scope": "combat",
+  "scope": "market",
   "notes": [
+    "Grenades cost half: Mk.I frag 150, Mk.III 500, Mk.V 1250 (sticky / homing cost more as before); Ozob's Nose 875.",
+    "Every weapon shop keeps grenades in stock: street 3, arms 5, black market 4, corporate 2 at least. Shops restocked once with the new rules.",
+    "About half of all gigs also reward two grenades at the gig's level.",
     "Cover is an attack penalty: the attack roll window has a Target cover choice (Half -3 to hit, Three-quarters -6). Token cover conditions add no AC. The damage roll window defaults to the same cover for the damage cut.",
     "Weapon chat cards are short: name, Attack / Damage buttons and tags, without the whole weapon description.",
     "Attack and damage roll windows open on top of the sheet that opened them.",
