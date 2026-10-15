@@ -1,8 +1,9 @@
 {
-  "version": "0.12.20",
+  "version": "0.12.21",
   "updated": "2026-10-14",
-  "scope": "ui",
+  "scope": "sound",
   "notes": [
+    "Every player hears the Cyberpunk 2077 UI sounds from the table's Forge storage (job board, Market, Cyberdeck, Chrome Manager) instead of the basic fallback set. Volume still follows the Interface slider.",
     "Market DETAILS opens the item sheet on top of the Market (and any item sheet opened over the Chrome Manager or Cyberdeck stays on top).",
     "Foundry warnings and messages show above the Market, Chrome Manager and Cyberdeck instead of hiding behind them.",
     "The Cyberdeck's empty software library says NO QUICKHACKS OWNED // BUY THEM IN THE MARKET when you own none.",
