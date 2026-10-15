@@ -1,8 +1,9 @@
 {
-  "version": "0.12.26",
+  "version": "0.12.27",
   "updated": "2026-10-14",
   "scope": "weapons",
   "notes": [
+    "Grenades and quickhacks hit for about 60% of before, like guns: frag Mk.III 10d6 -> 6d6, Ozob's Nose 15d6 -> 9d6, damaging hacks 10d6 -> 6d6, 8d6 -> 4d6+3, 10d10 -> 6d10, death burst 5d6 -> 3d6; bleed/burn ticks and flashbangs scaled too.",
     "Damage pass: every gun and melee weapon hits for about 60% of before (pistols ~20, rifles ~27, shotguns ~31, LMGs ~40, snipers ~50 per hit; knives ~14, katanas ~27). Dice type and the order between weapons are kept. Chainsword REDLINE +2d10, Errata +2d8 per earlier hit.",
     "The last reload rules are gone: Helix Self-Charging Cell, Kyokokukamusari Flashbang Magazine, and Metel's reload line.",
     "Gun cards are rewritten whenever their damage changes.",
