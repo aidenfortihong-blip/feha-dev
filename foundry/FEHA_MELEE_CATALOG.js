@@ -5,7 +5,7 @@
 (() => {
   try { globalThis.FEHA_MELEE_CATALOG?.destroy?.(); } catch {}
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const REWRITE = "melee-1.1-unified";
   const FLAG = "fleshEnshrouded";
   const MELEE_FOLDERS = new Set(["melee","-melee"]);
@@ -43,20 +43,20 @@
   });
 
   const ROWS = Object.freeze([
-    ["Baseball Bat","Blunt","7d6","bludgeoning",10,5,null,null],
-    ["Baton Beta","Baton","5d8","bludgeoning",null,5,null,null],
-    ["Baton Murphy","Baton","6d8","bludgeoning",10,5,null,null],
-    ["Baton Tinker Bell","Baton","5d8","bludgeoning",null,5,null,null],
-    ["Butcher's Knife","Knife","7d6","slashing",null,5,null,null],
+    ["Baseball Bat","Blunt","4d6","bludgeoning",10,5,null,null],
+    ["Baton Beta","Baton","3d8","bludgeoning",null,5,null,null],
+    ["Baton Murphy","Baton","4d8","bludgeoning",10,5,null,null],
+    ["Baton Tinker Bell","Baton","3d8","bludgeoning",null,5,null,null],
+    ["Butcher's Knife","Knife","5d6","slashing",null,5,null,null],
     ["Cane Fingers","Knife","6d6","piercing",null,5,null,null],
     ["Chainsword Legendary","Heavy Blade","12d10","slashing",14,5,null,null],
-    ["Chef's Knife","Knife","6d6","slashing",null,5,null,null],
-    ["Crowbar","Blunt","5d8","bludgeoning",10,5,null,null],
+    ["Chef's Knife","Knife","4d6","slashing",null,5,null,null],
+    ["Crowbar","Blunt","3d8","bludgeoning",10,5,null,null],
     ["Dildo Stout","Blunt","1d100","bludgeoning",null,5,null,null],
     ["Errata","Katana","16d8","slashing",11,5,null,null],
     ["Fanged Axe Military","Axe","6d10","slashing",13,5,null,null],
-    ["Hammer","Blunt","5d10","bludgeoning",12,5,null,null],
-    ["Iron Pipe","Blunt","5d8","bludgeoning",10,5,null,null],
+    ["Hammer","Blunt","3d10","bludgeoning",12,5,null,null],
+    ["Iron Pipe","Blunt","3d8","bludgeoning",10,5,null,null],
     ["Kanabo","Heavy Blunt","6d12","bludgeoning",15,5,null,null],
     ["Katana","Katana","7d8","slashing",10,5,null,null],
     ["Katana Go G","Katana","7d8","slashing",10,5,null,null],
@@ -73,7 +73,7 @@
     ["Punk Knife Pimp","Knife","7d6","piercing",null,5,null,null],
     ["Sword Witcher","Sword","6d10","slashing",12,5,null,null],
     ["Tanto","Knife","7d6","piercing",null,5,null,null],
-    ["Tire Iron","Blunt","5d8","bludgeoning",10,5,null,null],
+    ["Tire Iron","Blunt","3d8","bludgeoning",10,5,null,null],
     ["Tomahawk","Axe","7d8","slashing",10,5,20,60],
     ["VB Axe","Heavy Axe","8d10","slashing",14,5,null,null]
   ]);
