@@ -1,8 +1,11 @@
 {
-  "version": "0.12.28",
+  "version": "0.12.29",
   "updated": "2026-10-14",
-  "scope": "cyberware",
+  "scope": "combat",
   "notes": [
+    "Cover: Half Cover +3 AC and 25% less damage, Three-Quarters +6 AC and 50% less, against guns and melee. Grenades, launchers and quickhacks ignore the damage cut.",
+    "Armor soak: worn armor takes 1-7 off every bludgeoning, piercing or slashing hit (light 1-3, medium 2-5, heavy 3-7 by Mk), shown on the armor card.",
+    "Weapon load: your heaviest equipped weapon slows you (rifles/shotguns/DMRs -5 ft, snipers and heavy melee -10, LMGs -15). Strong Arms, Power Grip, Reinforced Muscles, Gun Stabilizer, Titanium Infused Bones or ForgeLine Sigma removes it.",
     "Cyberware damage at about 60%, like weapons: Mantis Blades 8d8 -> 4d8+4, Apex 12d8 -> 7d8+1, Gorilla Arms 9d10 -> 5d10+2, Monowire 9d8 -> 5d8+2, Power Grip 5d8 -> 3d8, Projectile Launcher 8d6 -> 4d6+3 (Apex 12d6 -> 7d6+1), Micro Generator discharge 6d6 -> 3d6+2, and the damage bonuses (Berserk, Viral Venom, Kiroshi Hunter, etc.). Healing chrome is unchanged.",
     "Grenades and quickhacks hit for about 60% of before, like guns: frag Mk.III 10d6 -> 6d6, Ozob's Nose 15d6 -> 9d6, damaging hacks 10d6 -> 6d6, 8d6 -> 4d6+3, 10d10 -> 6d10, death burst 5d6 -> 3d6; bleed/burn ticks and flashbangs scaled too.",
     "Damage pass: every gun and melee weapon hits for about 60% of before (pistols ~20, rifles ~27, shotguns ~31, LMGs ~40, snipers ~50 per hit; knives ~14, katanas ~27). Dice type and the order between weapons are kept. Chainsword REDLINE +2d10, Errata +2d8 per earlier hit.",
