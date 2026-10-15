@@ -282,23 +282,26 @@
       update["system.damage.base.custom.formula"] = def.damage;
     }
 
-    if (Number(item.system?.range?.reach ?? 0) !== Number(def.reach)) {
+    // Stored values: dnd5e blanks a melee weapon's derived range.value, so
+    // checking the prepared data re-saved every melee weapon on every load.
+    const range = item._source?.system?.range ?? item.system?.range ?? {};
+    if (Number(range.reach ?? 0) !== Number(def.reach)) {
       update["system.range.reach"] = Number(def.reach);
     }
 
     if (def.thrownRange != null) {
-      if (Number(item.system?.range?.value ?? 0) !== Number(def.thrownRange)) {
+      if (Number(range.value ?? 0) !== Number(def.thrownRange)) {
         update["system.range.value"] = Number(def.thrownRange);
       }
-      if (Number(item.system?.range?.long ?? 0) !== Number(def.thrownLong)) {
+      if (Number(range.long ?? 0) !== Number(def.thrownLong)) {
         update["system.range.long"] = Number(def.thrownLong);
       }
     } else {
-      if (Number(item.system?.range?.value ?? 0) !== 5) update["system.range.value"] = 5;
-      if (item.system?.range?.long != null) update["system.range.long"] = null;
+      if (Number(range.value ?? 0) !== 5) update["system.range.value"] = 5;
+      if (Number(range.long ?? 0) !== 0) update["system.range.long"] = null;
     }
 
-    if (String(item.system?.range?.units ?? "") !== "ft") {
+    if (String(range.units ?? "") !== "ft") {
       update["system.range.units"] = "ft";
     }
 
