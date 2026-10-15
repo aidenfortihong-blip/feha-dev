@@ -1,8 +1,11 @@
 {
-  "version": "0.12.29",
+  "version": "0.12.30",
   "updated": "2026-10-14",
   "scope": "combat",
   "notes": [
+    "Damage at about 90% of the original (was 60%) for guns, melee, unique weapons, grenades, quickhacks and cyberware: pistols ~19, rifles ~40, snipers ~75 per hit.",
+    "Cover is chosen when rolling damage: the damage roll window has a Target cover choice (None / Half -25% / Three-Quarters -50%), shown on the chat card and applied by Apply Damage. Token cover conditions only add AC (+3 / +6) now.",
+    "Guns no longer offer a One-Handed / Offhand choice when attacking.",
     "Cover: Half Cover +3 AC and 25% less damage, Three-Quarters +6 AC and 50% less, against guns and melee. Grenades, launchers and quickhacks ignore the damage cut.",
     "Armor soak: worn armor takes 1-7 off every bludgeoning, piercing or slashing hit (light 1-3, medium 2-5, heavy 3-7 by Mk), shown on the armor card.",
     "Weapon load: your heaviest equipped weapon slows you (rifles/shotguns/DMRs -5 ft, snipers and heavy melee -10, LMGs -15). Strong Arms, Power Grip, Reinforced Muscles, Gun Stabilizer, Titanium Infused Bones or ForgeLine Sigma removes it.",
