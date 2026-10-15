@@ -1,8 +1,9 @@
 {
-  "version": "0.12.24",
+  "version": "0.12.25",
   "updated": "2026-10-14",
   "scope": "weapons",
   "notes": [
+    "Guns have no ammo or reloading: charges, the Reload action, the shot counter and its buttons, empty-gun blocking, the reload check, Helix auto-recharge and the magazine / reload lines on gun cards and sheets are gone. Guns just attack.",
     "Guns use charges: a gun's magazine is its item charges, every attack spends one (from any sheet or macro), and an empty gun can't attack.",
     "Every gun has a Reload action: bonus action for pistols and SMGs, action for rifles and shotguns, full turn with the DEX check for LMGs and snipers. The FEHA weapon sheet's buttons use the same charges.",
     "Shots already fired carry over. Melee weapons and bows don't use charges; Helix guns still self-charge.",
