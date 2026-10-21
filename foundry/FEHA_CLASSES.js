@@ -311,7 +311,7 @@
     const m = ramModel(actor);
     if (!m || !m.maxRam) {
       ui.notifications?.warn?.("No Cyberdeck installed: no RAM to restore.");
-      return 0;
+      return null;
     }
     const next = Math.min(m.maxRam,m.currentRam + Math.max(0,amount));
     await actor.update({["flags."+FLAG+".ramCurrent"]:next});
@@ -330,15 +330,18 @@
 
     if (action === "breach") {
       const got = await gainRam(actor,Math.max(1,Number(actor.system.abilities.int.mod) || 0));
+      if (got === null) return;
       await announce(actor,"<strong>Breach Protocol</strong>: +"+got+" RAM.");
     } else if (action === "overclock") {
       const got = await gainRam(actor,2);
+      if (got === null) return;
       const roll = await new Roll("2d6").evaluate();
       await actor.applyDamage([{value:roll.total,type:"psychic"}]);
       await announce(actor,"<strong>Overclock</strong>: +"+got+" RAM, "+roll.total+" psychic damage.");
     } else if (action === "daisy") {
       const cost = Number(flags(actor).lastQuickhackRam) || 0;
       const got = await gainRam(actor,cost);
+      if (got === null) return;
       await announce(actor,"<strong>Daisy Chain</strong>: +"+got+" RAM. Upload the same quickhack at a second target within 30 ft of the first.");
     } else if (action === "drone") {
       const token = actor.getActiveTokens?.()[0]?.document ?? null;
