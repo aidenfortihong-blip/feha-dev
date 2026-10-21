@@ -276,15 +276,16 @@
     if (classItem(actor)) throw new Error(actor.name+" already has a class.");
     level = Math.max(1,Math.min(MAX_LEVEL,Math.floor(level)));
 
+    const hpBefore = Number(actor.system.attributes.hp.value) || 0;
     await dropPowerLevel(actor);
     const saves = {};
     for (const key of Object.keys(actor.system.abilities)) saves["system.abilities."+key+".proficient"] = CLASSES[clsKey].saves.includes(key) ? 1 : 0;
     await actor.update(saves);
     await actor.createEmbeddedDocuments("Item",[classData(clsKey,level)]);
     await syncFeatures(actor);
-    await syncHp(actor);
+    // New max HP; a character who was hurt stays hurt.
     const hp = maxHp(actor,clsKey,level);
-    await actor.update({"system.attributes.hp.value":hp});
+    await actor.update({"system.attributes.hp.max":hp,"system.attributes.hp.value":Math.max(1,Math.min(hp,hpBefore || hp))});
     return {actor:actor.name,cls:CLASSES[clsKey].name,level,hp};
   }
 
@@ -398,6 +399,29 @@
   }
 
   // ------------------------------------------------------------ player picker
+  const STYLE_ID = "feha-classes-css";
+  const CSS = `.feha-class-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .feha-class-card{display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid #4a2a2e;background:#120b0d;cursor:pointer}
+  .feha-class-card:has(input:checked){border-color:#ffd34d;box-shadow:0 0 0 1px #ffd34d inset}
+  .feha-class-card input{display:none}
+  .feha-class-card img{width:42px;height:42px;border:0}
+  .feha-class-card strong{font-size:16px;color:#ffd34d;letter-spacing:.06em;text-transform:uppercase}
+  .feha-class-card span,.feha-class-card em{font-size:12px}
+  .feha-class-card ul{margin:0;padding-left:0;list-style:none;font-size:12px}
+  .feha-class-card li b{display:inline-block;width:14px;color:#ff4f64}
+  .feha-class-card img{max-width:42px}
+  .feha-crew td,.feha-crew th{padding:4px 6px;text-align:left}
+  .feha-crew td:last-child{white-space:nowrap}
+  .feha-crew button{display:inline-block;width:auto;min-width:0;padding:2px 8px;margin-right:4px}`;
+
+  function ensureStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = CSS;
+    document.head.appendChild(style);
+  }
+
   let picking = false;
 
   async function pick(actor) {
@@ -416,18 +440,7 @@
       const result = await foundry.applications.api.DialogV2.wait({
         window:{title:"Choose "+actor.name+"'s class"},
         position:{width:760},
-        content:`<style>
-          .feha-class-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-          .feha-class-card{display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid #4a2a2e;background:#120b0d;cursor:pointer}
-          .feha-class-card:has(input:checked){border-color:#ffd34d;box-shadow:0 0 0 1px #ffd34d inset}
-          .feha-class-card input{display:none}
-          .feha-class-card img{width:42px;height:42px;border:0}
-          .feha-class-card strong{font-size:16px;color:#ffd34d;letter-spacing:.06em;text-transform:uppercase}
-          .feha-class-card span,.feha-class-card em{font-size:12px}
-          .feha-class-card ul{margin:0;padding-left:0;list-style:none;font-size:12px}
-          .feha-class-card li b{display:inline-block;width:14px;color:#ff4f64}
-          </style>
-          <p>Pick a class. It starts at level 1; the GM levels the crew up to 5. Ask the GM if you need to change it later.</p>
+        content:`<p>Pick a class. It starts at level 1; the GM levels the crew up to 5. Ask the GM if you need to change it later.</p>
           <div class="feha-class-pick">${Object.entries(CLASSES).map(card).join("")}</div>`,
         buttons:[
           {action:"ok",label:"Lock it in",default:true,callback:(event,button) => button.form.elements.cls.value || null},
@@ -514,6 +527,7 @@
 
     async init() {
       await api.destroy();
+      ensureStyle();
       CONFIG.queries[CH] = queryHandler = onQuery;
       hooks.push(["dnd5e.postUseActivity",Hooks.on("dnd5e.postUseActivity",activity => { void onUse(activity).catch(err => ui.notifications?.error?.(err.message)); })]);
       hooks.push(["renderActorDirectory",Hooks.on("renderActorDirectory",addCrewButton)]);
@@ -538,6 +552,7 @@
       if (CONFIG.queries?.[CH] === queryHandler) delete CONFIG.queries[CH];
       queryHandler = null;
       document.querySelector("#actors ."+BUTTON_CLASS)?.remove();
+      document.getElementById(STYLE_ID)?.remove();
       if (globalThis.FEHA_CLASSES === api) delete globalThis.FEHA_CLASSES;
     }
   };

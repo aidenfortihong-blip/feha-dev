@@ -21,7 +21,7 @@
 // The 10 ft movement limits themselves are table rules surfaced on the sheet.
 
 (() => {
-  const VERSION = "1.7.0";
+  const VERSION = "1.7.1";
   const FLAG = "fleshEnshrouded";
 
   const BONUS_RELOAD = new Set(["Pistol","Heavy Pistol","SMG","Shotgun Pistol"]);
@@ -344,7 +344,8 @@
   }
 
   function onRenderDamageDialog(app, element, context, options) {
-    injectCoverPicker(app, element, "damage");
+    // Healing and temp HP rolls use the same window; cover means nothing there.
+    if (app.config?.subject?.type !== "heal") injectCoverPicker(app, element, "damage");
     raiseDialog(app, options);
   }
 

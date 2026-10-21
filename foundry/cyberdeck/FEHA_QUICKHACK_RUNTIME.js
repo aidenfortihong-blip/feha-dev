@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.1.1";
+  const VERSION = "1.2.0";
   const FLAG = "fleshEnshrouded";
   const PICKER_ID = "feha-qh-runtime-picker";
 
