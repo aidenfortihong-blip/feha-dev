@@ -256,7 +256,15 @@
     const legacyQuickhack =
       String(flags.quickhackTurnStamp ?? "");
 
-    if (shared === stamp || legacyQuickhack === stamp) {
+    // Ordnance Expert: one more grenade in a turn whose bonus action went on
+    // a grenade.
+    const extraGrenade =
+      shared === stamp &&
+      String(flags.bonusActionSource ?? "") === "grenade" &&
+      classBonus(actor,"grenadesPerTurn") >= 2 &&
+      String(flags.extraGrenadeTurnStamp ?? "") !== stamp;
+
+    if ((shared === stamp && !extraGrenade) || legacyQuickhack === stamp) {
       throw new Error(
         "You already used your Bonus Action this turn."
       );
@@ -268,6 +276,12 @@
   async function markBonusActionUsed(actor,source="grenade") {
     const stamp = bonusActionStamp(actor);
     if (!stamp) return false;
+
+    const flags = actor?.flags?.[FLAG] ?? {};
+    if (String(flags.bonusActionTurnStamp ?? "") === stamp && source === "grenade") {
+      await actor.update({["flags."+FLAG+".extraGrenadeTurnStamp"]:stamp});
+      return true;
+    }
 
     await actor.update({
       ["flags."+FLAG+".bonusActionTurnStamp"]:stamp,
@@ -333,7 +347,17 @@
       return 12 + Math.max(1,Number(def?.mk ?? 1) || 1);
     }
 
-    return 8 + actorProficiency(actor) + abilityModifier(actor,"dex");
+    return 8 + actorProficiency(actor) + abilityModifier(actor,"dex") + classBonus(actor,"grenadeDc");
+  }
+
+  // Class features (Techie: Grenadier, Ordnance Expert). FEHA_CLASSES is
+  // optional; without it every bonus is 0.
+  function classBonus(actor,key) {
+    return Number(globalThis.FEHA_CLASSES?.bonus?.(actor,key)) || 0;
+  }
+
+  function throwRange(actor,schema) {
+    return Math.max(1,Number(schema.rangeFt ?? 60) || 60) + classBonus(actor,"grenadeRange");
   }
 
   function saveModifier(actor,key) {
@@ -2028,7 +2052,7 @@
     if (!cookoff) {
       const sourceCenter = tokenCenter(sourceToken,scene);
       const distance = feetBetween(scene,sourceCenter,center);
-      const range = Math.max(1,Number(schema.rangeFt ?? 60) || 60);
+      const range = throwRange(actor,schema);
 
       if (distance > range + 0.01) {
         throw new Error(
@@ -2406,7 +2430,7 @@
         await pickPoint(
           scene,
           sourceCenter,
-          Math.max(1,Number(schema.rangeFt ?? 60) || 60),
+          throwRange(actor,schema),
           Math.max(1,Number(schema.radiusFt ?? 5) || 5),
           def.name
         );

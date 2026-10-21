@@ -71,6 +71,7 @@
     jobCatalog:"foundry/FEHA_JOB_CATALOG.js",
     gigKit:"foundry/FEHA_GIG_KIT.js",
     jobs:"foundry/FEHA_JOBS.js",
+    classes:"foundry/FEHA_CLASSES.js",
     sync:"foundry/FEHA_MULTIPLAYER_SYNC.js",
     v3:"foundry/FEHA_TABLETOP_UI_V3.js",
     manifest:"version.json"
@@ -243,7 +244,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","gigsVesna","gigsBabka","gigsPadre","gigsFerro","gigsClerk","gigsKiyama","gigsDuval","gigsRhea","gigsDialtone","gigsVelvet","gigsHale","gigsPersonal","gigsPeople","jobCatalog","gigKit","jobs","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","gigsVesna","gigsBabka","gigsPadre","gigsFerro","gigsClerk","gigsKiyama","gigsDuval","gigsRhea","gigsDialtone","gigsVelvet","gigsHale","gigsPersonal","gigsPeople","jobCatalog","gigKit","jobs","classes","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -395,6 +396,7 @@
     evaluate(source.jobCatalog,files.jobCatalog,sha);
     evaluate(source.gigKit,files.gigKit,sha);
     evaluate(source.jobs,files.jobs,sha);
+    evaluate(source.classes,files.classes,sha);
     evaluate(source.sync,files.sync,sha);
 
     if (!globalThis.FEHA_CYBER_CORE) {
@@ -447,6 +449,7 @@
       "sheetQuickhacks",
       "sceneWallStatus",
       "jobs",
+      "classes",
       "multiplayerSync"
     ];
 

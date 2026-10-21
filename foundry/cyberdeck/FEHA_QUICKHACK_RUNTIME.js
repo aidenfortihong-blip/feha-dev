@@ -86,7 +86,9 @@
         2
       ) || 2;
 
-    return 8 + prof + intMod;
+    const classDc = Number(globalThis.FEHA_CLASSES?.bonus?.(actor,"hackDc")) || 0;
+
+    return 8 + prof + intMod + classDc;
   }
 
   function targetId(token) {

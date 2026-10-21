@@ -205,7 +205,9 @@
       .reduce((total,item) =>
         total + (Number(flags(item).quickhackDcBonus) || 0),0);
 
-    return 8 + prof + intMod + chrome;
+    const classDc = Number(globalThis.FEHA_CLASSES?.bonus?.(actor,"hackDc")) || 0;
+
+    return 8 + prof + intMod + chrome + classDc;
   }
 
   const ABILITY_KEYS = {
@@ -612,7 +614,9 @@
     try {
       await actor.update({
         [`flags.${FLAG}.ramCurrent`]:
-          m.currentRam-cost
+          m.currentRam-cost,
+        // Daisy Chain (Netrunner) gives back what the last quickhack cost.
+        [`flags.${FLAG}.lastQuickhackRam`]:cost
       });
 
       syncQuickhackRamUI(actor,resolution);
@@ -866,7 +870,8 @@
 
     const support = items.filter(isSupport);
     const supportRam = support.reduce((sum,item) => sum + supportRamBonus(item),0);
-    const maxRam = deck ? baseRam + supportRam : 0;
+    const classRam = Number(globalThis.FEHA_CLASSES?.bonus?.(actor,"ram")) || 0;
+    const maxRam = deck ? baseRam + supportRam + classRam : 0;
 
     const stored = actor?.flags?.[FLAG]?.ramCurrent;
     const currentRam = !deck
