@@ -18,7 +18,7 @@
     throw new Error("FEHA_CYBERWARE_RUNTIME requires Cyber Core + Cyberware Catalog.");
   }
 
-  const VERSION = "1.2.2";
+  const VERSION = "1.2.3";
   const FLAG = "fleshEnshrouded";
   const SPENT_FLAG = "cyberwareChargeSpent";
   const USED_FLAG = "cyberwareUsedThisRest";
@@ -864,6 +864,25 @@
     }
   }
 
+  // The installed Chrome Manager (chrome-legacy.js repairChromeData) rewrites
+  // cyberware flags on every actor each time it opens, on every client. On a
+  // player client the server refuses the writes to actors the player does not
+  // own and logs a permission error per actor; skip those writes there.
+  let foreignGuard = null;
+
+  function guardForeignWrites() {
+    if (game.user?.isGM || foreignGuard) return;
+
+    const original = Actor.prototype.updateEmbeddedDocuments;
+    const patched = function(embeddedName,updates,...rest) {
+      if (embeddedName === "Item" && !this.isOwner) return Promise.resolve([]);
+      return original.call(this,embeddedName,updates,...rest);
+    };
+
+    Actor.prototype.updateEmbeddedDocuments = patched;
+    foreignGuard = {original,patched};
+  }
+
   const api = {
     version:VERSION,
     charge,
@@ -877,6 +896,7 @@
 
     async init() {
       await api.destroy();
+      guardForeignWrites();
 
       if (game.user?.isGM) {
         try {
@@ -923,6 +943,11 @@
       for (const [event,id] of hooks.splice(0)) {
         try { Hooks.off(event,id); } catch {}
       }
+
+      if (foreignGuard && Actor.prototype.updateEmbeddedDocuments === foreignGuard.patched) {
+        Actor.prototype.updateEmbeddedDocuments = foreignGuard.original;
+      }
+      foreignGuard = null;
 
       if (clickHandler) {
         document.removeEventListener("click",clickHandler,true);
