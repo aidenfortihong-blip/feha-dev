@@ -1,8 +1,15 @@
 {
-  "version": "0.12.36",
+  "version": "1.0.0",
   "updated": "2026-10-21",
-  "scope": "cleanup",
+  "scope": "patch 1",
   "notes": [
+    "Patch 1 (1.0.0): full bug test of walls, combat, grenades, consumables, cyberware, quickhacks, Market, Chrome Manager, job board and the player client.",
+    "Grenades and quickhacks follow the same damage rules as weapons: armor soak, resistances, immunities and vulnerabilities now apply to them (they used to take HP straight off).",
+    "Daisy Chain (Netrunner) now lets the second quickhack upload through; the turn limit used to refuse it.",
+    "Players no longer get a permission error every time the Chrome Manager opens (it tried to rewrite NPC chrome on the player client).",
+    "Expired grenade zones are removed once (no more \"does not exist\" error).",
+    "Picking a class gives a character with no walking speed 30 ft.",
+    "Walls: 16 duplicate walls removed, 20 door edges snapped onto their walls and 17 door gaps closed (sight leaked through them), global light on for Arcadia Cave and Donor Clinic Map 2.",
     "The old Derke import tool is gone (it pointed at Batou's character and could rebuild him as Derke). The four player characters have no level until their player picks a class.",
     "Classes, levels 1-5: Solo (24 + CON HP, +6 a level; Combat Awareness, Patch Up, Called Shot, Suppressive Fire, Extra Attack), Netrunner (16 + CON, +4; Jack In, Breach Protocol, Overclock, Daisy Chain, Daemon) and Techie (20 + CON, +5; Grenadier, Jury Rig, Overcharge, FPV Drone, Ordnance Expert). Level 4 is an Ability Score Improvement.",
     "Players pick their own class the first time they load in without one; everyone starts at level 1. The GM levels the crew from Crew Level in the Actors tab (+1 / -1 per character, Level up everyone, Reset to let a player pick again).",
