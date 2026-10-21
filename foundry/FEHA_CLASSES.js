@@ -12,7 +12,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_CLASSES requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.0.2";
   const FLAG = "fleshEnshrouded";
   const CH = "feha.classes";
   const MAX_LEVEL = 5;
@@ -345,6 +345,8 @@
       const cost = Number(flags(actor).lastQuickhackRam) || 0;
       const got = await gainRam(actor,cost);
       if (got === null) return;
+      const stamp = globalThis.FEHA_QUICKHACK_RUNTIME?.turnStamp?.(actor);
+      if (stamp) await actor.update({["flags."+FLAG+".daisyChainTurnStamp"]:stamp});
       await announce(actor,"<strong>Daisy Chain</strong>: +"+got+" RAM. Upload the same quickhack at a second target within 30 ft of the first.");
     } else if (action === "drone") {
       const token = actor.getActiveTokens?.()[0]?.document ?? null;

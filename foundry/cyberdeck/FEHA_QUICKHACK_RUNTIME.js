@@ -6,7 +6,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const FLAG = "fleshEnshrouded";
   const PICKER_ID = "feha-qh-runtime-picker";
 
@@ -175,9 +175,14 @@
     const bonusActionStamp =
       String(flags.bonusActionTurnStamp ?? "");
 
+    // Daisy Chain (Netrunner): one more upload in the turn it was used.
+    const daisyChain =
+      String(flags.daisyChainTurnStamp ?? "") === stamp &&
+      quickhackStamp === stamp;
+
     if (
-      quickhackStamp === stamp ||
-      bonusActionStamp === stamp
+      !daisyChain &&
+      (quickhackStamp === stamp || bonusActionStamp === stamp)
     ) {
       // A rule refusal, not a failure: callers show it as a plain warning.
       const refused = new Error(
@@ -193,6 +198,15 @@
   async function markTurnUsed(actor) {
     const stamp = turnStamp(actor);
     if (!stamp) return false;
+
+    const flags = actor?.flags?.[FLAG] ?? {};
+    if (
+      String(flags.daisyChainTurnStamp ?? "") === stamp &&
+      String(flags.quickhackTurnStamp ?? "") === stamp
+    ) {
+      await actor.update({["flags."+FLAG+".daisyChainTurnStamp"]:null});
+      return true;
+    }
 
     await actor.update({
       ["flags."+FLAG+".quickhackTurnStamp"]:stamp,
@@ -1480,6 +1494,7 @@
     version:VERSION,
     handles,
     requiresTarget,
+    turnStamp,
     assertTurnAvailable,
     markTurnUsed,
     prepare,
