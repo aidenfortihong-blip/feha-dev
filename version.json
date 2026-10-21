@@ -1,8 +1,12 @@
 {
-  "version": "0.12.34",
+  "version": "0.12.35",
   "updated": "2026-10-21",
-  "scope": "characters",
+  "scope": "classes",
   "notes": [
+    "Classes, levels 1-5: Solo (24 + CON HP, +6 a level; Combat Awareness, Patch Up, Called Shot, Suppressive Fire, Extra Attack), Netrunner (16 + CON, +4; Jack In, Breach Protocol, Overclock, Daisy Chain, Daemon) and Techie (20 + CON, +5; Grenadier, Jury Rig, Overcharge, FPV Drone, Ordnance Expert). Level 4 is an Ability Score Improvement.",
+    "Players pick their own class the first time they load in without one; everyone starts at level 1. The GM levels the crew from Crew Level in the Actors tab (+1 / -1 per character, Level up everyone, Reset to let a player pick again).",
+    "Class features work with FEHA systems: Netrunner RAM and quickhack DC bonuses show in the Cyberdeck, Techie grenade range / DC and the second grenade a turn apply when throwing, Solos ignore weapon load, and the Techie FPV Drone puts a scout drone token on the map that its player sees through.",
+    "Healing rolls no longer show the Target cover choice.",
     "Derke is now Batou: an edgerunner on Kurohane probation. New feats Ride or Die, Look Out for Number One and Kurohane Probation, Kiroshi Optics installed, Unity pistol, and seven personal gigs about his probation, the job that got him caught and the people he looks out for. Derke's old sheet is kept in the FEHA Character Backup compendium.",
     "Every NPC has a hand-drawn manhwa/anime portrait and token, framed head-and-shoulders. About 100 new faces replaced AI-looking, black-and-white, chibi and missing art; troops still share one face per unit.",
     "NPC field kit: every NPC type carries grenades and corp consumables that fit its faction, tier and role (EMP for netrunners, recon for marksmen, incendiaries for Rustwater and Scorpions, smoke for officers; Bastion/Helix healers, Corvus RAM boosters, ForgeLine load boosters). New imports get it too.",
