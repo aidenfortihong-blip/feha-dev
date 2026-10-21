@@ -2,7 +2,7 @@
 (() => {
   const core=globalThis.FEHA_CYBER_CORE;
   if(!core) throw new Error("FEHA_MULTIPLAYER_SYNC requires FEHA_CYBER_CORE.");
-  const VERSION="0.3.4", CH="feha.multiplayerSync", MARK="fehaMultiplayerSyncV1";
+  const VERSION="0.3.5", CH="feha.multiplayerSync", MARK="fehaMultiplayerSyncV1";
   const FLAG="fleshEnshrouded", NS="world", STOCK="adkMarketStockV16", SESSION="adkMarketSessionV1", TIMEOUT=15000, APPROVAL_TIMEOUT=600000;
   const PLAYABLE=new Set(["ponyboy","batou","sasha","zach"]), pending=new Map(), hooks=[];
   let socketHandler=null, originals=null, wrappers=null, marketTimer=null, surfaceTimer=null, sessionTimer=null, applyingSession=false, marketHandler=false, approvalClickHandler=null, pickerObserver=null, pickerTimer=null, queryHandler=null, stockChain=Promise.resolve();
@@ -33,7 +33,8 @@
   const emit=(kind,payload={})=>{const m={[MARK]:true,kind,payload};for(const u of game.users??[]){if(!u?.active||u.isSelf)continue;Promise.resolve(u.query?.(CH,m,{timeout:10000})).catch(()=>{})}};
   function wait(id,{timeoutMs=TIMEOUT,timeoutMessage="FEHA multiplayer authority request timed out."}={}){let timer;return new Promise((resolve,reject)=>{const done=p=>{clearTimeout(timer);if(pending.get(id)===done)pending.delete(id);p?.error?reject(new Error(p.error)):resolve(p)};done.cancel=()=>done({error:"FEHA multiplayer authority reloaded."});pending.set(id,done);timer=setTimeout(()=>{if(pending.get(id)!==done)return;pending.delete(id);reject(new Error(timeoutMessage))},timeoutMs)})}
   function hp(a){const h=a?.system?.attributes?.hp??{};return{value:Math.max(0,Number(h.value??0)),max:Math.max(0,Number(h.max??0)),temp:Math.max(0,Number(h.temp??0))}}
-  async function damageLocal(a,amount){const damage=Math.max(0,Math.floor(Number(amount)||0)),before=hp(a);let rem=damage,temp=before.temp,value=before.value;const used=Math.min(temp,rem);temp-=used;rem-=used;value=Math.max(0,value-rem);const u={"system.attributes.hp.value":value};if(temp!==before.temp)u["system.attributes.hp.temp"]=temp;await a.update(u);return{damage,before,after:{value,max:before.max,temp}}}
+  // Same damage rules as weapon hits (armor soak, resistances, temp HP).
+  async function damageLocal(a,amount,item=null){const type=globalThis.FEHA_QUICKHACK_CATALOG?.definition?.(item)?.meta?.damageType??"";return globalThis.FEHA_ARMOR_RUNTIME.applyHit(a,amount,type,{sourceKind:"quickhack"})}
   function validateHack(p){
     const user=game.users?.get?.(p.userId)??null;
     const op=game.actors?.get?.(p.operatorActorId)??null;
@@ -76,6 +77,7 @@
 
     return{
       target,
+      item,
       damage:Math.max(0,Math.floor(Number(p.damage)||0))
     };
   }
@@ -346,7 +348,7 @@
 
     try{
       const validated=validateHack(data);
-      const result=await damageLocal(validated.target,validated.damage);
+      const result=await damageLocal(validated.target,validated.damage,validated.item);
       const applied={
         ...data,
         status:"applied",
@@ -401,7 +403,7 @@
         emit("hackRes",{
           requestId:p.requestId,
           userId:p.userId,
-          result:await damageLocal(v.target,v.damage)
+          result:await damageLocal(v.target,v.damage,v.item)
         });
       }catch(e){
         emit("hackRes",{

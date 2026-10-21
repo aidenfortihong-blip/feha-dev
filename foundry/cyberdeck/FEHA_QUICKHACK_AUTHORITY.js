@@ -7,7 +7,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_QUICKHACK_AUTHORITY requires FEHA_CYBER_CORE.");
 
-  const VERSION = "2.2.6";
+  const VERSION = "2.2.7";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -283,53 +283,9 @@
   }
 
   async function damageLocal(actor,amount,damageType="") {
-    const adjusted =
-      globalThis.FEHA_ARMOR_RUNTIME?.adjustDamage?.(
-        actor,
-        amount,
-        damageType,
-        {sourceKind:"quickhack"}
-      );
-
-    const damage = Math.max(
-      0,
-      Math.floor(
-        Number(
-          adjusted ?? amount
-        ) || 0
-      )
-    );
-
-    const before = hp(actor);
-    let remaining = damage;
-    let temp = before.temp;
-    let value = before.value;
-
-    const tempSpent = Math.min(temp,remaining);
-    temp -= tempSpent;
-    remaining -= tempSpent;
-    value = Math.max(0,value - remaining);
-
-    const update = {
-      "system.attributes.hp.value":value
-    };
-
-    if (temp !== before.temp) {
-      update["system.attributes.hp.temp"] = temp;
-    }
-
-    await actor.update(update);
-
-    return {
-      damage,
-      before,
-      after:{
-        value,
-        max:before.max,
-        temp
-      }
-    };
+    return globalThis.FEHA_ARMOR_RUNTIME.applyHit(actor,amount,damageType,{sourceKind:"quickhack"});
   }
+
 
   async function evaluateRoll(formula) {
     const roll = new Roll(String(formula));
@@ -1098,7 +1054,7 @@
       const center = tokenCenter(token,base.scene);
       if (feetBetween(base.scene,{x,y},center) > radius) continue;
 
-      await damageLocal(actor,raw);
+      await damageLocal(actor,raw,base.definition?.meta?.damageType);
       affectedCount++;
     }
 
@@ -1125,7 +1081,7 @@
       Math.max(0,Math.floor(Number(primaryRoll.total ?? 0)));
 
     const primaryResult =
-      await damageLocal(base.target,primaryRaw);
+      await damageLocal(base.target,primaryRaw,base.definition?.meta?.damageType);
 
     const reducedToZero =
       primaryResult.before.value > 0 &&
@@ -1173,7 +1129,7 @@
         continue;
       }
 
-      await damageLocal(actor,burstRaw);
+      await damageLocal(actor,burstRaw,base.definition?.meta?.burstDamageType ?? base.definition?.meta?.damageType);
       affectedCount++;
     }
 
@@ -1503,7 +1459,8 @@
 
         return damageLocal(
           base.target,
-          amount
+          amount,
+          base.definition?.meta?.damageType
         );
       }
 

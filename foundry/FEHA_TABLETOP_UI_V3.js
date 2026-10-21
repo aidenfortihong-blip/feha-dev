@@ -474,30 +474,13 @@
       });
     }
 
-    const before = targetHP(targetActor);
-    let remaining = damage;
-    let temp = before.temp;
-    let value = before.value;
-
-    const tempSpent = Math.min(temp,remaining);
-    temp -= tempSpent;
-    remaining -= tempSpent;
-    value = Math.max(0,value - remaining);
-
-    const update = {
-      "system.attributes.hp.value":value
-    };
-
-    if (before.temp !== temp) {
-      update["system.attributes.hp.temp"] = temp;
-    }
-
-    await targetActor.update(update);
+    const type = globalThis.FEHA_QUICKHACK_CATALOG?.definition?.(context.item)?.meta?.damageType ?? "";
+    const hit = await globalThis.FEHA_ARMOR_RUNTIME.applyHit(targetActor,damage,type,{sourceKind:"quickhack"});
 
     return {
-      damage,
-      before,
-      after:{value,max:before.max,temp}
+      damage:hit.damage,
+      before:hit.before,
+      after:hit.after
     };
   }
 

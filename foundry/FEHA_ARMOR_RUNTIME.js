@@ -5,7 +5,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_ARMOR_RUNTIME requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.3.3";
+  const VERSION = "1.4.0";
   const FLAG = "fleshEnshrouded";
   const hooks = [];
   let activeForgeTurn = null;
@@ -388,6 +388,32 @@
     return value;
   }
 
+  // Damage FEHA rolls itself (grenades, quickhacks) goes through the same
+  // rules as a weapon hit: FEHA armor signatures first, then dnd5e
+  // resistances, immunities, vulnerabilities, armor soak (traits.dm) and
+  // temporary HP. Returns the HP before and after and the damage taken.
+  async function applyHit(actor,amount,damageType="",{sourceKind=""}={}) {
+    const hpOf = () => {
+      const data = actor?.system?.attributes?.hp ?? {};
+      return {
+        value:Math.max(0,Number(data.value ?? 0)),
+        max:Math.max(0,Number(data.max ?? 0)),
+        temp:Math.max(0,Number(data.temp ?? 0))
+      };
+    };
+    const before = hpOf();
+    const value = Math.max(0,Math.floor(Number(adjustDamage(actor,amount,damageType,{sourceKind})) || 0));
+    if (value > 0) {
+      await actor.applyDamage([{value,type:String(damageType ?? "").toLowerCase(),properties:new Set()}]);
+    }
+    const after = hpOf();
+    return {
+      damage:Math.max(0,(before.value + before.temp) - (after.value + after.temp)),
+      before,
+      after
+    };
+  }
+
   function installHooks() {
     hooks.push(
       ["dnd5e.preCalculateDamage",Hooks.on(
@@ -511,6 +537,7 @@
     bastionFirearmDr,
     bastionBulletProfile,
     adjustDamage,
+    applyHit,
     originItem,
 
     async init() {

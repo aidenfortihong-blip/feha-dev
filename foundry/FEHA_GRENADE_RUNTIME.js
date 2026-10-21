@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.5.0";
+  const VERSION = "1.5.1";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -451,47 +451,9 @@
   }
 
   async function damageLocal(actor,amount,damageType="") {
-    const adjusted =
-      globalThis.FEHA_ARMOR_RUNTIME?.adjustDamage?.(
-        actor,
-        amount,
-        damageType,
-        {sourceKind:"grenade"}
-      );
-
-    const damage =
-      Math.max(
-        0,
-        Math.floor(
-          Number(adjusted ?? amount) || 0
-        )
-      );
-
-    const before = hp(actor);
-
-    let remaining = damage;
-    let temp = before.temp;
-    let value = before.value;
-
-    const tempSpent = Math.min(temp,remaining);
-    temp -= tempSpent;
-    remaining -= tempSpent;
-    value = Math.max(0,value - remaining);
-
-    const update = {"system.attributes.hp.value":value};
-
-    if (temp !== before.temp) {
-      update["system.attributes.hp.temp"] = temp;
-    }
-
-    await actor.update(update);
-
-    return {
-      damage,
-      before,
-      after:{value,max:before.max,temp}
-    };
+    return globalThis.FEHA_ARMOR_RUNTIME.applyHit(actor,amount,damageType,{sourceKind:"grenade"});
   }
+
 
   function isCyberware(item) {
     // A gun that carries a stray installed flag is not chrome: the recon

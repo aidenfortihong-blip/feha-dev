@@ -12,7 +12,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_CLASSES requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const FLAG = "fleshEnshrouded";
   const CH = "feha.classes";
   const MAX_LEVEL = 5;
@@ -280,6 +280,8 @@
     await dropPowerLevel(actor);
     const saves = {};
     for (const key of Object.keys(actor.system.abilities)) saves["system.abilities."+key+".proficient"] = CLASSES[clsKey].saves.includes(key) ? 1 : 0;
+    // A character made without a species has no walking speed at all.
+    if (!Number(actor._source.system?.attributes?.movement?.walk)) saves["system.attributes.movement.walk"] = 30;
     await actor.update(saves);
     await actor.createEmbeddedDocuments("Item",[classData(clsKey,level)]);
     await syncFeatures(actor);
