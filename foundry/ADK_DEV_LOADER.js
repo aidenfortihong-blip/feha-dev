@@ -40,7 +40,6 @@
     specialRetirement:"foundry/FEHA_SPECIAL_RETIREMENT.js",
     armorRuntime:"foundry/FEHA_ARMOR_RUNTIME.js",
     lumenRetirement:"foundry/FEHA_LUMEN_RETIREMENT.js",
-    derkeImport:"foundry/FEHA_DERKE_IMPORT.js",
     weaponReadiness:"foundry/FEHA_WEAPON_READINESS.js",
     weaponRuntime:"foundry/FEHA_WEAPON_RUNTIME.js",
     weaponTracker:"foundry/FEHA_RELOAD_TRACKER.js",
@@ -244,7 +243,7 @@
     // PREFLIGHT FIRST. Never destroy a known-good runtime for malformed or
     // partially committed source.
     for (const key of [
-      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","derkeImport","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","gigsVesna","gigsBabka","gigsPadre","gigsFerro","gigsClerk","gigsKiyama","gigsDuval","gigsRhea","gigsDialtone","gigsVelvet","gigsHale","gigsPersonal","gigsPeople","jobCatalog","gigKit","jobs","classes","sync","v3"
+      "baseJs","grenades","consumables","armor","weapons","melee","uniqueWeapons","weaponEconomy","core","modRetirement","specialRetirement","armorRuntime","lumenRetirement","weaponReadiness","weaponRuntime","weaponTracker","weaponSheet","worldHygiene","marketStockPatch","grenadeRuntime","consumableRuntime","cyberwareCatalog","cyberwareRuntime","npcCatalog","nebulaMaps","quickhacks","quickhackAuthority","quickhackRuntime","cameras","uiText","sheetQuickhacks","sceneWallStatus","city","gigsVesna","gigsBabka","gigsPadre","gigsFerro","gigsClerk","gigsKiyama","gigsDuval","gigsRhea","gigsDialtone","gigsVelvet","gigsHale","gigsPersonal","gigsPeople","jobCatalog","gigKit","jobs","classes","sync","v3"
     ]) {
       compileCheck(source[key],files[key]);
     }
@@ -356,7 +355,6 @@
     evaluate(source.specialRetirement,files.specialRetirement,sha);
     evaluate(source.armorRuntime,files.armorRuntime,sha);
     evaluate(source.lumenRetirement,files.lumenRetirement,sha);
-    evaluate(source.derkeImport,files.derkeImport,sha);
     evaluate(source.weaponReadiness,files.weaponReadiness,sha);
     evaluate(source.weaponRuntime,files.weaponRuntime,sha);
     evaluate(source.weaponTracker,files.weaponTracker,sha);
@@ -430,7 +428,6 @@
       "specialRetirement",
       "armorRuntime",
       "lumenRetirement",
-      "derkeImport",
       "weaponReadiness",
       "weaponRuntime",
       "weaponTracker",
@@ -504,11 +501,6 @@
     const armorRuntime =
       globalThis.FEHA_ARMOR_RUNTIME ??
       globalThis.FEHA_CYBER_CORE?.module?.("armorRuntime") ??
-      null;
-
-    const derkeImport =
-      globalThis.FEHA_DERKE_IMPORT ??
-      globalThis.FEHA_CYBER_CORE?.module?.("derkeImport") ??
       null;
 
     const weaponReadiness =
@@ -639,12 +631,6 @@
         "bastionBulletProfile",
         "adjustDamage"
       ]
-    );
-
-    requireMethods(
-      "Derke Import",
-      derkeImport,
-      ["findDerke","buildDerke","importDerke"]
     );
 
     requireMethods(

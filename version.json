@@ -1,8 +1,9 @@
 {
-  "version": "0.12.35",
+  "version": "0.12.36",
   "updated": "2026-10-21",
-  "scope": "classes",
+  "scope": "cleanup",
   "notes": [
+    "The old Derke import tool is gone (it pointed at Batou's character and could rebuild him as Derke). The four player characters have no level until their player picks a class.",
     "Classes, levels 1-5: Solo (24 + CON HP, +6 a level; Combat Awareness, Patch Up, Called Shot, Suppressive Fire, Extra Attack), Netrunner (16 + CON, +4; Jack In, Breach Protocol, Overclock, Daisy Chain, Daemon) and Techie (20 + CON, +5; Grenadier, Jury Rig, Overcharge, FPV Drone, Ordnance Expert). Level 4 is an Ability Score Improvement.",
     "Players pick their own class the first time they load in without one; everyone starts at level 1. The GM levels the crew from Crew Level in the Actors tab (+1 / -1 per character, Level up everyone, Reset to let a player pick again).",
     "Class features work with FEHA systems: Netrunner RAM and quickhack DC bonuses show in the Cyberdeck, Techie grenade range / DC and the second grenade a turn apply when throwing, Solos ignore weapon load, and the Techie FPV Drone puts a scout drone token on the map that its player sees through.",
