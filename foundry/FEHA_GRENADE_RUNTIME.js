@@ -9,7 +9,7 @@
   if (!core) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_CYBER_CORE.");
   if (!catalog) throw new Error("FEHA_GRENADE_RUNTIME requires FEHA_GRENADE_CATALOG.");
 
-  const VERSION = "1.5.1";
+  const VERSION = "1.5.2";
   const FLAG = "fleshEnshrouded";
   // FEHA messages travel over Foundry's user-to-user queries. The installed
   // module does not declare a socket, so the server never relayed
@@ -1260,6 +1260,8 @@
     }
   }
 
+  const expiring = new Set();
+
   async function cleanupTemplates() {
     if (!isAuthority()) return;
 
@@ -1280,10 +1282,17 @@
 
         if (!transientExpired && !persistentExpired) continue;
 
+        // Turn changes and the timer can both reach an expired template; the
+        // second delete used to log a "does not exist" error.
+        if (expiring.has(template.id)) continue;
+        expiring.add(template.id);
+
         try {
           await removeZoneMarkers(template.id);
-          await template.delete();
-        } catch {}
+          if (scene.templates.has(template.id)) await template.delete();
+        } catch {} finally {
+          expiring.delete(template.id);
+        }
       }
     }
   }
