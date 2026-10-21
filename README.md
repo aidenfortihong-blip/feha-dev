@@ -150,7 +150,7 @@ The loader resolves `main` to an immutable commit SHA before executing sources. 
 
 ## Locked rules
 
-- roster: Ponyboy, Derke, Sasha, Zach only
+- roster: Ponyboy, Batou, Sasha, Zach only
 - no Heat/Humanity
 - RAM restores on Short Rest only
 - `flags.fleshEnshrouded.ramCost` is canonical

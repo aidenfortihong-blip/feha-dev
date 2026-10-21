@@ -56,7 +56,7 @@
   add("kiyama-wrongsong",["The karaoke bar owner","shopkeeper","Stopped paying for cheaper protection."],["A teenage 'protector'","street-thug","One of three kids with one gun between them."]);
   add("kiyama-omakase",["Kiyama","street-fixer","The fixer. Here to sell out his own oyabun."],["The Kurohane envoy","kurohane-executive","Across the table from Kiyama."],["The sushi chef","shopkeeper","Sees everything, says nothing."]);
   add("kiyama-dojo",["The sensei","civilian","Zach's old teacher. Borrowed from Kiyama's family."],["The rival boss","yakuza-enforcer","Leads the rival family's visit."]);
-  add("kiyama-slipaway",["The witness","civilian","Saw Kiyama's own people commit the crime."]);
+  add("kiyama-offthebooks",["The deserter","civilian","Ran from Kurohane with something in his head."]);
 
   // ------------------------------------------------------------ DIAL TONE
   add("dialtone-ghost",["The cafe owner","shopkeeper","Has no idea his management AI is the leak."]);
@@ -84,7 +84,7 @@
   add("duval-nightbus",["The bus driver","civilian","Drives the last night bus."]);
   add("duval-overboard",["The dockworker","union-steward","Refused to move Yakuza cargo."]);
   add("duval-backpay",["The paymaster","civilian","Council paymaster in the armoured car."]);
-  add("duval-olddebts",["The collector","street-gunner","From Derke's past. Has someone Derke cares about."]);
+  add("duval-owed",["The fixer","street-fixer","Set Batou up on the job that got him caught."]);
 
   // ------------------------------------------------------------ MS. HALE
   add("hale-parachute",["The researcher","civilian","Helix researcher. Her contract was sold; she doesn't want to go."]);
@@ -114,7 +114,7 @@
   add("clerk-spincycle",["The man with the arm","civilian","His arm was repossessed mid-shift. In agony, not psychotic."],["A bystander","civilian","Trapped in the laundromat."]);
   add("clerk-bareknuckle",["The boxer","street-chromehead","Fighting with stolen Gorilla Arms to pay his sister's debt."]);
   add("clerk-doubleshift",["The store manager","shopkeeper","Won't call CivCorp. His son is in the crew."],["The manager's son","street-thug","One of the robbers."]);
-  add("clerk-fakeout",["The impostor","street-netrunner","Running cons with Derke's deepfaked face."]);
+  add("clerk-cleanrecord",["The auditor","kurohane-executive","Kurohane auditor. Carries Batou's file."]);
 
   // ------------------------------------------------------------ FERRO
   add("ferro-shiftchange",["The shift lead","union-steward","Walks the night shift home."]);
@@ -202,7 +202,6 @@
   add("personal-pony-pills",["The pharmacist","civilian","Fills the prescription off the books."]);
   add("personal-sasha-family",["The lawyer","civilian","Needed for the cousin."]);
   add("personal-zach-tournament",["The judge","civilian","Referees the tournament."]);
-  add("personal-derke-file",["The records clerk","civilian","Sleepy."]);
   add("rhea-scorpion-talks",["The land agent","kurohane-executive","Corp agent who wants both clans gone."]);
   add("rhea-trailer-park",["The developer","kurohane-executive","Sent the bulldozers."]);
   add("rhea-heap-king",["The corp buyer","kurohane-executive","Buys from the Heap at the scrap yard."]);

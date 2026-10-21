@@ -9,7 +9,7 @@
     return ui.notifications.error("FEHA HANDOFF EXPORTER is GM only.");
   }
 
-  const ACTORS = ["Ponyboy", "Derke", "Sasha", "Zach"];
+  const ACTORS = ["Ponyboy", "Batou", "Sasha", "Zach"];
   const norm = v => String(v ?? "").trim().toLowerCase();
 
   function parseJson(value) {

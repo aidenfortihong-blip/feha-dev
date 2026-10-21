@@ -34,7 +34,7 @@
   const MACRO_NAME = "ADK // JOBS";
   const MACRO_IMG = "icons/sundries/documents/document-sealed-signatures-red.webp";
   const HOTBAR_SLOT = 4;
-  const PLAYABLE = ["ponyboy","sasha","zach","derke"];
+  const PLAYABLE = ["ponyboy","sasha","zach","batou"];
   const HISTORY_MAX = 80;
   const OPEN = ["offered","requested","active"];
   const PERSONAL = "_personal";
@@ -1092,7 +1092,7 @@
       const list = offered.filter(j => j.for);
       return `<div class="fj-fixer" style="--fj-accent:var(--fj-cyan)"><span class="fj-mono" aria-hidden="true">★</span><div>
         <div class="h">PERSONAL</div><div class="who">Jobs about the crew</div>
-        <p>Work tied to Ponyboy, Sasha, Zach and Derke's own lives. These are always open, whoever the crew can reach.</p></div></div>
+        <p>Work tied to Ponyboy, Sasha, Zach and Batou's own lives. These are always open, whoever the crew can reach.</p></div></div>
         <div class="fj-cards">${list.map(jobCard).join("") || `<div class="fj-empty">Nothing personal right now.</div>`}</div>`;
     }
     const f = fixerOf(ui$.fixer);

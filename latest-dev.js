@@ -1216,7 +1216,7 @@
         const typed = norm(input.value);
         const exact =
           typed === "ponyboy" ||
-          typed === "derke" ||
+          typed === "batou" ||
           typed === "sasha" ||
           typed === "zach";
 
@@ -1466,7 +1466,7 @@
 
   const FEHA_PLAYABLE_ROSTER = Object.freeze([
     "ponyboy",
-    "derke",
+    "batou",
     "sasha",
     "zach"
   ]);
@@ -1500,7 +1500,7 @@
     const key = playableActorKey(actorOrName);
 
     if (key === "ponyboy") return "Ponyboy";
-    if (key === "derke") return "Derke";
+    if (key === "batou") return "Batou";
     if (key === "sasha") return "Sasha";
     if (key === "zach") return "Zach";
 
@@ -1637,8 +1637,6 @@
   }
 
   const FEHA_PORTRAIT_OVERRIDES = Object.freeze({
-    derke:
-      "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
     ponyboy:
       "https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/-yeah/40e1fb5d-6265-4dfd-93d3-d6344dc14180.png"
   });
@@ -1691,13 +1689,13 @@
         clearance:"FIELD ACCESS"
       },
       {
-        key:"derke",
-        name:"Derke",
-        code:"DK-02",
-        art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/74981913-bd87-4289-a524-7d987e699cfd.png",
+        key:"batou",
+        name:"Batou",
+        code:"BT-02",
+        art:"https://assets.forge-vtt.com/600d963af3cd821ef5bfb19a/1%20Cyberpunk/iewsufrb.png",
         primary:"#ff4f64",
         secondary:"#ffd34d",
-        signature:"COMBAT / KINETIC",
+        signature:"EDGE / ON PROBATION",
         clearance:"FIELD ACCESS"
       },
       {
@@ -6033,7 +6031,7 @@ if (!game.user?.isGM) {
     return ui.notifications.error("FEHA HANDOFF EXPORTER is GM only.");
   }
 
-  const ACTORS = ["Ponyboy", "Derke", "Sasha", "Zach"];
+  const ACTORS = ["Ponyboy", "Batou", "Sasha", "Zach"];
   const norm = v => String(v ?? "").trim().toLowerCase();
 
   function parseJson(value) {
