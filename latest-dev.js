@@ -4670,12 +4670,33 @@
       }
     });
 
+    // The character sheet edits system.currency.gp directly. Carry that
+    // number into the authoritative credits flag in the same update, or the
+    // next setCredits (purchase, payout, page load) puts the old balance back.
+    const gpHook = Hooks.on("preUpdateActor",(actor,changes) => {
+      const flatGp = changes?.["system.currency.gp"];
+      const gp = flatGp !== undefined
+        ? flatGp
+        : foundry.utils.getProperty(changes ?? {},"system.currency.gp");
+      if (gp === undefined) return;
+
+      const flat = foundry.utils.flattenObject(changes ?? {});
+      if (Object.keys(flat).some(key => key.startsWith(`flags.${FLAG}.credits`))) return;
+
+      const value = finiteMoney(gp && typeof gp === "object" ? gp.value : gp);
+      if (value === null) return;
+
+      foundry.utils.setProperty(changes,`flags.${FLAG}.credits`,value);
+      foundry.utils.setProperty(changes,`flags.${FLAG}.eurodollars`,value);
+    });
+
     creditsSystem = {
       wallet,
       original,
       installed:installedWalletApi,
       mutationObserver,
       actorHook,
+      gpHook,
       refreshCreditLabels
     };
 
@@ -4687,8 +4708,11 @@
       for (const actor of game.actors.filter(a => a.type === "character")) {
         if (!canEdit(actor)) continue;
 
+        // Only actors that never had a credits flag need converting. Rewriting
+        // everyone on every load put stale balances back over sheet edits.
         const hadCredits =
           finiteMoney(actor.flags?.[FLAG]?.credits) !== null;
+        if (hadCredits) continue;
 
         const balance = getCredits(actor);
 
@@ -4725,6 +4749,9 @@
     try {
       if (creditsSystem.actorHook != null) {
         Hooks.off("updateActor",creditsSystem.actorHook);
+      }
+      if (creditsSystem.gpHook != null) {
+        Hooks.off("preUpdateActor",creditsSystem.gpHook);
       }
     } catch {}
 

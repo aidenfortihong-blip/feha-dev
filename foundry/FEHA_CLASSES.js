@@ -12,7 +12,7 @@
   const core = globalThis.FEHA_CYBER_CORE;
   if (!core) throw new Error("FEHA_CLASSES requires FEHA_CYBER_CORE.");
 
-  const VERSION = "1.0.2";
+  const VERSION = "1.1.0";
   const FLAG = "fleshEnshrouded";
   const CH = "feha.classes";
   const MAX_LEVEL = 5;
@@ -217,7 +217,14 @@
   const classItem = actor => list(actor?.items).find(i => i.type === "class" && flags(i).fehaClass) ?? null;
   const classOf = actor => flags(classItem(actor)).fehaClass ?? null;
   const levelOf = actor => Number(classItem(actor)?.system?.levels ?? 0) || 0;
-  const isPC = actor => actor?.type === "character" && PLAYABLE.includes(String(flags(actor).adkCharacter ?? actor?.name ?? "").toLowerCase());
+  // A player character: one of the crew, or any character a player owns or
+  // has assigned (new players get the picker too). Test dummies do not count.
+  const playerOwned = actor => list(game.users).some(user =>
+    !user.isGM && (user.character?.id === actor.id || actor.testUserPermission?.(user,"OWNER")));
+  const isPC = actor =>
+    actor?.type === "character" &&
+    !flags(actor).playtest &&
+    (PLAYABLE.includes(String(flags(actor).adkCharacter ?? actor?.name ?? "").toLowerCase()) || playerOwned(actor));
 
   function bonus(actor,key) {
     return list(actor?.items).reduce((sum,item) => sum + (Number(flags(item).classBonus?.[key]) || 0),0);
@@ -463,7 +470,9 @@
 
   function promptIfNeeded() {
     if (game.user.isGM) return;
-    const actor = game.user.character;
+    const actor = game.user.character ??
+      list(game.actors).find(a => a.type === "character" && a.isOwner && !flags(a).playtest) ??
+      null;
     if (isPC(actor) && actor.isOwner && !classItem(actor)) setTimeout(() => pick(actor),1500);
   }
 
@@ -538,6 +547,13 @@
       // CON changes move max HP; only the active GM writes it.
       hooks.push(["updateActor",Hooks.on("updateActor",(actor,change) => {
         if (game.users.activeGM?.isSelf && classOf(actor) && foundry.utils.hasProperty(change,"system.abilities.con")) void syncHp(actor);
+      })]);
+      // A GM assigning a character (or ownership) to this player mid-session.
+      hooks.push(["updateUser",Hooks.on("updateUser",(user,change) => {
+        if (user.isSelf && "character" in (change ?? {})) promptIfNeeded();
+      })]);
+      hooks.push(["updateActor",Hooks.on("updateActor",(actor,change) => {
+        if (change?.ownership && actor.isOwner && !game.user.character) promptIfNeeded();
       })]);
       hooks.push(["deleteItem",Hooks.on("deleteItem",item => {
         if (item.type === "class" && flags(item).fehaClass && item.parent === game.user.character) promptIfNeeded();
