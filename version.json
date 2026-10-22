@@ -1,8 +1,10 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "updated": "2026-10-21",
-  "scope": "patch 1",
+  "scope": "credits, classes",
   "notes": [
+    "Money changed on the character sheet sticks: it no longer snaps back to the old balance on the next page load, purchase or payout.",
+    "The class picker opens for any player's character, not only the four crew; it also opens when the GM assigns a character mid-session, and Crew Level lists those characters.",
     "Patch 1 (1.0.0): full bug test of walls, combat, grenades, consumables, cyberware, quickhacks, Market, Chrome Manager, job board and the player client.",
     "Grenades and quickhacks follow the same damage rules as weapons: armor soak, resistances, immunities and vulnerabilities now apply to them (they used to take HP straight off).",
     "Daisy Chain (Netrunner) now lets the second quickhack upload through; the turn limit used to refuse it.",
