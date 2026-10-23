@@ -141,13 +141,13 @@
 
     // -------------------------------------------------------------- BATOU
     g("Batou","clerk",2,"batou-thesis","Thesis Defense","Protection","X5",
-      "Batou's thesis defense is in three days. Someone keeps breaking into the Academy lab at night and copying ECHO's training data.",
-      ["Stake out the AI lab at night","Catch whoever is copying ECHO","Find out who sent them"],
-      "The thief is a Kurohane research intern. Batou's father sent him: ECHO learns emotion the same way the Afterlight project does, and the Director wants to know how.",
+      "Batou's thesis defense is in three days. Someone keeps breaking into the Academy lab at night and copying his AI's training data.",
+      ["Stake out the AI lab at night","Catch whoever is copying his AI","Find out who sent them"],
+      "The thief is a Kurohane research intern. Batou's father sent him: Batou's AI learns emotion the same way the Afterlight project does, and the Director wants to know how.",
       "Clerk Seven: “Your friend's homework is worth more than he thinks. Somebody upstairs agrees.”",
       [b("X5","Kurohane Academy, AI lab","Rows of dark terminals, one screen still lit.",["Stealth DC 13 to wait unseen","Tech DC 14 to trace the copy"],[["Kurohane Security",2]])],
       [["The intern","civilian","Kurohane research intern. Terrified of the Director."]],
-      "Batou keeps ECHO safe and learns his father is watching his work. The intern owes him one.",
+      "Batou keeps his AI safe and learns his father is watching his work. The intern owes him one.",
       ["Memory Boost","Corvus Memory Booster x2"],"The intern: one look inside Kurohane's AI research division."),
 
     g("Batou","kiyama",2,"batou-wetware","Wetware","Investigation","35",
