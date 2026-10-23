@@ -1,8 +1,9 @@
 {
-  "version": "1.0.1",
-  "updated": "2026-10-21",
-  "scope": "credits, classes",
+  "version": "1.0.2",
+  "updated": "2026-10-23",
+  "scope": "batou",
   "notes": [
+    "Batou's personal gigs follow his new story: his thesis AI being stolen, a ripperdoc who has put an AI in someone's head, his mother's journal, the old Academy bullies, the Afterlight ledger, a Soulkiller survivor and a core full of engrams.",
     "Money changed on the character sheet sticks: it no longer snaps back to the old balance on the next page load, purchase or payout.",
     "The class picker opens for any player's character, not only the four crew; it also opens when the GM assigns a character mid-session, and Crew Level lists those characters.",
     "Patch 1 (1.0.0): full bug test of walls, combat, grenades, consumables, cyberware, quickhacks, Market, Chrome Manager, job board and the player client.",

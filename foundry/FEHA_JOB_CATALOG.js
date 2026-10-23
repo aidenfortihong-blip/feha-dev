@@ -716,21 +716,21 @@
       "Zach caught something in the Cinder numbers at work. Babka wants the proof before the next union meeting.",
       ["Stay late at the office","Copy the allocation reports","Get out without being caught"],
       "Zach's manager knows and is covering for a Council member. He'll offer Zach a promotion to keep quiet.")),
-    P("Batou",J("clerk","cleanrecord",2,"Data Heist","Clean Record","Downtown","Discreet Hotel Lobby",
+    P("Batou",J("clerk","afterlight",2,"Data Heist","The Afterlight Ledger","Downtown","Discreet Hotel Lobby",
       [["Kurohane Security",2],["Kurohane Agent",1]],1500,
-      "Batou's probation file is on a Kurohane auditor's deck, and she is staying at a downtown hotel for the night. Clerk Seven has the room number.",
-      ["Find the auditor's room","Copy or edit Batou's file","Leave nothing Kurohane can tie back to Batou"],
-      "The file has a second section: Kurohane isn't building a case to jail Batou. It's building one to own him as a deniable asset.")),
-    P("Batou",J("kiyama","offthebooks",2,"Smuggling","Off the Books","Orient Quarter","Orient Streets",
+      "A Kurohane auditor is staying downtown with the AFTERLIGHT project ledger on her deck: a list of every engram the project keeps.",
+      ["Find the auditor's room","Copy the ledger","Leave nothing that points to Batou"],
+      "Mara isn't the only name on it. The last entry is Batou's, marked 'future candidate'.")),
+    P("Batou",J("kiyama","soulkiller",2,"Investigation","The Survivor","Orient Quarter","Orient Streets",
       [["Yakuza Kobun",3],["Yakuza Enforcer",1]],1600,
-      "Kiyama's family needs a driver for one night. Batou's probation says he stays in his district after curfew.",
-      ["Pick up the cargo","Get it through the Orient Quarter","Get Batou home before his morning check-in"],
-      "The cargo is a Kurohane deserter. If Kurohane finds out who moved him, Batou's probation is over.")),
-    P("Batou",J("duval","owed",2,"Collection","What He's Owed","The Docks","Dive Bar",
+      "A Yakuza netrunner survived a Soulkiller attack, half of her mind gone. Kiyama is hiding her, and she remembers who ran the program.",
+      ["Reach the safehouse","Talk to the survivor","Get her out before Kurohane does"],
+      "She remembers the operator's voice: it was Batou's father, running the attack himself.")),
+    P("Batou",J("duval","coldcargo",2,"Smuggling","Cold Cargo","The Docks","Dive Bar",
       [["Street Thug",3],["Chromehead",1]],1300,
-      "The fixer who set up the job that got Batou caught never paid his cut. Duval knows where he drinks.",
-      ["Find the fixer at the dive bar","Get Batou's cut (pay, talk or fight)","Decide whether the fixer walks"],
-      "Kurohane froze the fixer's accounts the same night. He's been hiding from them too, and he knows who talked."))
+      "Kurohane is moving a server core out of the city tonight. Duval's people say it holds engrams.",
+      ["Find the shipment","Get to the core","Decide what to do with the minds inside"],
+      "The core is a backup of Afterlight. If Mara was freed, a copy of her is in it."))
   ];
 
   // ----------------------------------------------------------- GENERATOR
